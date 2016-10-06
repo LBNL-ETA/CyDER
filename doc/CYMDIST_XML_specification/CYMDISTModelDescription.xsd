@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+   <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+         <!-- XML Schema Generated from XML Document on Thu Oct 06 2016 10:29:59 GMT-0700 (PDT) -->
+         <!-- with XmlGrid.net Free Online Service http://xmlgrid.net -->
+         <xs:element name="CYMDISTModelDescription">
+               <xs:complexType>
+                     <xs:sequence>
+                           <xs:element name="ModelVariables">
+                                 <xs:complexType>
+                                       <xs:sequence>
+                                             <xs:element name="ScalarVariable" maxOccurs="unbounded">
+                                                   <xs:complexType>
+                                                         <xs:sequence>
+                                                               <xs:element name="Real">
+                                                                     <xs:complexType>
+                                                                           <xs:attribute name="unit" type="xs:string"></xs:attribute>
+                                                                           <xs:attribute name="start" type="xs:int"></xs:attribute>
+                                                                     </xs:complexType>
+                                                               </xs:element>
+                                                         </xs:sequence>
+                                                         <xs:attribute name="name" type="xs:string"></xs:attribute>
+                                                         <xs:attribute name="description" type="xs:string"></xs:attribute>
+                                                         <xs:attribute name="causality" type="xs:string"></xs:attribute>
+                                                   </xs:complexType>
+                                             </xs:element>
+                                       </xs:sequence>
+                                 </xs:complexType>
+                           </xs:element>
+                     </xs:sequence>
+                     <xs:attribute name="xmlns:xsi" type="xs:string"></xs:attribute>
+                     <xs:attribute name="fmiVersion" type="xs:int"></xs:attribute>
+                     <xs:attribute name="modelName" type="xs:string"></xs:attribute>
+                     <xs:attribute name="description" type="xs:string"></xs:attribute>
+                     <xs:attribute name="generationTool" type="xs:string"></xs:attribute>
+               </xs:complexType>
+         </xs:element>
+   </xs:schema>
