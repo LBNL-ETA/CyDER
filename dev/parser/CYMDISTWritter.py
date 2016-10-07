@@ -17,12 +17,12 @@ class CYMDISTWritter(object):
 
 
     def __init__(self, xml_path):
-        
-        self.xml_path = xml_path
 
         '''
         Constructor
         '''
+        
+        self.xml_path = xml_path
               
              
     def xml_validator(self):
@@ -110,15 +110,3 @@ if __name__ == "__main__":
     app.xml_validator()
     app.parser()
     
-# with open(schema_file, 'r') as f:
-#     schema_root = etree.XML(f.read())
-# 
-# schema = etree.XMLSchema(schema_root)
-# xmlparser = etree.XMLParser(schema=schema)
-# 
-# filenames = ['input1.xml', 'input2.xml', 'input3.xml']
-# for filename in filenames:
-#     if validate(xmlparser, filename):
-#         print "%s validates" % filename
-#     else:
-#         print "%s doesn't validate" % filename
