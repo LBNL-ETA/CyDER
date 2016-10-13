@@ -10,7 +10,9 @@ import json
 import os.path
 import logging
 
-logging.basicConfig(filename="CYMDIST.log",  filemode='w', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(filename="CYMDIST.log",  filemode='w', 
+                    level=logging.DEBUG, format='%(asctime)s %(message)s', 
+                    datefmt='%m/%d/%Y %I:%M:%S %p')
 stderrLogger=logging.StreamHandler()
 stderrLogger.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
 logging.getLogger().addHandler(stderrLogger)
