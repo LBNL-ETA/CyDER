@@ -1,5 +1,5 @@
 model {{modelName}}
-    "Block that exchanges a vector of real values with a Python function"
+    "Block that exchanges a vector of real values with CYMDIST"
     extends Modelica.Blocks.Interfaces.DiscreteBlock(
       startTime=0,
       firstTrigger(fixed=true, start=false));
