@@ -1,98 +1,126 @@
 model {{modelName}}
-    "Block that exchanges a vector of real values with CYMDIST"
-    extends Modelica.Blocks.Interfaces.DiscreteBlock(
-      startTime=0,
-      firstTrigger(fixed=true, start=false));
+  "Block that exchanges a vector of real values with CYMDIST"
+  extends Modelica.Blocks.Interfaces.DiscreteBlock(
+    startTime=0,
+    firstTrigger(fixed=true, start=false));
     
-    {%- for dict_item in parent_dict %}
-    {%- if (dict_item["causality"])== "parameter" %}
-    parameter {{dict_item["vartype"]}} {{dict_item["name"]}}(unit="{{dict_item["unit"]}}")
-      "{{dict_item["description"]}}";
-    {%- elif (dict_item["causality"])== "input" %}
-    Modelica.Blocks.Interfaces.RealInput {{dict_item["name"]}}(start="{{dict_item["start"]}}", unit="{{dict_item["unit"]}}")
-      "{{dict_item["description"]}}";
-    {%- elif (dict_item["causality"])== "output" %}
-    Modelica.Blocks.Interfaces.RealOutput {{dict_item["name"]}} (unit="{{dict_item["unit"]}}")
-      "{{dict_item["description"]}}";
-    {%- endif -%}
-    {% endfor %}
-    
-    parameter Integer nDblWri(min=1) = {{inputVariables|length}} 
-      "Number of double values to sent to CYMDIST";
-    parameter Integer nDblRea(min=1) = {{outputVariables|length}}  
-      "Number of double values to read from CYMDIST";
-    parameter Integer flaDblWri[nDblWri] = zeros(nDblWri)
+  {%- for dict_item in scalarVariables %}
+  {%- if (dict_item["causality"])== "parameter" %}
+  parameter {{dict_item["vartype"]}} {{dict_item["name"]}}(unit="{{dict_item["unit"]}}") = {{dict_item["start"]}}
+    "{{dict_item["description"]}}";
+  {%- elif (dict_item["causality"])== "input" %}
+  Modelica.Blocks.Interfaces.RealInput {{dict_item["name"]}}(start="{{dict_item["start"]}}", unit="{{dict_item["unit"]}}")
+    "{{dict_item["description"]}}";
+  {%- elif (dict_item["causality"])== "output" %}
+  Modelica.Blocks.Interfaces.RealOutput {{dict_item["name"]}} (unit="{{dict_item["unit"]}}")
+    "{{dict_item["description"]}}";
+  {%- endif -%}
+  {% endfor %}
+ 
+protected   
+  parameter Integer nDblPar = {{parameterVariableNames|length}} 
+    "Number of double parameter values to sent to CYMDIST";
+  parameter Integer nDblWri(min=1) = {{inputVariableNames|length}} 
+    "Number of double input values to sent to CYMDIST";
+  parameter Integer nDblRea(min=1) = {{outputVariableNames|length}}  
+    "Number of double output values to read from CYMDIST";
+  parameter Integer flaDblWri[nDblWri] = zeros(nDblWri)
     "Flag for double values (0: use current value, 1: use average over interval, 2: use integral over interval)";
-    
-    Real uR[nDblWri] "Real inputs to be sent to CYMDIST";
-    Real yR[nDblRea] "Real outputs received from CYMDIST";
-
-    Real uRInt[nDblWri] "Value of integral";
-    Real uRIntPre[nDblWri] "Value of integral at previous sampling instance";
-    Real uRWri[nDblWri] "Value to be sent to CYMDIST";
-    
-    parameter String uRStr[nDblWri] = {{modelicaInputVariables}} 
-      "Input variables names to be sent to CYMDIST";
-    
-    parameter String yRStr[nDblWri] = {{modelicaOutputVariables}} 
-      "Output variables names to be read from CYMDIST";
+  
+  {% set comma = joiner(",") -%}  
+  Real uR[nDblWri]={
+  {%- for row in inputVariableNames -%}
+  {{comma()}}
+  {{row}}
+  {%- endfor %} 
+  }"Real inputs to be sent to CYMDIST";
+  {% set comma = joiner(",") -%} 
+  Real yR[nDblRea]={
+  {%- for row in outputVariableNames -%}
+  {{comma()}}
+  {{row}}
+  {%- endfor %} 
+  }"Real outputs received from CYMDIST";
+  Real uRInt[nDblWri] "Value of integral";
+  Real uRIntPre[nDblWri] "Value of integral at previous sampling instance";
+  Real uRWri[nDblWri] "Value to be sent to CYMDIST";
+  {% set comma = joiner(",") -%}   
+  parameter String uRStr[nDblWri] = {
+  {%- for row in inputVariableNames -%}
+  {{comma()}}
+  "{{row}}"
+  {%- endfor %} 
+  }"Input variables names to be sent to CYMDIST";
+  {% set comma = joiner(",") -%} 
+  parameter String yRStr[nDblWri] = {
+  {%- for row in outputVariableNames -%}
+  {{comma()}}
+  "{{row}}"
+  {%- endfor %} 
+  }"Output variables names to be read from CYMDIST";
+  {% set comma = joiner(",") -%} 
+  parameter String parStr[nDblWri] = {
+  {%- for row in parameterVariableNames -%}
+  {{comma()}}
+  "{{row}}"
+  {%- endfor %}
+  }"Parameter variables names to be sent to CYMDIST";
+  {% set comma = joiner(",") -%} 
+  parameter Real parDbl[nDblPar] = {
+  {%- for row in parameterVariableValues -%}
+  {{comma()}}
+  {{row}}
+  {%- endfor %}
+  }"Parameter variables values to be sent to CYMDIST";
 
 initial equation 
-    {% for row in inputVariables %}
-    uR[{{loop.index}}] = {{row}};
-    {%- endfor %} 
-    uRWri    =  pre(uR);
-    uRInt    =  zeros(nDblWri);
-    uRIntPre =  zeros(nDblWri);
-    for i in 1:nDblWri loop
-      assert(flaDblWri[i]>=0 and flaDblWri[i]<=2,
-        "Parameter flaDblWri out of range for " + String(i) + "-th component.");
-    end for;
-    // The assignment of yR avoids the warning
-    // "initial conditions for variables of type Real are not fully specified".
-    // At startTime, the sampleTrigger is true and hence this value will
-    // be overwritten.
-    yR = zeros(nDblRea);
+  uRWri    =  pre(uR);
+  uRInt    =  zeros(nDblWri);
+  uRIntPre =  zeros(nDblWri);
+  for i in 1:nDblWri loop
+    assert(flaDblWri[i]>=0 and flaDblWri[i]<=2,
+      "Parameter flaDblWri out of range for " + String(i) + "-th component.");
+  end for;
+  // The assignment of yR avoids the warning
+  // "initial conditions for variables of type Real are not fully specified".
+  // At startTime, the sampleTrigger is true and hence this value will
+  // be overwritten.
+  yR = zeros(nDblRea);
 equation 
-    {% for row in inputVariables -%}
-    uR[{{loop.index}}] = {{row}};
-    {% endfor -%}
-    
-    {% for row in outputVariables -%}
-    yR[{{loop.index}}] = {{row}};
-    {% endfor -%}
-    
-    for i in 1:nDblWri loop
-      der(uRInt[i]) = if (flaDblWri[i] > 0) then uR[i] else 0;
-    end for;
+  for i in 1:nDblWri loop
+    der(uRInt[i]) = if (flaDblWri[i] > 0) then uR[i] else 0;
+  end for;
    
-    when {sampleTrigger} then
-      // Compute value that will be sent to CYMDIST
-      for i in 1:nDblWri loop
-        if (flaDblWri[i] == 0) then
-          // Send the current value.
-          uRWri[i] = pre(uR[i]); 
-        else
-          // Integral over the sampling interval
-          uRWri[i] = uRInt[i] - pre(uRIntPre[i]);
-          if (flaDblWri[i] == 1) then
-            // Average value over the sampling interval
-            uRWri[i] =  uRWri[i]/samplePeriod;  
-          end if;
+  when {sampleTrigger} then
+    // Compute value that will be sent to CYMDIST
+    for i in 1:nDblWri loop
+      if (flaDblWri[i] == 0) then
+        // Send the current value.
+        uRWri[i] = pre(uR[i]); 
+      else
+        // Integral over the sampling interval
+        uRWri[i] = uRInt[i] - pre(uRIntPre[i]);
+        if (flaDblWri[i] == 1) then
+          // Average value over the sampling interval
+          uRWri[i] =  uRWri[i]/samplePeriod;  
         end if;
-      end for;
+      end if;
+    end for;
       
-      // Exchange data
-      yR = Buildings.Utilities.IO.Python27.Functions.cymdist(
-        moduleName=moduleName,
-        functionName=functionName,
-        dblWri=uRWri,
-        nDblWri=nDblWri,
-        nDblRea=nDblRea,
-        dlbWriNam=uRStr,
-        dlbReaNam=yRStr);
+    // Exchange data
+    yR = Buildings.Utilities.IO.Python27.Functions.cymdist(
+      moduleName=moduleName,
+      functionName=functionName,
+      nDblInpVal=nDblWri,
+      dlbInpNam=uRStr,
+      dblInpVal=uRWri,
+      nDblOutVal=nDblRea,
+      dlbOutNam=yRStr,
+      nDlbParVal=nDblPar,
+      dlbParNam=parStr,
+      dlbParVal=parDbl);
       
-    // Store current value of integral
-    uRIntPre= uRInt;
-    end when;    
+  // Store current value of integral
+  uRIntPre= uRInt;
+  end when;    
 end {{modelName}};
