@@ -8,6 +8,8 @@ import xml.etree.ElementTree as ET
 import jinja2 as jja2
 import os.path as path
 import logging as log
+import subprocess as sp
+import os
 
 log.basicConfig(filename="CYMDIST.log",  filemode='w', 
                     level=log.DEBUG, format='%(asctime)s %(message)s', 
@@ -16,10 +18,20 @@ stderrLogger=log.StreamHandler()
 stderrLogger.setFormatter(log.Formatter(log.BASIC_FORMAT))
 log.getLogger().addHandler(stderrLogger)
 
-# The Path to the xsd document. 
-# This shouldn't be changed by the user.
-XSD_PATH = "./CYMDISTModelDescription.xsd"
-
+# These files are required by the utility to run. 
+# They must be at the top level of the current working 
+# directory.
+# XSD_SCHEMA: Schema used to validate the XML input
+# CYMDISTModelicaTemplate_MOT: Template used to write Modelica model
+# CYMDISTModelicaTemplate_MOS: Template used to write mos script
+XSD_SCHEMA = "./CYMDISTModelDescription.xsd"
+CYMDISTModelicaTemplate_MOT="CYMDISTModelicaTemplate.mot"
+CYMDISTModelicaTemplate_MOS="CYMDISTModelicaTemplate.mos"
+#########################################
+## TEST FILES TO BE PROVIDED BY THE USER
+BUILDINGS_PATH="/home/thierry/Desktop/vmWareLinux/proj/buildings_library/models/modelica/git/buildings/modelica-buildings/"
+XML_INPUT_PATH="CYMDISTModelDescription.xml"
+######################################### 
       
 def main():
         
@@ -28,8 +40,9 @@ def main():
     
     """
     
-    CYMDIST = CYMDISTWritter("CYMDISTModelDescription.xml")
+    CYMDIST = CYMDISTWritter(XML_INPUT_PATH, BUILDINGS_PATH)
     CYMDIST.print_mo()
+    CYMDIST.generate_fmu()
 
 class CYMDISTWritter(object):
     
@@ -45,7 +58,7 @@ class CYMDISTWritter(object):
     """
 
 
-    def __init__(self, xml_path):
+    def __init__(self, xml_path, buildings_path):
         """Initialize the class.
         
         Args:
@@ -54,6 +67,7 @@ class CYMDISTWritter(object):
         """
         
         self.xml_path = xml_path
+        self.buildings_path = buildings_path
               
              
     def xml_validator(self):
@@ -66,7 +80,7 @@ class CYMDISTWritter(object):
         
         try:
             # Get the XML schema to validate against
-            xmlschema = etree.XMLSchema(file=XSD_PATH)
+            xmlschema = etree.XMLSchema(file=XSD_SCHEMA)
             # Parse string of XML
             xml_doc = etree.parse(self.xml_path)
             # Validate parsed XML against schema
@@ -197,7 +211,7 @@ class CYMDISTWritter(object):
         outputVariableNames, parameterVariableNames, \
         parameterVariableValues = self.xml_parser()
 
-        loader = jja2.FileSystemLoader('./CYMDISTModelicaTemplate.mot')
+        loader = jja2.FileSystemLoader(CYMDISTModelicaTemplate_MOT)
         env = jja2.Environment(loader=loader)
         template = env.get_template('')
         
@@ -214,7 +228,42 @@ class CYMDISTWritter(object):
                             + " exists and will be overwritten.")
         with open(output_file, "wb") as fh:
             fh.write(output_res)
-        fh.close()    
+        fh.close()  
+        
+    
+    def generate_fmu(self):
+        """Generate the CYMDIST FMU.
+        
+        This function writes the mos file which is used to create the 
+        CYMDIST FMU. It requires the path to the Buildings 
+        library which will be set to the MODELICAPATH.
+        The function calls Dymola, runs the mos file and 
+        writes an FMU according to the parameters set in the mos template.
+        
+        """
+        
+        # Set the Modelica path to point to the Buildings Library
+        os.environ["MODELICAPATH"] = self.buildings_path 
+        
+        # Load the mos template to create the FMU
+        loader = jja2.FileSystemLoader(CYMDISTModelicaTemplate_MOS)
+        env = jja2.Environment(loader=loader)
+        template = env.get_template('')
+        
+        output_res=template.render(modelName= self.modelName, 
+                                   buildingsPath=self.buildings_path)
+        # Write results in mo file which has the same name as the class name
+        output_file = self.modelName + ".mos"
+        if path.isfile(output_file):
+            log.warning("The output file " + output_file 
+                            + " exists and will be overwritten.")
+        with open(output_file, "wb") as fh:
+            fh.write(output_res)
+        fh.close()  
+        
+        # Call Dymola to generate the FMUs
+        sp.call(["dymola", output_file]) 
+      
         
         
 if __name__ == '__main__':
