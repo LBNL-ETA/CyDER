@@ -38,8 +38,8 @@ protected
   Real yR[nDblOut]={
   y,
   y1 
-
   }"Variable used to collect values received from CYMDIST";
+  
   Real uRInt[nDblInp] "Value of integral";
   Real uRIntPre[nDblInp] "Value of integral at previous sampling instance";
   Real dblInpVal[nDblInp] "Value to be sent to CYMDIST";
