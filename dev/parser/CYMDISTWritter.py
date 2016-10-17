@@ -10,6 +10,7 @@ import os.path as path
 import logging as log
 import subprocess as sp
 import os
+import platform
 
 log.basicConfig(filename="CYMDIST.log",  filemode='w', 
                     level=log.DEBUG, format='%(asctime)s %(message)s', 
@@ -29,7 +30,10 @@ CYMDISTModelicaTemplate_MOT="CYMDISTModelicaTemplate.mot"
 CYMDISTModelicaTemplate_MOS="CYMDISTModelicaTemplate.mos"
 #########################################
 ## TEST FILES TO BE PROVIDED BY THE USER
-BUILDINGS_PATH="/home/thierry/Desktop/vmWareLinux/proj/buildings_library/models/modelica/git/buildings/modelica-buildings/"
+if platform.system()=='Linux':
+    BUILDINGS_PATH="/home/thierry/Desktop/vmWareLinux/proj/buildings_library/models/modelica/git/buildings/modelica-buildings"
+else:
+    BUILDINGS_PATH="Z:\\Ubuntu\proj\\buildings_library\\models\\modelica\\git\\buildings\\modelica-buildings"
 XML_INPUT_PATH="CYMDISTModelDescription.xml"
 ######################################### 
       
@@ -63,12 +67,14 @@ class CYMDISTWritter(object):
         
         Args:
             xml_path (str): The path to the XML file.
+            buildings_path (str): The path to the folder
+            which contains the Buildings library excluding 
+            the ending FILE SEPARATOR.
         
         """
         
         self.xml_path = xml_path
-        self.buildings_path = buildings_path
-              
+        self.buildings_path = buildings_path + os.sep
              
     def xml_validator(self):
         """Validate the XML file.
