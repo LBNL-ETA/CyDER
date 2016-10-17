@@ -151,6 +151,8 @@ class CYMDISTWritter(object):
                         " with causality" + causality + " not defined.\
                         The start value will be set to 0.0 by default."
                         start = 0.0
+                    elif not(start is None):
+                        start = float(start)
                     # Create a dictionary
                     scalarVariable["name"] = name
                     if not (description is None):
@@ -166,7 +168,7 @@ class CYMDISTWritter(object):
                         outputVariableNames.append(name)
                     if (causality=="parameter"):
                         parameterVariableNames.append(name)
-                        parameterVariableValues.append(float(start))
+                        parameterVariableValues.append(start)
                     scalarVariable["vartype"] = vartype
                     scalarVariable["unit"] = unit
                     if not (start is None):
@@ -213,7 +215,7 @@ class CYMDISTWritter(object):
         with open(output_file, "wb") as fh:
             fh.write(output_res)
         fh.close()    
-
+        
         
 if __name__ == '__main__':
     # Try running this module!
