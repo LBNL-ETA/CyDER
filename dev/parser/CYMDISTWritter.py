@@ -377,7 +377,7 @@ class CYMDISTWritter(object):
         
         # Write scuccess.
         log.info("The FMU " + fmuName + " is successfully created.")
-        log.info("The FMU " + fmuName  + " is in " + os.getcwd())
+        log.info("The FMU " + fmuName  + " is in " + os.getcwd() + ".")
         
     
     def clean_temporary(self):
@@ -431,7 +431,7 @@ class CYMDISTWritter(object):
            
         log.info("The model description file will be rewritten" +
                  " to include the attribute " + NEEDSEXECUTIONTOOL + 
-                 " set to true")
+                 " set to true.")
         tree = ET.parse(MODELDESCRIPTION)
         # Get the root of the tree
         root = tree.getroot()  
@@ -452,11 +452,12 @@ class CYMDISTWritter(object):
         # If that is the case, delete it or rename to tmp?
         fmuNameOriginal = fmuName + ".original"
         if path.isfile(fmuName):
-            log.info("The original CYMDIST FMU will be renamed to " + fmuName+".original")
-            log.info ("A modified version of the original will be written.")
+            log.info("The original CYMDIST FMU " + fmuName + 
+                     " will be renamed to " + fmuName+".original.")
+            log.info ("A modified version of the original will be created.")
             log.info("The difference between the original and the new FMU is"
                      " the model description file of the new FMU which has"
-                     " the attribute " + NEEDSEXECUTIONTOOL + " set to true")
+                     " the attribute " + NEEDSEXECUTIONTOOL + " set to true.")
             if path.isfile(fmuNameOriginal):
                 os.remove(fmuNameOriginal)
             os.rename(fmuName, fmuNameOriginal)
@@ -471,7 +472,7 @@ class CYMDISTWritter(object):
         
         # Write scuccess.
         log.info("The FMU " + fmuName + " is successfully re-created.")
-        log.info("The FMU " + fmuName  + " is in " + os.getcwd())
+        log.info("The FMU " + fmuName  + " is in " + os.getcwd() + ".")
         
 
 if __name__ == '__main__':
