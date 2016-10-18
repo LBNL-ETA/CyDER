@@ -12,6 +12,7 @@ import subprocess as sp
 import os
 import platform
 import shutil
+import zipfile
 
 log.basicConfig(filename="CYMDIST.log",  filemode='w', 
                     level=log.DEBUG, format='%(asctime)s %(message)s', 
@@ -27,6 +28,8 @@ log.getLogger().addHandler(stderrLogger)
 # CYMDISTModelicaTemplate_MO: Template used to write Modelica model
 # CYMDISTModelicaTemplate_MOS: Template used to write mos script
 XSD_SCHEMA = "./CYMDISTModelDescription.xsd"
+NEEDSEXECUTIONTOOL = "needsExecutionTool"
+MODELDESCRIPTION="modelDescription.xml"
 CYMDISTModelicaTemplate_MO="CYMDISTModelicaTemplate.mo"
 CYMDISTModelicaTemplate_MOS="CYMDISTModelicaTemplate.mos"
 #########################################
@@ -37,7 +40,7 @@ else:
     BUILDINGS_PATH="Z:\\Ubuntu\proj\\buildings_library\\models\\modelica\\git\\buildings\\modelica-buildings"
 XML_INPUT_PATH="CYMDISTModelDescription.xml"
 ######################################### 
-      
+
 def main():
         
     """Illustrate how to write Modelica model for CYMDIST.
@@ -47,9 +50,69 @@ def main():
     
     CYMDIST = CYMDISTWritter(XML_INPUT_PATH, BUILDINGS_PATH)
     CYMDIST.print_mo()
-    #CYMDIST.generate_fmu()
-    #CYMDIST.clean_temporary()
+    CYMDIST.generate_fmu()
+    CYMDIST.clean_temporary()
+    CYMDIST.rewrite_fmu()
 
+def zip_fmu(dirPath=None, zipFilePath=None, includeDirInZip=True):
+    """Create a zip archive from a directory.
+    
+    Note that this function is designed to put files in the zip archive with
+    either no parent directory or just one parent directory, so it will trim any
+    leading directories in the filesystem paths and not include them inside the
+    zip archive paths. This is generally the case when you want to just take a
+    directory and make it into a zip file that can be extracted in different
+    locations. 
+    
+    Keyword arguments:
+    
+    dirPath -- string path to the directory to archive. This is the only
+    required argument. It can be absolute or relative, but only one or zero
+    leading directories will be included in the zip archive.
+
+    zipFilePath -- string path to the output zip file. This can be an absolute
+    or relative path. If the zip file already exists, it will be updated. If
+    not, it will be created. If you want to replace it from scratch, delete it
+    prior to calling this function. (default is computed as dirPath + ".zip")
+
+    includeDirInZip -- boolean indicating whether the top level directory should
+    be included in the archive or omitted. (default True)
+    
+    Author: http://peterlyons.com/problog/2009/04/zip-dir-python
+
+"""
+    if not zipFilePath:
+        zipFilePath = dirPath + ".zip"
+    if not os.path.isdir(dirPath):
+        raise OSError("dirPath argument must point to a directory. "
+            "'%s' does not." % dirPath)
+    parentDir, dirToZip = os.path.split(dirPath)
+    #Little nested function to prepare the proper archive path
+    def trimPath(path):
+        archivePath = path.replace(parentDir, "", 1)
+        if parentDir:
+            archivePath = archivePath.replace(os.path.sep, "", 1)
+        if not includeDirInZip:
+            archivePath = archivePath.replace(dirToZip + os.path.sep, "", 1)
+        return os.path.normcase(archivePath)
+        
+    outFile = zipfile.ZipFile(zipFilePath, "w",
+        compression=zipfile.ZIP_DEFLATED)
+    for (archiveDirPath, dirNames, fileNames) in os.walk(dirPath):
+        for fileName in fileNames:
+            filePath = os.path.join(archiveDirPath, fileName)
+            outFile.write(filePath, trimPath(filePath))
+        #Make sure we get empty directories as well
+        if not fileNames and not dirNames:
+            zipInfo = zipfile.ZipInfo(trimPath(archiveDirPath) + "/")
+            #some web sites suggest doing
+            #zipInfo.external_attr = 16
+            #or
+            #zipInfo.external_attr = 48
+            #Here to allow for inserting an empty directory.  Still TBD/TODO.
+            outFile.writestr(zipInfo, "")
+    outFile.close()
+      
 class CYMDISTWritter(object):
     
     """CYMDIST FMU writer.
@@ -225,7 +288,9 @@ class CYMDISTWritter(object):
                     if not (start is None):
                         scalarVariable["start"] = start
                     scalarVariables.append(scalarVariable)
-            # Print list with all scalar variables                
+            # Print list with all scalar variables        
+            # Write success.
+            log.info("Parsing of " + self.xml_path + " was successfull.")        
             return scalarVariables, inputVariableNames, \
                 outputVariableNames, parameterVariableNames, \
                 parameterVariableValues
@@ -266,7 +331,13 @@ class CYMDISTWritter(object):
         with open(output_file, "wb") as fh:
             fh.write(output_res)
         fh.close()  
-        
+
+        # Write success.
+        log.info("The Modelica model " + output_file + 
+                 " of " + self.modelName + " is successfully created.")
+        log.info("The Modelica model " + output_file + 
+                 " of " + self.modelName + " is in " + os.getcwd())
+    
     
     def generate_fmu(self):
         """Generate the CYMDIST FMU.
@@ -301,6 +372,13 @@ class CYMDISTWritter(object):
         # Call Dymola to generate the FMUs
         sp.call(["dymola", output_file]) 
         
+        # Define name of the FMU
+        fmuName = self.modelName + ".fmu"
+        
+        # Write scuccess.
+        log.info("The FMU " + fmuName + " is successfully created.")
+        log.info("The FMU " + fmuName  + " is in " + os.getcwd())
+        
     
     def clean_temporary(self):
         temporary = ["buildlog.txt", "dsin.txt", "dslog.txt", "dymosim", 
@@ -314,9 +392,87 @@ class CYMDISTWritter(object):
         for fol in DymFMU_tmp:
             if path.isdir(fol):
                 shutil.rmtree(fol)
-     
-    # Needs to unzio and reqrite the xml.            
-    # https://www.safaribooksonline.com/library/view/python-cookbook-3rd/9781449357337/ch06s06.html
+                
+             
+    def rewrite_fmu(self):
+        """Add needsExecutionTool to the CYMDIST FMU.
+        
+        This function unzips the FMU generated with generate_fmu(),
+        read the xml file and add needsExecutionTool to the FNU capabilities.
+        The function completes the process by rezipping the FMU.
+        
+        """
+        
+        # Get the XML file
+        
+        dir = self.modelName + ".tmp"
+        zipdir = dir + ".zip"
+        fmuName=self.modelName + ".fmu"
+        
+        if path.exists(dir):
+            shutil.rmtree(dir)
+            
+        if not path.exists(dir):
+            os.makedirs(dir)
+        
+        # Copy file to temporary folder    
+        shutil.copy2(fmuName, dir)
+        
+        # Get the current working directory
+        cwd = os.getcwd()
+        
+        # Change to the temporary directory
+        os.chdir(dir)
+        
+        # Unzip folder which contains he FMU
+        zip_ref = zipfile.ZipFile(fmuName, 'r')
+        zip_ref.extractall(".")
+        zip_ref.close()
+           
+        log.info("The model description file will be rewritten" +
+                 " to include the attribute " + NEEDSEXECUTIONTOOL + 
+                 " set to true")
+        tree = ET.parse(MODELDESCRIPTION)
+        # Get the root of the tree
+        root = tree.getroot()  
+        # Add the needsExecution tool attribute
+        root.attrib[NEEDSEXECUTIONTOOL] = "true"
+        tree.write(MODELDESCRIPTION, xml_declaration=True)
+        if path.isfile(fmuName):
+            os.remove(fmuName)
+        
+        # Switch back to the current working directory
+        os.chdir(cwd)
+        
+        # Pass the directory which will be zipped
+        # and call the zipper function.
+        zip_fmu(dir, includeDirInZip=False)
+        
+        # Check if fmuName exists in current directory
+        # If that is the case, delete it or rename to tmp?
+        fmuNameOriginal = fmuName + ".original"
+        if path.isfile(fmuName):
+            log.info("The original CYMDIST FMU will be renamed to " + fmuName+".original")
+            log.info ("A modified version of the original will be written.")
+            log.info("The difference between the original and the new FMU is"
+                     " the model description file of the new FMU which has"
+                     " the attribute " + NEEDSEXECUTIONTOOL + " set to true")
+            if path.isfile(fmuNameOriginal):
+                os.remove(fmuNameOriginal)
+            os.rename(fmuName, fmuNameOriginal)
+        
+        # Rename the FMU name to be the name of the FMU
+        # which will be used for the simulation. This FMU
+        # contains the needsExecutionTool flag.
+        os.rename(zipdir, fmuName)
+        
+        # Delete temporary folder 
+        shutil.rmtree(dir)
+        
+        # Write scuccess.
+        log.info("The FMU " + fmuName + " is successfully re-created.")
+        log.info("The FMU " + fmuName  + " is in " + os.getcwd())
+        
 
 if __name__ == '__main__':
     # Try running this module!
