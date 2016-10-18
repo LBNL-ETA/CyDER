@@ -215,12 +215,12 @@ class CYMDISTWritter(object):
         outputVariableNames = []
         parameterVariableValues = []
         parameterVariableNames = []
-        inpX = 88
-        inpY = 110
-        outX = 88
-        outY = 108
-        inx=0
-        outx=0
+        inpY1 = 88
+        inpY2 = 110
+        outY1 = 88
+        outY2 = 108
+        inCnt=0
+        outCnt=0
         indel = 20
         outdel = 18
 
@@ -258,28 +258,28 @@ class CYMDISTWritter(object):
                     scalarVariable["causality"] = causality
                     if (causality=="input"):
                         inputVariableNames.append(name)
-                        inpX = inpX - inx*indel
-                        inpY = inpY - inx*indel
-                        inx+=1
+                        inpY1 = inpY1 - inCnt*indel
+                        inpY2 = inpY2 - inCnt*indel
+                        inCnt+=1
                         scalarVariable["annotation"] = (" annotation"
                                                         "(Placement"
                                                         "(transformation"
                                                         "(extent={{-122," 
-                                                        + str(inpX) + "},"
+                                                        + str(inpY1) + "},"
                                                         "{-100," 
-                                                        + str(inpY) + "}})))")
+                                                        + str(inpY2) + "}})))")
                     if (causality=="output"):
-                        outX = outX - outx*outdel
-                        outY = outY - outx*outdel
-                        outx+=1
+                        outY1 = outY1 - outCnt*outdel
+                        outY2 = outY2 - outCnt*outdel
+                        outCnt+=1
                         outputVariableNames.append(name)
                         scalarVariable["annotation"] = (" annotation"
                                                         "(Placement"
                                                         "(transformation"
                                                         "(extent={{100," 
-                                                        + str(outX) + "},"
+                                                        + str(outY1) + "},"
                                                         "{120," 
-                                                        + str(outY) + "}})))")
+                                                        + str(outY2) + "}})))")
                     if (causality=="parameter"):
                         parameterVariableNames.append(name)
                         parameterVariableValues.append(start)
