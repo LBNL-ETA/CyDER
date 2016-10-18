@@ -50,9 +50,9 @@ def main():
     
     CYMDIST = CYMDISTWritter(XML_INPUT_PATH, BUILDINGS_PATH)
     CYMDIST.print_mo()
-    #CYMDIST.generate_fmu()
-    #CYMDIST.clean_temporary()
-    #CYMDIST.rewrite_fmu()
+    CYMDIST.generate_fmu()
+    CYMDIST.clean_temporary()
+    CYMDIST.rewrite_fmu()
 
 def zip_fmu(dirPath=None, zipFilePath=None, includeDirInZip=True):
     """Create a zip archive from a directory.
