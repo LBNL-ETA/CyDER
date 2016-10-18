@@ -3,7 +3,7 @@ model {{modelName}}
   extends Modelica.Blocks.Interfaces.DiscreteBlock(
     startTime=0,
     firstTrigger(fixed=true, start=false));
-    
+///////////// THE CODE BELOW HAS BEEN AUTOMATICALLY GENERATED //////////////   
   {%- for dict_item in scalarVariables %}
   {%- if (dict_item["causality"])== "parameter" %}
   parameter {{dict_item["vartype"]}} {{dict_item["name"]}}(unit="{{dict_item["unit"]}}") = {{dict_item["start"]}}
@@ -83,6 +83,7 @@ protected
   {%- endfor %}
   }"Parameter variables values to be sent to CYMDIST";
 
+///////////// THE CODE ABOVE HAS BEEN AUTOMATICALLY GENERATED //////////////  
   
 initial equation 
   dblInpVal    =  pre(uR);

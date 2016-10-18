@@ -43,16 +43,16 @@ XML_INPUT_PATH="CYMDISTModelDescription.xml"
 
 def main():
         
-    """Illustrate how to write Modelica model for CYMDIST.
+    """Illustrate how to export CYMDIST as an FMU.
     
     
     """
     
     CYMDIST = CYMDISTWritter(XML_INPUT_PATH, BUILDINGS_PATH)
     CYMDIST.print_mo()
-    CYMDIST.generate_fmu()
-    CYMDIST.clean_temporary()
-    CYMDIST.rewrite_fmu()
+    #CYMDIST.generate_fmu()
+    #CYMDIST.clean_temporary()
+    #CYMDIST.rewrite_fmu()
 
 def zip_fmu(dirPath=None, zipFilePath=None, includeDirInZip=True):
     """Create a zip archive from a directory.
@@ -80,7 +80,7 @@ def zip_fmu(dirPath=None, zipFilePath=None, includeDirInZip=True):
     
     Author: http://peterlyons.com/problog/2009/04/zip-dir-python
 
-"""
+    """
     if not zipFilePath:
         zipFilePath = dirPath + ".zip"
     if not os.path.isdir(dirPath):
@@ -160,7 +160,7 @@ class CYMDISTWritter(object):
             # boolean value indicating success/failure
             result = xmlschema.validate(xml_doc)
             if result:
-                log.info(self.xml_path + " is a Valid XML document.")
+                log.info(self.xml_path + " is a valid XML document.")
             return result
         except etree.XMLSchemaParseError, xspe:
             # Something wrong with the schema (getting from URL/parsing)
@@ -191,9 +191,10 @@ class CYMDISTWritter(object):
     def xml_parser(self):
         """Parse the XML file.
         
-        This function parses the XML file and extract 
-        the variables attributes needed to write the 
-        Modelica model.
+        This function parses the XML file which contains
+        the input, output,  and parameters of a CYMDIST
+        model. It extracts the variables attributes 
+        needed to write the CYMDIST Modelica model.
         
         """
         
@@ -207,6 +208,7 @@ class CYMDISTWritter(object):
         # Get the model name to write the .mo file 
         self.modelName = root.attrib.get("modelName")
         
+        # Assert if version is different from FMI 2.0
         assert (not(fmiVersion is "2.0")), "The FMI version 2.0 \
             is the only version currently supported."
   
@@ -241,9 +243,9 @@ class CYMDISTWritter(object):
                         # Set the start value of input and parameter to zero.
                         # This assumes that we are only dealing with Integers
                         # This is because of the start value which is set to 0.0.
-                        print "Start value of variable " + name + \
-                        " with causality" + causality + " not defined.\
-                        The start value will be set to 0.0 by default."
+                        log.warning( "Start value of variable " + name + 
+                                     " with causality " + causality + " is not defined."+
+                                     "The start value will be set to 0.0 by default.")
                         start = 0.0
                     elif not(start is None):
                         start = float(start)
@@ -266,8 +268,8 @@ class CYMDISTWritter(object):
                                                         "(transformation"
                                                         "(extent={{-122," 
                                                         + str(inpY1) + "},"
-                                                        "{-100," 
-                                                        + str(inpY2) + "}})))")
+                                                        "{-100,"+ str(inpY2) 
+                                                        + "}})))")
                     if (causality=="output"):
                         outY1 = outY1 - outCnt*outdel
                         outY2 = outY2 - outCnt*outdel
@@ -278,8 +280,8 @@ class CYMDISTWritter(object):
                                                         "(transformation"
                                                         "(extent={{100," 
                                                         + str(outY1) + "},"
-                                                        "{120," 
-                                                        + str(outY2) + "}})))")
+                                                        "{120," + str(outY2) 
+                                                        + "}})))")
                     if (causality=="parameter"):
                         parameterVariableNames.append(name)
                         parameterVariableValues.append(start)
@@ -297,10 +299,10 @@ class CYMDISTWritter(object):
             
     
     def print_mo(self):
-        """Print the Modelica model of CYMDIST from the XML file.
+        """Print the Modelica model of a CYMDIST XML file.
         
-        This function parses the XML file and extract 
-        the variables attributes needed to write the 
+        This function parses a CYMDIST XML file and extract 
+        the variables attributes needed to write the CYMDIST 
         Modelica model. It then writes the Modelica model.
         The name of the Modelica model is the modelName in the 
         model description file. This is used to avoid
@@ -327,7 +329,7 @@ class CYMDISTWritter(object):
         output_file = self.modelName + ".mo"
         if path.isfile(output_file):
             log.warning("The output file " + output_file 
-                            + " exists and will be overwritten.")
+                        + " exists and will be overwritten.")
         with open(output_file, "wb") as fh:
             fh.write(output_res)
         fh.close()  
@@ -343,10 +345,12 @@ class CYMDISTWritter(object):
         """Generate the CYMDIST FMU.
         
         This function writes the mos file which is used to create the 
-        CYMDIST FMU. It requires the path to the Buildings 
+        CYMDIST FMU. The function requires the path to the Buildings 
         library which will be set to the MODELICAPATH.
-        The function calls Dymola, runs the mos file and 
-        writes an FMU according to the parameters set in the mos template.
+        The function calls Dymola to run the mos file and 
+        write a CYMDIST FMU. The CYMDIST FMU cannot be used yet
+        as Dymola does not support the export of FMUs which 
+        has the needsExecutionTool set to true. 
         
         """
         
@@ -364,7 +368,7 @@ class CYMDISTWritter(object):
         output_file = self.modelName + ".mos"
         if path.isfile(output_file):
             log.warning("The output file " + output_file 
-                            + " exists and will be overwritten.")
+                        + " exists and will be overwritten.")
         with open(output_file, "wb") as fh:
             fh.write(output_res)
         fh.close()  
@@ -398,8 +402,9 @@ class CYMDISTWritter(object):
         """Add needsExecutionTool to the CYMDIST FMU.
         
         This function unzips the FMU generated with generate_fmu(),
-        read the xml file and add needsExecutionTool to the FNU capabilities.
-        The function completes the process by rezipping the FMU.
+        reads the xml file and add needsExecutionTool to the FMU capabilities.
+        The function completes the process by re-zipping the FMU.
+        The new FMU contains the modified XML file as well as the binaries.
         
         """
         
@@ -455,8 +460,8 @@ class CYMDISTWritter(object):
             log.info("The original CYMDIST FMU " + fmuName + 
                      " will be renamed to " + fmuName+".original.")
             log.info ("A modified version of the original will be created.")
-            log.info("The difference between the original and the new FMU is"
-                     " the model description file of the new FMU which has"
+            log.info("The difference between the original and the new FMU lies"
+                     " in the model description file of the new FMU which has"
                      " the attribute " + NEEDSEXECUTIONTOOL + " set to true.")
             if path.isfile(fmuNameOriginal):
                 os.remove(fmuNameOriginal)

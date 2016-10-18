@@ -1,5 +1,5 @@
+// Export model as an FMU.
 openModel("{{modelName}}.mo");
-// Export FMUs from the Buildings library
 Advanced.FMI.xmlIgnoreProtected=true;
 translateModelFMU(
   modelToOpen="{{modelName}}",

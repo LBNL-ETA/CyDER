@@ -3,6 +3,7 @@ model CYMDIST
   extends Modelica.Blocks.Interfaces.DiscreteBlock(
     startTime=0,
     firstTrigger(fixed=true, start=false));
+///////////// THE CODE BELOW HAS BEEN AUTOMATICALLY GENERATED //////////////
   parameter Real par1(unit="Ohm") = 1.0
     "First parameter";
   parameter Real par2(unit="Ohm") = 10.0
@@ -64,6 +65,7 @@ protected
   10.0
   }"Parameter variables values to be sent to CYMDIST";
 
+///////////// THE CODE ABOVE HAS BEEN AUTOMATICALLY GENERATED //////////////  
   
 initial equation 
   dblInpVal    =  pre(uR);
