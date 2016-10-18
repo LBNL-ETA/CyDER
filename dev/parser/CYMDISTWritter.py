@@ -24,10 +24,10 @@ log.getLogger().addHandler(stderrLogger)
 # They must be at the top level of the current working 
 # directory.
 # XSD_SCHEMA: Schema used to validate the XML input
-# CYMDISTModelicaTemplate_MOT: Template used to write Modelica model
+# CYMDISTModelicaTemplate_MO: Template used to write Modelica model
 # CYMDISTModelicaTemplate_MOS: Template used to write mos script
 XSD_SCHEMA = "./CYMDISTModelDescription.xsd"
-CYMDISTModelicaTemplate_MOT="CYMDISTModelicaTemplate.mot"
+CYMDISTModelicaTemplate_MO="CYMDISTModelicaTemplate.mo"
 CYMDISTModelicaTemplate_MOS="CYMDISTModelicaTemplate.mos"
 #########################################
 ## TEST FILES TO BE PROVIDED BY THE USER
@@ -219,7 +219,7 @@ class CYMDISTWritter(object):
         outputVariableNames, parameterVariableNames, \
         parameterVariableValues = self.xml_parser()
 
-        loader = jja2.FileSystemLoader(CYMDISTModelicaTemplate_MOT)
+        loader = jja2.FileSystemLoader(CYMDISTModelicaTemplate_MO)
         env = jja2.Environment(loader=loader)
         template = env.get_template('')
         
@@ -285,6 +285,9 @@ class CYMDISTWritter(object):
         for fol in DymFMU_tmp:
             if path.isdir(fol):
                 shutil.rmtree(fol)
+     
+    # Needs to unzio and reqrite the xml.            
+    # https://www.safaribooksonline.com/library/view/python-cookbook-3rd/9781449357337/ch06s06.html
 
 if __name__ == '__main__':
     # Try running this module!
