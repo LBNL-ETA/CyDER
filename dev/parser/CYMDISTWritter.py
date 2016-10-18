@@ -47,8 +47,8 @@ def main():
     
     CYMDIST = CYMDISTWritter(XML_INPUT_PATH, BUILDINGS_PATH)
     CYMDIST.print_mo()
-    CYMDIST.generate_fmu()
-    CYMDIST.clean_temporary()
+    #CYMDIST.generate_fmu()
+    #CYMDIST.clean_temporary()
 
 class CYMDISTWritter(object):
     
@@ -152,6 +152,15 @@ class CYMDISTWritter(object):
         outputVariableNames = []
         parameterVariableValues = []
         parameterVariableNames = []
+        inpX = 88
+        inpY = 110
+        outX = 88
+        outY = 108
+        inx=0
+        outx=0
+        indel = 20
+        outdel = 18
+
         for child in root.iter("ModelVariables"):
             scalarVariables = []
             # print(child.tag, child.attrib)
@@ -186,8 +195,28 @@ class CYMDISTWritter(object):
                     scalarVariable["causality"] = causality
                     if (causality=="input"):
                         inputVariableNames.append(name)
+                        inpX = inpX - inx*indel
+                        inpY = inpY - inx*indel
+                        inx+=1
+                        scalarVariable["annotation"] = (" annotation"
+                                                        "(Placement"
+                                                        "(transformation"
+                                                        "(extent={{-122," 
+                                                        + str(inpX) + "},"
+                                                        "{-100," 
+                                                        + str(inpY) + "}})))")
                     if (causality=="output"):
+                        outX = outX - outx*outdel
+                        outY = outY - outx*outdel
+                        outx+=1
                         outputVariableNames.append(name)
+                        scalarVariable["annotation"] = (" annotation"
+                                                        "(Placement"
+                                                        "(transformation"
+                                                        "(extent={{100," 
+                                                        + str(outX) + "},"
+                                                        "{120," 
+                                                        + str(outY) + "}})))")
                     if (causality=="parameter"):
                         parameterVariableNames.append(name)
                         parameterVariableValues.append(start)

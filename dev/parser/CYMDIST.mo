@@ -8,13 +8,13 @@ model CYMDIST
   parameter Real par2(unit="Ohm") = 10.0
     "Second parameter";
   Modelica.Blocks.Interfaces.RealInput u(start=1.0, unit="A")
-    "First input";
+    "First input" annotation(Placement(transformation(extent={{-122,88},{-100,110}})));
   Modelica.Blocks.Interfaces.RealOutput y (unit="V")
-    "First output";
+    "First output" annotation(Placement(transformation(extent={{100,88},{120,108}})));
   Modelica.Blocks.Interfaces.RealInput u1(start=2.0, unit="A")
-    "Second input";
+    "Second input" annotation(Placement(transformation(extent={{-122,68},{-100,90}})));
   Modelica.Blocks.Interfaces.RealOutput y1 (unit="V")
-    "Second output";
+    "Second output" annotation(Placement(transformation(extent={{100,70},{120,90}})));
  
 protected   
   parameter String moduleName

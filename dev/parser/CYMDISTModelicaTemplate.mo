@@ -10,10 +10,10 @@ model {{modelName}}
     "{{dict_item["description"]}}";
   {%- elif (dict_item["causality"])== "input" %}
   Modelica.Blocks.Interfaces.RealInput {{dict_item["name"]}}(start={{dict_item["start"]}}, unit="{{dict_item["unit"]}}")
-    "{{dict_item["description"]}}";
+    "{{dict_item["description"]}}"{{dict_item["annotation"]}};
   {%- elif (dict_item["causality"])== "output" %}
   Modelica.Blocks.Interfaces.RealOutput {{dict_item["name"]}} (unit="{{dict_item["unit"]}}")
-    "{{dict_item["description"]}}";
+    "{{dict_item["description"]}}"{{dict_item["annotation"]}};
   {%- endif -%}
   {% endfor %}
  
