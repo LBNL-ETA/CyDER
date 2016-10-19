@@ -38,7 +38,8 @@ if platform.system()=='Linux':
     BUILDINGS_PATH="/home/thierry/Desktop/vmWareLinux/proj/buildings_library/models/modelica/git/buildings/modelica-buildings"
 else:
     BUILDINGS_PATH="Z:\\Ubuntu\proj\\buildings_library\\models\\modelica\\git\\buildings\\modelica-buildings"
-XML_INPUT_PATH="CYMDISTModelDescription.xml"
+XML_INPUT_PATH="./CYMDISTModelDescription.xml"
+INPUT_FILE_PATH = "./CYMDIST.inp"
 ######################################### 
 
 def main():
@@ -48,11 +49,11 @@ def main():
     
     """
     
-    CYMDIST = CYMDISTWritter(XML_INPUT_PATH, BUILDINGS_PATH)
+    CYMDIST = CYMDISTWritter(INPUT_FILE_PATH, XML_INPUT_PATH, BUILDINGS_PATH)
     CYMDIST.print_mo()
-    CYMDIST.generate_fmu()
-    CYMDIST.clean_temporary()
-    CYMDIST.rewrite_fmu()
+    #CYMDIST.generate_fmu()
+    #CYMDIST.clean_temporary()
+    #CYMDIST.rewrite_fmu()
 
 def zip_fmu(dirPath=None, zipFilePath=None, includeDirInZip=True):
     """Create a zip archive from a directory.
@@ -127,10 +128,11 @@ class CYMDISTWritter(object):
     """
 
 
-    def __init__(self, xml_path, buildings_path):
+    def __init__(self, input_file_path, xml_path, buildings_path):
         """Initialize the class.
         
         Args:
+            inputFile_path (str): The path to the CYMDIST input file.
             xml_path (str): The path to the XML file.
             buildings_path (str): The path to the folder
             which contains the Buildings library excluding 
@@ -138,6 +140,7 @@ class CYMDISTWritter(object):
         
         """
         
+        self.input_file_path = input_file_path
         self.xml_path = xml_path
         self.buildings_path = buildings_path + os.sep
              
@@ -318,8 +321,10 @@ class CYMDISTWritter(object):
         loader = jja2.FileSystemLoader(CYMDISTModelicaTemplate_MO)
         env = jja2.Environment(loader=loader)
         template = env.get_template('')
-        
+                
+        # Call template with parameters
         output_res=template.render(modelName= self.modelName,
+                        inputFilePath=self.input_file_path,
                         scalarVariables=scalarVariables, 
                         inputVariableNames=inputVariableNames,
                         outputVariableNames=outputVariableNames,
