@@ -13,6 +13,8 @@ import os
 import platform
 import shutil
 import zipfile
+import re
+import sys
 
 log.basicConfig(filename="CYMDIST.log",  filemode='w', 
                     level=log.DEBUG, format='%(asctime)s %(message)s', 
@@ -55,9 +57,63 @@ def main():
     
     CYMDIST = CYMDISTWritter(INPUT_FILE_PATH, XML_INPUT_PATH, BUILDINGS_PATH)
     CYMDIST.print_mo()
-    CYMDIST.generate_fmu()
-    CYMDIST.clean_temporary()
-    CYMDIST.rewrite_fmu()
+    #CYMDIST.generate_fmu()
+    #CYMDIST.clean_temporary()
+    #CYMDIST.rewrite_fmu()
+
+#--- Fcn to sanitize an identifier.
+#
+
+#
+
+def checkDuplicates(l):
+    """ Check duplicates
+    
+    This function checks duplicates in a list
+    and exists if duplicates are found. Duplicates 
+    names are not allowed in the list of input, output,
+    and parameters.
+    
+    """
+
+    dup = set([x for x in l if l.count(x) > 1])
+    lst_dup = list(dup)
+    if (len(lst_dup)>0):
+        log.error("There are duplicate names in the list " 
+                  + str(l) + "." + "This is invalid."
+                  " Check you XML input file.")
+        for i in lst_dup:
+            log.error("Variable " + i + 
+                      " is duplicated in " + str(l) + ".")
+        sys.exit()
+
+g_rexBadIdChars = re.compile(r'[^a-zA-Z0-9_]')
+def sanitizeIdentifier(identifier):
+    """ Make an identifier acceptable as the name of a C function.
+    
+    In C, a function name:
+    Can contain any of the characters {a-z,A-Z,0-9,_}.
+    Cannot start with a number.
+    Can contain universal character names from the ISO/IEC TR 10176 standard.
+    However, universal character names are not supported here.
+    
+    """
+
+    if(len(identifier) <= 0):
+        log.error("Require a non-null variable name.")
+        sys.exit()
+    #
+    # Can't start with a number.
+    if(identifier[0].isdigit()):
+        log.warning("Variable Name " + identifier + 
+                    " starts with 0." "This is invalid."
+                    " The name will be changed to start with f_.")
+        identifier = 'f_' + identifier
+    #
+    # Replace all illegal characters with an underscore.
+    identifier = g_rexBadIdChars.sub('_', identifier)
+    #
+    return(identifier)
 
 def zip_fmu(dirPath=None, zipFilePath=None, includeDirInZip=True):
     """Create a zip archive from a directory.
@@ -221,9 +277,13 @@ class CYMDISTWritter(object):
   
         # Iterate through the XML file and get the ModelVariables.
         inputVariableNames = []
+        modelicaInputVariableNames = []
         outputVariableNames = []
+        outputDeviceNames = []
+        modelicaOutputVariableNames = []
         parameterVariableValues = []
         parameterVariableNames = []
+        modelicaParameterVariableNames = []
         inpY1 = 88
         inpY2 = 110
         outY1 = 88
@@ -244,8 +304,31 @@ class CYMDISTWritter(object):
                 # Iterate through children of ScalarVariables and get attributes
                 for subelement in element:
                     vartype = subelement.tag
-                    unit = subelement.attrib.get("unit")
-                    start = subelement.attrib.get("start")
+                    if (vartype=="Real"):
+                        unit = subelement.attrib.get("unit")
+                        start = subelement.attrib.get("start")
+                    # Get the device name of an output variable
+                    if (vartype=="Device" and causality=="output"):
+                        devName = subelement.attrib.get("name")
+                        # Create list of output variables
+                        outputVariableNames.append(name)
+                        # Create list with device name of output variable
+                        outputDeviceNames.append(devName)
+                        log.info("Output with name " + name 
+                                 + " will be sanitized to remove invalid Modelica characters.")
+                        newOutputName = sanitizeIdentifier(name)
+                        log.info("The Modelica output name is " + newOutputName + ".")
+                        log.info("Device with name " + devName 
+                                 + " will be sanitized to remove invalid Modelica characters.")
+                        newDeviceName = sanitizeIdentifier(devName)
+                        log.info("The Modelica device name is " + newDeviceName + ".")
+                        log.info("The output name will be concatenated "
+                                 "with the sanitized device name to be unique.")
+                        newOutputName = newOutputName + "_" + newDeviceName
+                        log.info("The Modelica output name is " + newOutputName + ".")
+                        modelicaOutputVariableNames.append(newOutputName)
+                        # Assign variable name to the dictionary
+                        scalarVariable["name"] = newOutputName
                     if ((start is None) and ((causality=="input") or causality=="parameter")):
                         # Set the start value of input and parameter to zero.
                         # This assumes that we are only dealing with Integers
@@ -257,7 +340,7 @@ class CYMDISTWritter(object):
                     elif not(start is None):
                         start = float(start)
                     # Create a dictionary
-                    scalarVariable["name"] = name
+                    #scalarVariable["name"] = name
                     if not (description is None):
                         scalarVariable["description"] = description
                     # If there is no description set this to
@@ -267,6 +350,14 @@ class CYMDISTWritter(object):
                     scalarVariable["causality"] = causality
                     if (causality=="input"):
                         inputVariableNames.append(name)
+                        log.info("Input with name " + name 
+                                 + " will be sanitized to remove"
+                                 " invalid Modelica characters.")
+                        newName = sanitizeIdentifier(name)
+                        log.info("The Modelica input name is " + newName + ".")
+                        modelicaInputVariableNames.append(newName)
+                        # Assign variable name to the dictionary
+                        scalarVariable["name"] = newName
                         inpY1 = inpY1 - inCnt*indel
                         inpY2 = inpY2 - inCnt*indel
                         inCnt+=1
@@ -281,7 +372,6 @@ class CYMDISTWritter(object):
                         outY1 = outY1 - outCnt*outdel
                         outY2 = outY2 - outCnt*outdel
                         outCnt+=1
-                        outputVariableNames.append(name)
                         scalarVariable["annotation"] = (" annotation"
                                                         "(Placement"
                                                         "(transformation"
@@ -291,18 +381,31 @@ class CYMDISTWritter(object):
                                                         + "}})))")
                     if (causality=="parameter"):
                         parameterVariableNames.append(name)
+                        log.info("Parameter with name " + name 
+                                 + " will be sanitized to remove invalid Modelica characters.")
+                        newName = sanitizeIdentifier(name)
+                        log.info("The Modelica parameter name is " + newName + ".")
+                        modelicaParameterVariableNames.append(newName)
+                        # Assign variable name to the dictionary
+                        scalarVariable["name"] = newName
                         parameterVariableValues.append(start)
                     scalarVariable["vartype"] = vartype
                     scalarVariable["unit"] = unit
                     if not (start is None):
                         scalarVariable["start"] = start
-                    scalarVariables.append(scalarVariable)
-            # Print list with all scalar variables        
+                    scalarVariables.append(scalarVariable)     
+            # perform some checks on variables to avoid name clashes
+            # before returning the variables to Modelica
+            for i in [modelicaInputVariableNames,
+                      modelicaOutputVariableNames,
+                      modelicaParameterVariableNames]:
+                checkDuplicates (i)
+                
             # Write success.
-            log.info("Parsing of " + self.xml_path + " was successfull.")        
-            return scalarVariables, inputVariableNames, \
-                outputVariableNames, parameterVariableNames, \
-                parameterVariableValues
+            log.info("Parsing of " + self.xml_path + " was successfull.")                    
+            return scalarVariables, inputVariableNames, modelicaInputVariableNames,\
+                outputVariableNames, modelicaOutputVariableNames, parameterVariableNames, \
+                modelicaParameterVariableNames, parameterVariableValues
             
     
     def print_mo(self):
@@ -319,8 +422,10 @@ class CYMDISTWritter(object):
         
         self.xml_validator()
         scalarVariables, inputVariableNames, \
-        outputVariableNames, parameterVariableNames, \
-        parameterVariableValues = self.xml_parser()
+        modelicaInputVariableNames, outputVariableNames,\
+        modelicaOutputVariableNames, parameterVariableNames, \
+        modelicaParameterVariableNames,parameterVariableValues \
+        = self.xml_parser()
 
         loader = jja2.FileSystemLoader(CYMDISTModelicaTemplate_MO)
         env = jja2.Environment(loader=loader)
@@ -331,8 +436,11 @@ class CYMDISTWritter(object):
                         inputFilePath=self.input_file_path,
                         scalarVariables=scalarVariables, 
                         inputVariableNames=inputVariableNames,
+                        modelicaInputVariableNames=modelicaInputVariableNames,
                         outputVariableNames=outputVariableNames,
+                        modelicaOutputVariableNames=modelicaOutputVariableNames,
                         parameterVariableNames=parameterVariableNames,
+                        modelicaParameterVariableNames=modelicaParameterVariableNames,
                         parameterVariableValues=parameterVariableValues)
         # Write results in mo file which has the same name as the class name
         output_file = self.modelName + ".mo"
@@ -405,7 +513,7 @@ class CYMDISTWritter(object):
         for fol in DymFMU_tmp:
             if path.isdir(fol):
                 shutil.rmtree(fol)
-                
+                            
              
     def rewrite_fmu(self):
         """Add needsExecutionTool to the CYMDIST FMU.
@@ -419,24 +527,24 @@ class CYMDISTWritter(object):
         
         # Get the XML file
         
-        dir = self.modelName + ".tmp"
-        zipdir = dir + ".zip"
+        fmutmp = self.modelName + ".tmp"
+        zipdir = fmutmp + ".zip"
         fmuName=self.modelName + ".fmu"
         
-        if path.exists(dir):
-            shutil.rmtree(dir)
+        if path.exists(fmutmp):
+            shutil.rmtree(fmutmp)
             
-        if not path.exists(dir):
-            os.makedirs(dir)
+        if not path.exists(fmutmp):
+            os.makedirs(fmutmp)
         
         # Copy file to temporary folder    
-        shutil.copy2(fmuName, dir)
+        shutil.copy2(fmuName, fmutmp)
         
         # Get the current working directory
         cwd = os.getcwd()
         
         # Change to the temporary directory
-        os.chdir(dir)
+        os.chdir(fmutmp)
         
         # Unzip folder which contains he FMU
         zip_ref = zipfile.ZipFile(fmuName, 'r')
@@ -460,7 +568,7 @@ class CYMDISTWritter(object):
         
         # Pass the directory which will be zipped
         # and call the zipper function.
-        zip_fmu(dir, includeDirInZip=False)
+        zip_fmu(fmutmp, includeDirInZip=False)
         
         # Check if fmuName exists in current directory
         # If that is the case, delete it or rename to tmp?
@@ -482,7 +590,7 @@ class CYMDISTWritter(object):
         os.rename(zipdir, fmuName)
         
         # Delete temporary folder 
-        shutil.rmtree(dir)
+        shutil.rmtree(fmutmp)
         
         # Write scuccess.
         log.info("The FMU " + fmuName + " is successfully re-created.")

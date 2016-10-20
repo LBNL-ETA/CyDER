@@ -10,12 +10,16 @@ model CYMDIST
     "Second parameter";
   Modelica.Blocks.Interfaces.RealInput u(start=1.0, unit="A")
     "First input" annotation(Placement(transformation(extent={{-122,88},{-100,110}})));
-  Modelica.Blocks.Interfaces.RealOutput y (unit="V")
-    "First output" annotation(Placement(transformation(extent={{100,88},{120,108}})));
+  Modelica.Blocks.Interfaces.RealOutput y_dev1 (unit="V")
+    "First output" annotation(Placement(transformation(extent={{100,70},{120,90}})));
+  Modelica.Blocks.Interfaces.RealOutput y_dev1 (unit="V")
+    "First output" annotation(Placement(transformation(extent={{100,70},{120,90}})));
   Modelica.Blocks.Interfaces.RealInput u1(start=2.0, unit="A")
     "Second input" annotation(Placement(transformation(extent={{-122,68},{-100,90}})));
-  Modelica.Blocks.Interfaces.RealOutput y1 (unit="V")
-    "Second output" annotation(Placement(transformation(extent={{100,70},{120,90}})));
+  Modelica.Blocks.Interfaces.RealOutput y1_dev1 (unit="V")
+    "Second output" annotation(Placement(transformation(extent={{100,-20},{120,0}})));
+  Modelica.Blocks.Interfaces.RealOutput y1_dev1 (unit="V")
+    "Second output" annotation(Placement(transformation(extent={{100,-20},{120,0}})));
  
 protected   
   parameter String moduleName
@@ -38,8 +42,8 @@ protected
   }"Variables used to collect values to be sent to CYMDIST";
   
   Real yR[nDblOut]={
-  y,
-  y1 
+  y_dev1,
+  y1_dev1 
   }"Variable used to collect values received from CYMDIST";
   
   Real uRInt[nDblInp] "Value of integral";

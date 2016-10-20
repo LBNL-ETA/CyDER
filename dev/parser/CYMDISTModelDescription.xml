@@ -36,6 +36,8 @@
       causality="output">
       <Real
         unit="V"/>
+      <Device
+        name="dev1"/>
     </ScalarVariable>
     <ScalarVariable
       name="u1"
@@ -51,6 +53,8 @@
       causality="output">
       <Real
         unit="V"/>
+      <Device
+        name="dev1"/>
     </ScalarVariable>
   </ModelVariables>
 </CYMDISTModelDescription>

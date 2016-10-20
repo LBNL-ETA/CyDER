@@ -34,7 +34,7 @@ protected
   
   {% set comma = joiner(",") -%}  
   Real uR[nDblInp]={
-  {%- for row in inputVariableNames -%}
+  {%- for row in modelicaInputVariableNames -%}
   {{comma()}}
   {{row}}
   {%- endfor %} 
@@ -42,7 +42,7 @@ protected
   
   {% set comma = joiner(",") -%} 
   Real yR[nDblOut]={
-  {%- for row in outputVariableNames -%}
+  {%- for row in modelicaOutputVariableNames -%}
   {{comma()}}
   {{row}}
   {%- endfor %} 
