@@ -294,9 +294,8 @@ class CYMDISTWritter(object):
         indel = 20
         outdel = 18
 
+        scalarVariables = []
         for child in root.iter("ModelVariables"):
-            scalarVariables = []
-            # print(child.tag, child.attrib)
             for element in child:
                 scalarVariable = {}
                 # Iterate through ScalarVariables and get attributes
@@ -310,6 +309,7 @@ class CYMDISTWritter(object):
                         start = subelement.attrib.get("start")
                     # Get the device name of an output variable
                     if (vartype=="Device" and causality=="output"):
+                        print "I am here"
                         devName = subelement.attrib.get("name")
                         # Create list of output variables
                         outputVariableNames.append(name)
@@ -394,10 +394,9 @@ class CYMDISTWritter(object):
                     scalarVariable["unit"] = unit
                     if not (start is None):
                         scalarVariable["start"] = start
-                    scalarVariables.append(scalarVariable)     
+                scalarVariables.append(scalarVariable)     
             # perform some checks on variables to avoid name clashes
             # before returning the variables to Modelica
-            print "This is scalarVariables " + str(scalarVariables)
             for i in [modelicaInputVariableNames,
                       modelicaOutputVariableNames,
                       modelicaParameterVariableNames]:

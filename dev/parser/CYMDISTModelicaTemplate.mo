@@ -94,7 +94,7 @@ protected
   
   {% if (outputVariableNames|length==0) -%} 
   parameter String dblOutDevNam[nDblOut] 
-    "Device variables names to be sent to CYMDIST";
+    "Output variables devices names to be sent to CYMDIST";
   {%- else %}
   {% set comma = joiner(",") -%}
   parameter String dblOutDevNam[nDblOut]={
@@ -119,7 +119,7 @@ protected
   {%- endif %}
 
   {% if (parameterVariableNames|length==0) -%} 
-  parameter Real dblParVal[nDblPar]
+  parameter Real dblParVal[nDblPar]=zeros(nDblPar)
     "Parameter variables values to be sent to CYMDIST";
   {%- else %}
   {% set comma = joiner(",") -%} 
@@ -178,7 +178,7 @@ equation
       dblInpVal=dblInpVal,
       nDblOut=nDblOut,
       dblOutNam=dblOutNam,
-      dblOutDevNam=dblOutDevNam
+      dblOutDevNam=dblOutDevNam,
       nDblPar=nDblPar,
       dblParNam=dblParNam,
       dblParVal=dblParVal,
