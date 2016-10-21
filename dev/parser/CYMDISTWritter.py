@@ -44,7 +44,7 @@ else:
     BUILDINGS_PATH="Z:\\thierry\\proj\\buildings_library\\models\\modelica\\git\master\\modelica-buildings"
     # Buildings path on the Windows Desktop 
     # BUILDINGS_PATH="Z:\\Ubuntu\proj\\buildings_library\\models\\modelica\\git\\buildings\\modelica-buildings"
-XML_INPUT_PATH="./CYMDISTModelDescription.xml"
+XML_INPUT_PATH="./CYMDISTModelDescription2.xml"
 INPUT_FILE_PATH = "./CYMDIST.inp"
 ######################################### 
 
@@ -188,7 +188,7 @@ class CYMDISTWritter(object):
     """
 
 
-    def __init__(self, input_file_path, xml_path, buildings_path):
+    def __init__(self, input_file_path, xml_path, buildings_path, write_results=0):
         """Initialize the class.
         
         Args:
@@ -203,6 +203,7 @@ class CYMDISTWritter(object):
         self.input_file_path = input_file_path
         self.xml_path = xml_path
         self.buildings_path = buildings_path + os.sep
+        self.write_results=write_results
              
     def xml_validator(self):
         """Validate the XML file.
@@ -396,6 +397,7 @@ class CYMDISTWritter(object):
                     scalarVariables.append(scalarVariable)     
             # perform some checks on variables to avoid name clashes
             # before returning the variables to Modelica
+            print "This is scalarVariables " + str(scalarVariables)
             for i in [modelicaInputVariableNames,
                       modelicaOutputVariableNames,
                       modelicaParameterVariableNames]:
@@ -404,8 +406,8 @@ class CYMDISTWritter(object):
             # Write success.
             log.info("Parsing of " + self.xml_path + " was successfull.")                    
             return scalarVariables, inputVariableNames, modelicaInputVariableNames,\
-                outputVariableNames, modelicaOutputVariableNames, parameterVariableNames, \
-                modelicaParameterVariableNames, parameterVariableValues
+                outputVariableNames, modelicaOutputVariableNames, outputDeviceNames,\
+                parameterVariableNames, modelicaParameterVariableNames, parameterVariableValues
             
     
     def print_mo(self):
@@ -423,9 +425,9 @@ class CYMDISTWritter(object):
         self.xml_validator()
         scalarVariables, inputVariableNames, \
         modelicaInputVariableNames, outputVariableNames,\
-        modelicaOutputVariableNames, parameterVariableNames, \
-        modelicaParameterVariableNames,parameterVariableValues \
-        = self.xml_parser()
+        modelicaOutputVariableNames, outputDeviceNames, \
+        parameterVariableNames, modelicaParameterVariableNames,\
+        parameterVariableValues = self.xml_parser()
 
         loader = jja2.FileSystemLoader(CYMDISTModelicaTemplate_MO)
         env = jja2.Environment(loader=loader)
@@ -434,11 +436,13 @@ class CYMDISTWritter(object):
         # Call template with parameters
         output_res=template.render(modelName= self.modelName,
                         inputFilePath=self.input_file_path,
+                        writeResults=self.write_results,
                         scalarVariables=scalarVariables, 
                         inputVariableNames=inputVariableNames,
                         modelicaInputVariableNames=modelicaInputVariableNames,
                         outputVariableNames=outputVariableNames,
                         modelicaOutputVariableNames=modelicaOutputVariableNames,
+                        outputDeviceNames = outputDeviceNames,
                         parameterVariableNames=parameterVariableNames,
                         modelicaParameterVariableNames=modelicaParameterVariableNames,
                         parameterVariableValues=parameterVariableValues)
