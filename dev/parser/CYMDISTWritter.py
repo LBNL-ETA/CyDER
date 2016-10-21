@@ -44,7 +44,7 @@ else:
     BUILDINGS_PATH="Z:\\thierry\\proj\\buildings_library\\models\\modelica\\git\master\\modelica-buildings"
     # Buildings path on the Windows Desktop 
     # BUILDINGS_PATH="Z:\\Ubuntu\proj\\buildings_library\\models\\modelica\\git\\buildings\\modelica-buildings"
-XML_INPUT_PATH="./CYMDISTModelDescription2.xml"
+XML_INPUT_PATH="./CYMDISTModelDescription.xml"
 INPUT_FILE_PATH = "./CYMDIST.inp"
 ######################################### 
 
@@ -67,11 +67,11 @@ def main():
 #
 
 def checkDuplicates(l):
-    """ Check duplicates
+    """ Check duplicates in a list of variables.
     
     This function checks duplicates in a list
-    and exists if duplicates are found. Duplicates 
-    names are not allowed in the list of input, output,
+    and breaks if duplicates are found. Duplicates 
+    names are not allowed in the list of inputs, outputs,
     and parameters.
     
     """
@@ -79,31 +79,32 @@ def checkDuplicates(l):
     dup = set([x for x in l if l.count(x) > 1])
     lst_dup = list(dup)
     if (len(lst_dup)>0):
-        log.error("There are duplicate names in the list " 
+        log.error("There are duplicates names in the list " 
                   + str(l) + "." + "This is invalid."
                   " Check you XML input file.")
         for i in lst_dup:
             log.error("Variable " + i + 
-                      " is duplicated in " + str(l) + ".")
+                      " has duplicates in the list " 
+                      + str(l) + ".")
         sys.exit()
 
+# Invalid symbols
 g_rexBadIdChars = re.compile(r'[^a-zA-Z0-9_]')
 def sanitizeIdentifier(identifier):
-    """ Make an identifier acceptable as the name of a C function.
+    """ Make an identifier acceptable as the name of a Modelica variable. 
     
-    In C, a function name:
+    In Modelica, a variable name:
     Can contain any of the characters {a-z,A-Z,0-9,_}.
     Cannot start with a number.
-    Can contain universal character names from the ISO/IEC TR 10176 standard.
-    However, universal character names are not supported here.
     
     """
-
+    
+    # Check if variable has a length > 0
     if(len(identifier) <= 0):
         log.error("Require a non-null variable name.")
         sys.exit()
     #
-    # Can't start with a number.
+    # Check if variable starts with a number.
     if(identifier[0].isdigit()):
         log.warning("Variable Name " + identifier + 
                     " starts with 0." "This is invalid."
@@ -166,11 +167,6 @@ def zip_fmu(dirPath=None, zipFilePath=None, includeDirInZip=True):
         #Make sure we get empty directories as well
         if not fileNames and not dirNames:
             zipInfo = zipfile.ZipInfo(trimPath(archiveDirPath) + "/")
-            #some web sites suggest doing
-            #zipInfo.external_attr = 16
-            #or
-            #zipInfo.external_attr = 48
-            #Here to allow for inserting an empty directory.  Still TBD/TODO.
             outFile.writestr(zipInfo, "")
     outFile.close()
       
@@ -285,6 +281,7 @@ class CYMDISTWritter(object):
         parameterVariableValues = []
         parameterVariableNames = []
         modelicaParameterVariableNames = []
+        # Parameters used to write annotations.
         inpY1 = 88
         inpY2 = 110
         outY1 = 88
