@@ -463,7 +463,7 @@ class CYMDISTWritter(object):
         log.info("The Modelica model " + output_file + 
                  " of " + self.modelName + " is successfully created.")
         log.info("The Modelica model " + output_file + 
-                 " of " + self.modelName + " is in " + os.getcwd())
+                 " of " + self.modelName + " is in " + os.getcwd() +".")
     
     
     def generate_fmu(self):
