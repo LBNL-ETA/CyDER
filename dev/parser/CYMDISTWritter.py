@@ -75,14 +75,16 @@ def check_duplicates(arr):
 
     dup = set([x for x in arr if arr.count(x) > 1])
     lst_dup = list(dup)
-    if (len(lst_dup) > 0):
+    len_lst = len(lst_dup)
+    if (len_lst > 0):
         log.error("There are duplicates names in the list " 
-                  + str(arr) + "." + "This is invalid."
-                  " Check your XML input file.")
+                  + str(arr) + ".") 
+        log.error("This is invalid. Check your XML input file.")
         for i in lst_dup:
             log.error("Variable " + i + " has duplicates"
                       " in the list " + str(arr) + ".")
-        sys.exit()
+        # Assert if version is different from FMI 2.0
+        assert(len_lst <= 0), "Duplicates found in the list."
 
 # Invalid symbols
 g_rexBadIdChars = re.compile(r'[^a-zA-Z0-9_]')
@@ -101,13 +103,13 @@ def sanitize_name(name):
     # Check if variable has a length > 0
     if(len(name) <= 0):
         log.error("Require a non-null variable name.")
-        sys.exit()
+        assert(len(name) > 0), "Require a non-null variable name."
     #
     # Check if variable starts with a number.
     if(name[0].isdigit()):
-        log.warning("Variable Name " + name + 
-                    " starts with 0." "This is invalid."
-                    " The name will be changed to start with f_.")
+        log.warning("Variable Name " + name + " starts with 0.")
+        log.warning("This is invalid.")
+        log.warning("The name will be changed to start with f_.")
         name = 'f_' + name
     #
     # Replace all illegal characters with an underscore.
