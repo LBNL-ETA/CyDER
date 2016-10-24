@@ -42,8 +42,9 @@ else:
     BUILDINGS_PATH = "Z:\\thierry\\proj\\buildings_library\\models\\modelica\\git\master\\modelica-buildings"
     # Buildings path on the Windows Desktop 
     # BUILDINGS_PATH="Z:\\Ubuntu\proj\\buildings_library\\models\\modelica\\git\\buildings\\modelica-buildings"
-XML_INPUT_PATH = "./CYMDISTModelDescription.xml"
-INPUT_FILE_PATH = "./CYMDIST.inp"
+XML_INPUT_PATH = "CYMDISTModelDescription.xml"
+INPUT_FILE_PATH = "CYMDIST.inp"
+FMUS_PATH = os.path.join("..", "fmus", "win32", "Dymola", "CYMDIST")
 ######################################### 
 
 def main():
@@ -56,9 +57,9 @@ def main():
                              XML_INPUT_PATH, 
                              BUILDINGS_PATH)
     CYMDIST.print_mo()
-    # CYMDIST.generate_fmu()
-    # CYMDIST.clean_temporary()
-    # CYMDIST.rewrite_fmu()
+    CYMDIST.generate_fmu()
+    CYMDIST.clean_temporary()
+    CYMDIST.rewrite_fmu()
 
 def check_duplicates(arr):
     """ Check duplicates in a list of variables.
@@ -608,6 +609,11 @@ class CYMDISTWritter(object):
         # which will be used for the simulation. This FMU
         # contains the needsExecutionTool flag.
         os.rename(zipdir, fmuName)
+        
+        # Copy FMU to unit test folder 
+        log.info("Copy FMU " + fmuName + " to unit test folder " 
+                 + FMUS_PATH + " so it can be run with the FMU checker.")   
+        shutil.copy2(fmuName, FMUS_PATH)
         
         # Delete temporary folder 
         shutil.rmtree(fmutmp)

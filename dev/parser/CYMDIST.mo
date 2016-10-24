@@ -22,7 +22,7 @@ protected
     "Name of the python module that contains the function";
   parameter String functionName=moduleName 
     "Name of the python function";
-  parameter String inputFileName=Modelica.Utilities.Files.loadResource("./CYMDIST.inp") 
+  parameter String inputFileName=Modelica.Utilities.Files.loadResource("CYMDIST.inp") 
     "Name of the CYMDIST input file";
   parameter Integer resWri=0 
     "Flag for enabling results writing. 1: write results, 0: else";
