@@ -5,16 +5,96 @@
 # TSNouidui@lbl.gov                            2016-09-06
 #######################################################
 import unittest
-import os, sys;
+import os, sys
 import logging
 from subprocess import call
+
+root_path = os.path.join("..", "parser")
+mod_path = os.path.abspath(os.path.join(root_path))
+sys.path.append(mod_path)
+
+import CYMDISTWritter as cymwritter
+
+BUILDINGS_PATH = ""
+XSD_PATH = os.path.join(root_path, "CYMDISTModelDescription.xsd")
+XML_INPUT_PATH = os.path.join(root_path, "CYMDISTModelDescription.xml")
+INPUT_FILE_PATH = os.path.join(root_path, "CYMDIST.inp")
+MOT_PATH = os.path.join(root_path, "CYMDISTModelicaTemplate.mo")
+MOST_PATH = os.path.join(root_path, "CYMDISTModelicaTemplate.mos")
+
+CYMDIST_T = cymwritter.CYMDISTWritter(INPUT_FILE_PATH, 
+                                      XML_INPUT_PATH, 
+                                      BUILDINGS_PATH, 
+                                      MOT_PATH, MOST_PATH,
+                                      XSD_PATH, 0)
 
 class Tester(unittest.TestCase):
     ''' Class that runs all regression tests.
     '''
 
+    def test_check_duplicates(self):
+        '''  Test the function check_duplicates().
+        
+        '''
+        
+        # Array does not contain duplicates variables.
+        cymwritter.check_duplicates(["x1", "x2", "x3", "x4"])
+        
+        # Array contain duplicates variables.
+        with self.assertRaises(AssertionError):
+            cymwritter.check_duplicates(["x1", "x1", "x3", "x4"])
+
+    def test_sanitize_name(self):
+        '''  Test the function sanitize_name().
+        
+        '''
+        
+        # Testing name conversions.
+        name=cymwritter.sanitize_name("test+name")
+        self.assertEquals(name, "test_name", "Names are not matching.")
+        
+        name=cymwritter.sanitize_name("0test+*.name")
+        self.assertEquals(name, "f_0test___name", "Names are not matching.")
+
+
+    def test_xml_validator(self):
+        '''  Test the function xml_validator().
+        
+        '''
+        
+        # Testing validation of xml file
+        CYMDIST_T.xml_validator()
+        
+    def test_xml_parser(self):
+        '''  Test the function xml_validator().
+        
+        '''
+        
+        # Testing validation of xml file
+        CYMDIST_T.xml_parser()
+
+
+    def test_print_mo(self):
+        '''  Test the function print_mo().
+        
+        '''
+        
+        # Testing function to print Modelica model.
+        CYMDIST_T.print_mo()
+        import filecmp
+        
+        # Check if file is the same as the reference.
+        assert(filecmp.cmp
+               ("CYMDIST.mo", os.path.join(root_path, 
+                                            "CYMDIST_ref.mo"))), \
+                                            "Printed file is different"\
+                                            " from reference CYMDIST_ref.mo." 
+
+    @unittest.skip("Skipping running FMU checker")
     def test_fmucheker_cyder_fmus(self):
-        '''  Detect the operating system,
+        '''  Test FMU with FMU checker
+        
+        Detect the operating system,
         switch to the folder which contains FMUs
         with correct binaries, call the fmuChecker 
         to run the FMUs with default settings.
@@ -85,7 +165,7 @@ class Tester(unittest.TestCase):
             logging.warning ("There is no FMU to check in the FMU folder.")
         
         # Assert if the number of successful runs is less than one
-        self.assertTrue(n_fmus > 0)
+        self.assertTrue(n_fmus > 0)    
 
 if __name__ == '__main__':
     unittest.main()
