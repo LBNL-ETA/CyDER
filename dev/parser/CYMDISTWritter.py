@@ -27,7 +27,7 @@ log.getLogger().addHandler(stderrLogger)
 # XSD_SCHEMA: Schema used to validate the XML input
 # CYMDISTModelicaTemplate_MO: Template used to write Modelica model
 # CYMDISTModelicaTemplate_MOS: Template used to write mos script
-XSD_SCHEMA = "./CYMDISTModelDescription.xsd"
+XSD_SCHEMA = "CYMDISTModelDescription.xsd"
 NEEDSEXECUTIONTOOL = "needsExecutionTool"
 MODELDESCRIPTION = "modelDescription.xml"
 CYMDISTModelicaTemplate_MO = "CYMDISTModelicaTemplate.mo"
@@ -52,7 +52,9 @@ def main():
     
     """
     
-    CYMDIST = CYMDISTWritter(INPUT_FILE_PATH, XML_INPUT_PATH, BUILDINGS_PATH)
+    CYMDIST = CYMDISTWritter(INPUT_FILE_PATH, 
+                             XML_INPUT_PATH, 
+                             BUILDINGS_PATH)
     CYMDIST.print_mo()
     # CYMDIST.generate_fmu()
     # CYMDIST.clean_temporary()
@@ -182,7 +184,10 @@ class CYMDISTWritter(object):
     """
 
 
-    def __init__(self, input_file_path, xml_path, buildings_path, write_results=0):
+    def __init__(self, input_file_path, xml_path, buildings_path, 
+                 moT_path = CYMDISTModelicaTemplate_MO, 
+                 mosT_path = CYMDISTModelicaTemplate_MOS, 
+                 xsd_path=XSD_SCHEMA, write_results=0):
         """Initialize the class.
         
         Args:
@@ -191,13 +196,19 @@ class CYMDISTWritter(object):
             buildings_path (str): The path to the folder
             which contains the Buildings library excluding
             the ending FILE SEPARATOR.
+            moT_path (str): Modelica model template.
+            mosT_path (str): Modelica script template.
+            xsd_path (str): The path to the XML schema.
             write_results (int): Flag for results writing.
                
         """
-        
+    
         self.input_file_path = input_file_path
         self.xml_path = xml_path
         self.buildings_path = buildings_path + os.sep
+        self.moT_path = moT_path
+        self.mosT_path = mosT_path
+        self.xsd_path = xsd_path
         self.write_results = write_results
              
     def xml_validator(self):
@@ -210,7 +221,7 @@ class CYMDISTWritter(object):
         
         try:
             # Get the XML schema to validate against
-            xmlschema = etree.XMLSchema(file=XSD_SCHEMA)
+            xmlschema = etree.XMLSchema(file=self.xsd_path)
             # Parse string of XML
             xml_doc = etree.parse(self.xml_path)
             # Validate parsed XML against schema
@@ -433,7 +444,7 @@ class CYMDISTWritter(object):
         parameterVariableNames, modelicaParameterVariableNames, \
         parameterVariableValues = self.xml_parser()
 
-        loader = jja2.FileSystemLoader(CYMDISTModelicaTemplate_MO)
+        loader = jja2.FileSystemLoader(self.moT_path)
         env = jja2.Environment(loader=loader)
         template = env.get_template('')
                 
@@ -483,7 +494,7 @@ class CYMDISTWritter(object):
         os.environ["MODELICAPATH"] = self.buildings_path 
         
         # Load the mos template to create the FMU
-        loader = jja2.FileSystemLoader(CYMDISTModelicaTemplate_MOS)
+        loader = jja2.FileSystemLoader(self.mosT_path)
         env = jja2.Environment(loader=loader)
         template = env.get_template('')
         
