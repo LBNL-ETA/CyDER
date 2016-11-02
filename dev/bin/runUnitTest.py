@@ -145,6 +145,7 @@ class Tester(unittest.TestCase):
         
         # Set the path to the fmuChecker 
         fmu_checker = os.path.join('..', 'fmuChecker', 'fmuCheck.' + FMU_ARCH)
+        logging.info('This is the path to the fmuChecker: ' + str(fmu_checker))
         
         # Walk through the directories and run unit tests for all found FMUs.
         for root, dirs, files in os.walk(fmus_dir):
