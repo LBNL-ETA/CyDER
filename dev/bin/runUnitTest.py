@@ -9,18 +9,18 @@ import os, sys
 import logging
 from subprocess import call
 
-root_path = os.path.join("..", "parser")
+root_path = os.path.join('..', 'parser')
 mod_path = os.path.abspath(os.path.join(root_path))
 sys.path.append(mod_path)
 
 import CYMDISTWritter as cymwritter
 
-BUILDINGS_PATH = ""
-XSD_PATH = os.path.join(root_path, "CYMDISTModelDescription.xsd")
-XML_INPUT_PATH = os.path.join(root_path, "CYMDISTModelDescription.xml")
-INPUT_FILE_PATH = os.path.join(root_path, "CYMDIST.inp")
-MOT_PATH = os.path.join(root_path, "CYMDISTModelicaTemplate.mo")
-MOST_PATH = os.path.join(root_path, "CYMDISTModelicaTemplate.mos")
+BUILDINGS_PATH = ''
+XSD_PATH = os.path.join(root_path, 'CYMDISTModelDescription.xsd')
+XML_INPUT_PATH = os.path.join(root_path, 'CYMDISTModelDescription.xml')
+INPUT_FILE_PATH = os.path.join(root_path, 'CYMDIST.inp')
+MOT_PATH = os.path.join(root_path, 'CYMDISTModelicaTemplate.mo')
+MOST_PATH = os.path.join(root_path, 'CYMDISTModelicaTemplate.mos')
 
 CYMDIST_T = cymwritter.CYMDISTWritter(INPUT_FILE_PATH, 
                                       XML_INPUT_PATH, 
@@ -38,11 +38,11 @@ class Tester(unittest.TestCase):
         '''
         
         # Array does not contain duplicates variables.
-        cymwritter.check_duplicates(["x1", "x2", "x3", "x4"])
+        cymwritter.check_duplicates(['x1', 'x2', 'x3', 'x4'])
         
         # Array contain duplicates variables.
         with self.assertRaises(AssertionError):
-            cymwritter.check_duplicates(["x1", "x1", "x3", "x4"])
+            cymwritter.check_duplicates(['x1', 'x1', 'x3', 'x4'])
 
     def test_sanitize_name(self):
         '''  Test the function sanitize_name().
@@ -50,11 +50,11 @@ class Tester(unittest.TestCase):
         '''
         
         # Testing name conversions.
-        name=cymwritter.sanitize_name("test+name")
-        self.assertEquals(name, "test_name", "Names are not matching.")
+        name=cymwritter.sanitize_name('test+name')
+        self.assertEquals(name, 'test_name', 'Names are not matching.')
         
-        name=cymwritter.sanitize_name("0test+*.name")
-        self.assertEquals(name, "f_0test___name", "Names are not matching.")
+        name=cymwritter.sanitize_name('0test+*.name')
+        self.assertEquals(name, 'f_0test___name', 'Names are not matching.')
 
 
     def test_xml_validator(self):
@@ -85,12 +85,12 @@ class Tester(unittest.TestCase):
         
         # Check if file is the same as the reference.
         assert(filecmp.cmp
-               ("CYMDIST.mo", os.path.join(root_path, 
-                                            "CYMDIST_ref.mo"))), \
-                                            "Printed file is different"\
-                                            " from reference CYMDIST_ref.mo." 
+               ('CYMDIST.mo', os.path.join(root_path, 
+                                            'CYMDIST_ref.mo'))), \
+                                            'Printed file is different'\
+                                            ' from reference CYMDIST_ref.mo.' 
 
-    @unittest.skip("Skipping running FMU checker")
+    #@unittest.skip("Skipping running FMU checker")
     def test_fmucheker_cyder_fmus(self):
         '''  Test FMU with FMU checker
         
@@ -117,19 +117,19 @@ class Tester(unittest.TestCase):
         #
         if( PLATFORM_NAME.startswith('win') ):
             if(is_64bits):
-                FMU_ARCH="win64"
+                FMU_ARCH='win64'
             else:
-                FMU_ARCH="win32"
+                FMU_ARCH='win32'
         elif(PLATFORM_NAME.startswith('linux')):
             if(is_64bits):
-                FMU_ARCH="linux64"
+                FMU_ARCH='linux64'
             else:
-                FMU_ARCH="linux32"
+                FMU_ARCH='linux32'
         elif( PLATFORM_NAME.startswith('darwin') ):
             if(is_64bits):
-                FMU_ARCH="darwin64"
+                FMU_ARCH='darwin64'
             else:
-                FMU_ARCH="darwin32"
+                FMU_ARCH='darwin32'
         # Set working directory to the one containing this file.
         abspath = os.path.abspath(__file__);
         dname = os.path.dirname(abspath);
@@ -138,31 +138,31 @@ class Tester(unittest.TestCase):
         # Get the path to the FMUs.
         # This directory depends on the 
         # operating system architecture.
-        fmus_dir = os.path.join("..", "fmus", FMU_ARCH)
+        fmus_dir = os.path.join('..', 'fmus', FMU_ARCH)
         
         # define number of FMUs
         n_fmus=0
         
         # Set the path to the fmuChecker 
-        fmu_checker = os.path.join("..", "fmuChecker", "fmuCheck." + FMU_ARCH)
+        fmu_checker = os.path.join('..', 'fmuChecker', 'fmuCheck.' + FMU_ARCH)
         
         # Walk through the directories and run unit tests for all found FMUs.
         for root, dirs, files in os.walk(fmus_dir):
             for fil in files:
-                if fil.endswith(".fmu"):
+                if fil.endswith('.fmu'):
                     n_fmus=n_fmus+1;
-                    logging.info("Found FMU: " + str(fil) + " in directory: " + str (root))
+                    logging.info('Found FMU: ' + str(fil) + ' in directory: ' + str (root))
                     # Get the path to the FMU
                     fmu_path = os.path.join(root, fil)
                     # Call and execute the fmuChecker
-                    logging.info("Run the fmuChecker for FMU: " + str(fil))
+                    logging.info('Run the fmuChecker for FMU: ' + str(fil))
                     call([fmu_checker, fmu_path])
                     
         # Report the number of FMUs checked
         if (n_fmus!=0):           
-            logging.info("Ran fmuChecker for " + str (n_fmus) + " FMU(s).")
+            logging.info('Ran fmuChecker for ' + str (n_fmus) + ' FMU(s).')
         else:
-            logging.warning ("There is no FMU to check in the FMU folder.")
+            logging.warning ('There is no FMU to check in the FMU folder.')
         
         # Assert if the number of successful runs is less than one
         self.assertTrue(n_fmus > 0)    
