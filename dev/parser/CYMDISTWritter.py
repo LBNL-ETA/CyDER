@@ -2,7 +2,12 @@
 Created on Oct 7, 2016
 
 @author: Thierry S. Nouidui
+@requires: Python 3.4 and higher
+@contact: TSNouidui@lbl.gov
+@note: CYMDIST 7.2 to FMU
+ 
 '''
+
 from lxml import etree
 import xml.etree.ElementTree as ET
 import jinja2 as jja2
@@ -14,7 +19,7 @@ import shutil
 import zipfile
 import re
 
-log.basicConfig(filename="CYMDIST.log", filemode='w',
+log.basicConfig(filename='CYMDIST.log', filemode='w',
                     level=log.DEBUG, format='%(asctime)s %(message)s',
                     datefmt='%m/%d/%Y %I:%M:%S %p')
 stderrLogger = log.StreamHandler()
@@ -27,24 +32,24 @@ log.getLogger().addHandler(stderrLogger)
 # XSD_SCHEMA: Schema used to validate the XML input
 # CYMDISTModelicaTemplate_MO: Template used to write Modelica model
 # CYMDISTModelicaTemplate_MOS: Template used to write mos script
-XSD_SCHEMA = "CYMDISTModelDescription.xsd"
-NEEDSEXECUTIONTOOL = "needsExecutionTool"
-MODELDESCRIPTION = "modelDescription.xml"
-CYMDISTModelicaTemplate_MO = "CYMDISTModelicaTemplate.mo"
-CYMDISTModelicaTemplate_MOS = "CYMDISTModelicaTemplate.mos"
+XSD_SCHEMA = 'CYMDISTModelDescription.xsd'
+NEEDSEXECUTIONTOOL = 'needsExecutionTool'
+MODELDESCRIPTION = 'modelDescription.xml'
+CYMDISTModelicaTemplate_MO = 'CYMDISTModelicaTemplate.mo'
+CYMDISTModelicaTemplate_MOS = 'CYMDISTModelicaTemplate.mos'
 #########################################
 # # TEST FILES TO BE PROVIDED BY THE USER
 if platform.system() == 'Linux':
     # Buildings path on the Linux Desktop 
-    BUILDINGS_PATH = "/home/thierry/Desktop/vmWareLinux/proj/buildings_library/models/modelica/git/buildings/modelica-buildings"
+    BUILDINGS_PATH = '/home/thierry/Desktop/vmWareLinux/proj/buildings_library/models/modelica/git/buildings/modelica-buildings'
 else:
     # Buildings path on the Windows Notebook 
-    BUILDINGS_PATH = "Z:\\thierry\\proj\\buildings_library\\models\\modelica\\git\master\\modelica-buildings"
+    BUILDINGS_PATH = 'Z:\\thierry\\proj\\buildings_library\\models\\modelica\\git\master\\modelica-buildings'
     # Buildings path on the Windows Desktop 
-    # BUILDINGS_PATH="Z:\\Ubuntu\proj\\buildings_library\\models\\modelica\\git\\buildings\\modelica-buildings"
-XML_INPUT_PATH = "CYMDISTModelDescription.xml"
-INPUT_FILE_PATH = "CYMDIST.inp"
-FMUS_PATH = os.path.join("..", "fmus", "win32", "Dymola", "CYMDIST")
+    # BUILDINGS_PATH='Z:\\Ubuntu\proj\\buildings_library\\models\\modelica\\git\\buildings\\modelica-buildings'
+XML_INPUT_PATH = 'CYMDISTModelDescription.xml'
+INPUT_FILE_PATH = 'CYMDIST.inp'
+FMUS_PATH = os.path.join('..', 'fmus', 'win32', 'Dymola', 'CYMDIST')
 ######################################### 
 
 def main():
@@ -78,14 +83,14 @@ def check_duplicates(arr):
     lst_dup = list(dup)
     len_lst = len(lst_dup)
     if (len_lst > 0):
-        log.error("There are duplicates names in the list " 
-                  + str(arr) + ".") 
-        log.error("This is invalid. Check your XML input file.")
+        log.error('There are duplicates names in the list ' 
+                  + str(arr) + '.') 
+        log.error('This is invalid. Check your XML input file.')
         for i in lst_dup:
-            log.error("Variable " + i + " has duplicates"
-                      " in the list " + str(arr) + ".")
+            log.error('Variable ' + i + ' has duplicates'
+                      ' in the list ' + str(arr) + '.')
         # Assert if version is different from FMI 2.0
-        assert(len_lst <= 0), "Duplicates found in the list."
+        assert(len_lst <= 0), 'Duplicates found in the list.'
 
 # Invalid symbols
 g_rexBadIdChars = re.compile(r'[^a-zA-Z0-9_]')
@@ -103,14 +108,14 @@ def sanitize_name(name):
     
     # Check if variable has a length > 0
     if(len(name) <= 0):
-        log.error("Require a non-null variable name.")
-        assert(len(name) > 0), "Require a non-null variable name."
+        log.error('Require a non-null variable name.')
+        assert(len(name) > 0), 'Require a non-null variable name.'
     #
     # Check if variable starts with a number.
     if(name[0].isdigit()):
-        log.warning("Variable Name " + name + " starts with 0.")
-        log.warning("This is invalid.")
-        log.warning("The name will be changed to start with f_.")
+        log.warning('Variable Name ' + name + ' starts with 0.')
+        log.warning('This is invalid.')
+        log.warning('The name will be changed to start with f_.')
         name = 'f_' + name
     #
     # Replace all illegal characters with an underscore.
@@ -145,9 +150,9 @@ def zip_fmu(dirPath=None, zipFilePath=None, includeDirInZip=True):
 
     """
     if not zipFilePath:
-        zipFilePath = dirPath + ".zip"
+        zipFilePath = dirPath + '.zip'
     if not os.path.isdir(dirPath):
-        raise OSError("dirPath argument must point to a directory. "
+        raise OSError('dirPath argument must point to a directory. '
             "'%s' does not." % dirPath)
     parentDir, dirToZip = os.path.split(dirPath)
     # Little nested function to prepare the proper archive path
@@ -231,31 +236,31 @@ class CYMDISTWritter(object):
             # boolean value indicating success/failure
             result = xmlschema.validate(xml_doc)
             if result:
-                log.info(self.xml_path + " is a valid XML document.")
+                log.info(self.xml_path + ' is a valid XML document.')
             return result
-        except etree.XMLSchemaParseError, xspe:
+        except etree.XMLSchemaParseError as xspe:
             # Something wrong with the schema (getting from URL/parsing)
-            print "XMLSchemaParseError occurred!"
-            print xspe
-        except etree.XMLSyntaxError, xse:
+            print('XMLSchemaParseError occurred!')
+            print(xspe)
+        except etree.XMLSyntaxError as xse:
             # XML not well formed
-            print "XMLSyntaxError occurred!"
-            print xse
+            print('XMLSyntaxError occurred!')
+            print(xse)
         except etree.DocumentInvalid:
             # XML failed to validate against schema
-            print "DocumentInvalid occurred!"
+            print('DocumentInvalid occurred!')
             error = xmlschema.error_log.last_error
             if error:
                 # All the error properties (from libxml2) describing what went wrong
-                print 'domain_name: ' + error.domain_name
-                print 'domain: ' + str(error.domain)
-                print 'filename: ' + error.filename
-                print 'level: ' + str(error.level)
-                print 'level_name: ' + error.level_name  # an integer
-                print 'line: ' + str(error.line)  # a unicode string that identifies the line where the error occurred.
-                print 'message: ' + error.message  # a unicode string that lists the message.
-                print 'type: ' + str(error.type)  # an integer
-                print 'type_name: ' + error.type_name
+                print('domain_name: ' + error.domain_name)
+                print('domain: ' + str(error.domain))
+                print('filename: ' + error.filename)
+                print('level: ' + str(error.level))
+                print('level_name: ' + error.level_name)  # an integer
+                print('line: ' + str(error.line))  # a unicode string that identifies the line where the error occurred.
+                print('message: ' + error.message)  # a unicode string that lists the message.
+                print('type: ' + str(error.type))  # an integer
+                print('type_name: ' + error.type_name)
     
     
             
@@ -275,13 +280,13 @@ class CYMDISTWritter(object):
         root = tree.getroot()  
         
         # Get the FMI Version for checking
-        fmiVersion = root.attrib.get("fmiVersion")
+        fmiVersion = root.attrib.get('fmiVersion')
         # Get the model name to write the .mo file 
-        self.modelName = root.attrib.get("modelName")
+        self.modelName = root.attrib.get('modelName')
         
         # Assert if version is different from FMI 2.0
-        assert (not(fmiVersion is "2.0")), "The FMI version 2.0 \
-            is the only version currently supported."
+        assert (not(fmiVersion is '2.0')), 'The FMI version 2.0 \
+            is the only version currently supported.'
   
         # Iterate through the XML file and get the ModelVariables.
         inputVariableNames = []
@@ -303,114 +308,121 @@ class CYMDISTWritter(object):
         outdel = 18
 
         scalarVariables = []
-        for child in root.iter("ModelVariables"):
+        for child in root.iter('ModelVariables'):
             for element in child:
                 scalarVariable = {}
                 # Iterate through ScalarVariables and get attributes
-                (name, description, causality) = element.attrib.get("name"), \
-                    element.attrib.get("description"), \
-                    element.attrib.get("causality").lower()
+                (name, description, causality) = element.attrib.get('name'), \
+                    element.attrib.get('description'), \
+                    element.attrib.get('causality').lower()
                 # Iterate through children of ScalarVariables and get attributes
                 for subelement in element:
-                    vartype = subelement.tag.lower()
-                    if (vartype == "real"):
-                        unit = subelement.attrib.get("unit")
-                        start = subelement.attrib.get("start")
+                    vartype = subelement.tag
+                    vartype_low = vartype.lower()
+                    # Modelica types are case sensitive.
+                    # This code makes sure that we get correct
+                    # Modelica types if the user mistypes them.
+                    if (vartype_low == 'real'):
+                        # Make sure that we have 
+                        # a valid Modelica type.
+                        vartype = 'Real'
+                        unit = subelement.attrib.get('unit')
+                        start = subelement.attrib.get('start')
                     # Get the device name of an output variable
-                    if (vartype == "device" and causality == "output"):
-                        devName = subelement.attrib.get("name")
+                    if (vartype_low == 'device' and causality == 'output'):
+                        devName = subelement.attrib.get('name')
                         # Create list of output variables
                         outputVariableNames.append(name)
                         # Create list with device name of output variable
                         outputDeviceNames.append(devName)
-                        log.info("Output with name " + name 
-                                 + " will be sanitized"
-                                 " to remove invalid Modelica characters.")
+                        log.info('Output with name ' + name 
+                                 + ' will be sanitized'
+                                 ' to remove invalid Modelica characters.')
                         newOutputName = sanitize_name(name)
-                        log.info("The Modelica output name is " 
-                                 + newOutputName + ".")
-                        log.info("Device with name " + devName 
-                                 + " will be sanitized to remove"
-                                 " invalid Modelica characters.")
+                        log.info('The Modelica output name is ' 
+                                 + newOutputName + '.')
+                        log.info('Device with name ' + devName 
+                                 + ' will be sanitized to remove'
+                                 ' invalid Modelica characters.')
                         newDeviceName = sanitize_name(devName)
-                        log.info("The Modelica device name is " 
-                                 + newDeviceName + ".")
-                        log.info("The output name will be concatenated "
-                                 "with the sanitized device name to be unique.")
-                        newOutputName = newOutputName + "_" + newDeviceName
-                        log.info("The Modelica output name is " 
-                                 + newOutputName + ".")
+                        log.info('The Modelica device name is ' 
+                                 + newDeviceName + '.')
+                        log.info('The output name will be concatenated '
+                                 'with the sanitized device name to be unique.')
+                        newOutputName = newOutputName + '_' + newDeviceName
+                        log.info('The Modelica output name is ' 
+                                 + newOutputName + '.')
                         modelicaOutputVariableNames.append(newOutputName)
                         # Assign variable name to the dictionary
-                        scalarVariable["name"] = newOutputName
-                    if ((start is None) and ((causality == "input") 
-                                             or causality == "parameter")):
+                        scalarVariable['name'] = newOutputName
+                    if ((start is None) and ((causality == 'input') 
+                                             or causality == 'parameter')):
                         # Set the start value of input and parameter to zero.
                         # This assumes that we are only dealing with Integers
                         # This is because of the start value which is set to 0.0.
-                        log.warning("Start value of variable " 
-                                     + name + " with causality " 
-                                     + causality + " is not defined."
-                                     + "The start value will be set to 0.0 by default.")
+                        log.warning('Start value of variable ' 
+                                     + name + ' with causality ' 
+                                     + causality + ' is not defined.'
+                                     + 'The start value will be set to 0.0 by default.')
                         start = 0.0
                     elif not(start is None):
                         start = float(start)
                     # Create a dictionary
-                    # scalarVariable["name"] = name
+                    # scalarVariable['name'] = name
                     if not (description is None):
-                        scalarVariable["description"] = description
+                        scalarVariable['description'] = description
                     # If there is no description set this to
                     # be an empty string.
                     else:
-                        scalarVariable["description"] = ""
-                    scalarVariable["causality"] = causality
-                    if (causality == "input"):
+                        scalarVariable['description'] = ''
+                    scalarVariable['causality'] = causality
+                    if (causality == 'input'):
                         inputVariableNames.append(name)
-                        log.info("Input with name " + name 
-                                 + " will be sanitized to remove"
-                                 " invalid Modelica characters.")
+                        log.info('Input with name ' + name 
+                                 + ' will be sanitized to remove'
+                                 ' invalid Modelica characters.')
                         newName = sanitize_name(name)
-                        log.info("The Modelica input name is " + newName + ".")
+                        log.info('The Modelica input name is ' + newName + '.')
                         modelicaInputVariableNames.append(newName)
                         # Assign variable name to the dictionary
-                        scalarVariable["name"] = newName
+                        scalarVariable['name'] = newName
                         inpY1 = inpY1 - inCnt * indel
                         inpY2 = inpY2 - inCnt * indel
                         inCnt += 1
-                        scalarVariable["annotation"] = (" annotation"
-                                                        "(Placement"
-                                                        "(transformation"
-                                                        "(extent={{-122," 
-                                                        + str(inpY1) + "},"
-                                                        "{-100," + str(inpY2) 
-                                                        + "}})))")
-                    if (causality == "output"):
+                        scalarVariable['annotation'] = (' annotation'
+                                                        '(Placement'
+                                                        '(transformation'
+                                                        '(extent={{-122,' 
+                                                        + str(inpY1) + '},'
+                                                        '{-100,' + str(inpY2) 
+                                                        + '}})))')
+                    if (causality == 'output'):
                         outY1 = outY1 - outCnt * outdel
                         outY2 = outY2 - outCnt * outdel
                         outCnt += 1
-                        scalarVariable["annotation"] = (" annotation"
-                                                        "(Placement"
-                                                        "(transformation"
-                                                        "(extent={{100," 
-                                                        + str(outY1) + "},"
-                                                        "{120," + str(outY2) 
-                                                        + "}})))")
-                    if (causality == "parameter"):
+                        scalarVariable['annotation'] = (' annotation'
+                                                        '(Placement'
+                                                        '(transformation'
+                                                        '(extent={{100,' 
+                                                        + str(outY1) + '},'
+                                                        '{120,' + str(outY2) 
+                                                        + '}})))')
+                    if (causality == 'parameter'):
                         parameterVariableNames.append(name)
-                        log.info("Parameter with name " + name 
-                                 + " will be sanitized to remove"
-                                 " invalid Modelica characters.")
+                        log.info('Parameter with name ' + name 
+                                 + ' will be sanitized to remove'
+                                 ' invalid Modelica characters.')
                         newName = sanitize_name(name)
-                        log.info("The Modelica parameter name is " 
-                                 + newName + ".")
+                        log.info('The Modelica parameter name is ' 
+                                 + newName + '.')
                         modelicaParameterVariableNames.append(newName)
                         # Assign variable name to the dictionary
-                        scalarVariable["name"] = newName
+                        scalarVariable['name'] = newName
                         parameterVariableValues.append(start)
-                    scalarVariable["vartype"] = vartype
-                    scalarVariable["unit"] = unit
+                    scalarVariable['vartype'] = vartype
+                    scalarVariable['unit'] = unit
                     if not (start is None):
-                        scalarVariable["start"] = start
+                        scalarVariable['start'] = start
                 scalarVariables.append(scalarVariable)     
             # perform some checks on variables to avoid name clashes
             # before returning the variables to Modelica
@@ -420,7 +432,7 @@ class CYMDISTWritter(object):
                 check_duplicates (i)
                 
             # Write success.
-            log.info("Parsing of " + self.xml_path + " was successfull.")                    
+            log.info('Parsing of ' + self.xml_path + ' was successfull.')                    
             return scalarVariables, inputVariableNames, modelicaInputVariableNames, \
                 outputVariableNames, modelicaOutputVariableNames, outputDeviceNames, \
                 parameterVariableNames, modelicaParameterVariableNames, parameterVariableValues
@@ -463,19 +475,20 @@ class CYMDISTWritter(object):
                         modelicaParameterVariableNames=modelicaParameterVariableNames,
                         parameterVariableValues=parameterVariableValues)
         # Write results in mo file which has the same name as the class name
-        output_file = self.modelName + ".mo"
+        output_file = self.modelName + '.mo'
         if os.path.isfile(output_file):
-            log.warning("The output file " + output_file 
-                        + " exists and will be overwritten.")
-        with open(output_file, "wb") as fh:
+            log.warning('The output file ' + output_file 
+                        + ' exists and will be overwritten.')
+        with open(output_file, 'w') as fh:
             fh.write(output_res)
         fh.close()  
 
         # Write success.
-        log.info("The Modelica model " + output_file + 
-                 " of " + self.modelName + " is successfully created.")
-        log.info("The Modelica model " + output_file + 
-                 " of " + self.modelName + " is in " + os.getcwd() +".")
+        log.info('The Modelica model ' + output_file + 
+                 ' of ' + self.modelName + ' is successfully created.')
+        log.info('The Modelica model ' + output_file + 
+                 ' of ' + self.modelName + ' is in ' + os.getcwd() +'.')
+        return 
     
     
     def generate_fmu(self):
@@ -492,7 +505,7 @@ class CYMDISTWritter(object):
         """
         
         # Set the Modelica path to point to the Buildings Library
-        os.environ["MODELICAPATH"] = self.buildings_path 
+        os.environ['MODELICAPATH'] = self.buildings_path 
         
         # Load the mos template to create the FMU
         loader = jja2.FileSystemLoader(self.mosT_path)
@@ -502,37 +515,39 @@ class CYMDISTWritter(object):
         output_res = template.render(modelName=self.modelName,
                                    buildingsPath=self.buildings_path)
         # Write results in mo file which has the same name as the class name
-        output_file = self.modelName + ".mos"
+        output_file = self.modelName + '.mos'
         if os.path.isfile(output_file):
-            log.warning("The output file " + output_file 
-                        + " exists and will be overwritten.")
-        with open(output_file, "wb") as fh:
-            fh.write(output_res)
+            log.warning('The output file ' + output_file 
+                        + ' exists and will be overwritten.')
+        with open(output_file, 'w') as fh:
+            fh.write(str(output_res))
         fh.close()  
         
         # Call Dymola to generate the FMUs
-        sp.call(["dymola", output_file]) 
+        sp.call(['dymola', output_file]) 
         
         # Define name of the FMU
-        fmuName = self.modelName + ".fmu"
+        fmuName = self.modelName + '.fmu'
         
         # Write scuccess.
-        log.info("The FMU " + fmuName + " is successfully created.")
-        log.info("The FMU " + fmuName + " is in " + os.getcwd() + ".")
+        log.info('The FMU ' + fmuName + ' is successfully created.')
+        log.info('The FMU ' + fmuName + ' is in ' + os.getcwd() + '.')
+        
+        return
         
     
     def clean_temporary(self):
         """Clean temporary generated files.
         
         """
-        temporary = ["buildlog.txt", "dsin.txt", "dslog.txt", "dymosim",
-                     "request.", "status.", "dsmodel.c",
-                     "dsmodel_fmuconf.h", "fmiModelIdentifier.h"]
+        temporary = ['buildlog.txt', 'dsin.txt', 'dslog.txt', 'dymosim',
+                     'request.', 'status.', 'dsmodel.c',
+                     'dsmodel_fmuconf.h', 'fmiModelIdentifier.h']
         for fil in temporary:
             if os.path.isfile(fil):
                 os.remove(fil)
         # FMU folders generated by Dymola.
-        DymFMU_tmp = ["~FMUOutput", ".FMUOutput", "DymosimDll32", "DymosimDll64"]
+        DymFMU_tmp = ['~FMUOutput', '.FMUOutput', 'DymosimDll32', 'DymosimDll64']
         for fol in DymFMU_tmp:
             if os.path.isdir(fol):
                 shutil.rmtree(fol)
@@ -548,9 +563,9 @@ class CYMDISTWritter(object):
         
         """
         
-        fmutmp = self.modelName + ".tmp"
-        zipdir = fmutmp + ".zip"
-        fmuName = self.modelName + ".fmu"
+        fmutmp = self.modelName + '.tmp'
+        zipdir = fmutmp + '.zip'
+        fmuName = self.modelName + '.fmu'
         
         if os.path.exists(fmutmp):
             shutil.rmtree(fmutmp)
@@ -569,17 +584,17 @@ class CYMDISTWritter(object):
         
         # Unzip folder which contains he FMU
         zip_ref = zipfile.ZipFile(fmuName, 'r')
-        zip_ref.extractall(".")
+        zip_ref.extractall('.')
         zip_ref.close()
            
-        log.info("The model description file will be rewritten" + 
-                 " to include the attribute " + NEEDSEXECUTIONTOOL + 
-                 " set to true.")
+        log.info('The model description file will be rewritten' + 
+                 ' to include the attribute ' + NEEDSEXECUTIONTOOL + 
+                 ' set to true.')
         tree = ET.parse(MODELDESCRIPTION)
         # Get the root of the tree
         root = tree.getroot()  
         # Add the needsExecution tool attribute
-        root.attrib[NEEDSEXECUTIONTOOL] = "true"
+        root.attrib[NEEDSEXECUTIONTOOL] = 'true'
         tree.write(MODELDESCRIPTION, xml_declaration=True)
         if os.path.isfile(fmuName):
             os.remove(fmuName)
@@ -593,14 +608,14 @@ class CYMDISTWritter(object):
         
         # Check if fmuName exists in current directory
         # If that is the case, delete it or rename to tmp?
-        fmuNameOriginal = fmuName + ".original"
+        fmuNameOriginal = fmuName + '.original'
         if os.path.isfile(fmuName):
-            log.info("The original CYMDIST FMU " + fmuName + 
-                     " will be renamed to " + fmuName + ".original.")
-            log.info ("A modified version of the original will be created.")
-            log.info("The difference between the original and the new FMU lies"
-                     " in the model description file of the new FMU which has"
-                     " the attribute " + NEEDSEXECUTIONTOOL + " set to true.")
+            log.info('The original CYMDIST FMU ' + fmuName + 
+                     ' will be renamed to ' + fmuName + '.original.')
+            log.info ('A modified version of the original will be created.')
+            log.info('The difference between the original and the new FMU lies'
+                     ' in the model description file of the new FMU which has'
+                     ' the attribute ' + NEEDSEXECUTIONTOOL + ' set to true.')
             if os.path.isfile(fmuNameOriginal):
                 os.remove(fmuNameOriginal)
             os.rename(fmuName, fmuNameOriginal)
@@ -611,16 +626,16 @@ class CYMDISTWritter(object):
         os.rename(zipdir, fmuName)
         
         # Copy FMU to unit test folder 
-        log.info("Copy FMU " + fmuName + " to unit test folder " 
-                 + FMUS_PATH + " so it can be run with the FMU checker.")   
+        log.info('Copy FMU ' + fmuName + ' to unit test folder ' 
+                 + FMUS_PATH + ' so it can be run with the FMU checker.')   
         shutil.copy2(fmuName, FMUS_PATH)
         
         # Delete temporary folder 
         shutil.rmtree(fmutmp)
         
         # Write scuccess.
-        log.info("The FMU " + fmuName + " is successfully re-created.")
-        log.info("The FMU " + fmuName + " is in " + os.getcwd() + ".")
+        log.info('The FMU ' + fmuName + ' is successfully re-created.')
+        log.info('The FMU ' + fmuName + ' is in ' + os.getcwd() + '.')
         
 
 if __name__ == '__main__':
