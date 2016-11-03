@@ -51,10 +51,10 @@ class Tester(unittest.TestCase):
         
         # Testing name conversions.
         name=cymwritter.sanitize_name('test+name')
-        self.assertEquals(name, 'test_name', 'Names are not matching.')
+        self.assertEqual(name, 'test_name', 'Names are not matching.')
         
         name=cymwritter.sanitize_name('0test+*.name')
-        self.assertEquals(name, 'f_0test___name', 'Names are not matching.')
+        self.assertEqual(name, 'f_0test___name', 'Names are not matching.')
 
 
     def test_xml_validator(self):
@@ -90,7 +90,7 @@ class Tester(unittest.TestCase):
                                             'Printed file is different'\
                                             ' from reference CYMDIST_ref.mo.' 
 
-    #@unittest.skip("Skipping running FMU checker")
+    @unittest.skip("Skipping running FMU checker")
     def test_fmucheker_cyder_fmus(self):
         '''  Test FMU with FMU checker
         
