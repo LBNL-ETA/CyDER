@@ -4,7 +4,7 @@
   fmiVersion="2.0"
   modelName="CYMDIST"
   description="Input data for a CYMDIST FMU"
-  generationTool="xxx">
+  generationTool="CYMDISTPy">
   <ModelVariables>
     <ScalarVariable
       name="par1"

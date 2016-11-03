@@ -47,8 +47,8 @@ else:
     BUILDINGS_PATH = 'Z:\\thierry\\proj\\buildings_library\\models\\modelica\\git\master\\modelica-buildings'
     # Buildings path on the Windows Desktop 
     # BUILDINGS_PATH='Z:\\Ubuntu\proj\\buildings_library\\models\\modelica\\git\\buildings\\modelica-buildings'
-XML_INPUT_PATH = 'CYMDISTModelDescription.xml'
-INPUT_FILE_PATH = 'CYMDIST.inp'
+XML_INPUT_PATH = 'HL0004.xml'
+INPUT_FILE_PATH = 'HL0004.sxst'
 FMUS_PATH = os.path.join('..', 'fmus', 'win32', 'Dymola', 'CYMDIST')
 ######################################### 
 
@@ -302,8 +302,6 @@ class CYMDISTWritter(object):
         inpY2 = 110
         outY1 = 88
         outY2 = 108
-        inCnt = 0
-        outCnt = 0
         indel = 20
         outdel = 18
 
@@ -392,9 +390,9 @@ class CYMDISTWritter(object):
 #                         modelicaInputVariableNames.append(newName)
 #                         # Assign variable name to the dictionary
 #                         scalarVariable['name'] = newName
-                        inpY1 = inpY1 - inCnt * indel
-                        inpY2 = inpY2 - inCnt * indel
-                        inCnt += 1
+                        inpY1 = inpY1 - indel
+                        inpY2 = inpY2 - indel
+                        #inCnt += 1
                         scalarVariable['annotation'] = (' annotation'
                                                         '(Placement'
                                                         '(transformation'
@@ -403,9 +401,9 @@ class CYMDISTWritter(object):
                                                         '{-100,' + str(inpY2) 
                                                         + '}})))')
                     if (causality == 'output'):
-                        outY1 = outY1 - outCnt * outdel
-                        outY2 = outY2 - outCnt * outdel
-                        outCnt += 1
+                        outY1 = outY1 - outdel
+                        outY2 = outY2 - outdel
+                        #outCnt += 1
                         scalarVariable['annotation'] = (' annotation'
                                                         '(Placement'
                                                         '(transformation'
