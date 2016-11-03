@@ -58,13 +58,13 @@ def main():
     
     """
     
-    CYMDIST = CYMDISTWritter(INPUT_FILE_PATH, 
-                             XML_INPUT_PATH, 
+    CYMDIST = CYMDISTWritter(INPUT_FILE_PATH,
+                             XML_INPUT_PATH,
                              BUILDINGS_PATH)
     CYMDIST.print_mo()
-    #CYMDIST.generate_fmu()
-    #CYMDIST.clean_temporary()
-    #CYMDIST.rewrite_fmu()
+    # CYMDIST.generate_fmu()
+    # CYMDIST.clean_temporary()
+    # CYMDIST.rewrite_fmu()
 
 def check_duplicates(arr):
     """ Check duplicates in a list of variables.
@@ -190,9 +190,9 @@ class CYMDISTWritter(object):
     """
 
 
-    def __init__(self, input_file_path, xml_path, buildings_path, 
-                 moT_path = CYMDISTModelicaTemplate_MO, 
-                 mosT_path = CYMDISTModelicaTemplate_MOS, 
+    def __init__(self, input_file_path, xml_path, buildings_path,
+                 moT_path=CYMDISTModelicaTemplate_MO,
+                 mosT_path=CYMDISTModelicaTemplate_MOS,
                  xsd_path=XSD_SCHEMA, write_results=0):
         """Initialize the class.
         
@@ -290,13 +290,13 @@ class CYMDISTWritter(object):
   
         # Iterate through the XML file and get the ModelVariables.
         inputVariableNames = []
-        #modelicaInputVariableNames = []
+        # modelicaInputVariableNames = []
         outputVariableNames = []
         outputDeviceNames = []
         concatOutputVariableNames = []
         parameterVariableValues = []
         parameterVariableNames = []
-        #modelicaParameterVariableNames = []
+        # modelicaParameterVariableNames = []
         # Parameters used to write annotations.
         inpY1 = 88
         inpY2 = 110
@@ -358,7 +358,7 @@ class CYMDISTWritter(object):
 #                         scalarVariable['name'] = newOutputName
                         log.info('The output name ' + name + ' will be concatenated '
                                   'with the device name ' + devName + ' to be unique.')
-                        scalarVariable['name'] = name+'_'+devName
+                        scalarVariable['name'] = name + '_' + devName
                         concatOutputVariableNames.append(scalarVariable['name'])
                         log.info('The new output name is ' + scalarVariable['name'] + '.')
                     if ((start is None) and ((causality == 'input') 
@@ -448,8 +448,8 @@ class CYMDISTWritter(object):
 #                 outputVariableNames, modelicaOutputVariableNames, outputDeviceNames, \
 #                 parameterVariableNames, modelicaParameterVariableNames, parameterVariableValues
             return scalarVariables, inputVariableNames, \
-                outputVariableNames, concatOutputVariableNames,\
-                outputDeviceNames,parameterVariableNames, \
+                outputVariableNames, concatOutputVariableNames, \
+                outputDeviceNames, parameterVariableNames, \
                 parameterVariableValues
     
     def print_mo(self):
@@ -469,7 +469,7 @@ class CYMDISTWritter(object):
         outputVariableNames, \
         concatOutputVariableNames, \
         outputDeviceNames, \
-        parameterVariableNames,\
+        parameterVariableNames, \
         parameterVariableValues = self.xml_parser()
 
         loader = jja2.FileSystemLoader(self.moT_path)
@@ -502,7 +502,7 @@ class CYMDISTWritter(object):
         log.info('The Modelica model ' + output_file + 
                  ' of ' + self.modelName + ' is successfully created.')
         log.info('The Modelica model ' + output_file + 
-                 ' of ' + self.modelName + ' is in ' + os.getcwd() +'.')
+                 ' of ' + self.modelName + ' is in ' + os.getcwd() + '.')
         return 
     
     
