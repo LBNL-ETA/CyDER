@@ -1,8 +1,8 @@
 // Export model as an FMU.
-openModel("{{modelName}}.mo");
+openModel("{{model_name}}.mo");
 Advanced.FMI.xmlIgnoreProtected=true;
 translateModelFMU(
-  modelToOpen="{{modelName}}",
+  modelToOpen="{{model_name}}",
   storeResult=false,
   modelName="",
   fmiVersion="2",
