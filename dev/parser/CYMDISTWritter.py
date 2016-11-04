@@ -13,7 +13,7 @@ import xml.etree.ElementTree as ET
 import jinja2 as jja2
 import logging as log
 import subprocess as sp
-import os
+import os, sys
 import platform
 import shutil
 import zipfile
@@ -58,13 +58,110 @@ def main():
     
     """
     
-    CYMDIST = CYMDISTWritter(INPUT_FILE_PATH,
-                             XML_INPUT_PATH,
-                             BUILDINGS_PATH)
+    # Set defaults for command-line options.
+    gridFilePath = None
+    inputFilePath = None
+    buildingsPath = None
+    moTemplatePath=CYMDISTModelicaTemplate_MO
+    mosTemplatePath=CYMDISTModelicaTemplate_MOS
+    xsdFilePath=XSD_SCHEMA
+    writeResults=0
+    #
+    # Get command-line options.
+    lastIdx = len(sys.argv) - 1
+    currIdx = 1
+    while(currIdx < lastIdx):
+        currArg = sys.argv[currIdx]
+        if(currArg.startswith('-g')):
+            currIdx += 1
+            gridFilePath = sys.argv[currIdx]
+            log.info('Setting CYMDIST grid model path to {' + gridFilePath + '}')
+        elif(currArg.startswith('-i')):
+            currIdx += 1
+            inputFilePath = sys.argv[currIdx]
+            log.info('Setting CYMDIST XML input path to {' + inputFilePath + '}')
+        elif(currArg.startswith('-b')):
+            currIdx += 1
+            buildingsPath = sys.argv[currIdx]
+            log.info('Setting Modelica Buildings path to {' + buildingsPath + '}')
+        elif(currArg.startswith('-m')):
+            currIdx += 1
+            moTemplatePath = sys.argv[currIdx]
+            log.info('Setting Modelica template path to {' + moTemplatePath + '}')
+        elif(currArg.startswith('-ms')):
+            currIdx += 1
+            mosTemplatePath = sys.argv[currIdx]
+            log.info('Setting Modelica script template path to {' + mosTemplatePath + '}')
+        elif(currArg.startswith('-x')):
+            currIdx += 1
+            xsdFilePath = sys.argv[currIdx]
+            log.info('Setting XSD validator path to {' + xsdFilePath + '}')
+        elif(currArg.startswith('-r')):
+            currIdx += 1
+            writeResults = int(sys.argv[currIdx])
+            log.info('Setting Flag for writing results to {' + writeResults + '}')
+        else:
+            quit_with_error('Bad command-line option {' + currArg + '}', True)
+            # Here, processed option at {currIdx}.
+        currIdx += 1
+    
+    if(gridFilePath is None):
+        quit_with_error('Missing required input, <path-to-grid-file>', True)
+    if(buildingsPath is None):
+        quit_with_error('Missing required input, <path-to-Buildings-file>', True)
+    if(inputFilePath is None):
+        quit_with_error('Missing required input, <path-to-input-file>', True)
+
+    CYMDIST = CYMDISTWritter(gridFilePath,
+                             inputFilePath,
+                             buildingsPath,
+                             moTemplatePath,
+                             mosTemplatePath,
+                             xsdFilePath,
+                             writeResults)
     CYMDIST.print_mo()
-    # CYMDIST.generate_fmu()
-    # CYMDIST.clean_temporary()
-    # CYMDIST.rewrite_fmu()
+    CYMDIST.generate_fmu()
+    CYMDIST.clean_temporary()
+    CYMDIST.rewrite_fmu()
+
+def print_cmd_line_usage():
+    """ Print command line usage.
+    
+    """
+
+    print ('USAGE:', os.path.basename(__file__),  \
+    '-g <path-to-grid-file>  [-i <path-to-input-file>]'\
+    ' [-b] <path-to-Buildings-file> [-x] <path-to-xsd-file>' )
+    print ('-- Export a CYMDIST model as a Functional Mockup Unit (FMU) for Model Exchange 2.0')
+    print ('-- Input -g, Path to the grid model (required).')
+    print ('-- Input -i, Path to the input file (required).')
+    print ('-- Input -b, Path to the Buildings library (required).')
+    print ('-- Option -m, Path to the Modelica template file. Optional if run from the parser installation folder.')
+    print ('-- Option -ms, Path to the Modelica script template file. Optional if run from the parser installation folder.')
+    print ('-- Option -x, Path to the XSD file. Optional if run from the parser installation folder.')
+    print ('-- Option -r, Flag to write results. 0 if results should not be written, 1 else. Default is 0.')
+
+
+
+def quit_with_error(messageStr, showCmdLine):
+    
+    """ Terminate with an error.
+    
+        Args:
+            messageStr(str): error message.
+            showCmdLine(bool): if True show message.
+        
+    """
+
+    print ('ERROR from script file {' +os.path.basename(__file__) +'}')
+
+    if( messageStr is not None ):
+        print (messageStr)
+
+    if( showCmdLine ):
+        print (print_cmd_line_usage())
+
+    sys.exit(1)
 
 def check_duplicates(arr):
     """ Check duplicates in a list of variables.
@@ -197,7 +294,7 @@ class CYMDISTWritter(object):
         """Initialize the class.
         
         Args:
-            input_file_path (str): The path to the CYMDIST input file.
+            input_file_path (str): The path to the CYMDIST grid model file.
             xml_path (str): The path to the XML file.
             buildings_path (str): The path to the folder
             which contains the Buildings library excluding
@@ -471,8 +568,9 @@ class CYMDISTWritter(object):
         parameterVariableValues = self.xml_parser()
 
         loader = jja2.FileSystemLoader(self.moT_path)
+        print ("This is the template path " + self.moT_path)
         env = jja2.Environment(loader=loader)
-        template = env.get_template('')
+        template = env.get_template(self.moT_path)
                 
         # Call template with parameters
         output_res = template.render(modelName=self.modelName,
@@ -521,10 +619,12 @@ class CYMDISTWritter(object):
         os.environ['MODELICAPATH'] = self.buildings_path 
         
         # Load the mos template to create the FMU
+        #root = os.path.dirname(self.mosT_path)
+        #base = os.path.basename(self.mosT_path)
+        
         loader = jja2.FileSystemLoader(self.mosT_path)
         env = jja2.Environment(loader=loader)
         template = env.get_template('')
-        
         output_res = template.render(modelName=self.modelName,
                                    buildingsPath=self.buildings_path)
         # Write results in mo file which has the same name as the class name
@@ -653,5 +753,6 @@ class CYMDISTWritter(object):
 
 if __name__ == '__main__':
     # Try running this module!
+    # Set defaults for command-line options.
     main()
     
