@@ -41,7 +41,7 @@ protected
   {%- else %}
   {% set comma = joiner(",") -%}  
   Real uR[nDblInp]={
-  {%- for row in input_variable_Names -%}
+  {%- for row in input_variable_names -%}
   {{comma()}}
   '{{row}}'
   {%- endfor %} 
