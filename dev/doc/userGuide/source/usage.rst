@@ -5,16 +5,32 @@
 Usage of CYMDIST as an FMU
 =============================
 
-The following items need to be observed when importing an FMU that contains CYMDIST:
+The following items must be observed to import an FMU that contains CYMDIST:
 
-1. The Python 3.4 interpreter must be installed.
+1. ``Python 3.4`` must be installed.
 
-2. A ``PYTHONPATH`` variable must be created in the System environment variables.
+2. ``CYME`` version 7.2 must be installed. CYME can be downloaded from `www.cyme.com <https://www.cyme.com>`_.
 
-3. Following folders must be added to the ``PYTHONPATH``:
+3. The CYMDIST Python API scripts directory must be added to the ``PYTHONPATH``.
 
-   - ``dev/cymdist``: This folder contains the python functions which allows to communicate with CYMDIST. The folder is available in the distribution of CYMDISTPy.
-   - ``path-to-cympy``: This folder contains the CYMDIST API functions and are installed with the distribution of CYMDIST (e.g. ``C:\Program Files (x86)\CYME\CYME)``.
+.. note:: The CYMDIST Python API scripts are in the installation folder of CYME. It can typically be found in 
+
+       ``pathCYME\CYME\cympy``, where ``pathCYME`` is the path to the installation folder of CYME 7.2.
+
+To add the CYMDIST Python API scripts folder to the ``PYTHONPATH``:
+
+     - In Search, search for and then select: System (Control Panel).
+     
+     - Click the Advanced system settings link.
+     
+     - Click Environment Variables. In the section System Variables, find a variable named ``PYTHONPATH`` environment variable and select it. If the variable does not exist, create it. Click Edit. 
+     
+     - In the Edit System Variable (or New System Variable) window, specify the value of the PYTHONPATH environment variable which should in our case be ``pathCYME\CYME``. Note that ``cympy`` is not included in the name of the variable. 
+     
+
+4. The ``cymdist`` utility folder must be added to the ``PYTHONPATH``. The ``cymdist`` utility folder can be found in the distribution of CYMDISTPy. It is in ``dev/cymdist``. 
+To complete your set-up, add the folder ``dev\cymdist`` to the ``PYTHONPATH``.
+
 
 
 
