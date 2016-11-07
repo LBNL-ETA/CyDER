@@ -88,16 +88,28 @@
             
   <div class="section" id="usage-of-cymdist-as-an-fmu">
 <span id="usage"></span><h1>5. Usage of CYMDIST as an FMU<a class="headerlink" href="#usage-of-cymdist-as-an-fmu" title="Permalink to this headline">¶</a></h1>
-<p>The following items need to be observed when importing an FMU that contains CYMDIST:</p>
+<p>The following items must be observed to import an FMU that contains CYMDIST:</p>
 <ol class="arabic simple">
-<li>The Python 3.4 interpreter must be installed.</li>
-<li>A <code class="docutils literal"><span class="pre">PYTHONPATH</span></code> variable must be created in the System environment variables.</li>
-<li>Following folders must be added to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>:<ul>
-<li><code class="docutils literal"><span class="pre">dev/cymdist</span></code>: This folder contains the python functions which allows to communicate with CYMDIST. The folder is available in the distribution of CYMDISTPy.</li>
-<li><code class="docutils literal"><span class="pre">path-to-cympy</span></code>: This folder contains the CYMDIST API functions and are installed with the distribution of CYMDIST (e.g. <code class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files</span> <span class="pre">(x86)\CYME\CYME)</span></code>.</li>
-</ul>
-</li>
+<li><code class="docutils literal"><span class="pre">Python</span> <span class="pre">3.4</span></code> must be installed.</li>
+<li><code class="docutils literal"><span class="pre">CYME</span></code> version 7.2 must be installed. CYME can be downloaded from <a class="reference external" href="https://www.cyme.com">www.cyme.com</a>.</li>
+<li>The CYMDIST Python API scripts directory must be added to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>.</li>
 </ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The CYMDIST Python API scripts are in the installation folder of CYME. It can typically be found in</p>
+<p class="last"><code class="docutils literal"><span class="pre">pathCYME\CYME\cympy</span></code>, where <code class="docutils literal"><span class="pre">pathCYME</span></code> is the path to the installation folder of CYME 7.2.</p>
+</div>
+<p>To add the CYMDIST Python API scripts folder to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>In Search, search for and then select: System (Control Panel).</li>
+<li>Click the Advanced system settings link.</li>
+<li>Click Environment Variables. In the section System Variables, find a variable named <code class="docutils literal"><span class="pre">PYTHONPATH</span></code> environment variable and select it. If the variable does not exist, create it. Click Edit.</li>
+<li>In the Edit System Variable (or New System Variable) window, specify the value of the PYTHONPATH environment variable which should in our case be <code class="docutils literal"><span class="pre">pathCYME\CYME</span></code>. Note that <code class="docutils literal"><span class="pre">cympy</span></code> is not included in the name of the variable.</li>
+</ul>
+</div></blockquote>
+<p>4. The <code class="docutils literal"><span class="pre">cymdist</span></code> utility folder must be added to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>. The <code class="docutils literal"><span class="pre">cymdist</span></code> utility folder can be found in the distribution of CYMDISTPy. It is in <code class="docutils literal"><span class="pre">dev/cymdist</span></code>.
+To complete your set-up, add the folder <code class="docutils literal"><span class="pre">dev\cymdist</span></code> to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>.</p>
 </div>
 
 
