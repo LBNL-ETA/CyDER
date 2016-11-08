@@ -14,6 +14,7 @@ User Guide
    bestPractice
    development
    notation
+   glossary
    acknowledgments
    disclaimer
    legal

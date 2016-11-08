@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>12. Copyright and License &mdash; FMU Export of CYMDIST User Guide</title>
+    <title>9. Glossary &mdash; FMU Export of CYMDIST User Guide</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -25,7 +25,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="FMU Export of CYMDIST User Guide" href="index.html" />
-    <link rel="prev" title="11. Disclaimers" href="disclaimer.html" /> 
+    <link rel="next" title="10. Acknowledgments" href="acknowledgments.html" />
+    <link rel="prev" title="8. Notation" href="notation.html" /> 
   </head>
   <body role="document">
 <div class="headerStyle">
@@ -39,7 +40,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="disclaimer.html" title="11. Disclaimers"
+          <a href="acknowledgments.html" title="10. Acknowledgments"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="notation.html" title="8. Notation"
              accesskey="P">previous</a> |</li>
     <li><a href="http://simulationresearch.lbl.gov/fmu/CYMDIST/export/index.html">Home</a> |
     <a href="index.html">User Guide</a></li>
@@ -52,12 +56,15 @@
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="disclaimer.html"
-                        title="previous chapter">11. Disclaimers</a></p>
+  <p class="topless"><a href="notation.html"
+                        title="previous chapter">8. Notation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="acknowledgments.html"
+                        title="next chapter">10. Acknowledgments</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/legal.txt"
+      <li><a href="_sources/glossary.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -79,10 +86,34 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="copyright-and-license">
-<h1>12. Copyright and License<a class="headerlink" href="#copyright-and-license" title="Permalink to this headline">¶</a></h1>
-<p>Functional Mock-up Unit Export of CYMDIST 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory (subject to receipt of any required approvals from the U.S. Department of Energy). All rights reserved.</p>
-<p>xxxx fixme xxx still needed</p>
+  <div class="section" id="glossary">
+<h1>9. Glossary<a class="headerlink" href="#glossary" title="Permalink to this headline">¶</a></h1>
+<dl class="glossary docutils">
+<dt id="term-dymola">Dymola</dt>
+<dd>Dymola, Dynamic Modeling Laboratory, is a modeling and simulation environment for the Modelica language.</dd>
+<dt id="term-functional-mock-up-interface">Functional Mock-up Interface</dt>
+<dd>The Functional Mock-up Interface (FMI) is the result of the Information Technology for European Advancement (ITEA2) project  <a class="reference internal" href="#term-modelisar"><span class="xref std std-term">MODELISAR</span></a>.
+The FMI standard is a tool independent standard to support both model exchange and co-simulation of dynamic models using a combination of XML-files,
+C-header files, C-code or binaries.</dd>
+<dt id="term-functional-mock-up-unit">Functional Mock-up Unit</dt>
+<dd>A simulation model or program which implements the FMI standard is called Functional Mock-up Unit (FMU).
+An FMU comes along with a small set of C-functions (FMI functions) whose input and return arguments are defined by the FMI standard.
+These C-functions can be provided in source and/or binary form. The FMI functions are called by a simulator to create one or more instances of the FMU.
+The functions are also used to run the FMUs, typically together with other models. An FMU may either require the importing tool
+to perform numerical integration (model-exchange) or be self-integrating (co-simulation). An FMU is distributed in the form of a zip-file that contains
+shared libraries, which contain the implementation of the FMI functions and/or source code of the FMI functions,
+an XML-file, also called the model description file, which contains the variable definitions as well as meta-information of the model,
+additional files such as tables, images or documentation that might be relevant for the model.</dd>
+<dt id="term-modelica">Modelica</dt>
+<dd>Modelica is a non-proprietary, object-oriented, equation-based language to conveniently model complex physical systems containing,
+e.g., mechanical, electrical, electronic, hydraulic, thermal, control, electric power or process-oriented subcomponents.</dd>
+<dt id="term-modelisar">MODELISAR</dt>
+<dd>MODELISAR is an ITEA 2 (Information Technology for European Advancement) European project aiming to improve the design of systems and of embedded software in vehicles.</dd>
+<dt id="term-pyfmi">PyFMI</dt>
+<dd>PyFMI is a package for loading and interacting with Functional Mock-Up Units (FMUs), which are compiled dynamic models compliant with the Functional Mock-Up Interface (FMI).</dd>
+<dt id="term-python">Python</dt>
+<dd>Python is a dynamic programming language that is used in a wide variety of application domains.</dd>
+</dl>
 </div>
 
 
@@ -98,7 +129,10 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="disclaimer.html" title="11. Disclaimers"
+          <a href="acknowledgments.html" title="10. Acknowledgments"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="notation.html" title="8. Notation"
              >previous</a> |</li>
     <li><a href="http://simulationresearch.lbl.gov/fmu/CYMDIST/export/index.html">Home</a> |
     <a href="index.html">User Guide</a></li>
