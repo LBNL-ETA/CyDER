@@ -69,7 +69,7 @@ The installation directory should contain the following subdirectories:
 - ``models/``
   (Examples models)
 
-  - ``cymdist``
+  - ``modelica``
 
 3. Add following folders to your system path: 
 
