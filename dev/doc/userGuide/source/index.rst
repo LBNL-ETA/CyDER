@@ -13,6 +13,7 @@ User Guide
    usage
    bestPractice
    development
+   help
    notation
    glossary
    acknowledgments
