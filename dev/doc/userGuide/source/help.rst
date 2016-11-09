@@ -75,7 +75,7 @@ Requirements
 
   We tested the C-compiler provided in Visual Studio 2010 Professional.
 
-**:term:`PyFMI` source**
+:term:`PyFMI` **source**
 
 .. note::
 
