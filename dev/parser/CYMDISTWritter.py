@@ -33,11 +33,11 @@ log.getLogger().addHandler(stderrLogger)
 # XSD_SCHEMA: Schema used to validate the XML input
 # CYMDISTModelicaTemplate_MO: Template used to write Modelica model
 # CYMDISTModelicaTemplate_MOS: Template used to write mos script
-XSD_SCHEMA = 'CYMDISTModelDescription.xsd'
+XSD_SCHEMA = 'utilities/CYMDISTModelDescription.xsd'
 NEEDSEXECUTIONTOOL = 'needsExecutionTool'
 MODELDESCRIPTION = 'modelDescription.xml'
-CYMDISTModelicaTemplate_MO = 'CYMDISTModelicaTemplate.mo'
-CYMDISTModelicaTemplate_MOS = 'CYMDISTModelicaTemplate.mos'
+CYMDISTModelicaTemplate_MO = 'utilities/CYMDISTModelicaTemplate.mo'
+CYMDISTModelicaTemplate_MOS = 'utilities/CYMDISTModelicaTemplate.mos'
 #########################################
 # # TEST FILES TO BE PROVIDED BY THE USER
 if platform.system() == 'Linux':
@@ -459,26 +459,6 @@ class CYMDISTWritter(object):
                         output_variable_names.append(name)
                         # Create list with device name of output variable
                         output_device_names.append(devName)
-#                         log.info('Output with name ' + name
-#                                  + ' will be sanitized'
-#                                  ' to remove invalid Modelica characters.')
-#                         newOutputName = sanitize_name(name)
-#                         log.info('The Modelica output name is '
-#                                  + newOutputName + '.')
-#                         log.info('Device with name ' + devName
-#                                  + ' will be sanitized to remove'
-#                                  ' invalid Modelica characters.')
-#                         newDeviceName = sanitize_name(devName)
-#                         log.info('The Modelica device name is '
-#                                  + newDeviceName + '.')
-#                         log.info('The output name will be concatenated '
-#                                  'with the sanitized device name to be unique.')
-#                         newOutputName = newOutputName + '_' + newDeviceName
-#                         log.info('The Modelica output name is '
-#                                  + newOutputName + '.')
-#                         modelicaOutputVariableNames.append(newOutputName)
-#                         # Assign variable name to the dictionary
-#                         scalar_variable['name'] = newOutputName
                         log.info('The output name ' + name + ' will be concatenated '
                                  'with the device name ' + devName + ' to be unique.')
                         scalar_variable['name'] = name + '_' + devName
@@ -490,8 +470,7 @@ class CYMDISTWritter(object):
                                              or causality == 'parameter')):
                         # Set the start value of input and parameter to zero.
                         # This assumes that we are only dealing with Integers
-                        # This is because of the start value which is set to
-                        # 0.0.
+                        # This is because of the start value which is set to 0.0.
                         log.warning('Start value of variable '
                                     + name + ' with causality '
                                     + causality + ' is not defined.'
@@ -510,14 +489,6 @@ class CYMDISTWritter(object):
                     scalar_variable['causality'] = causality
                     if (causality == 'input'):
                         input_variable_names.append(name)
-#                         log.info('Input with name ' + name
-#                                  + ' will be sanitized to remove'
-#                                  ' invalid Modelica characters.')
-#                         newName = sanitize_name(name)
-#                         log.info('The Modelica input name is ' + newName + '.')
-#                         modelicaInputVariableNames.append(newName)
-#                         # Assign variable name to the dictionary
-#                         scalar_variable['name'] = newName
                         inpY1 = inpY1 - indel
                         inpY2 = inpY2 - indel
                         scalar_variable['annotation'] = (' annotation'
@@ -539,16 +510,6 @@ class CYMDISTWritter(object):
                                                          + '}})))')
                     if (causality == 'parameter'):
                         parameter_variable_names.append(name)
-#                         log.info('Parameter with name ' + name
-#                                  + ' will be sanitized to remove'
-#                                  ' invalid Modelica characters.')
-#                         newName = sanitize_name(name)
-#                         log.info('The Modelica parameter name is '
-#                                  + newName + '.')
-#                         modelicaParameterVariableNames.append(newName)
-#                         # Assign variable name to the dictionary
-#
-#                         scalar_variable['name'] = newName
                         parameter_variable_values.append(start)
                     scalar_variable['vartype'] = vartype
                     scalar_variable['unit'] = unit
@@ -557,10 +518,6 @@ class CYMDISTWritter(object):
                 scalar_variables.append(scalar_variable)
             # perform some checks on variables to avoid name clashes
             # before returning the variables to Modelica
-#             for i in [modelicaInputVariableNames,
-#                       modelicaOutputVariableNames,
-#                       modelicaParameterVariableNames]:
-#                 check_duplicates (i)
             for i in [input_variable_names,
                       concat_output_variable_names,
                       parameter_variable_names]:
@@ -568,9 +525,6 @@ class CYMDISTWritter(object):
 
             # Write success.
             log.info('Parsing of ' + self.xml_path + ' was successfull.')
-#             return scalar_variables, input_variable_names, modelicaInputVariableNames, \
-#                 output_variable_names, modelicaOutputVariableNames, output_device_names, \
-#                 parameter_variable_names, modelicaParameterVariableNames, parameter_variable_values
             return scalar_variables, input_variable_names, \
                 output_variable_names, concat_output_variable_names, \
                 output_device_names, parameter_variable_names, \
@@ -606,12 +560,10 @@ class CYMDISTWritter(object):
                                      write_results=self.write_results,
                                      scalar_variables=scalar_variables,
                                      input_variable_names=input_variable_names,
-                                     #                         modelicaInputVariableNames=modelicaInputVariableNames,
                                      output_variable_names=output_variable_names,
                                      concat_output_variable_names=concat_output_variable_names,
                                      output_device_names=output_device_names,
                                      parameter_variable_names=parameter_variable_names,
-                                     #                         modelicaParameterVariableNames=modelicaParameterVariableNames,
                                      parameter_variable_values=parameter_variable_values)
         # Write results in mo file which has the same name as the class name
         output_file = self.model_name + '.mo'
@@ -762,11 +714,6 @@ class CYMDISTWritter(object):
         # which will be used for the simulation. This FMU
         # contains the needsExecutionTool flag.
         os.rename(zipdir, fmu_name)
-
-        # Copy FMU to unit test folder
-        # log.info('Copy FMU ' + fmu_name + ' to unit test folder '
-        #         + FMUS_PATH + ' so it can be run with the FMU checker.')
-        #shutil.copy2(fmu_name, FMUS_PATH)
 
         # Delete temporary folder
         shutil.rmtree(fmutmp)

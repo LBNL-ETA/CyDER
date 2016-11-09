@@ -17,11 +17,11 @@ sys.path.append(mod_path)
 import CYMDISTWritter as cymwritter
 
 BUILDINGS_PATH = ''
-XSD_PATH = os.path.join(root_path, 'CYMDISTModelDescription.xsd')
-XML_INPUT_PATH = os.path.join(root_path, 'CYMDISTModelDescription.xml')
-INPUT_FILE_PATH = os.path.join(root_path, 'CYMDIST.inp')
-MOT_PATH = os.path.join(root_path, 'CYMDISTModelicaTemplate.mo')
-MOST_PATH = os.path.join(root_path, 'CYMDISTModelicaTemplate.mos')
+XSD_PATH = os.path.join(root_path, 'utilities', 'CYMDISTModelDescription.xsd')
+XML_INPUT_PATH = os.path.join(root_path, 'utilities', 'CYMDISTModelDescription.xml')
+INPUT_FILE_PATH = os.path.join(root_path, 'utilities', 'CYMDIST.inp')
+MOT_PATH = os.path.join(root_path, 'utilities', 'CYMDISTModelicaTemplate.mo')
+MOST_PATH = os.path.join(root_path, 'utilities', 'CYMDISTModelicaTemplate.mos')
 
 CYMDIST_T = cymwritter.CYMDISTWritter(INPUT_FILE_PATH,
                                       XML_INPUT_PATH,
@@ -85,7 +85,7 @@ class Tester(unittest.TestCase):
 
         # Check if file is the same as the reference.
         assert(filecmp.cmp
-               ('CYMDIST.mo', os.path.join(root_path,
+               ('CYMDIST.mo', os.path.join(root_path, 'utilities',
                                            'CYMDIST_ref.mo'))), \
             'Printed file is different'\
             ' from reference CYMDIST_ref.mo.'
