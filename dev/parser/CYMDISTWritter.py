@@ -33,11 +33,11 @@ log.getLogger().addHandler(stderrLogger)
 # XSD_SCHEMA: Schema used to validate the XML input
 # CYMDISTModelicaTemplate_MO: Template used to write Modelica model
 # CYMDISTModelicaTemplate_MOS: Template used to write mos script
-XSD_SCHEMA = 'CYMDISTModelDescription.xsd'
+XSD_SCHEMA = 'utilities/CYMDISTModelDescription.xsd'
 NEEDSEXECUTIONTOOL = 'needsExecutionTool'
 MODELDESCRIPTION = 'modelDescription.xml'
-CYMDISTModelicaTemplate_MO = 'CYMDISTModelicaTemplate.mo'
-CYMDISTModelicaTemplate_MOS = 'CYMDISTModelicaTemplate.mos'
+CYMDISTModelicaTemplate_MO = 'utilities/CYMDISTModelicaTemplate.mo'
+CYMDISTModelicaTemplate_MOS = 'utilities/CYMDISTModelicaTemplate.mos'
 #########################################
 # # TEST FILES TO BE PROVIDED BY THE USER
 if platform.system() == 'Linux':
