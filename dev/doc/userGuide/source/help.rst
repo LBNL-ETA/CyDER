@@ -3,13 +3,13 @@ Help
 
 Installing PyFMI for Python 3.4 32 bit
 --------------------------------------
-
-At time of writing, there was no PyFMI executable available for Python 3.4 on Windows 32bit (See `PyPyi <https://pypi.python.org/pypi/PyFMI>`_.).
-The next steps describe requirments and steps to perform to compile PyFMI from source.
+:term:`PyFMI` is a python package which can be used to import and run a CYMDIST FMU. In :term:`PyFMI` version 2.3.1, a master algorithm was added to import and 
+link multiple FMUs for co-simulation. At time of writing, there was no :term:`PyFMI` 2.3.1 executable available for Python 3.4 on Windows 32bit (See `PyPyi <https://pypi.python.org/pypi/PyFMI>`_.).
+The next steps describe requirments and steps to perform to compile :term:`PyFMI` version 2.3.1 from source.
 
 .. note::
   
-  To avoid having to recompile PyFMI dependent libraries from source, 
+  To avoid having to recompile :term:`PyFMI` dependent libraries from source, 
   we recommend to use pre-compiled Windows binaries whenever available.
 
 Requirements
@@ -75,7 +75,7 @@ Requirements
 
   We tested the C-compiler provided in Visual Studio 2010 Professional.
 
-**PyFMI source**
+**:term:`PyFMI` source**
 
 .. note::
 
@@ -84,7 +84,7 @@ Requirements
 Compilation
 +++++++++++
 
-To compile PyFMI from source, run
+To compile :term:`PyFMI` from source, run
 
 .. code-block:: none
 
