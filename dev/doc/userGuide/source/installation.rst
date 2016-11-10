@@ -61,10 +61,10 @@ The installation directory should contain the following subdirectories:
     (fmuChecker binaries for running unit test)
 
   - ``bin/``
-    (Scripts for running unit tests.)
+    (Scripts for running unit tests)
 
   - ``fmus/``
-    (FMUs folder.)
+    (FMUs folder)
 
 - ``models/``
   (Examples models)
@@ -102,9 +102,10 @@ The installation directory should contain the following subdirectories:
 
 
    .. note:: 
-   
-     ``lxml`` cannot be installed using ``pip``. Please download and install
-     the executable (``lxml-3.4.4.win32-py3.4.exe``) from `PyPyi <https://pypi.python.org/pypi/lxml/3.4.4>`_. 
+
+     - ``cymdist-dependencies.txt`` includes the versions of the Python modules which were tested.
+
+     - ``lxml`` cannot be installed using ``pip``. Please download and install the executable (``lxml-3.4.4.win32-py3.4.exe``) from `PyPyi <https://pypi.python.org/pypi/lxml/3.4.4>`_. 
    
 
 

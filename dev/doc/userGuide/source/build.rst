@@ -6,7 +6,8 @@ Creating an FMU
 ===============
 
 This chapter describes how to create a Functional Mockup Unit, starting from a CYMDIST model description input file.
-It assumes you have followed the :doc:`installation` instructions, and that you have created the CYMDIST model description file  following the :doc:`bestPractice` guidelines.
+It assumes you have followed the :doc:`installation` instructions, and that you have created the CYMDIST 
+model description file  following the :doc:`bestPractice` guidelines.
 
 
 Command-line use
@@ -19,27 +20,25 @@ The standard invocation of the CYMDISTPy tool is:
 .. code-block:: none
 
   > python  <scriptDir>CYMDISTWritter.py  \
-    -g <path-to-grid-model-file>  \
-    -i <path-to-input-file> -b <path-to-buildings-lib-file> \
-    -m <path-to-modelica-template-file> \
-    -s <path-to-modelica-script-template-file> -x <path-to-xsd-file> \
-    -r <flag-to-write-results>
+    -g <grid-model-path>  \
+    -i <input-file-path> \
+    -b <buildings-lib-path> \
+    -r <write-results>
 
 where ``scriptDir`` is the path to the scripts directory of CYMDISTPy.
-This is the ``parser/`` subdirectory of the installation directory.
+This is the ``parser`` subdirectory of the installation directory.
 See :doc:`installation` for details.
 
-If ``CYMDISTWritter.py`` is run from within ``scriptDir`` then only the required arguments are needed
-as shown in the following example:
+An example of invoking ``CYMDISTWritter.py`` on Windows is 
 
 .. code-block:: none
 
   # Windows:
-  > python  CYMDISTWritter.py  -g C:\grid\test.sxst  -i test.xml  -b modelica-buildings
+  > python  parser\CYMDISTWritter.py  \
+    -g C:\grid\test.sxst  \  
+    -i test.xml  \  
+    -b modelica-buildings
 
-where ``scriptDir`` is the path to the scripts directory of CYMDISTPy.
-Typically this is the ``parser/`` subdirectory of the installation directory.
-See :doc:`installation` for details.
 
 All file paths can be absolute or relative.
 For readability, the rest of these instructions omit the paths to the script and input files.
@@ -51,32 +50,21 @@ Script ``CYMDISTWritter.py`` supports the following command-line switches:
 +----------------------------------------------------+----------------------------------------------------------+
 | option <argument>                                  | Purpose                                                  |
 +====================================================+==========================================================+
-| -g <path-to-grid-model-file>                       | Path to the grid model (required).                       |
+| -g <grid-model-path>                               | Path to the grid model (required)                        |
 +----------------------------------------------------+----------------------------------------------------------+
-| -i <path-to-input-file>                            | Path to the input file (required).                       |
+| -i <input-file-path>                               | Path to the input file (required)                        |
 +----------------------------------------------------+----------------------------------------------------------+
-| -b <path-to-buildings-lib-file>                    | Path to the Buildings library (required).                |
+| -b <buildings-lib-path>                            | Path to the Buildings library (required)                 |
 +----------------------------------------------------+----------------------------------------------------------+
-| -m <path-to-modelica-template-file>                | Path to the Modelica template file                       |
-|                                                    | This file is in the ``scriptDir``. If the script is      |
-|                                                    | run for the ``scriptDir`` then this file is not required.|
-+----------------------------------------------------+----------------------------------------------------------+
-| -s <path-to-modelica-script-template-file>         | Path to the Modelica script template file                |
-|                                                    | This file is in the ``scriptDir``. If the script is      |
-|                                                    | run for the ``scriptDir`` then this file is not required.|
-+----------------------------------------------------+----------------------------------------------------------+
-| -x <path-to-xsd-file>                              | Path to the ``XSD`` validator file.                      |
-|                                                    | This file is in the ``scriptDir``. If the script is      |
-|                                                    | run for the ``scriptDir`` then this file is not required.|
-+----------------------------------------------------+----------------------------------------------------------+
-|-r <flag-to-write-results>                          | Flag to write results.                                   |
+| -r <write-results>                                 | Flag for writing results.                                |
 |                                                    | 0 if results should not be written, 1 else. Default is 0.|
 +----------------------------------------------------+----------------------------------------------------------+
 
 The main functions of CYMDISTPy are
 
- - reading, validating, andparsing the CYMDIST XML input file,
- - writing Modelica code with input and outputs,
+ - reading, validating, and parsing the CYMDIST XML input file. 
+   This includes removing and replacing invalid characters in variable names such as ``*,+`` with ``_``,
+ - writing Modelica code with valid input and outputs,
  - invoking Dymola to compile the Modelica code as an FMU for model exchange 2.0.
 
 .. note:: 
