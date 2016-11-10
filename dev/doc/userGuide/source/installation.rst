@@ -52,10 +52,10 @@ The installation directory should contain the following subdirectories:
 - ``dev/``
 
   - ``parser/``
-    (Python scripts, Modelica templates and xsd validator files.)
+    (Python scripts, Modelica templates and xsd validator files)
     
   - ``cymdist/``
-    (Python scripts for communicating with CYMDIST.)
+    (Python scripts for communicating with CYMDIST)
 
   - ``fmuChecker/``
     (fmuChecker binaries for running unit test)
