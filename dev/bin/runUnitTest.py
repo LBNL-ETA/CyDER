@@ -10,18 +10,21 @@ import sys
 import logging
 from subprocess import call
 
-root_path = os.path.join('..', 'parser')
-mod_path = os.path.abspath(os.path.join(root_path))
-sys.path.append(mod_path)
+# Appending parser_path to the system path os required to be able
+# to find the CYMDISTWritter model from this directory
+script_path = os.path.dirname(os.path.realpath(__file__))
+parser_path = os.path.abspath(os.path.join(script_path, '..', 'parser'))
+sys.path.append(parser_path)
 
 import CYMDISTWritter as cymwritter
 
 BUILDINGS_PATH = ''
-XSD_PATH = os.path.join(root_path, 'utilities', 'CYMDISTModelDescription.xsd')
-XML_INPUT_PATH = os.path.join(root_path, 'utilities', 'CYMDISTModelDescription.xml')
-INPUT_FILE_PATH = os.path.join(root_path, 'utilities', 'CYMDIST.inp')
-MOT_PATH = os.path.join(root_path, 'utilities', 'CYMDISTModelicaTemplate.mo')
-MOST_PATH = os.path.join(root_path, 'utilities', 'CYMDISTModelicaTemplate.mos')
+utilities_path = os.path.abspath(os.path.join(script_path, '..', 'parser', 'utilities'))
+XSD_PATH = os.path.join(utilities_path, 'CYMDISTModelDescription.xsd')
+XML_INPUT_PATH = os.path.join(utilities_path, 'CYMDISTModelDescription.xml')
+INPUT_FILE_PATH = os.path.join(utilities_path, 'CYMDIST.inp')
+MOT_PATH = os.path.join(utilities_path, 'CYMDISTModelicaTemplate.mo')
+MOST_PATH = os.path.join(utilities_path, 'CYMDISTModelicaTemplate.mos')
 
 CYMDIST_T = cymwritter.CYMDISTWritter(INPUT_FILE_PATH,
                                       XML_INPUT_PATH,
@@ -85,10 +88,10 @@ class Tester(unittest.TestCase):
 
         # Check if file is the same as the reference.
         assert(filecmp.cmp
-               ('CYMDIST.mo', os.path.join(root_path, 'utilities',
-                                           'CYMDIST_ref.mo'))), \
-            'Printed file is different'\
-            ' from reference CYMDIST_ref.mo.'
+               ('CYMDIST.mo', 
+                os.path.join(utilities_path, 'CYMDIST_ref.mo'))), \
+                'Printed file is different' + \
+                ' from reference CYMDIST_ref.mo.'
 
     @unittest.skip("Skipping running FMU checker")
     def test_fmucheker_cyder_fmus(self):

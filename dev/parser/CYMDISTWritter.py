@@ -33,11 +33,19 @@ log.getLogger().addHandler(stderrLogger)
 # XSD_SCHEMA: Schema used to validate the XML input
 # CYMDISTModelicaTemplate_MO: Template used to write Modelica model
 # CYMDISTModelicaTemplate_MOS: Template used to write mos script
-XSD_SCHEMA = 'utilities/CYMDISTModelDescription.xsd'
+XSD_SCHEMA = 'CYMDISTModelDescription.xsd'
 NEEDSEXECUTIONTOOL = 'needsExecutionTool'
 MODELDESCRIPTION = 'modelDescription.xml'
-CYMDISTModelicaTemplate_MO = 'utilities/CYMDISTModelicaTemplate.mo'
-CYMDISTModelicaTemplate_MOS = 'utilities/CYMDISTModelicaTemplate.mos'
+CYMDISTModelicaTemplate_MO = 'CYMDISTModelicaTemplate.mo'
+CYMDISTModelicaTemplate_MOS = 'CYMDISTModelicaTemplate.mos'
+
+# Get the path to the templates files
+script_path = os.path.dirname(os.path.realpath(__file__))
+utilities_path=os.path.join(script_path, 'utilities')
+MO_TEMPLATE_PATH = os.path.join(utilities_path, CYMDISTModelicaTemplate_MO)
+MOS_TEMPLATE_PATH = os.path.join(utilities_path, CYMDISTModelicaTemplate_MOS)
+XSD_FILE_PATH = os.path.join(utilities_path, XSD_SCHEMA)
+
 #########################################
 # # TEST FILES TO BE PROVIDED BY THE USER
 if platform.system() == 'Linux':
@@ -50,7 +58,7 @@ else:
     # BUILDINGS_PATH='Z:\\Ubuntu\proj\\buildings_library\\models\\modelica\\git\\buildings\\modelica-buildings'
 XML_INPUT_PATH = 'HL0004.xml'
 INPUT_FILE_PATH = 'HL0004.sxst'
-FMUS_PATH = os.path.join('..', 'fmus', 'win32', 'Dymola', 'CYMDIST')
+
 #########################################
 
 
@@ -58,95 +66,78 @@ def main():
     """Illustrate how to export CYMDIST as an FMU.
 
     """
+    import argparse
+    
+    # Configure the argument parser
+    parser = argparse.ArgumentParser(description='Export CYMDIST as an FMU for model exchange 2.0.')
+    cymdist_group = parser.add_argument_group("Required arguments to export CYMDIST as an FMU")
 
+    cymdist_group.add_argument("-g", "--grid-model-path", required=True,
+                        help="Path to the Grid model")
+    cymdist_group.add_argument('-i', "--input-file-path", required=True,
+                        help="Path to the input model")
+    cymdist_group.add_argument("-b", "--buildings-lib-path", required=True,
+                        help='Path to the Buildings library, e.g. c:\\test\\xxx\\modelica-buildings')
+    cymdist_group.add_argument("-r", "--write-results",
+                        type=int,
+                        help='Flag for writing results. 1 for writing, 0 else. Default is 0.')
+
+    # Parse the arguments
+    args = parser.parse_args()
+        
     # Set defaults for command-line options.
-    ret_val = -1
-    grid_file_path = None
-    input_file_path = None
-    buildings_path = None
-    mo_template_path = CYMDISTModelicaTemplate_MO
-    mos_template_path = CYMDISTModelicaTemplate_MOS
-    xsd_file_path = XSD_SCHEMA
+    grid_model_path = args.grid_model_path
+    input_file_path = args.input_file_path
+    buildings_lib_path = args.buildings_lib_path
     write_results = 0
-    #
-    # Get command-line options.
-    lastIdx = len(sys.argv) - 1
-    currIdx = 1
-    while(currIdx < lastIdx):
-        currArg = sys.argv[currIdx]
-        if(currArg.startswith('-g')):
-            currIdx += 1
-            grid_file_path = sys.argv[currIdx]
-            log.info(
-                'Setting CYMDIST grid model path to {' + grid_file_path + '}')
-        elif(currArg.startswith('-i')):
-            currIdx += 1
-            input_file_path = sys.argv[currIdx]
-            log.info(
-                'Setting CYMDIST XML input path to {' + input_file_path + '}')
-        elif(currArg.startswith('-b')):
-            currIdx += 1
-            buildings_path = sys.argv[currIdx]
-            log.info(
-                'Setting Modelica Buildings path to {' + buildings_path + '}')
-        elif(currArg.startswith('-m')):
-            currIdx += 1
-            mo_template_path = sys.argv[currIdx]
-            log.info(
-                'Setting Modelica template path to {' + mo_template_path + '}')
-        elif(currArg.startswith('-s')):
-            currIdx += 1
-            mos_template_path = sys.argv[currIdx]
-            log.info(
-                'Setting Modelica script template path to {' + mos_template_path + '}')
-        elif(currArg.startswith('-x')):
-            currIdx += 1
-            xsd_file_path = sys.argv[currIdx]
-            log.info('Setting XSD validator path to {' + xsd_file_path + '}')
-        elif(currArg.startswith('-r')):
-            currIdx += 1
-            write_results = int(sys.argv[currIdx])
-            log.info(
-                'Setting Flag for writing results to {' + str(write_results) + '}')
-        else:
-            quit_with_error('Bad command-line option {' + currArg + '}', True)
-            # Here, processed option at {currIdx}.
-        currIdx += 1
-
-    if(grid_file_path is None):
-        quit_with_error('Missing required input, <path-to-grid-file>', True)
-    if(buildings_path is None):
-        quit_with_error(
-            'Missing required input, <path-to-Buildings-file>', True)
+    
+    # Check if any errors
+    if(grid_model_path is None):
+        log.error('Missing required input, <path-to-grid-model>')
+        parser.print_help()
+        sys.exit(1)
+    if(buildings_lib_path is None):
+        log.error('Missing required input, <path-to-buildings-lib>')
+        parser.print_help()
+        sys.exit(1)
     if(input_file_path is None):
-        quit_with_error('Missing required input, <path-to-input-file>', True)
-
-    CYMDIST = CYMDISTWritter(grid_file_path,
+        log.error('Missing required input, <path-to-input-file>')
+        parser.print_help()
+        sys.exit(1)
+    CYMDIST = CYMDISTWritter(grid_model_path,
                              input_file_path,
-                             buildings_path,
-                             mo_template_path,
-                             mos_template_path,
-                             xsd_file_path,
+                             buildings_lib_path,
+                             MO_TEMPLATE_PATH,
+                             MOS_TEMPLATE_PATH, 
+                             XSD_FILE_PATH,
                              write_results)
+    retVal = -1
     ret_val = CYMDIST.print_mo()
-    if(ret_val != 0):
-        quit_with_error(
-            'Could not print the CYMDIST Modelica model. Error in print_mo()', True)
+    if(ret_val!= 0):
+        log.error(
+            'Could not print the CYMDIST Modelica model. Error in print_mo()')
+        parser.print_help()
+        sys.exit(1)
     ret_val = -1
     ret_val = CYMDIST.generate_fmu()
     if(ret_val != 0):
-        quit_with_error(
-            'Could not generate the CYMDIST FMU. Error in generate_fmu()', True)
+        log.error(
+            'Could not generate the CYMDIST FMU. Error in generate_fmu()')
+        parser.print_help()
+        sys.exit(1)
     ret_val = -1
     ret_val = CYMDIST.clean_temporary()
     if(ret_val != 0):
-        quit_with_error(
-            'Could not clean temporary files. Error in clean_temporary()', True)
+        log.error(
+            'Could not clean temporary files. Error in clean_temporary()')
+        parser.print_help()
+        sys.exit(1)
     ret_val = -1
     ret_val = CYMDIST.rewrite_fmu()
     if(ret_val != 0):
-        quit_with_error('Could not rewrite CYMDIST FMU. Error in fmu()', True)
-
+        log.error('Could not rewrite CYMDIST FMU. Error in rewrite_fmu()')
+        parser.print_help()
+        sys.exit(1)
 
 def print_cmd_line_usage():
     """ Print command line usage.
@@ -407,6 +398,13 @@ class CYMDISTWritter(object):
         fmi_version = root.attrib.get('fmiVersion')
         # Get the model name to write the .mo file
         self.model_name = root.attrib.get('modelName')
+        
+        # Remove Invalid characterss from the model name as this is used 
+        # by the Modelica model and the FMU
+        log.info('Invalid characters will be removed from the '
+                 'model name  ' + self.model_name + '.')
+        self.model_name = sanitize_name(self.model_name)
+        log.info('The new model name is ' + self.model_name + '.')
 
         # Assert if version is different from FMI 2.0
         assert (not(fmi_version is '2.0')), 'The FMI version 2.0 \
@@ -414,12 +412,15 @@ class CYMDISTWritter(object):
 
         # Iterate through the XML file and get the ModelVariables.
         input_variable_names = []
+        modelica_input_variable_names = []
         # modelicaInputVariableNames = []
         output_variable_names = []
+        modelica_concat_output_variable_names = []
         output_device_names = []
         concat_output_variable_names = []
         parameter_variable_values = []
         parameter_variable_names = []
+        modelica_parameter_variable_names = []
         # modelicaParameterVariableNames = []
         # Parameters used to write annotations.
         inpY1 = 88
@@ -439,7 +440,7 @@ class CYMDISTWritter(object):
                     element.attrib.get('causality').lower()
                 # Iterate through children of ScalarVariables and get
                 # attributes
-                scalar_variable['name'] = name
+                #scalar_variable['name'] = name
                 for subelement in element:
                     vartype = subelement.tag
                     vartype_low = vartype.lower()
@@ -461,11 +462,18 @@ class CYMDISTWritter(object):
                         output_device_names.append(devName)
                         log.info('The output name ' + name + ' will be concatenated '
                                  'with the device name ' + devName + ' to be unique.')
-                        scalar_variable['name'] = name + '_' + devName
-                        concat_output_variable_names.append(
-                            scalar_variable['name'])
-                        log.info('The new output name is ' +
-                                 scalar_variable['name'] + '.')
+                        new_name = name + '_' + devName
+                        log.info('The new output name is ' + new_name + '.')
+                        
+                        log.info('Invalid characters will be removed from the '
+                         'concatenated output variable name ' + new_name + '.')
+                        new_name = sanitize_name(new_name)
+                        log.info('The new concatenated output variable name is ' \
+                                 + new_name + '.')
+                        modelica_concat_output_variable_names.append(new_name)
+                        scalar_variable['name'] = new_name
+                        #concat_output_variable_names.append(scalar_variable['name'])
+                        
                     if ((start is None) and ((causality == 'input')
                                              or causality == 'parameter')):
                         # Set the start value of input and parameter to zero.
@@ -489,6 +497,14 @@ class CYMDISTWritter(object):
                     scalar_variable['causality'] = causality
                     if (causality == 'input'):
                         input_variable_names.append(name)
+                        log.info('Invalid characters will be removed from the '
+                         'input variable name ' + name + '.')
+                        new_name = sanitize_name(name)
+                        log.info('The new input variable name is ' \
+                                 + new_name + '.')
+                        modelica_input_variable_names.append(new_name)
+                        scalar_variable['name'] = new_name
+                        
                         inpY1 = inpY1 - indel
                         inpY2 = inpY2 - indel
                         scalar_variable['annotation'] = (' annotation'
@@ -510,6 +526,13 @@ class CYMDISTWritter(object):
                                                          + '}})))')
                     if (causality == 'parameter'):
                         parameter_variable_names.append(name)
+                        log.info('Invalid characters will be removed from the '
+                         'parameter variable name ' + name + '.')
+                        new_name = sanitize_name(name)
+                        log.info('The new parameter variable name is ' \
+                                 + new_name + '.')
+                        modelica_parameter_variable_names.append(new_name)
+                        scalar_variable['name'] = new_name
                         parameter_variable_values.append(start)
                     scalar_variable['vartype'] = vartype
                     scalar_variable['unit'] = unit
@@ -517,10 +540,11 @@ class CYMDISTWritter(object):
                         scalar_variable['start'] = start
                 scalar_variables.append(scalar_variable)
             # perform some checks on variables to avoid name clashes
-            # before returning the variables to Modelica
-            for i in [input_variable_names,
-                      concat_output_variable_names,
-                      parameter_variable_names]:
+            # before returning the variables to Modelica            
+            log.info('Check for duplicates in input, output and parameter variable names')
+            for i in [modelica_input_variable_names,
+                      modelica_concat_output_variable_names,
+                      modelica_parameter_variable_names]:
                 check_duplicates(i)
 
             # Write success.
@@ -528,7 +552,9 @@ class CYMDISTWritter(object):
             return scalar_variables, input_variable_names, \
                 output_variable_names, concat_output_variable_names, \
                 output_device_names, parameter_variable_names, \
-                parameter_variable_values
+                parameter_variable_values, modelica_input_variable_names, \
+                modelica_concat_output_variable_names, \
+                modelica_parameter_variable_names
 
     def print_mo(self):
         """Print the Modelica model of a CYMDIST XML file.
@@ -548,7 +574,10 @@ class CYMDISTWritter(object):
             concat_output_variable_names, \
             output_device_names, \
             parameter_variable_names, \
-            parameter_variable_values = self.xml_parser()
+            parameter_variable_values, \
+            modelica_input_variable_names, \
+            modelica_concat_output_variable_names, \
+            modelica_parameter_variable_names = self.xml_parser()
 
         loader = jja2.FileSystemLoader(self.moT_path)
         env = jja2.Environment(loader=loader)
@@ -564,7 +593,10 @@ class CYMDISTWritter(object):
                                      concat_output_variable_names=concat_output_variable_names,
                                      output_device_names=output_device_names,
                                      parameter_variable_names=parameter_variable_names,
-                                     parameter_variable_values=parameter_variable_values)
+                                     parameter_variable_values=parameter_variable_values,
+                                     modelica_input_variable_names=modelica_input_variable_names,
+                                     modelica_concat_output_variable_names=modelica_concat_output_variable_names,
+                                     modelica_parameter_variable_names=modelica_parameter_variable_names)
         # Write results in mo file which has the same name as the class name
         output_file = self.model_name + '.mo'
         if os.path.isfile(output_file):
