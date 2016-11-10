@@ -15,7 +15,6 @@ import logging as log
 import subprocess as sp
 import os
 import sys
-import platform
 import shutil
 import zipfile
 import re
@@ -48,17 +47,8 @@ XSD_FILE_PATH = os.path.join(utilities_path, XSD_SCHEMA)
 
 #########################################
 # # TEST FILES TO BE PROVIDED BY THE USER
-if platform.system() == 'Linux':
-    # Buildings path on the Linux Desktop
-    BUILDINGS_PATH = '/home/thierry/Desktop/vmWareLinux/proj/buildings_library/models/modelica/git/buildings/modelica-buildings'
-else:
-    # Buildings path on the Windows Notebook
-    BUILDINGS_PATH = 'Z:\\thierry\\proj\\buildings_library\\models\\modelica\\git\master\\modelica-buildings'
-    # Buildings path on the Windows Desktop
-    # BUILDINGS_PATH='Z:\\Ubuntu\proj\\buildings_library\\models\\modelica\\git\\buildings\\modelica-buildings'
 XML_INPUT_PATH = 'HL0004.xml'
 INPUT_FILE_PATH = 'HL0004.sxst'
-
 #########################################
 
 
@@ -69,13 +59,14 @@ def main():
     import argparse
     
     # Configure the argument parser
-    parser = argparse.ArgumentParser(description='Export CYMDIST as an FMU for model exchange 2.0.')
+    parser = argparse.ArgumentParser(description='Export CYMDIST as a Functional Mock-up Unit'\
+                                      ' (FMU) for model exchange 2.0.')
     cymdist_group = parser.add_argument_group("Required arguments to export CYMDIST as an FMU")
 
     cymdist_group.add_argument("-g", "--grid-model-path", required=True,
                         help="Path to the Grid model")
     cymdist_group.add_argument('-i', "--input-file-path", required=True,
-                        help="Path to the input model")
+                        help="Path to the input file")
     cymdist_group.add_argument("-b", "--buildings-lib-path", required=True,
                         help='Path to the Buildings library, e.g. c:\\test\\xxx\\modelica-buildings')
     cymdist_group.add_argument("-r", "--write-results",
@@ -147,14 +138,11 @@ def print_cmd_line_usage():
     print('USAGE:', os.path.basename(__file__),
           '-g <path-to-grid-file>  [-i <path-to-input-file>]'
           ' [-b] <path-to-Buildings-file> [-x] <path-to-xsd-file>')
-    print('-- Export a CYMDIST model as a Functional Mockup Unit (FMU) for Model Exchange 2.0')
+    print('-- Export a CYMDIST model as a Functional Mockup Unit (FMU) for model exchange 2.0')
     print('-- Input -g, Path to the grid model (required).')
     print('-- Input -i, Path to the input file (required).')
     print('-- Input -b, Path to the Buildings library (required).')
-    print('-- Option -m, Path to the Modelica template file. Optional if run from the parser installation folder.')
-    print('-- Option -s, Path to the Modelica script template file. Optional if run from the parser installation folder.')
-    print('-- Option -x, Path to the XSD file. Optional if run from the parser installation folder.')
-    print('-- Option -r, Flag to write results. 0 if results should not be written, 1 else. Default is 0.')
+    print('-- Option -r, Flag for writing results. 0 if results should not be written, 1 else. Default is 0.')
 
 
 def quit_with_error(messageStr, showCmdLine):
