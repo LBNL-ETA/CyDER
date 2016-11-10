@@ -5,11 +5,11 @@
 Usage of CYMDIST as an FMU
 =============================
 
-The following items must be observed to import an FMU that contains CYMDIST:
+The following requirements must be met to import an run FMU that contains CYMDIST:
 
-1. ``Python 3.4`` must be installed.
+1. Python 3.4 must be installed.
 
-2. ``CYME`` version 7.2 must be installed. CYME can be downloaded from `www.cyme.com <https://www.cyme.com>`_.
+2. CYME version 7.2 must be installed. CYME can be downloaded from `www.cyme.com <https://www.cyme.com>`_.
 
 3. The CYMDIST Python API scripts directory must be added to the ``PYTHONPATH``.
 
@@ -30,6 +30,8 @@ To add the CYMDIST Python API scripts folder to the ``PYTHONPATH``:
 
 4. The ``cymdist`` utility folder must be added to the ``PYTHONPATH``. The ``cymdist`` utility folder can be found in the distribution of CYMDISTPy. It is in ``dev/cymdist``. 
 To complete your set-up, add the folder ``dev\cymdist`` to the ``PYTHONPATH``.
+
+5. The Python 3.4 installation folder (e.g. ``C:\Python34`` ) must be added to the ``PYTHONPATH``.
 
 
 
