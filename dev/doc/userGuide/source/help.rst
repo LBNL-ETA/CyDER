@@ -51,9 +51,9 @@ To compile :term:`PyFMI` from source, run
 
 .. code-block:: none
 
-  python setup.py install –fmil-home=path_to_FMI_Library/
+  python setup.py install –fmil-home=path_to_FMI_Library\
 
-where ``path_to_FMI_Library/`` is the path to the FMI library.
+where ``path_to_FMI_Library\`` is the path to the FMI library.
 
 
 

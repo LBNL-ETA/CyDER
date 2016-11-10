@@ -12,7 +12,7 @@ The following requirements must be met to import an run FMU that contains CYMDIS
 2. CYME version 7.2 must be installed. CYME can be downloaded from `www.cyme.com <https://www.cyme.com>`_.
 
 3. The ``cymdist`` functions folder must be added to the ``PYTHONPATH``. 
-   The ``cymdist`` functions folder can be found in the distribution of CYMDISTPy. It is in ``dev/cymdist``. 
+   The ``cymdist`` functions folder can be found in the distribution of CYMDISTPy. It is in ``dev\cymdist``. 
 
    To add the ``cymdist`` functions folder to the ``PYTHONPATH``:
 
@@ -22,7 +22,7 @@ The following requirements must be met to import an run FMU that contains CYMDIS
      
    - Click Environment Variables. In the section System Variables, find a variable named ``PYTHONPATH`` environment variable and select it. If the variable does not exist, create it. Click Edit. 
      
-   - In the Edit System Variable (or New System Variable) window, specify the value of the PYTHONPATH environment variable which should be in our case be ``dev/cymdist``. 
+   - In the Edit System Variable (or New System Variable) window, specify the value of the PYTHONPATH environment variable which should be in our case be ``dev\cymdist``. 
 
 4. The CYMDIST Python API scripts directory must be added to the ``PYTHONPATH``.
 
@@ -32,6 +32,9 @@ The following requirements must be met to import an run FMU that contains CYMDIS
  Note that ``cympy`` is not included in the name of the variable.   
      
 5. The Python 3.4 installation folder (e.g. ``C:\Python34`` ) must be added to the ``PYTHONPATH``.
+
+6. Upon request, the simulation results are saved in a result file which is created in the current working directory. 
+   The name of the result file is ``xxx_result_.pickle``, where xxx is the FMU model name as defined in the XML input file.
 
 
 

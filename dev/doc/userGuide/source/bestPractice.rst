@@ -42,8 +42,6 @@ To parametrize the ``ScalarVariable`` as an output variable, the user needs to
   - define the type of variable (Currently only ``Real`` variables are supported) (Line 21)
   - give the unit of the variable (Currently only valid Modelica units are supported) (Line 22)
   - give the name of the output device (Line 24)
-
-
    
 .. note:: 
    
