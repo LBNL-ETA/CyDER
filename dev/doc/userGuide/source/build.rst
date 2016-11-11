@@ -34,11 +34,7 @@ An example of invoking ``CYMDISTWritter.py`` on Windows is
 .. code-block:: none
 
   # Windows:
-  > python  parser\CYMDISTWritter.py  \
-    -g C:\grid\test.sxst  \  
-    -i test.xml  \  
-    -b modelica-buildings
-
+  > python parser\CYMDISTWritter.py -g C:\test.sxst -i test.xml -b modelica-buildings
 
 All file paths can be absolute or relative.
 For readability, the rest of these instructions omit the paths to the script and input files.
@@ -54,17 +50,18 @@ Script ``CYMDISTWritter.py`` supports the following command-line switches:
 +----------------------------------------------------+----------------------------------------------------------+
 | -i <input-file-path>                               | Path to the input file (required)                        |
 +----------------------------------------------------+----------------------------------------------------------+
-| -b <buildings-lib-path>                            | Path to the Buildings library (required)                 |
+| -b <buildings-lib-path>                            | Path to the Buildings library (**required** if not       |
+|                                                    | on the ``MODELICAPATH``                                  |
 +----------------------------------------------------+----------------------------------------------------------+
 | -r <write-results>                                 | Flag for writing results.                                |
-|                                                    | 0 if results should not be written, 1 else. Default is 0.|
+|                                                    | 0 if results should not be written, 1 else. Default is 0 |
 +----------------------------------------------------+----------------------------------------------------------+
 
 The main functions of CYMDISTPy are
 
  - reading, validating, and parsing the CYMDIST XML input file. 
-   This includes removing and replacing invalid characters in variable names such as ``*,+`` with ``_``,
- - writing Modelica code with valid input and outputs,
+   This includes removing and replacing invalid characters in variable names such as ``*+-`` with ``_``,
+ - writing Modelica code with valid inputs and outputs names,
  - invoking Dymola to compile the Modelica code as an FMU for model exchange 2.0.
 
 .. note:: 
