@@ -98,32 +98,28 @@
   <div class="section" id="creating-an-fmu">
 <span id="build"></span><h1>4. Creating an FMU<a class="headerlink" href="#creating-an-fmu" title="Permalink to this headline">¶</a></h1>
 <p>This chapter describes how to create a Functional Mockup Unit, starting from a CYMDIST model description input file.
-It assumes you have followed the <a class="reference internal" href="installation.html"><span class="doc">Installation and Configuration</span></a> instructions, and that you have created the CYMDIST model description file  following the <a class="reference internal" href="bestPractice.html"><span class="doc">Best Practice</span></a> guidelines.</p>
+It assumes you have followed the <a class="reference internal" href="installation.html"><span class="doc">Installation and Configuration</span></a> instructions, and that you have created the CYMDIST
+model description file  following the <a class="reference internal" href="bestPractice.html"><span class="doc">Best Practice</span></a> guidelines.</p>
 <div class="section" id="command-line-use">
 <h2>4.1. Command-line use<a class="headerlink" href="#command-line-use" title="Permalink to this headline">¶</a></h2>
 <p>To create an FMU,
 open a command-line window (see <a class="reference internal" href="notation.html"><span class="doc">Notation</span></a>).
 The standard invocation of the CYMDISTPy tool is:</p>
 <div class="highlight-none"><div class="highlight"><pre><span></span>&gt; python  &lt;scriptDir&gt;CYMDISTWritter.py  \
-  -g &lt;path-to-grid-model-file&gt;  \
-  -i &lt;path-to-input-file&gt; -b &lt;path-to-buildings-lib-file&gt; \
-  -m &lt;path-to-modelica-template-file&gt; \
-  -s &lt;path-to-modelica-script-template-file&gt; -x &lt;path-to-xsd-file&gt; \
-  -r &lt;flag-to-write-results&gt;
+  -g &lt;grid-model-path&gt;  \
+  -i &lt;input-file-path&gt; \
+  -b &lt;buildings-lib-path&gt; \
+  -r &lt;write-results&gt;
 </pre></div>
 </div>
 <p>where <code class="docutils literal"><span class="pre">scriptDir</span></code> is the path to the scripts directory of CYMDISTPy.
-This is the <code class="docutils literal"><span class="pre">parser/</span></code> subdirectory of the installation directory.
+This is the <code class="docutils literal"><span class="pre">parser</span></code> subdirectory of the installation directory.
 See <a class="reference internal" href="installation.html"><span class="doc">Installation and Configuration</span></a> for details.</p>
-<p>If <code class="docutils literal"><span class="pre">CYMDISTWritter.py</span></code> is run from within <code class="docutils literal"><span class="pre">scriptDir</span></code> then only the required arguments are needed
-as shown in the following example:</p>
+<p>An example of invoking <code class="docutils literal"><span class="pre">CYMDISTWritter.py</span></code> on Windows is</p>
 <div class="highlight-none"><div class="highlight"><pre><span></span># Windows:
-&gt; python  CYMDISTWritter.py  -g C:\grid\test.sxst  -i test.xml  -b modelica-buildings
+&gt; python parser\CYMDISTWritter.py -g C:\test.sxst -i test.xml -b modelica-buildings
 </pre></div>
 </div>
-<p>where <code class="docutils literal"><span class="pre">scriptDir</span></code> is the path to the scripts directory of CYMDISTPy.
-Typically this is the <code class="docutils literal"><span class="pre">parser/</span></code> subdirectory of the installation directory.
-See <a class="reference internal" href="installation.html"><span class="doc">Installation and Configuration</span></a> for details.</p>
 <p>All file paths can be absolute or relative.
 For readability, the rest of these instructions omit the paths to the script and input files.</p>
 <div class="admonition note">
@@ -142,41 +138,28 @@ For readability, the rest of these instructions omit the paths to the script and
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>-g &lt;path-to-grid-model-file&gt;</td>
-<td>Path to the grid model (required).</td>
+<tr class="row-even"><td>-g &lt;grid-model-path&gt;</td>
+<td>Path to the grid model (required)</td>
 </tr>
-<tr class="row-odd"><td>-i &lt;path-to-input-file&gt;</td>
-<td>Path to the input file (required).</td>
+<tr class="row-odd"><td>-i &lt;input-file-path&gt;</td>
+<td>Path to the input file (required)</td>
 </tr>
-<tr class="row-even"><td>-b &lt;path-to-buildings-lib-file&gt;</td>
-<td>Path to the Buildings library (required).</td>
+<tr class="row-even"><td>-b &lt;buildings-lib-path&gt;</td>
+<td>Path to the Buildings library (<strong>required</strong> if not
+on the <code class="docutils literal"><span class="pre">MODELICAPATH</span></code></td>
 </tr>
-<tr class="row-odd"><td>-m &lt;path-to-modelica-template-file&gt;</td>
-<td>Path to the Modelica template file
-This file is in the <code class="docutils literal"><span class="pre">scriptDir</span></code>. If the script is
-run for the <code class="docutils literal"><span class="pre">scriptDir</span></code> then this file is not required.</td>
-</tr>
-<tr class="row-even"><td>-s &lt;path-to-modelica-script-template-file&gt;</td>
-<td>Path to the Modelica script template file
-This file is in the <code class="docutils literal"><span class="pre">scriptDir</span></code>. If the script is
-run for the <code class="docutils literal"><span class="pre">scriptDir</span></code> then this file is not required.</td>
-</tr>
-<tr class="row-odd"><td>-x &lt;path-to-xsd-file&gt;</td>
-<td>Path to the <code class="docutils literal"><span class="pre">XSD</span></code> validator file.
-This file is in the <code class="docutils literal"><span class="pre">scriptDir</span></code>. If the script is
-run for the <code class="docutils literal"><span class="pre">scriptDir</span></code> then this file is not required.</td>
-</tr>
-<tr class="row-even"><td>-r &lt;flag-to-write-results&gt;</td>
-<td>Flag to write results.
-0 if results should not be written, 1 else. Default is 0.</td>
+<tr class="row-odd"><td>-r &lt;write-results&gt;</td>
+<td>Flag for writing results.
+0 if results should not be written, 1 else. Default is 0</td>
 </tr>
 </tbody>
 </table>
 <p>The main functions of CYMDISTPy are</p>
 <blockquote>
 <div><ul class="simple">
-<li>reading, validating, andparsing the CYMDIST XML input file,</li>
-<li>writing Modelica code with input and outputs,</li>
+<li>reading, validating, and parsing the CYMDIST XML input file.
+This includes removing and replacing invalid characters in variable names such as <code class="docutils literal"><span class="pre">*+-</span></code> with <code class="docutils literal"><span class="pre">_</span></code>,</li>
+<li>writing Modelica code with valid inputs and outputs names,</li>
 <li>invoking Dymola to compile the Modelica code as an FMU for model exchange 2.0.</li>
 </ul>
 </div></blockquote>
