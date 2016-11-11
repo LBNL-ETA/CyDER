@@ -67,7 +67,7 @@ def main():
                         help="Path to the Grid model")
     cymdist_group.add_argument('-i', "--input-file-path", required=True,
                         help="Path to the input file")
-    cymdist_group.add_argument("-b", "--buildings-lib-path", required=True,
+    cymdist_group.add_argument("-b", "--buildings-lib-path",
                         help='Path to the Buildings library, e.g. c:\\test\\xxx\\modelica-buildings')
     cymdist_group.add_argument("-r", "--write-results",
                         type=int,
@@ -79,7 +79,15 @@ def main():
     # Set defaults for command-line options.
     grid_model_path = args.grid_model_path
     input_file_path = args.input_file_path
+
     buildings_lib_path = args.buildings_lib_path
+    if (buildings_lib_path is None):
+        log.info('The path to the Buildings library was not provided.')
+        log.info('Start searching the MODELICAPATH to see if it is defined.')
+        buildings_lib_path = os.environ.get('MODELICAPATH')
+        if (buildings_lib_path is None):
+            log.error('The path to the Buildings library was neither'
+                      +' provided nor found on the MODELICAPATH.')
     write_results = 0
     
     # Check if any errors
@@ -138,11 +146,13 @@ def print_cmd_line_usage():
     print('USAGE:', os.path.basename(__file__),
           '-g <path-to-grid-file>  [-i <path-to-input-file>]'
           ' [-b] <path-to-Buildings-file> [-x] <path-to-xsd-file>')
-    print('-- Export a CYMDIST model as a Functional Mockup Unit (FMU) for model exchange 2.0')
+    print('-- Export a CYMDIST model as a Functional Mockup Unit' + \
+          ' (FMU) for model exchange 2.0')
     print('-- Input -g, Path to the grid model (required).')
     print('-- Input -i, Path to the input file (required).')
     print('-- Input -b, Path to the Buildings library (required).')
-    print('-- Option -r, Flag for writing results. 0 if results should not be written, 1 else. Default is 0.')
+    print('-- Option -r, Flag for writing results. 0 if results'+ \
+          ' should not be written, 1 else. Default is 0.')
 
 
 def quit_with_error(messageStr, showCmdLine):
