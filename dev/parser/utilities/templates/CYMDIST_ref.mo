@@ -18,7 +18,7 @@ model CYMDIST
     "Second output" annotation(Placement(transformation(extent={{100,16},{120,36}})));
  
 protected   
-  parameter String inputFileName=Modelica.Utilities.Files.loadResource("Z:\thierry\proj\cyder_repo\cyder\dev\parser\utilities\CYMDIST.inp") 
+  parameter String inputFileName=Modelica.Utilities.Files.loadResource("Z:\thierry\proj\cyder_repo\cyder\dev\parser\utilities\templates\CYMDIST.inp") 
     "Name of the CYMDIST input file";
   parameter Integer resWri=0 
     "Flag for enabling results writing. 1: write results, 0: else";

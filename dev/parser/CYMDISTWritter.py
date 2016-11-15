@@ -625,8 +625,13 @@ class CYMDISTWritter(object):
         """
 
         # Set the Modelica path to point to the Buildings Library
-        os.environ['MODELICAPATH'] = self.buildings_path  \
-                                   + ';' + os.environ.get('MODELICAPATH')
+        modelica_path=os.environ.get('MODELICAPATH')
+        if (modelica_path is None):
+            os.environ['MODELICAPATH'] = self.buildings_path  
+        else:
+            os.environ['MODELICAPATH'] = self.buildings_path  \
+                + ';' + os.environ.get('MODELICAPATH')
+                                       
         
         loader = jja2.FileSystemLoader(self.mosT_path)
         env = jja2.Environment(loader=loader)
