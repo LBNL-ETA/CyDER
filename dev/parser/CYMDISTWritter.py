@@ -40,9 +40,7 @@ CYMDISTModelicaTemplate_MOS = 'CYMDISTModelicaTemplate.mos'
 
 # Get the path to the templates files
 script_path = os.path.dirname(os.path.realpath(__file__))
-utilities_path = os.path.join(script_path, 'utilities', 'templates')
-BUILDINGS_LIB_PATH = os.path.join(script_path, 'utilities', 
-                                'libraries', 'modelica-buildings')
+utilities_path=os.path.join(script_path, 'utilities')
 MO_TEMPLATE_PATH = os.path.join(utilities_path, CYMDISTModelicaTemplate_MO)
 MOS_TEMPLATE_PATH = os.path.join(utilities_path, CYMDISTModelicaTemplate_MOS)
 XSD_FILE_PATH = os.path.join(utilities_path, XSD_SCHEMA)
@@ -69,8 +67,8 @@ def main():
                         help="Path to the Grid model")
     cymdist_group.add_argument('-i', "--input-file-path", required=True,
                         help="Path to the input file")
-#     cymdist_group.add_argument("-b", "--buildings-lib-path",
-#                         help='Path to the Buildings library, e.g. c:\\test\\xxx\\modelica-buildings')
+    cymdist_group.add_argument("-b", "--buildings-lib-path",
+                        help='Path to the Buildings library, e.g. c:\\test\\xxx\\modelica-buildings')
     cymdist_group.add_argument("-r", "--write-results",
                         type=int,
                         help='Flag for writing results. 1 for writing, 0 else. Default is 0.')
@@ -81,14 +79,15 @@ def main():
     # Set defaults for command-line options.
     grid_model_path = args.grid_model_path
     input_file_path = args.input_file_path
-#     BUILDINGS_LIB_PATH = args.buildings_lib_path
-#     if (BUILDINGS_LIB_PATH is None):
-#         log.info('The path to the Buildings library was not provided.')
-#         log.info('Start searching the MODELICAPATH to see if it is defined.')
-#         BUILDINGS_LIB_PATH = os.environ.get('MODELICAPATH')
-#         if (BUILDINGS_LIB_PATH is None):
-#             log.error('The path to the Buildings library was neither'
-#                       +' provided nor found on the MODELICAPATH.')
+
+    buildings_lib_path = args.buildings_lib_path
+    if (buildings_lib_path is None):
+        log.info('The path to the Buildings library was not provided.')
+        log.info('Start searching the MODELICAPATH to see if it is defined.')
+        buildings_lib_path = os.environ.get('MODELICAPATH')
+        if (buildings_lib_path is None):
+            log.error('The path to the Buildings library was neither'
+                      +' provided nor found on the MODELICAPATH.')
     write_results = 0
     
     # Check if any errors
@@ -96,17 +95,17 @@ def main():
         log.error('Missing required input, <path-to-grid-model>')
         parser.print_help()
         sys.exit(1)
-#     if(BUILDINGS_LIB_PATH is None):
-#         log.error('Missing required input, <path-to-buildings-lib>')
-#         parser.print_help()
-#         sys.exit(1)
+    if(buildings_lib_path is None):
+        log.error('Missing required input, <path-to-buildings-lib>')
+        parser.print_help()
+        sys.exit(1)
     if(input_file_path is None):
         log.error('Missing required input, <path-to-input-file>')
         parser.print_help()
         sys.exit(1)
     CYMDIST = CYMDISTWritter(grid_model_path,
                              input_file_path,
-                             BUILDINGS_LIB_PATH,
+                             buildings_lib_path,
                              MO_TEMPLATE_PATH,
                              MOS_TEMPLATE_PATH, 
                              XSD_FILE_PATH,
@@ -151,7 +150,7 @@ def print_cmd_line_usage():
           ' (FMU) for model exchange 2.0')
     print('-- Input -g, Path to the grid model (required).')
     print('-- Input -i, Path to the input file (required).')
-#     print('-- Input -b, Path to the Buildings library (required).')
+    print('-- Input -b, Path to the Buildings library (required).')
     print('-- Option -r, Flag for writing results. 0 if results'+ \
           ' should not be written, 1 else. Default is 0.')
 
@@ -172,6 +171,7 @@ def quit_with_error(messageStr, showCmdLine):
 
     if(showCmdLine):
         print(print_cmd_line_usage())
+
     sys.exit(1)
 
 
@@ -625,14 +625,8 @@ class CYMDISTWritter(object):
         """
 
         # Set the Modelica path to point to the Buildings Library
-        modelica_path=os.environ.get('MODELICAPATH')
-        if (modelica_path is None):
-            os.environ['MODELICAPATH'] = self.buildings_path  
-        else:
-            os.environ['MODELICAPATH'] = self.buildings_path  \
-                + ';' + os.environ.get('MODELICAPATH')
-                                       
-        
+        os.environ['MODELICAPATH'] = self.buildings_path
+
         loader = jja2.FileSystemLoader(self.mosT_path)
         env = jja2.Environment(loader=loader)
         template = env.get_template('')

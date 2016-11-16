@@ -22,6 +22,7 @@ The standard invocation of the CYMDISTPy tool is:
   > python  <scriptDir>CYMDISTWritter.py  \
     -g <grid-model-path>  \
     -i <input-file-path> \
+    -b <buildings-lib-path> \
     -r <write-results>
 
 where ``scriptDir`` is the path to the scripts directory of CYMDISTPy.
@@ -33,7 +34,7 @@ An example of invoking ``CYMDISTWritter.py`` on Windows is
 .. code-block:: none
 
   # Windows:
-  > python  parser\CYMDISTWritter.py  -g  C:\test.sxst  -i  test.xml 
+  > python parser\CYMDISTWritter.py -g C:\test.sxst -i test.xml -b modelica-buildings
 
 All file paths can be absolute or relative.
 For readability, the rest of these instructions omit the paths to the script and input files.
@@ -48,6 +49,9 @@ Script ``CYMDISTWritter.py`` supports the following command-line switches:
 | -g <grid-model-path>                               | Path to the grid model (required)                        |
 +----------------------------------------------------+----------------------------------------------------------+
 | -i <input-file-path>                               | Path to the input file (required)                        |
++----------------------------------------------------+----------------------------------------------------------+
+| -b <buildings-lib-path>                            | Path to the Buildings library (**required** if not       |
+|                                                    | on the ``MODELICAPATH``                                  |
 +----------------------------------------------------+----------------------------------------------------------+
 | -r <write-results>                                 | Flag for writing results.                                |
 |                                                    | 0 if results should not be written, 1 else. Default is 0 |
@@ -69,7 +73,7 @@ The main functions of CYMDISTPy are
 Output
 ^^^^^^
 
-The main output from running ``CYMDISTWritter.py`` consists of an FMU, named after the ``modelName`` specified in the input file.
+The main output from running ``CYMDISTWritter.py`` consists of an FMU, named after the modelName specified in the input file.
 The FMU is written to the current working directory, that is, in the directory from which you entered the command.
 
 The FMU is complete and self-contained.

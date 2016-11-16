@@ -108,6 +108,7 @@ The standard invocation of the CYMDISTPy tool is:</p>
 <div class="highlight-none"><div class="highlight"><pre><span></span>&gt; python  &lt;scriptDir&gt;CYMDISTWritter.py  \
   -g &lt;grid-model-path&gt;  \
   -i &lt;input-file-path&gt; \
+  -b &lt;buildings-lib-path&gt; \
   -r &lt;write-results&gt;
 </pre></div>
 </div>
@@ -116,7 +117,7 @@ This is the <code class="docutils literal"><span class="pre">parser</span></code
 See <a class="reference internal" href="installation.html"><span class="doc">Installation and Configuration</span></a> for details.</p>
 <p>An example of invoking <code class="docutils literal"><span class="pre">CYMDISTWritter.py</span></code> on Windows is</p>
 <div class="highlight-none"><div class="highlight"><pre><span></span># Windows:
-&gt; python  parser\CYMDISTWritter.py  -g  C:\test.sxst  -i  test.xml
+&gt; python parser\CYMDISTWritter.py -g C:\test.sxst -i test.xml -b modelica-buildings
 </pre></div>
 </div>
 <p>All file paths can be absolute or relative.
@@ -143,7 +144,11 @@ For readability, the rest of these instructions omit the paths to the script and
 <tr class="row-odd"><td>-i &lt;input-file-path&gt;</td>
 <td>Path to the input file (required)</td>
 </tr>
-<tr class="row-even"><td>-r &lt;write-results&gt;</td>
+<tr class="row-even"><td>-b &lt;buildings-lib-path&gt;</td>
+<td>Path to the Buildings library (<strong>required</strong> if not
+on the <code class="docutils literal"><span class="pre">MODELICAPATH</span></code></td>
+</tr>
+<tr class="row-odd"><td>-r &lt;write-results&gt;</td>
 <td>Flag for writing results.
 0 if results should not be written, 1 else. Default is 0</td>
 </tr>
@@ -167,7 +172,7 @@ This is currently not supported by default in Dymola.</p>
 </div>
 <div class="section" id="output">
 <h2>4.2. Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
-<p>The main output from running <code class="docutils literal"><span class="pre">CYMDISTWritter.py</span></code> consists of an FMU, named after the <code class="docutils literal"><span class="pre">modelName</span></code> specified in the input file.
+<p>The main output from running <code class="docutils literal"><span class="pre">CYMDISTWritter.py</span></code> consists of an FMU, named after the modelName specified in the input file.
 The FMU is written to the current working directory, that is, in the directory from which you entered the command.</p>
 <p>The FMU is complete and self-contained.
 Any secondary output from running the CYMDISTPy tools can be deleted safely.</p>
