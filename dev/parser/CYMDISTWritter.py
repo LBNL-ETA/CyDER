@@ -72,7 +72,7 @@ def main():
                         help='Path to the Buildings library, e.g. c:\\test\\xxx\\modelica-buildings')
     cymdist_group.add_argument("-r", "--write-results",
                         type=int,
-                        help='Flag for writing results. 1 for writing, 0 else. Default is 0.')
+                        help='Flag for writing results. 1 for writing, 0 else. Default is 0')
 
     # Parse the arguments
     args = parser.parse_args()
@@ -154,11 +154,11 @@ def print_cmd_line_usage():
           ' [-b] <path-to-Buildings-file> [-x] <path-to-xsd-file>')
     print('-- Export a CYMDIST model as a Functional Mockup Unit' + \
           ' (FMU) for model exchange 2.0')
-    print('-- Input -g, Path to the grid model (required).')
-    print('-- Input -i, Path to the input file (required).')
-    print('-- Input -b, Path to the Buildings library (required).')
+    print('-- Input -g, Path to the grid model (required)')
+    print('-- Input -i, Path to the input file (required)')
+    print('-- Input -b, Path to the Buildings library')
     print('-- Option -r, Flag for writing results. 0 if results'+ \
-          ' should not be written, 1 else. Default is 0.')
+          ' should not be written, 1 else. Default is 0')
 
 
 def quit_with_error(messageStr, showCmdLine):
