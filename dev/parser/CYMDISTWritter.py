@@ -9,6 +9,7 @@ Created on Oct 7, 2016
 '''
 
 from lxml import etree
+from datetime import datetime
 import xml.etree.ElementTree as ET
 import jinja2 as jja2
 import logging as log
@@ -110,6 +111,7 @@ def main():
                              MOS_TEMPLATE_PATH, 
                              XSD_FILE_PATH,
                              write_results)
+    start = datetime.now()
     retVal = -1
     ret_val = CYMDIST.print_mo()
     if(ret_val!= 0):
@@ -137,6 +139,10 @@ def main():
         log.error('Could not rewrite CYMDIST FMU. Error in rewrite_fmu()')
         parser.print_help()
         sys.exit(1)
+    end = datetime.now()
+    
+    log.info('Export CYMDIST as an FMU in ' +
+          str((end - start).total_seconds()) + ' seconds.')
 
 def print_cmd_line_usage():
     """ Print command line usage.
@@ -643,7 +649,7 @@ class CYMDISTWritter(object):
         fh.close()
 
         # Call Dymola to generate the FMUs
-        sp.call(['dymola', output_file])
+        sp.call(['dymola', output_file, '/nowindow'])
 
         # Define name of the FMU
         fmu_name = self.model_name + '.fmu'
