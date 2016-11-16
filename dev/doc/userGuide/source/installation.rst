@@ -35,7 +35,7 @@ To export CYMDIST as an FMU, CYMDISTPy needs:
 CYMDISTPy has been tested with:
 
 
-- Buildings Library version 4.0.0
+- Buildings Library version 4.0.0 (Can be downloaded from `here <http://simulationresearch.lbl.gov/modelica/download.html>`_)
 - Dymola 2017 (Modelica Parser)
 - Microsoft Visual Studio 10 Professional (Includes C-Compiler for cython and Modelica)
 
