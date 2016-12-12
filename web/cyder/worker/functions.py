@@ -361,7 +361,7 @@ def get_distance(devices):
 
 
 def get_unbalanced_line(devices):
-    """This function requires the get_voltage function has been called before
+    """This function requires the get_voltage function has been called before.
 
     Args:
         devices (DataFrame): list of all the devices to include
@@ -388,7 +388,7 @@ def get_unbalanced_line(devices):
 
 
 def get_upmu_data(inputdt, upmu_path):
-    """ Retrieves instantaneous P, Q, and voltage magnitude for specified datetime.
+    """Retrieves instantaneous P, Q, and voltage magnitude for specified datetime.
 
     Args:
         inputdt (datetime): timezone aware datetime object
@@ -398,7 +398,6 @@ def get_upmu_data(inputdt, upmu_path):
          'units': ('kW', 'kVAR'),
          'VMAG_A': , 'VMAG_B': , 'VMAG_C': }
     """
-
     bc = btrdb.HTTPConnection("miranda.cs.berkeley.edu")
     ur = btrdb.UUIDResolver("miranda.cs.berkeley.edu", "uuidresolver", "uuidpass", "upmu")
 
