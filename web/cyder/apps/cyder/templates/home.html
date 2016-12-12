@@ -14,6 +14,13 @@
 
 <div class="text-center">
   <p>The CyDER project is really fun!</p>
+  <p>We have {{nb_model}} distribution models in the database so far :)</p>
+
+  <br>
+  
+  {% for name in filename %}
+    <p>{{ name }}</p>
+  {% endfor %}
 </div>
 
 {% endblock content %}

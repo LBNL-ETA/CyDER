@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Item
+from .models import Model
 from redis import Redis
 
 
@@ -7,9 +7,7 @@ redis = Redis(host='redis', port=6379)
 
 
 def home(request):
-    if request.method == 'POST':
-        Item.objects.create(text=request.POST['item_text'])
-        return redirect('/')
-    items = Item.objects.all()
-    counter = redis.incr('counter')
-    return render(request, 'home.html', {'items': items, 'counter': counter})
+    model = Model.objects.all()
+    nb_model = len(model)
+    model_filenames = [m.filename for m in model]
+    return render(request, 'home.html', {'nb_model': nb_model, 'filename': model_filenames})
