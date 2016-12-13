@@ -52,7 +52,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
 )
 
-ROOT_URLCONF = 'cyder.urls'
+ROOT_URLCONF = 'docker_django.urls'
 
 TEMPLATES = [
     {
@@ -70,7 +70,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'cyder.wsgi.application'
+WSGI_APPLICATION = 'docker_django.wsgi.application'
 
 
 # Database

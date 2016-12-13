@@ -12,5 +12,5 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^', include('cyder.apps.cyder.urls')),
+    url(r'^', include('docker_django.apps.cyder.urls')),
 ]
