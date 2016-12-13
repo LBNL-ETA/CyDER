@@ -3,7 +3,8 @@ web:
   build: ./web
   expose:
     - "8000"
-    - "8001"
+  ports:
+    - "81:81"
   links:
     - postgres:postgres
     - redis:redis
