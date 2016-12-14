@@ -1,7 +1,10 @@
 {% extends "_base.html" %}
-
-
 {% block content %}
+
+<head>
+  <script src="https://maps.googleapis.com/maps/api/js"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
 
 <div class="text-center">
   {% load staticfiles %}
@@ -13,14 +16,79 @@
 <br>
 
 <div class="text-center">
-  <p>The CyDER project is really fun!</p>
-  <p>We have {{nb_model}} distribution models in the database so far :)</p>
-
+  <h1><b>CyDER</b></h1>
+  <p>Check out our coverage of the electric distribution systems in California :)</p>
   <br>
-  
-  {% for name in filename %}
-    <p>{{ name }}</p>
-  {% endfor %}
 </div>
+
+<div id="locations-map" style="width: 70%; height: 500px; margin: 0 auto;"></div>
+
+<br>
+
+<script type="text/javascript">
+var url = base_url + 'api/home/get';
+var data
+d3.json(url, function (json) {
+  // Save data in global scope
+  data = json
+
+  // Create google coodinate objects
+  data.models.forEach(function(d) {
+    d.LatLng = new google.maps.LatLng(parseFloat(d.lat), parseFloat(d.lon));
+  });
+
+  // Create the map :)
+  var map = initMap();
+
+  // Function to initialize the map
+  function initMap() {
+      // create bounds, which will extend to cover all location markers
+      var bound = new google.maps.LatLngBounds();
+      data.models.forEach(function(d) {
+          bound.extend(d['LatLng']);
+      });
+      var map = new google.maps.Map(document.getElementById('locations-map'), {
+          // center the map at the center of all the markers
+          // the style and control types are copied from the trips page map
+          center: bound.getCenter(),
+          mapTypeId: google.maps.MapTypeId.TERRAIN,
+          panControl: true,
+          scrollwheel: false,
+          mapTypeControl: false,
+          panControlOptions: {
+              position: google.maps.ControlPosition.RIGHT_CENTER
+          },
+          zoomControl: true,
+          zoomControlOptions: {
+              style: google.maps.ZoomControlStyle.LARGE,
+              position: google.maps.ControlPosition.RIGHT_CENTER
+          },
+          scaleControl: true,
+          streetViewControl: false,
+          zoom: 1 // overridden with map.fitBounds below
+      });
+      map.fitBounds(bound);
+
+      data.models.forEach(function(d) {
+        var marker = new google.maps.Marker({
+          position: d.LatLng,
+          map: map,
+          description: "<p>region: " + d.region + "</p>" + "<p> last updated: never </p>",
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+         var infowindow = new google.maps.InfoWindow({
+           content: marker.description,
+         });
+         infowindow.open(map, marker);
+        });
+
+      });
+
+      return map; // return the map to be used later
+  }
+
+});
+</script>
 
 {% endblock content %}
