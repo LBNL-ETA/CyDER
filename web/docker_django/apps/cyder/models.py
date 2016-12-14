@@ -5,10 +5,14 @@ from django.contrib.auth.models import User
 class Model(models.Model):
     """docstring for Model."""
     filename = models.CharField(max_length=50, null=True, blank=True)
-    north_lat = models.FloatField(null=True, blank=True)
-    south_lat = models.FloatField(null=True, blank=True)
-    north_lon = models.FloatField(null=True, blank=True)
-    south_lon = models.FloatField(null=True, blank=True)
+    lat = models.FloatField(null=True, blank=True)
+    lon = models.FloatField(null=True, blank=True)
+    breaker_name = models.CharField(max_length=50, null=True, blank=True)
+    city = models.CharField(max_length=50, null=True, blank=True)
+    area = models.CharField(max_length=50, null=True, blank=True)
+    region = models.CharField(max_length=50, null=True, blank=True)
+    zip_code = models.CharField(max_length=50, null=True, blank=True)
+    version = models.CharField(max_length=50, null=True, blank=True)
     upmu_location = models.CharField(max_length=50, null=True, blank=True)
 
 
