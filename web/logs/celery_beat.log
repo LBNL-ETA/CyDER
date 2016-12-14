@@ -1,0 +1,183 @@
+celery beat v3.1.16 (Cipater) is starting.
+__    -    ... __   -        _
+Configuration ->
+    . broker -> redis://redis:6379/0
+    . loader -> celery.loaders.app.AppLoader
+    . scheduler -> celery.beat.PersistentScheduler
+    . db -> celerybeat-schedule
+    . logfile -> [stderr]@%INFO
+    . maxinterval -> now (0s)
+
+worker: Warm shutdown (MainProcess)
+ 
+ -------------- celery@878bd261e7b7 v3.1.16 (Cipater)
+---- **** ----- 
+--- * ***  * -- Linux-4.4.27-boot2docker-x86_64-with-debian-8.6
+-- * - **** --- 
+- ** ---------- [config]
+- ** ---------- .> app:         cyder:0x7f39df8d6490
+- ** ---------- .> transport:   redis://redis:6379/0
+- ** ---------- .> results:     redis://redis:6379/0
+- *** --- * --- .> concurrency: 1 (prefork)
+-- ******* ---- 
+--- ***** ----- [queues]
+ -------------- .> web_framework    exchange=web_framework(direct) key=web_framework
+                
+
+[2016-12-14 05:34:15,300: INFO/MainProcess] beat: Starting...
+/usr/local/lib/python2.7/site-packages/celery/platforms.py:766: RuntimeWarning: You are running the worker with superuser privileges, which is
+absolutely not recommended!
+
+Please specify a different user using the -u option.
+
+User information: uid=0 euid=0 gid=0 egid=0
+
+  uid=uid, euid=euid, gid=gid, egid=egid,
+
+/usr/local/lib/python2.7/site-packages/celery/fixups/django.py:254: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+
+[2016-12-14 05:34:16,667: WARNING/MainProcess] /usr/local/lib/python2.7/site-packages/celery/fixups/django.py:254: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+
+[2016-12-14 05:34:16,668: WARNING/MainProcess] celery@878bd261e7b7 ready.
+[2016-12-14 05:34:26,493: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:35:26,514: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+celery beat v3.1.16 (Cipater) is starting.
+__    -    ... __   -        _
+Configuration ->
+    . broker -> redis://redis:6379/0
+    . loader -> celery.loaders.app.AppLoader
+    . scheduler -> celery.beat.PersistentScheduler
+    . db -> celerybeat-schedule
+    . logfile -> [stderr]@%INFO
+    . maxinterval -> now (0s)
+
+worker: Warm shutdown (MainProcess)
+ 
+ -------------- celery@878bd261e7b7 v3.1.16 (Cipater)
+---- **** ----- 
+--- * ***  * -- Linux-4.4.27-boot2docker-x86_64-with-debian-8.6
+-- * - **** --- 
+- ** ---------- [config]
+- ** ---------- .> app:         cyder:0x7fc88f83c490
+- ** ---------- .> transport:   redis://redis:6379/0
+- ** ---------- .> results:     redis://redis:6379/0
+- *** --- * --- .> concurrency: 1 (prefork)
+-- ******* ---- 
+--- ***** ----- [queues]
+ -------------- .> web_framework    exchange=web_framework(direct) key=web_framework
+                
+
+[2016-12-14 05:36:32,158: INFO/MainProcess] beat: Starting...
+[2016-12-14 05:36:32,284: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+/usr/local/lib/python2.7/site-packages/celery/platforms.py:766: RuntimeWarning: You are running the worker with superuser privileges, which is
+absolutely not recommended!
+
+Please specify a different user using the -u option.
+
+User information: uid=0 euid=0 gid=0 egid=0
+
+  uid=uid, euid=euid, gid=gid, egid=egid,
+
+/usr/local/lib/python2.7/site-packages/celery/fixups/django.py:254: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+
+[2016-12-14 05:36:33,583: WARNING/MainProcess] /usr/local/lib/python2.7/site-packages/celery/fixups/django.py:254: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+
+[2016-12-14 05:36:33,584: WARNING/MainProcess] celery@878bd261e7b7 ready.
+[2016-12-14 05:37:32,358: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:38:32,392: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:39:32,395: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:40:32,428: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:41:32,481: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:42:32,533: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:43:32,586: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:44:32,638: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:45:32,639: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:46:32,689: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:47:32,698: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:48:32,750: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:49:32,807: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:50:32,862: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:51:32,915: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:52:32,969: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:53:33,023: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:54:33,050: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:55:33,104: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:56:33,139: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:57:33,192: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:58:33,243: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+[2016-12-14 05:59:33,278: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (test)
+celery beat v3.1.16 (Cipater) is starting.
+__    -    ... __   -        _
+Configuration ->
+    . broker -> redis://redis:6379/0
+    . loader -> celery.loaders.app.AppLoader
+    . scheduler -> celery.beat.PersistentScheduler
+    . db -> celerybeat-schedule
+    . logfile -> [stderr]@%INFO
+    . maxinterval -> now (0s)
+
+worker: Warm shutdown (MainProcess)
+ 
+ -------------- celery@878bd261e7b7 v3.1.16 (Cipater)
+---- **** ----- 
+--- * ***  * -- Linux-4.4.27-boot2docker-x86_64-with-debian-8.6
+-- * - **** --- 
+- ** ---------- [config]
+- ** ---------- .> app:         cyder:0x7fe1e2edc490
+- ** ---------- .> transport:   redis://redis:6379/0
+- ** ---------- .> results:     redis://redis:6379/0
+- *** --- * --- .> concurrency: 1 (prefork)
+-- ******* ---- 
+--- ***** ----- [queues]
+ -------------- .> web_framework    exchange=web_framework(direct) key=web_framework
+                
+
+[2016-12-14 05:59:44,229: INFO/MainProcess] beat: Starting...
+/usr/local/lib/python2.7/site-packages/celery/platforms.py:766: RuntimeWarning: You are running the worker with superuser privileges, which is
+absolutely not recommended!
+
+Please specify a different user using the -u option.
+
+User information: uid=0 euid=0 gid=0 egid=0
+
+  uid=uid, euid=euid, gid=gid, egid=egid,
+
+/usr/local/lib/python2.7/site-packages/celery/fixups/django.py:254: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+
+[2016-12-14 05:59:45,729: WARNING/MainProcess] /usr/local/lib/python2.7/site-packages/celery/fixups/django.py:254: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+
+[2016-12-14 05:59:45,730: WARNING/MainProcess] celery@878bd261e7b7 ready.
+[2016-12-14 06:00:33,313: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (docker_django.apps.cyder.periodic_tasks.test)
+[2016-12-14 06:01:33,358: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (docker_django.apps.cyder.periodic_tasks.test)
+[2016-12-14 06:02:33,402: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (docker_django.apps.cyder.periodic_tasks.test)
+[2016-12-14 06:03:33,458: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (docker_django.apps.cyder.periodic_tasks.test)
+[2016-12-14 06:04:33,512: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (docker_django.apps.cyder.periodic_tasks.test)
+[2016-12-14 06:05:33,563: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (docker_django.apps.cyder.periodic_tasks.test)
+[2016-12-14 06:06:33,583: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (docker_django.apps.cyder.periodic_tasks.test)
+[2016-12-14 06:07:33,637: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (docker_django.apps.cyder.periodic_tasks.test)
+[2016-12-14 06:08:33,689: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (docker_django.apps.cyder.periodic_tasks.test)
+[2016-12-14 06:09:12,005: INFO/MainProcess] beat: Starting...
+/usr/local/lib/python2.7/site-packages/celery/platforms.py:766: RuntimeWarning: You are running the worker with superuser privileges, which is
+absolutely not recommended!
+
+Please specify a different user using the -u option.
+
+User information: uid=0 euid=0 gid=0 egid=0
+
+  uid=uid, euid=euid, gid=gid, egid=egid,
+
+[2016-12-14 06:09:12,087: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (docker_django.apps.cyder.periodic_tasks.test)
+/usr/local/lib/python2.7/site-packages/celery/fixups/django.py:254: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+
+[2016-12-14 06:09:13,171: WARNING/MainProcess] /usr/local/lib/python2.7/site-packages/celery/fixups/django.py:254: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+
+[2016-12-14 06:09:13,172: WARNING/MainProcess] celery@878bd261e7b7 ready.
+[2016-12-14 06:10:12,153: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (docker_django.apps.cyder.periodic_tasks.test)

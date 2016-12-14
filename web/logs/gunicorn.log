@@ -1,0 +1,66 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+[2016-12-14 04:34:52 +0000] [11] [INFO] Starting gunicorn 19.3.0
+[2016-12-14 04:34:52 +0000] [11] [INFO] Listening at: http://0.0.0.0:8000 (11)
+[2016-12-14 04:34:52 +0000] [11] [INFO] Using worker: sync
+[2016-12-14 04:34:52 +0000] [25] [INFO] Booting worker with pid: 25
+[2016-12-14 04:34:52 +0000] [26] [INFO] Booting worker with pid: 26
+bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+[2016-12-14 04:43:08 +0000] [11] [INFO] Starting gunicorn 19.3.0
+[2016-12-14 04:43:08 +0000] [11] [INFO] Listening at: http://0.0.0.0:8000 (11)
+[2016-12-14 04:43:08 +0000] [11] [INFO] Using worker: sync
+[2016-12-14 04:43:08 +0000] [25] [INFO] Booting worker with pid: 25
+[2016-12-14 04:43:08 +0000] [26] [INFO] Booting worker with pid: 26
+bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+[2016-12-14 04:52:07 +0000] [11] [INFO] Starting gunicorn 19.3.0
+[2016-12-14 04:52:07 +0000] [11] [INFO] Listening at: http://0.0.0.0:8000 (11)
+[2016-12-14 04:52:07 +0000] [11] [INFO] Using worker: sync
+[2016-12-14 04:52:07 +0000] [25] [INFO] Booting worker with pid: 25
+[2016-12-14 04:52:07 +0000] [26] [INFO] Booting worker with pid: 26
+bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+[2016-12-14 05:11:43 +0000] [11] [INFO] Starting gunicorn 19.3.0
+[2016-12-14 05:11:43 +0000] [11] [INFO] Listening at: http://0.0.0.0:8000 (11)
+[2016-12-14 05:11:43 +0000] [11] [INFO] Using worker: sync
+[2016-12-14 05:11:43 +0000] [25] [INFO] Booting worker with pid: 25
+[2016-12-14 05:11:43 +0000] [26] [INFO] Booting worker with pid: 26
+bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+[2016-12-14 05:27:23 +0000] [11] [INFO] Starting gunicorn 19.3.0
+[2016-12-14 05:27:23 +0000] [11] [INFO] Listening at: http://0.0.0.0:8000 (11)
+[2016-12-14 05:27:23 +0000] [11] [INFO] Using worker: sync
+[2016-12-14 05:27:23 +0000] [25] [INFO] Booting worker with pid: 25
+[2016-12-14 05:27:23 +0000] [26] [INFO] Booting worker with pid: 26
+[2016-12-14 05:34:10 +0000] [11] [INFO] Handling signal: term
+[2016-12-14 05:34:10 +0000] [25] [INFO] Worker exiting (pid: 25)
+[2016-12-14 05:34:10 +0000] [26] [INFO] Worker exiting (pid: 26)
+[2016-12-14 05:34:10 +0000] [11] [INFO] Shutting down: Master
+bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+[2016-12-14 05:34:13 +0000] [39] [INFO] Starting gunicorn 19.3.0
+[2016-12-14 05:34:13 +0000] [39] [INFO] Listening at: http://0.0.0.0:8000 (39)
+[2016-12-14 05:34:13 +0000] [39] [INFO] Using worker: sync
+[2016-12-14 05:34:13 +0000] [49] [INFO] Booting worker with pid: 49
+[2016-12-14 05:34:13 +0000] [52] [INFO] Booting worker with pid: 52
+[2016-12-14 05:36:24 +0000] [39] [INFO] Handling signal: term
+[2016-12-14 05:36:24 +0000] [49] [INFO] Worker exiting (pid: 49)
+[2016-12-14 05:36:24 +0000] [52] [INFO] Worker exiting (pid: 52)
+[2016-12-14 05:36:25 +0000] [39] [INFO] Shutting down: Master
+bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+[2016-12-14 05:36:28 +0000] [72] [INFO] Starting gunicorn 19.3.0
+[2016-12-14 05:36:28 +0000] [72] [INFO] Listening at: http://0.0.0.0:8000 (72)
+[2016-12-14 05:36:28 +0000] [72] [INFO] Using worker: sync
+[2016-12-14 05:36:28 +0000] [81] [INFO] Booting worker with pid: 81
+[2016-12-14 05:36:28 +0000] [82] [INFO] Booting worker with pid: 82
+[2016-12-14 05:59:39 +0000] [72] [INFO] Handling signal: term
+[2016-12-14 05:59:39 +0000] [81] [INFO] Worker exiting (pid: 81)
+[2016-12-14 05:59:39 +0000] [82] [INFO] Worker exiting (pid: 82)
+[2016-12-14 05:59:39 +0000] [72] [INFO] Shutting down: Master
+bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+[2016-12-14 05:59:42 +0000] [141] [INFO] Starting gunicorn 19.3.0
+[2016-12-14 05:59:42 +0000] [141] [INFO] Listening at: http://0.0.0.0:8000 (141)
+[2016-12-14 05:59:42 +0000] [141] [INFO] Using worker: sync
+[2016-12-14 05:59:42 +0000] [150] [INFO] Booting worker with pid: 150
+[2016-12-14 05:59:42 +0000] [154] [INFO] Booting worker with pid: 154
+bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+[2016-12-14 06:09:09 +0000] [11] [INFO] Starting gunicorn 19.3.0
+[2016-12-14 06:09:09 +0000] [11] [INFO] Listening at: http://0.0.0.0:8000 (11)
+[2016-12-14 06:09:09 +0000] [11] [INFO] Using worker: sync
+[2016-12-14 06:09:09 +0000] [25] [INFO] Booting worker with pid: 25
+[2016-12-14 06:09:09 +0000] [26] [INFO] Booting worker with pid: 26

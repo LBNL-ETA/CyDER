@@ -7,3 +7,5 @@ __pycache__
 .venv
 .cache
 *.pyc
+celerybeat.pid
+celerybeat-schedule
