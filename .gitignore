@@ -10,3 +10,5 @@ __pycache__
 celerybeat.pid
 celerybeat-schedule
 **/logs
+celery_beat.log
+gunicorn.log

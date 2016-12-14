@@ -95,3 +95,9 @@ User information: uid=0 euid=0 gid=0 egid=0
 [2016-12-14 19:48:31,415: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (docker_django.apps.cyder.periodic_tasks.test)
 [2016-12-14 19:48:31,418: INFO/MainProcess] Received task: docker_django.apps.cyder.periodic_tasks.test[c73b0e2f-aee5-4726-a6ff-45eb821b659a]
 [2016-12-14 19:48:31,421: INFO/MainProcess] Task docker_django.apps.cyder.periodic_tasks.test[c73b0e2f-aee5-4726-a6ff-45eb821b659a] succeeded in 0.00142968099681s: True
+[2016-12-14 19:49:31,467: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (docker_django.apps.cyder.periodic_tasks.test)
+[2016-12-14 19:49:31,470: INFO/MainProcess] Received task: docker_django.apps.cyder.periodic_tasks.test[e9c346a4-6079-497a-aaf7-41f5ecbf2205]
+[2016-12-14 19:49:31,483: INFO/MainProcess] Task docker_django.apps.cyder.periodic_tasks.test[e9c346a4-6079-497a-aaf7-41f5ecbf2205] succeeded in 0.0114889840188s: True
+[2016-12-14 19:50:31,521: INFO/MainProcess] Scheduler: Sending due task write_a_new_file (docker_django.apps.cyder.periodic_tasks.test)
+[2016-12-14 19:50:31,525: INFO/MainProcess] Received task: docker_django.apps.cyder.periodic_tasks.test[e9dbc65f-9589-4de7-bf31-5da6fd9c222d]
+[2016-12-14 19:50:31,534: INFO/MainProcess] Task docker_django.apps.cyder.periodic_tasks.test[e9dbc65f-9589-4de7-bf31-5da6fd9c222d] succeeded in 0.00780936802039s: True
