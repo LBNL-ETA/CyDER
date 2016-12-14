@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from celery.schedules import crontab
-from docker_django.celery_beat_schedule import return_CELERYBEAT_SCHEDULE, return_CELERYBEAT_ROUTES
+from docker_django.config.celery_beat_schedule import return_CELERYBEAT_SCHEDULE, return_CELERYBEAT_ROUTES
 from datetime import timedelta
 
 # Celery settings

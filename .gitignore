@@ -9,3 +9,4 @@ __pycache__
 *.pyc
 celerybeat.pid
 celerybeat-schedule
+**/logs
