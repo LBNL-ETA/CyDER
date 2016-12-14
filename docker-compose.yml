@@ -13,7 +13,7 @@ web:
   env_file: .env
   environment:
     DEBUG: 'true'
-  command: bash gunicorn_start.sh
+  command: bash web_container_start.sh
 
 nginx:
   restart: always
