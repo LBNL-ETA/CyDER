@@ -73,7 +73,8 @@ d3.json(url, function (json) {
         var marker = new google.maps.Marker({
           position: d.LatLng,
           map: map,
-          description: "<p>region: " + d.region + "</p>" + "<p> last updated: never </p>",
+          description: "<p>region: " + d.region + "</p>" + "<p> last calibrated: never </p>" +
+                       "<a href=" + base_url + 'api/model/get/' + String(d.id) + ">more details</a>",
         });
 
         google.maps.event.addListener(marker, 'click', function() {

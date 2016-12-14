@@ -15,3 +15,8 @@ def home_info(request):
     return_dict['models'] = list(Model.objects.all().values())
     return_dict['nb_model'] = len(return_dict['models'])
     return JsonResponse(return_dict)
+
+def model_info(request, id):
+    return_dict = {}
+    return_dict['models'] = list(Model.objects.filter(id=id).values())[0]
+    return JsonResponse(return_dict)
