@@ -3,7 +3,8 @@ web:
   build: ./web
   expose:
     - "8000"
-    - "8001"
+  ports:
+    - "81:81"
   links:
     - postgres:postgres
     - redis:redis
@@ -12,7 +13,7 @@ web:
   env_file: .env
   environment:
     DEBUG: 'true'
-  command: bash gunicorn_start.sh
+  command: bash web_container_start.sh
 
 nginx:
   restart: always
