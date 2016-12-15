@@ -1,0 +1,44 @@
+{% extends "_base.html" %}
+{% block content %}
+
+<div style="max-width: 400px; margin: 0 auto;">
+  <div class="text-center">
+    <br>
+    <img src="http://sdtimes.com/wp-content/uploads/2015/11/logo.png">
+    <br>
+  </div>
+
+  <br>
+
+  <div class="text-center">
+    <h1><b>CyDER</b></h1>
+    <p>Distribution grid model:</p>
+  </div>
+
+  <div style="text-align:left;">
+    <ul style="list-style-position: inside;">
+      <li>Id: {{ id }}</li>
+      <li>Region: {{ region }}</li>
+      <li>Area: {{ area }}</li>
+      <li>City: {{ city }}</li>
+      <li>Latitude: {{ lat }}</li>
+      <li>Longitude: {{ lon }}</li>
+      <li>Filename: {{ filename }}</li>
+      <li>Breaker name: {{ breaker_name }}</li>
+    </ul>
+  </div>
+
+  <br>
+
+  <div class="text-center">
+    <p>Last calibrations:</p>
+  </div>
+
+  <div style="text-align:left;">
+    <ul style="list-style-position: inside;">
+      <li>Never</li>
+    </ul>
+  </div>
+</div>
+
+{% endblock content %}

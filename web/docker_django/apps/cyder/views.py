@@ -20,3 +20,7 @@ def model_info(request, id):
     return_dict = {}
     return_dict['models'] = list(Model.objects.filter(id=id).values())[0]
     return JsonResponse(return_dict)
+
+def model(request, id):
+    return_dict = list(Model.objects.filter(id=id).values())[0]
+    return render(request, 'model.html', return_dict)
