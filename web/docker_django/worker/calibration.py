@@ -22,7 +22,18 @@ import datetime
 
 # Get data from upmu
 query_date = datetime.datetime.now() + datetime.timedelta(hours=1)
-udata = functions.get_upmu_data(query_date, '/LBNL/grizzly_bus1/')
+# udata = functions.get_upmu_data(query_date, '/LBNL/grizzly_bus1/')
+# Retrieve microPMU data at t
+udata = {'VMAG_A': 7287.4208984375,
+         'VMAG_B': 7299.921875,
+         'VMAG_C': 7318.2822265625,
+         'P_A': 7272.5364248477308,
+         'P_B': 2118.3817519608633,
+         'P_C': 6719.1867010705246,
+         'Q_A': -284.19075651498088,
+         'Q_B': -7184.1189935099919,
+         'Q_C': 3564.4269660296022,
+         'units': ('kW', 'kVAR', 'V')}
 print(udata)
 
 # # Run load allocation function to set input values
