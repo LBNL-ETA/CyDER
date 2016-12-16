@@ -22,7 +22,7 @@ import datetime
 
 # Get data from upmu
 query_date = datetime.datetime.now() + datetime.timedelta(hours=1)
-udata = functions.get_upmu_data(query_date, upmu_location)
+udata = functions.get_upmu_data(query_date, '/LBNL/grizzly_bus1/')
 print(udata)
 
 # # Run load allocation function to set input values
