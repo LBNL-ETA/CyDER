@@ -1,7 +1,7 @@
 from __future__ import division
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from .models import Model
+from .models import Model, CalibrationHistory
 from . import tool
 from redis import Redis
 
@@ -17,7 +17,9 @@ def home_info(request):
 
 def model_info(request, id):
     return_dict = {}
-    return_dict['models'] = list(Model.objects.filter(id=id).values())[0]
+    model = Model.objects.filter(id=id)
+    return_dict['model'] = list(model.values())[0]
+    return_dict['history'] = list(CalibrationHistory.objects.filter(model=model[0]).values())
     return JsonResponse(return_dict)
 
 

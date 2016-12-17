@@ -17,14 +17,14 @@
 
   <div style="text-align:left;">
     <ul style="list-style-position: inside;">
-      <li>Id: {{ id }}</li>
-      <li>Region: {{ region }}</li>
-      <li>Area: {{ area }}</li>
-      <li>City: {{ city }}</li>
-      <li>Latitude: {{ lat }}</li>
-      <li>Longitude: {{ lon }}</li>
-      <li>Filename: {{ filename }}</li>
-      <li>Breaker name: {{ breaker_name }}</li>
+      <li>Id: {{ model.id }}</li>
+      <li>Region: {{ model.region }}</li>
+      <li>Area: {{ model.area }}</li>
+      <li>City: {{ model.city }}</li>
+      <li>Latitude: {{ model.lat }}</li>
+      <li>Longitude: {{ model.lon }}</li>
+      <li>Filename: {{ model.filename }}</li>
+      <li>Breaker name: {{ model.breaker_name }}</li>
     </ul>
   </div>
 
@@ -36,7 +36,9 @@
 
   <div style="text-align:left;">
     <ul style="list-style-position: inside;">
-      <li>Never</li>
+      {% for value in history %}
+      <li>date: {{ value.date }} <a href="#">more details</a></li>
+      {% endfor %}
     </ul>
   </div>
 </div>

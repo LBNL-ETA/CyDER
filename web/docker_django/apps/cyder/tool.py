@@ -21,12 +21,12 @@ def get_calibration_data(model_id):
     model_parent_path = ''
     cmd = ('project_cyder/web/docker_django/worker/calibration.py ' +
            model_parent_path + str(model.filename) + ' ' + str(model.upmu_location))
-    output = run_ssh_command(cmd, timeout=timeout)
+    output, status = run_ssh_command(cmd, timeout=timeout)
 
     # Parse ssh output
     if output is not False:
         keys = ['upmu', 'voltages', 'currents']
-        result = parse_ssh_output(output, keys)
+        result = parse_ssh_output(output, keys, status)
     else:
         raise Exception('SSH request to the server took more than ' +
                         str(timeout) + ' seconds')
@@ -64,14 +64,14 @@ def run_ssh_command(cmd, timeout=10):
     for step in range(0, timeout):
         time.sleep(1)
         if ssh.poll() is not None:
-            return ssh.stdout.readlines()
+            return ssh.stdout.readlines(), 'Success'
 
     # The ssh query was longer than timeout duration
     ssh.kill()
-    return False
+    return False, ssh.stderr.readlines()
 
 
-def parse_ssh_output(output, keys):
+def parse_ssh_output(output, keys, status):
     """
     Parse the output of an ssh request.
     Output lenght must be the same as keys lenght.
@@ -79,7 +79,8 @@ def parse_ssh_output(output, keys):
     # Check if the lenght is the same
     if len(output) != len(keys):
         print('#####')
-        print(output)
+        print('output:' + str(output))
+        print('status:' + str(status))
         print('#####')
         raise Exception('The output from the ssh request was not the right lenght')
 

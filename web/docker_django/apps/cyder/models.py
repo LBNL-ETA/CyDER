@@ -16,16 +16,33 @@ class Model(models.Model):
     upmu_location = models.CharField(max_length=50, null=True, blank=True)
 
 
-class Calibration(models.Model):
-    """docstring for Calibration."""
+class CurrentCalibration(models.Model):
+    """docstring for CalibrationData."""
+    model = models.OneToOneField(Model, null=True, blank=True)
+    impedance_a = models.FloatField(null=True, blank=True)
+    impedance_b = models.FloatField(null=True, blank=True)
+    impedance_c = models.FloatField(null=True, blank=True)
+
+
+class CalibrationHistory(models.Model):
+    """docstring for CalibrationHistory"""
+    model = models.ForeignKey(Model, null=True, blank=True)
     date = models.DateTimeField(null=True, blank=True)
-    model_value = models.FloatField(null=True, blank=True)
-    calibration_value = models.FloatField(null=True, blank=True)
     updated = models.BooleanField(default=False)
     calibration_algorithm = models.TextField(null=True, blank=True)
 
+
+class CalibrationResult(models.Model):
+    """docstring for CalibrationData."""
+    calibration = models.OneToOneField(CalibrationHistory, null=True, blank=True)
+    impedance_a = models.FloatField(null=True, blank=True)
+    impedance_b = models.FloatField(null=True, blank=True)
+    impedance_c = models.FloatField(null=True, blank=True)
+
+
 class CalibrationData(models.Model):
     """docstring for CalibrationData."""
+    calibration = models.OneToOneField(CalibrationHistory, null=True, blank=True)
     p_a = models.FloatField(null=True, blank=True)
     p_b = models.FloatField(null=True, blank=True)
     p_c = models.FloatField(null=True, blank=True)

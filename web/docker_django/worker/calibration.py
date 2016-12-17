@@ -21,7 +21,7 @@ except:
 # cympy.study.Open(model_filename)
 
 # # Get data from upmu
-# query_date = datetime.datetime.now() + datetime.timedelta(hours=1)
+# query_date = datetime.datetime.now() - datetime.timedelta(hours=1)
 # udata = functions.get_upmu_data(query_date, '/LBNL/grizzly_bus1/')
 udata = {'VMAG_A': 7287.4208984375,
          'VMAG_B': 7299.921875,

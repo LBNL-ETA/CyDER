@@ -15,9 +15,9 @@ from datetime import timedelta
 
 def return_CELERYBEAT_SCHEDULE():
     CELERYBEAT_SCHEDULE = {
-        'write_a_new_file': {
-            'task': 'docker_django.apps.cyder.periodic_tasks.test',
-            'schedule': timedelta(seconds=60),
+        'calibrate all the models':{
+            'task': 'docker_django.apps.cyder.periodic_tasks.calibrate_models',
+            'schedule': timedelta(hours=12),
         },
     }
     return CELERYBEAT_SCHEDULE
@@ -25,6 +25,6 @@ def return_CELERYBEAT_SCHEDULE():
 
 def return_CELERYBEAT_ROUTES():
     CELERYBEAT_ROUTES = {
-                'docker_django.apps.cyder.periodic_tasks.test': {'queue': 'web_framework'},
+                'docker_django.apps.cyder.periodic_tasks.calibrate_models': {'queue': 'web_framework'},
                 }
     return CELERYBEAT_ROUTES
