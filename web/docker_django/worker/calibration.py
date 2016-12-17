@@ -11,6 +11,7 @@ try:
     parser = argparse.ArgumentParser(description='Option to pick a model')
     parser.add_argument('filename')
     parser.add_argument('upmu_location')
+    args = parser.parse_args()
     model_filename = str(args.filename)
     upmu_location = str(args.upmu_location)
 except:

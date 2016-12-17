@@ -1,5 +1,6 @@
 from __future__ import division
 from .models import Model
+import subprocess
 import time
 import ast
 
@@ -76,7 +77,7 @@ def parse_ssh_output(output, keys):
     Output lenght must be the same as keys lenght.
     """
     # Check if the lenght is the same
-    if len(ouput) != len(keys):
+    if len(output) != len(keys):
         print('#####')
         print(output)
         print('#####')

@@ -2,7 +2,7 @@ from __future__ import division
 from celery import shared_task
 import datetime
 from . import tool
-from .model import Model
+from .models import Model
 
 @shared_task
 def test():
