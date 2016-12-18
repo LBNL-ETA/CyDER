@@ -11,7 +11,16 @@ redis = Redis(host='redis', port=6379)
 
 def home_info(request):
     return_dict = {}
+
+    # Get all information about the models
     return_dict['models'] = list(Model.objects.all().values())
+
+    # Get the last calibration datetime
+    for index, model in enumerate(return_dict['models']):
+        dates = CalibrationHistory.objects.filter(model=model['id']).order_by('-date')
+        return_dict['models'][index]['last_calibrated'] = dates[0].date
+
+    # Get the number of model
     return_dict['nb_model'] = len(return_dict['models'])
     return JsonResponse(return_dict)
 
