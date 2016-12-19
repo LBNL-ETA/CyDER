@@ -1,10 +1,30 @@
 {% extends "_base.html" %}
 {% block content %}
+<style>
+.button1 {
+    background-color: #4CAF50;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    color: white;
+    border: 2px solid #4CAF50;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+}
 
-<div style="max-width: 400px; margin: 0 auto;">
+.button1:hover {
+    background-color: white;
+    color: black;
+}
+</style>
+
+
+<div style="max-width: 500px; margin: 0 auto;">
   <div class="text-center">
     <br>
-    <img src="http://sdtimes.com/wp-content/uploads/2015/11/logo.png">
+    <img src="http://sdtimes.com/wp-content/uploads/2015/11/logo.png" style="width:304px;height:228px;">
     <br>
   </div>
 
@@ -27,7 +47,11 @@
       <li>Breaker name: {{ model.breaker_name }}</li>
     </ul>
   </div>
+  <div class="text-center">
+    <a class="button1" href="/api/model/update/{{ model.id }}">Calibrate</a>
+  </div>
 
+  <br>
   <br>
 
   <div class="text-center">
@@ -37,7 +61,10 @@
   <div style="text-align:left;">
     <ul style="list-style-position: inside;">
       {% for value in history %}
-      <li>date: {{ value.date }} <a href="#">more details</a></li>
+      <li>{{ value.date|date:"M d, Y" }} | ZA={{ value.z_a|floatformat:-2 }}
+        ZB={{ value.z_b|floatformat:-2 }} ZC={{ value.z_c|floatformat:-2 }}
+        <a href="/calibration/{{ value.id }}">more details</a>
+      </li>
       {% endfor %}
     </ul>
   </div>

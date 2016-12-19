@@ -1,5 +1,22 @@
 /* custom styles */
-
 .container {
   max-width: 700px;
+}
+
+.button1 {
+    background-color: #4CAF50;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    color: white;
+    border: 2px solid #4CAF50;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+}
+
+.button1:hover {
+    background-color: white;
+    color: black;
 }

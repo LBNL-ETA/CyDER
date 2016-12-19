@@ -1,7 +1,8 @@
 from __future__ import division
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from .models import Model, CalibrationHistory
+import api
+import ast
 
 
 def home(request):
@@ -9,8 +10,8 @@ def home(request):
 
 
 def model(request, id):
-    return_dict = {}
-    model = Model.objects.filter(id=id)
-    return_dict['model'] = list(model.values())[0]
-    return_dict['history'] = list(CalibrationHistory.objects.filter(model=model[0]).values())
-    return render(request, 'model.html', return_dict)
+    return render(request, 'model.html', api.model_info_dict(request, id))
+
+
+def calibration(request, id):
+    return render(request, 'calibration.html', api.calibration_info_dict(request, id))

@@ -1,0 +1,35 @@
+{% extends "_base.html" %}
+{% block content %}
+
+<div style="max-width: 500px; margin: 0 auto;">
+  <div class="text-center">
+    <br>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/2/29/Postgresql_elephant.svg" style="width:304px;height:228px;">
+    <br>
+  </div>
+
+  <br>
+
+  <div class="text-center">
+    <h1><b>CyDER</b></h1>
+    <p>Data used for the calibration process:</p>
+    <br>
+  </div>
+
+  <div style="text-align:left;">
+    <ul style="list-style-position: inside;">
+      <li>Id: {{ calibration_data.calibration_id }}</li>
+      <li>Active power A: {{ calibration_data.p_a|floatformat:-2 }} kW</li>
+      <li>Active power B: {{ calibration_data.p_b|floatformat:-2 }} kW</li>
+      <li>Active power C: {{ calibration_data.p_c|floatformat:-2 }} kW</li>
+      <li>Reactive power A: {{ calibration_data.q_a|floatformat:-2 }} kvar</li>
+      <li>Reactive power B: {{ calibration_data.q_b|floatformat:-2 }} kvar</li>
+      <li>Reactive power C: {{ calibration_data.q_c|floatformat:-2 }} kvar</li>
+      <li>Voltage A: {{ calibration_data.voltage_a|floatformat:-2 }} V</li>
+      <li>Voltage B: {{ calibration_data.voltage_b|floatformat:-2 }} V</li>
+      <li>Voltage C: {{ calibration_data.voltage_c|floatformat:-2 }} V</li>
+    </ul>
+  </div>
+</div>
+
+{% endblock content %}

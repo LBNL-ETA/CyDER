@@ -1,8 +1,49 @@
 from __future__ import division
-from .models import Model
+import models as m
 import subprocess
 import time
+import datetime as dt
 import ast
+
+
+def calibration_process(model_id):
+    """
+    Launch individual calibration function and save to the DB
+    """
+    # Get the calibration data
+    sim_result = get_calibration_data(model_id)
+
+    # Find the new impedances
+    impedances = get_calibrated_impedances(sim_result)
+
+    # Update the database
+    temp_model = m.Model.objects.get(id=model_id)
+    history = m.CalibrationHistory(
+        model=temp_model,
+        date=dt.datetime.now() - dt.timedelta(hours=1),
+        updated=False,
+        calibration_algorithm="Basic")
+    history.save()
+    calibration_result = m.CalibrationResult(
+        calibration=history,
+        impedance_a=impedances['impedances']['A'],
+        impedance_b=impedances['impedances']['B'],
+        impedance_c=impedances['impedances']['C'])
+    calibration_result.save()
+    calibration_data = m.CalibrationData(
+        calibration=history,
+        p_a=sim_result['upmu']['P_A'],
+        p_b=sim_result['upmu']['P_B'],
+        p_c=sim_result['upmu']['P_C'],
+        q_a=sim_result['upmu']['Q_A'],
+        q_b=sim_result['upmu']['Q_B'],
+        q_c=sim_result['upmu']['Q_C'],
+        voltage_a=sim_result['upmu']['VMAG_A'],
+        voltage_b=sim_result['upmu']['VMAG_B'],
+        voltage_c=sim_result['upmu']['VMAG_C'])
+    calibration_data.save()
+
+    return True
 
 
 def get_calibration_data(model_id):
@@ -12,7 +53,7 @@ def get_calibration_data(model_id):
     """
     # Query the model information
     try:
-        model = Model.objects.get(id=model_id)
+        model = m.Model.objects.get(id=model_id)
     except:
         raise Exception('Model id does not exist in the database')
 
