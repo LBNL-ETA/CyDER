@@ -22,7 +22,11 @@ def home_info(request):
     # Get the last calibration datetime
     for index, model in enumerate(return_dict['models']):
         dates = CalibrationHistory.objects.filter(model=model['id']).order_by('-date')
-        return_dict['models'][index]['last_calibrated'] = dates[0].date
+        try:
+            return_dict['models'][index]['last_calibrated'] = dates[0].date
+        except:
+            # The model where never calibrated
+            return_dict['models'][index]['last_calibrated'] = 'Never'
 
     # Get the number of model
     return_dict['nb_model'] = len(return_dict['models'])
