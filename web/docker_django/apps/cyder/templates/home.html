@@ -23,7 +23,7 @@
 <br>
 
 <script type="text/javascript">
-var url = base_url + 'api/home/get';
+var url = "{% url 'home_info' %}";
 var data
 d3.json(url, function (json) {
   // Save data in global scope
@@ -72,8 +72,8 @@ d3.json(url, function (json) {
           position: d.LatLng,
           map: map,
           description: "<p>Region: " + d.region + "</p>" + "<p>Last calibrated: " +
-                       d.last_calibrated.toDateString() + "</p>" + "<a href=" + base_url +
-                       'model/' + String(d.id) + ">more details</a>",
+                       d.last_calibrated.toDateString() + "</p>" + "<a href=" +
+                      "/model/" + String(d.id) + " >more details</a>",
         });
 
         google.maps.event.addListener(marker, 'click', function() {
