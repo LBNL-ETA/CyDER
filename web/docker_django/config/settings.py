@@ -32,7 +32,6 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = (
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -40,6 +39,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # apps
     'docker_django.apps.cyder',
+    # Admin is after so the logout page is not default to the admin one
+    'django.contrib.admin',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -123,3 +124,6 @@ STATIC_URL = '/static/'
 # )
 # print(STATICFILES_DIRS)
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# Page after login
+LOGIN_REDIRECT_URL = '/home'

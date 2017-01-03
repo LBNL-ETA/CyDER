@@ -1,5 +1,6 @@
 from __future__ import division
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.http import Http404
 from .models import Model, CalibrationHistory, CurrentCalibration, CalibrationResult
@@ -11,6 +12,7 @@ from redis import Redis
 redis = Redis(host='redis', port=6379)
 
 
+@login_required
 def home_info(request):
     return_dict = {}
 
@@ -27,6 +29,7 @@ def home_info(request):
     return JsonResponse(return_dict)
 
 
+@login_required
 def model_info(request, id):
     return JsonResponse(model_info_dict(request, id))
 
@@ -55,6 +58,7 @@ def model_info_dict(request, id):
     return return_dict
 
 
+@login_required
 def calibration_info(request, id):
     return JsonResponse(calibration_info_dict(request, id))
 
@@ -67,6 +71,7 @@ def calibration_info_dict(request, id):
     return return_dict
 
 
+@login_required
 def model_update(request, id):
     # Launch a calibration and save to the DB
     tool.calibration_process(id)
