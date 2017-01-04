@@ -3,7 +3,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.http import Http404
-from .models import Model, CalibrationHistory, CurrentCalibration, CalibrationResult
+from django.contrib.auth.models import User
+from .models import Model, CalibrationHistory, CurrentCalibration, CalibrationResult, UserModel
 from .models import CalibrationData
 from . import tool
 from redis import Redis
@@ -80,3 +81,39 @@ def model_update(request, id):
     # Launch a calibration and save to the DB
     tool.calibration_process(id)
     return render(request, 'model.html', model_info_dict(request, id))
+
+
+@login_required
+def add_model(request, id):
+    # Get the user and the model
+    try:
+        user = User.objects.get(username=request.user)
+        model = Model.objects.get(id=id)
+    except:
+        # Model was invalid
+        raise Exception('Model id is not valid')
+
+    # Create a new entry in UserModel
+    new_model = UserModel(user=user, model=model,
+                          name='no name', description='no description')
+    new_model.save()
+    return render(request, 'my_models.html', my_models_info_dict(request))
+
+
+@login_required
+def my_models_info(request):
+    return JsonResponse(my_models_info_dict(request))
+
+
+def my_models_info_dict(request):
+    return_dict = {}
+    user = User.objects.get(username=request.user)
+    return_dict['my_models'] = list(UserModel.objects.filter(user=user).values())
+
+    # Add info about each model
+    for index, row in enumerate(return_dict['my_models']):
+        model = Model.objects.get(id=row['model_id'])
+        if not model:
+            raise Exception('Model does not exist anymore')
+        return_dict['my_models'][index]['region'] = model.region
+    return return_dict

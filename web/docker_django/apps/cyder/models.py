@@ -16,6 +16,14 @@ class Model(models.Model):
     upmu_location = models.CharField(max_length=50, null=True, blank=True)
 
 
+class UserModel(models.Model):
+    """docstring for UserModel."""
+    user = models.ForeignKey(User, null=True, blank=True)
+    model = models.ForeignKey(Model, null=True, blank=True)
+    name = models.CharField(max_length=50, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+
+
 class CurrentCalibration(models.Model):
     """docstring for CalibrationData."""
     model = models.OneToOneField(Model, null=True, blank=True)

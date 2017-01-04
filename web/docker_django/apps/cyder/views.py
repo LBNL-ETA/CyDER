@@ -23,3 +23,8 @@ def model(request, id):
 @login_required
 def calibration(request, id):
     return render(request, 'calibration.html', api.calibration_info_dict(request, id))
+
+
+@login_required
+def my_models(request):
+    return render(request, 'my_models.html', api.my_models_info_dict(request))

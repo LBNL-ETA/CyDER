@@ -1,0 +1,40 @@
+{% extends "_base.html" %}
+{% block content %}
+
+
+<div style="max-width: 500px; margin: 0 auto;">
+
+  <br>
+
+  <div class="text-center">
+    <h1><b>CyDER</b></h1>
+    <p>Model saved for this user:</p>
+    <br>
+  </div>
+
+  <div style="text-align:left;">
+    <ul style="list-style-position: inside;">
+    {% for value in my_models %}
+    <li><b>Model region:</b> {{ value.region }} | <b>Name:</b> {{ value.name }} |
+      <b>Description:</b> {{ value.description }}
+    </li>
+    <div class="text-center">
+      <a class="button3" style="padding: 5px 5px; font-size: 14px;" href="#">Remove</a>
+      <a class="button2" style="padding: 5px 5px; font-size: 14px;" href="#">Copy</a>
+      <a class="button1" style="padding: 5px 5px; font-size: 14px;" href="#">Simulate</a>
+      <a class="button1" style="padding: 5px 5px; font-size: 14px;" href="#">View results</a>
+    </div>
+    <br>
+    {% endfor %}
+    </ul>
+  </div>
+
+  <br>
+
+  <div class="text-center">
+    <p><i>To add a model, go to the model's web page and click "Add"</i></p>
+  </div>
+
+</div>
+
+{% endblock content %}

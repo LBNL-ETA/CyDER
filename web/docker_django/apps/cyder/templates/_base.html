@@ -7,30 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static "main.css" %}">
-    <style>
-    .button2 {
-        background-color: orange;
-        padding: 15px 32px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        color: white;
-        border: 2px solid orange;
-        -webkit-transition-duration: 0.4s; /* Safari */
-        transition-duration: 0.4s;
-    }
-
-    .button2:hover {
-        background-color: white;
-        color: black;
-    }
-    </style>
   </head>
   <body>
-    <script type="text/javascript">var base_url = 'http://192.168.99.100/'</script>
+    
     <a class="button2" href="/home">Home</a>
-    <a class="button2 pull-right" href="/accounts/logout/">Logout</a>
+    <a class="button2" href="/my_models">My models</a>
+    <a class="button3 pull-right" href="/accounts/logout/">Logout</a>
     <div>
       {% block content %}
       {% endblock %}
