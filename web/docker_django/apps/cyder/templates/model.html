@@ -1,32 +1,12 @@
 {% extends "_base.html" %}
 {% block content %}
-<style>
-.button1 {
-    background-color: #4CAF50;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    color: white;
-    border: 2px solid #4CAF50;
-    -webkit-transition-duration: 0.4s; /* Safari */
-    transition-duration: 0.4s;
-}
-
-.button1:hover {
-    background-color: white;
-    color: black;
-}
-</style>
-
 
 <div style="max-width: 500px; margin: 0 auto;">
-  <div class="text-center">
+  <!-- <div class="text-center">
     <br>
     <img src="http://sdtimes.com/wp-content/uploads/2015/11/logo.png" style="width:304px;height:228px;">
     <br>
-  </div>
+  </div> -->
 
   <br>
 
@@ -41,17 +21,13 @@
       <li>Region: {{ model.region }}</li>
       <li>Area: {{ model.area }}</li>
       <li>City: {{ model.city }}</li>
-      <li>Latitude: {{ model.lat }}</li>
+      <!-- <li>Latitude: {{ model.lat }}</li>
       <li>Longitude: {{ model.lon }}</li>
-      <li>Filename: {{ model.filename }}</li>
+      <li>Filename: {{ model.filename }}</li> -->
       <li>Breaker name: {{ model.breaker_name }}</li>
     </ul>
   </div>
-  <div class="text-center">
-    <a class="button1" href="/api/model/update/{{ model.id }}">Calibrate</a>
-  </div>
 
-  <br>
   <br>
 
   <div class="text-center">
@@ -68,6 +44,12 @@
       {% endfor %}
     </ul>
   </div>
+  <br>
+  <br>
+  <div class="text-center">
+    <a class="button1" href="/api/model/update/{{ model.id }}">Calibrate</a>
+  </div>
+
 </div>
 
 {% endblock content %}

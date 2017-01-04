@@ -4,21 +4,21 @@
 <script src="https://maps.googleapis.com/maps/api/js"></script>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 
-<div class="text-center">
+<!-- <div class="text-center">
   <br>
-  <img src="http://media.django.es.s3.amazonaws.com/nuevo/images/djangopony.png" style="width:304px;height:228px;">
+  <img src="http://media.django.es.s3.amazonaws.com/nuevo/images/djangopony.png">
   <br>
-</div>
+</div> -->
 
 <br>
 
 <div class="text-center">
   <h1><b>CyDER</b></h1>
-  <p>Check out our coverage of the electric distribution systems in California :)</p>
+  <p>Click a map marker to get more informations on a distribution grid.</p>
   <br>
 </div>
 
-<div id="locations-map" style="width: 70%; height: 500px; margin: 0 auto;"></div>
+<div id="locations-map" style="width: 70%; height: 500px; margin: 0 auto; border:6px solid #E4E4E4;"></div>
 
 <br>
 
@@ -72,8 +72,10 @@ d3.json(url, function (json) {
           position: d.LatLng,
           map: map,
           description: "<p>Region: " + d.region + "</p>" + "<p>Last calibrated: " +
-                       d.last_calibrated.toDateString() + "</p>" + "<a href=" +
-                      "/model/" + String(d.id) + " >more details</a>",
+                       d.last_calibrated.toDateString() + "</p>" +
+                       "<div class='text-center'>" +
+                       "<a class='button1' href=" + "/model/" + String(d.id) + " >Select</a>" +
+                       "</div>",
         });
 
         google.maps.event.addListener(marker, 'click', function() {

@@ -13,7 +13,11 @@ def home(request):
 
 @login_required
 def model(request, id):
-    return render(request, 'model.html', api.model_info_dict(request, id))
+    # Reduced history data
+    reduced_result = api.model_info_dict(request, id)
+    reduced_result['history'] = list(reversed(reduced_result['history']))[:5]
+
+    return render(request, 'model.html', reduced_result)
 
 
 @login_required
