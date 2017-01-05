@@ -1,6 +1,7 @@
 from __future__ import division
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.http import JsonResponse
 import api
 import ast
@@ -28,3 +29,11 @@ def calibration(request, id):
 @login_required
 def my_models(request):
     return render(request, 'my_models.html', api.my_models_info_dict(request))
+
+
+@login_required
+def my_models_settings(request, id):
+    status, form = api._my_model_update_description(request, id)
+    if status:
+        messages.add_message(request, messages.INFO, 'The description was updated!')
+    return render(request, 'my_models_settings.html', {'form': form, 'usermodel_id': id})

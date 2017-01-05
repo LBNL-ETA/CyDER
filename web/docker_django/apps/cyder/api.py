@@ -1,14 +1,17 @@
 from __future__ import division
 from django.shortcuts import render, redirect
+from django.shortcuts import get_list_or_404, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.http import JsonResponse
 from django.http import Http404
 from django.contrib.auth.models import User
 from .models import Model, CalibrationHistory, CurrentCalibration, CalibrationResult, UserModel
 from .models import CalibrationData
+from .form import UserModelDescriptionForm
 from . import tool
 from redis import Redis
-
+import pdb
 
 redis = Redis(host='redis', port=6379)
 
@@ -77,7 +80,7 @@ def calibration_info_dict(request, id):
 
 
 @login_required
-def model_update(request, id):
+def model_calibrate(request, id):
     """API but still return webpage"""
     # Launch a calibration and save to the DB
     tool.calibration_process(id)
@@ -93,13 +96,13 @@ def add_model(request, id):
         model = Model.objects.get(id=id)
     except:
         # Model was invalid
-        raise Exception('Model id is not valid')
+        raise Http404('Model id is not valid')
 
     # Create a new entry in UserModel
     new_model = UserModel(user=user, model=model,
                           name='no name', description='no description')
     new_model.save()
-    return render(request, 'my_models.html', my_models_info_dict(request))
+    return redirect('my_models')
 
 
 @login_required
@@ -111,9 +114,29 @@ def remove_model(request, id):
         user_model.delete()
     except:
         # Model was invalid
-        raise Exception('UserModel id is not valid')
+        raise Http404('UserModel id is not valid')
 
-    return render(request, 'my_models.html', my_models_info_dict(request))
+    return redirect('my_models')
+
+
+@login_required
+def copy_model(request, id):
+    """API but still return webpage"""
+    # Get the user and the model
+    try:
+        user_model = UserModel.objects.get(id=id)
+        user = User.objects.get(username=request.user)
+        model = Model.objects.get(id=user_model.model_id)
+    except:
+        # Model was invalid
+        raise Http404('UserModel id is not valid')
+
+    # Create a new entry in UserModel
+    new_model = UserModel(user=user, model=model,
+                          name=user_model.name + ' - copy',
+                          description=user_model.description + ' - copy')
+    new_model.save()
+    return redirect('my_models')
 
 
 @login_required
@@ -130,6 +153,28 @@ def my_models_info_dict(request):
     for index, row in enumerate(return_dict['my_models']):
         model = Model.objects.get(id=row['model_id'])
         if not model:
-            raise Exception('Model does not exist anymore')
+            raise Http404('Model does not exist anymore')
         return_dict['my_models'][index]['region'] = model.region
     return return_dict
+
+
+@login_required
+def my_model_update_description(request, id):
+    return_dict = {}
+    status, form = _my_model_update_description(request, id)
+    return_dict['status'] = "False"
+    if status:
+        return_dict['status'] = "True"
+    return JsonResponse(return_dict)
+
+
+def _my_model_update_description(request, id):
+    instance = get_object_or_404(UserModel, id=id)
+    form = UserModelDescriptionForm(request.POST or None, instance=instance)
+    status = False
+    if form.is_valid():
+        form.save()
+        status = True
+
+    # Return form plus status if successfully saved
+    return (status, form)

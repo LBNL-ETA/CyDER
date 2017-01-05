@@ -9,10 +9,20 @@
     <link rel="stylesheet" href="{% static "main.css" %}">
   </head>
   <body>
-    
+
     <a class="button2" href="/home">Home</a>
     <a class="button2" href="/my_models">My models</a>
     <a class="button3 pull-right" href="/accounts/logout/">Logout</a>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+          <a class="close" data-dismiss="alert" href="#">&times;</a>
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
     <div>
       {% block content %}
       {% endblock %}
