@@ -78,6 +78,7 @@ def calibration_info_dict(request, id):
 
 @login_required
 def model_update(request, id):
+    """API but still return webpage"""
     # Launch a calibration and save to the DB
     tool.calibration_process(id)
     return render(request, 'model.html', model_info_dict(request, id))
@@ -85,6 +86,7 @@ def model_update(request, id):
 
 @login_required
 def add_model(request, id):
+    """API but still return webpage"""
     # Get the user and the model
     try:
         user = User.objects.get(username=request.user)
@@ -97,6 +99,20 @@ def add_model(request, id):
     new_model = UserModel(user=user, model=model,
                           name='no name', description='no description')
     new_model.save()
+    return render(request, 'my_models.html', my_models_info_dict(request))
+
+
+@login_required
+def remove_model(request, id):
+    """API but still return webpage"""
+    # Get the user and the model
+    try:
+        user_model = UserModel.objects.get(id=id)
+        user_model.delete()
+    except:
+        # Model was invalid
+        raise Exception('UserModel id is not valid')
+
     return render(request, 'my_models.html', my_models_info_dict(request))
 
 

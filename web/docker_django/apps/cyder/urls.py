@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'^api/calibration/get/(?P<id>\d+)/$', api.calibration_info, name='calibration_info'),
     url(r'^api/my_models/get/$', api.my_models_info, name='my_models_info'),
     url(r'^api/my_models/add/(?P<id>\d+)/$', api.add_model, name='add_model'),
+    url(r'^api/my_models/remove/(?P<id>\d+)/$', api.remove_model, name='remove_model'),
 ]
