@@ -360,6 +360,41 @@ def get_distance(devices):
     return distance
 
 
+def get_coordinates(devices):
+    """
+    Args:
+        devices (DataFrame): list of all the devices to include
+
+    Return:
+        devices_distance (DataFrame): devices and their corresponding latitude
+        and longitude from the substation
+    """
+    coordinates = devices.copy()
+
+    # Reset or create new columns to hold the result
+    coordinates['latitude'] = [0] * len(coordinates)
+    coordinates['longitude'] = [0] * len(coordinates)
+
+    for device in devices.itertuples():
+        # Get the according latitude in a pandas dataframe
+        coordinates.loc[device.Index, 'latitude'] = cympy.study.QueryInfoDevice(
+            "CoordY", device.device_number, int(device.device_type_id))
+
+        # Get the according longitude in a pandas dataframe
+        coordinates.loc[device.Index, 'longitude'] = cympy.study.QueryInfoDevice(
+            "CoordX", device.device_number, int(device.device_type_id))
+
+    # Cast the right type
+    for column in ['latitude']:
+        coordinates[column] = coordinates[column].apply(lambda x: None if x is '' else float(x) / (1.26 * 100000))
+
+    # Cast the right type
+    for column in ['longitude']:
+        coordinates[column] = coordinates[column].apply(lambda x: None if x is '' else float(x) / (100000))
+
+    return coordinates
+
+
 def get_unbalanced_line(devices):
     """This function requires the get_voltage function has been called before.
 
