@@ -16,6 +16,15 @@ class Model(models.Model):
     upmu_location = models.CharField(max_length=50, null=True, blank=True)
 
 
+class Node(models.Model):
+    """docstring for Node."""
+    model = models.ForeignKey(Model, null=True, blank=True)
+    node_id = models.CharField(max_length=50, null=True, blank=True)
+    section_id = models.CharField(max_length=50, null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+
+
 class UserModel(models.Model):
     """docstring for UserModel."""
     user = models.ForeignKey(User, null=True, blank=True)

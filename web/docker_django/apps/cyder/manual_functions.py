@@ -1,5 +1,24 @@
 import docker_django.apps.cyder.models as m
+import tool
+import models as m
 import csv
+
+
+def node_itinialization():
+    """
+    """
+    # Remove all the nodes
+    nodes = m.Node.objects.all()
+    for node in nodes:
+        node.delete()
+
+    all_models = m.Model.objects.all()
+    for model in all_models:
+        number_of_nodes = update_model_nodes(model.id)
+        print("Updated " + str(model.filename) + ' with ' + str(number_of_nodes) + ' nodes.')
+
+    return True
+
 
 def database_initialization(filename='/usr/src/app/docker_django/static/init_DB.csv'):
     """

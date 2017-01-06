@@ -6,6 +6,47 @@ import datetime as dt
 import ast
 
 
+def update_model_nodes(model_id):
+    """
+    Update the nodes for a model, return the number of nodes.
+    """
+    # Query the model information
+    try:
+        model_instance = m.Model.objects.get(id=model_id)
+    except:
+        raise Exception('Model id does not exist in the database')
+
+    # Get the node data
+    nodes = get_nodes_data(model_instance.filename)
+
+    # Update the database
+    for node in nodes:
+        temp = Node(model=model_instance, **node)
+        temp.save()
+
+    return len(nodes)
+
+
+def get_nodes_data(filename):
+    """
+    Launch ssh command and retrieve outputs
+    """
+    # Launch SSH request to the server and grab the stdout
+    timeout = 10
+    cmd = 'project_cyder/web/docker_django/worker/model_content.py ' + str(filename)
+    output, status = run_ssh_command(cmd, timeout=timeout)
+
+    # Parse ssh output
+    if output is not False:
+        result = parse_dataframe_ssh_output(output, status)
+    else:
+        raise Exception('SSH request to the server took more than ' +
+                        str(timeout) + ' seconds')
+
+    # Return the value from the calibration
+    return result
+
+
 def calibration_process(model_id):
     """
     Launch individual calibration function and save to the DB
@@ -130,5 +171,17 @@ def parse_ssh_output(output, keys, status):
     for key, string in zip(keys, output):
         dict_string = '{' + string.split('{', 1)[1].split('}')[0] + '}'
         result[key] = ast.literal_eval(dict_string)
+
+    return result
+
+
+def parse_dataframe_ssh_output(output, status):
+    """
+    Parse the output from a dataframe where every row is a different line
+    """
+    result = []
+    for string in output:
+        dict_string = '{' + string.split('{', 1)[1].split('}')[0] + '}'
+        result.append(ast.literal_eval(dict_string))
 
     return result
