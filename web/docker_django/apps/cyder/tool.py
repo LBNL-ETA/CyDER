@@ -4,6 +4,7 @@ import subprocess
 import time
 import datetime as dt
 import ast
+import pdb
 
 
 def update_model_nodes(model_id):
@@ -32,7 +33,7 @@ def get_nodes_data(filename):
     Launch ssh command and retrieve outputs
     """
     # Launch SSH request to the server and grab the stdout
-    timeout = 10
+    timeout = 20
     cmd = 'project_cyder/web/docker_django/worker/model_content.py ' + str(filename)
     output, status = run_ssh_command(cmd, timeout=timeout)
 

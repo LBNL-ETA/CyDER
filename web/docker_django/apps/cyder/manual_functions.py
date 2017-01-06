@@ -14,7 +14,7 @@ def node_itinialization():
 
     all_models = m.Model.objects.all()
     for model in all_models:
-        number_of_nodes = update_model_nodes(model.id)
+        number_of_nodes = tool.update_model_nodes(model.id)
         print("Updated " + str(model.filename) + ' with ' + str(number_of_nodes) + ' nodes.')
 
     return True
