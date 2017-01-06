@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import site
 
 BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
@@ -42,6 +43,7 @@ INSTALLED_APPS = (
     # Admin is after so the logout page is not default to the admin one
     'django.contrib.admin',
     'crispy_forms',
+    'bootstrap3_datetime',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -121,10 +123,11 @@ USE_TZ = True
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 STATIC_URL = '/static/'
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
-# print(STATICFILES_DIRS)
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Page after login

@@ -22,6 +22,7 @@ class UserModel(models.Model):
     model = models.ForeignKey(Model, null=True, blank=True)
     name = models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
+    simulation_date = models.DateTimeField(null=True, blank=True)
 
 
 class CurrentCalibration(models.Model):

@@ -1,6 +1,8 @@
 {% extends "_base.html" %}
 {% block content %}
+{% load staticfiles %}
 {% load crispy_forms_tags %}
+
 
 <div style="max-width: 500px; margin: 0 auto;">
   <div class="text-center">
@@ -12,9 +14,13 @@
   {% csrf_token %}
   {% crispy form %}
 
+  <br>
+
+
+  <br>
+
   <div class="text-center">
-    <br>
-    <p>Another form...</p>
+    <a class="button1" href="#">Simulate</a>
   </div>
 
 </div>
