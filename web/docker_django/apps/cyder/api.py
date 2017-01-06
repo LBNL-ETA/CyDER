@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.http import Http404
 from django.contrib.auth.models import User
-from .models import Model, CalibrationHistory, CurrentCalibration, CalibrationResult, UserModel
+from .models import Model, CalibrationHistory, CurrentCalibration, CalibrationResult, UserModel, Node
 from .models import CalibrationData
 from .form import UserModelDescriptionForm
 from . import tool
@@ -178,3 +178,15 @@ def _my_model_update_description(request, id):
 
     # Return form plus status if successfully saved
     return (status, form)
+
+
+@login_required
+def nodes_info(request, id):
+    # Get the model
+    return_dict = {}
+    model = Model.objects.get(id=id)
+
+    # Get all information about the nodes
+    return_dict['nodes'] = list(Node.objects.filter(model=model).values())
+
+    return JsonResponse(return_dict)

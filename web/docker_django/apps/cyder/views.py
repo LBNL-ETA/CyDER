@@ -22,6 +22,11 @@ def model(request, id):
 
 
 @login_required
+def nodes(request, id):
+    return render(request, 'model_node_map.html', {'model_id': id})
+
+
+@login_required
 def calibration(request, id):
     return render(request, 'calibration.html', api.calibration_info_dict(request, id))
 

@@ -6,6 +6,7 @@ from . import api
 urlpatterns = [
     url(r'^home/$', views.home, name='home'),
     url(r'^model/(?P<id>\d+)/$', views.model, name='model'),
+    url(r'^nodes/(?P<id>\d+)/$', views.nodes, name='nodes'),
     url(r'^my_models/', views.my_models, name='my_models'),
     url(r'^calibration/(?P<id>\d+)/$', views.calibration, name='calibration'),
     url(r'^my_models_settings/(?P<id>\d+)/$', views.my_models_settings, name='my_models_settings'),
@@ -13,6 +14,7 @@ urlpatterns = [
     # API URLs
     url(r'^api/home/get/$', api.home_info, name='home_info'),
     url(r'^api/model/get/(?P<id>\d+)/$', api.model_info, name='model_info'),
+    url(r'^api/nodes/get/(?P<id>\d+)/$', api.nodes_info, name='nodes_info'),
     url(r'^api/model/calibrate/(?P<id>\d+)/$', api.model_calibrate, name='model_calibrate'),
     url(r'^api/calibration/get/(?P<id>\d+)/$', api.calibration_info, name='calibration_info'),
     url(r'^api/my_models/get/$', api.my_models_info, name='my_models_info'),
