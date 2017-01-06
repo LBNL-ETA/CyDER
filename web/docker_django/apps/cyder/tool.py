@@ -33,7 +33,7 @@ def get_nodes_data(filename):
     Launch ssh command and retrieve outputs
     """
     # Launch SSH request to the server and grab the stdout
-    timeout = 40
+    timeout = False
     cmd = 'project_cyder/web/docker_django/worker/model_content.py ' + str(filename)
     output, status = run_ssh_command(cmd, timeout=timeout)
 
@@ -140,14 +140,18 @@ def run_ssh_command(cmd, timeout=10):
     """
     # Launch ssh query
     ssh = subprocess.Popen(["ssh","Jonathan@128.3.12.69", "python", cmd],
-                           shell=False, stdout=subprocess.PIPE, bufsize=10000,
+                           shell=False, stdout=subprocess.PIPE, bufsize=1000000,
                            stderr=subprocess.PIPE)
 
-    # Test for output every second
-    for step in range(0, timeout):
-        time.sleep(1)
-        if ssh.poll() is not None:
-            return ssh.stdout.readlines(), 'Success'
+    if not timeout:
+        return ssh.stdout.readlines(), 'Success'
+
+    else:
+        # Test for output every second
+        for step in range(0, timeout):
+            time.sleep(1)
+            if ssh.poll() is not None:
+                return ssh.stdout.readlines(), 'Success'
 
     # The ssh query was longer than timeout duration
     ssh.kill()
