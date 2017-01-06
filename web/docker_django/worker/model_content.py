@@ -23,5 +23,6 @@ cympy.study.Open(filename)
 nodes = functions.list_nodes()
 
 # Output to the console each line is a node
-for index in range(0, len(nodes)):
+lenght = min(300, len(nodes))
+for index in range(0, lenght):
     print(nodes.ix[index][['node_id', 'section_id', 'latitude', 'longitude']].to_dict())
