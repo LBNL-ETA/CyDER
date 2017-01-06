@@ -33,7 +33,7 @@ def get_nodes_data(filename):
     Launch ssh command and retrieve outputs
     """
     # Launch SSH request to the server and grab the stdout
-    timeout = 20
+    timeout = 40
     cmd = 'project_cyder/web/docker_django/worker/model_content.py ' + str(filename)
     output, status = run_ssh_command(cmd, timeout=timeout)
 
