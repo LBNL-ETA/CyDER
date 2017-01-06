@@ -119,6 +119,40 @@ def list_devices(device_type=False, verbose=False):
     return devices
 
 
+def list_nodes():
+    """List all the nodes
+
+    Return:
+        a DataFrame with section_id, node_id, latitude and longitude
+    """
+
+    # Get all nodes
+    nodes = cympy.study.ListNodes()
+
+    # Create a frame
+    nodes = pandas.DataFrame(nodes, columns=['node_object'])
+    nodes['node_id'] = nodes['node_object'].apply(lambda x: x.ID)
+
+    nodes['section_id'] = [0] * len(nodes)
+    nodes['latitude'] = [0] * len(nodes)
+    nodes['longitude'] = [0] * len(nodes)
+
+    for node in nodes.itertuples():
+        nodes.loc[node.Index, 'section_id'] = cympy.study.QueryInfoNode("SectionId", node.node_id)
+        nodes.loc[node.Index, 'latitude'] = cympy.study.QueryInfoNode("CoordY", node.node_id)
+        nodes.loc[node.Index, 'longitude'] = cympy.study.QueryInfoNode("CoordX", node.node_id)
+
+    # Cast the right type
+    for column in ['latitude']:
+        nodes[column] = nodes[column].apply(lambda x: None if x is '' else float(x) / (1.26 * 100000))
+
+    # Cast the right type
+    for column in ['longitude']:
+        nodes[column] = nodes[column].apply(lambda x: None if x is '' else float(x) / (100000))
+
+    return nodes
+
+
 def _describe_object(device):
         for value in cympy.dm.Describe(device.GetObjType()):
             print(value.Name)
