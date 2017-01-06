@@ -5,6 +5,9 @@ def database_initialization(filename='/usr/src/app/docker_django/static/init_DB.
     """
     Initialize the database from a csv file.
     (remove previous instances)
+    To do:
+        - do not remove previous instances and just update from csv files
+        - add more details about each models
     """
     # Counter
     model_added = 0

@@ -1,16 +1,22 @@
 {% extends "_base.html" %}
 {% block content %}
+{% load crispy_forms_tags %}
 
-<div class="text-center">
-  <h1><b>CyDER</b></h1>
-  <br>
+<div style="max-width: 500px; margin: 0 auto;">
+  <div class="text-center">
+    <h1><b>CyDER</b></h1>
+    <br>
+    <p>Click the "Simulate" button at the bottom to launch the simulation</p>
+  </div>
 
-  <p>Validate the model's settings before the simulation</p>
+  {% csrf_token %}
+  {% crispy form %}
 
-  <form method="POST" class="post-form">{% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class="btn btn-default" href="{% url 'my_models_settings' id=usermodel_id %}">Save</button>
-  </form>
+  <div class="text-center">
+    <br>
+    <p>Another form...</p>
+  </div>
+
 </div>
 
 {% endblock %}

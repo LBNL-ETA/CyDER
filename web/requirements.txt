@@ -4,3 +4,5 @@ psycopg2==2.6
 redis==2.10.3
 celery==3.1.16
 simplejson
+django-crispy-forms
+pdb

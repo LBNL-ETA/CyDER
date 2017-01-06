@@ -35,5 +35,5 @@ def my_models(request):
 def my_models_settings(request, id):
     status, form = api._my_model_update_description(request, id)
     if status:
-        messages.add_message(request, messages.INFO, 'The description was updated!')
+        messages.add_message(request, messages.SUCCESS, 'The description was updated!')
     return render(request, 'my_models_settings.html', {'form': form, 'usermodel_id': id})
