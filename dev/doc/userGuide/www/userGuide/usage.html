@@ -97,24 +97,41 @@
 <li><p class="first">The <code class="docutils literal"><span class="pre">cymdist</span></code> functions folder must be added to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>.
 The <code class="docutils literal"><span class="pre">cymdist</span></code> functions folder can be found in the distribution of CYMDISTPy. It is in <code class="docutils literal"><span class="pre">dev\cymdist</span></code>.</p>
 <p>To add the <code class="docutils literal"><span class="pre">cymdist</span></code> functions folder to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>:</p>
-<ul class="simple">
-<li>In Search, search for and then select: System (Control Panel).</li>
-<li>Click the Advanced system settings link.</li>
-<li>Click Environment Variables. In the section System Variables, find a variable named <code class="docutils literal"><span class="pre">PYTHONPATH</span></code> environment variable and select it. If the variable does not exist, create it. Click Edit.</li>
-<li>In the Edit System Variable (or New System Variable) window, specify the value of the PYTHONPATH environment variable which should be in our case be <code class="docutils literal"><span class="pre">dev\cymdist</span></code>.</li>
+<ul>
+<li><p class="first">In Search, search for and then select: System (Control Panel).</p>
+</li>
+<li><p class="first">Click the Advanced system settings link.</p>
+</li>
+<li><p class="first">Click Environment Variables. In the section System Variables,
+find a variable named <code class="docutils literal"><span class="pre">PYTHONPATH</span></code> environment variable and select it.</p>
+<blockquote>
+<div><p>If the variable does not exist, create it. Click Edit.</p>
+</div></blockquote>
+</li>
+<li><p class="first">In the Edit System Variable (or New System Variable) window,
+specify the value of the PYTHONPATH environment variable</p>
+<blockquote>
+<div><p>which should be in our case be <code class="docutils literal"><span class="pre">dev\cymdist</span></code>.</p>
+</div></blockquote>
+</li>
 </ul>
 </li>
 <li><p class="first">The CYMDIST Python API scripts directory must be added to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>.</p>
-<p>The CYMDIST Python API scripts are in the installation folder of CYME. It can typically be found in <code class="docutils literal"><span class="pre">path_to_CYME\CYME\cympy</span></code>, where <code class="docutils literal"><span class="pre">path_to_CYME</span></code> is the path to the installation folder of CYME 7.2.</p>
+<p>The CYMDIST Python API scripts are in the installation folder of CYME.
+It can typically be found in <code class="docutils literal"><span class="pre">path_to_CYME\CYME\cympy</span></code>, where <code class="docutils literal"><span class="pre">path_to_CYME</span></code>
+is the path to the installation folder of CYME 7.2.</p>
 </li>
 </ol>
 <blockquote>
-<div>To add the CYMDIST Python API scripts folder to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>, add <code class="docutils literal"><span class="pre">path_to_CYME\CYME</span></code> to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>.
+<div>To add the CYMDIST Python API scripts folder to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>,
+add <code class="docutils literal"><span class="pre">path_to_CYME\CYME</span></code> to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>.
 Note that <code class="docutils literal"><span class="pre">cympy</span></code> is not included in the name of the variable.</div></blockquote>
 <ol class="arabic simple" start="5">
 <li>The Python 3.4 installation folder (e.g. <code class="docutils literal"><span class="pre">C:\Python34</span></code> ) must be added to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>.</li>
-<li>Upon request, the simulation results are saved in a result file which is created in the current working directory.
-The name of the result file is <code class="docutils literal"><span class="pre">xxx_result_.pickle</span></code>, where xxx is the FMU model name as defined in the XML input file.</li>
+<li>Upon request, the simulation results are saved in a result file which
+is created in the current working directory.
+The name of the result file is <code class="docutils literal"><span class="pre">xxx_result_.pickle</span></code>, where xxx
+is the FMU model name as defined in the XML input file.</li>
 </ol>
 </div>
 
