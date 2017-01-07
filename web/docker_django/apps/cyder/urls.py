@@ -6,7 +6,6 @@ from . import api
 urlpatterns = [
     url(r'^home/$', views.home, name='home'),
     url(r'^model/(?P<id>\d+)/$', views.model, name='model'),
-    url(r'^nodes/(?P<id>\d+)/$', views.nodes, name='nodes'),
     url(r'^my_models/', views.my_models, name='my_models'),
     url(r'^calibration/(?P<id>\d+)/$', views.calibration, name='calibration'),
     url(r'^my_models_settings/(?P<id>\d+)/$', views.my_models_settings, name='my_models_settings'),

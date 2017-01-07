@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
+import models as m
 import api
 import ast
 
@@ -22,11 +23,6 @@ def model(request, id):
 
 
 @login_required
-def nodes(request, id):
-    return render(request, 'model_node_map.html', {'model_id': id})
-
-
-@login_required
 def calibration(request, id):
     return render(request, 'calibration.html', api.calibration_info_dict(request, id))
 
@@ -38,7 +34,8 @@ def my_models(request):
 
 @login_required
 def my_models_settings(request, id):
-    status, form = api._my_model_update_description(request, id)
+    status, form, instance = api._my_model_update_description(request, id)
     if status:
         messages.add_message(request, messages.SUCCESS, 'The description was updated!')
-    return render(request, 'my_models_settings.html', {'form': form, 'usermodel_id': id})
+
+    return render(request, 'my_models_settings.html', {'form': form, 'usermodel_id': id, 'model_id':instance.model.id})
