@@ -6,3 +6,4 @@ celery==3.1.16
 simplejson
 django-crispy-forms
 pdb
+django-bootstrap3-datetimepicker
