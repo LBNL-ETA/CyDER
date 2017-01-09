@@ -25,6 +25,18 @@ class Node(models.Model):
     latitude = models.FloatField(null=True, blank=True)
 
 
+class Devices(models.Model):
+    """docstring for devices"""
+    model = models.ForeignKey(Model, null=True, blank=True)
+    device_number = models.CharField(max_length=50, null=True, blank=True)
+    device_type = models.CharField(max_length=50, null=True, blank=True)
+    device_type_id = models.CharField(max_length=50, null=True, blank=True)
+    section_id = models.CharField(max_length=50, null=True, blank=True)
+    distance = models.FloatField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+
+
 class UserModel(models.Model):
     """docstring for UserModel."""
     user = models.ForeignKey(User, null=True, blank=True)

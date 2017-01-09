@@ -408,6 +408,7 @@ def get_coordinates(devices):
     # Reset or create new columns to hold the result
     coordinates['latitude'] = [0] * len(coordinates)
     coordinates['longitude'] = [0] * len(coordinates)
+    coordinates['section_id'] = [0] * len(coordinates)
 
     for device in devices.itertuples():
         # Get the according latitude in a pandas dataframe
@@ -417,6 +418,10 @@ def get_coordinates(devices):
         # Get the according longitude in a pandas dataframe
         coordinates.loc[device.Index, 'longitude'] = cympy.study.QueryInfoDevice(
             "CoordX", device.device_number, int(device.device_type_id))
+
+        # Get the section id in a pandas dataframe
+        coordinates.loc[device.Index, 'section_id'] = cympy.study.QueryInfoDevice(
+            "SectionId", device.device_number, int(device.device_type_id))
 
     # Cast the right type
     for column in ['latitude']:

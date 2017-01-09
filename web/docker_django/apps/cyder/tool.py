@@ -7,6 +7,27 @@ import ast
 import pdb
 
 
+def update_model_devices(model_id):
+    """
+    Update the nodes for a model, return the number of nodes.
+    """
+    # Query the model information
+    try:
+        model_instance = m.Model.objects.get(id=model_id)
+    except:
+        raise Exception('Model id does not exist in the database')
+
+    # Get the node data
+    devices = get_model_content_data('model_devices.py', model_instance.filename)
+
+    # Update the database
+    for device in devices:
+        temp = m.Devices(model=model_instance, **device)
+        temp.save()
+
+    return len(devices)
+
+
 def update_model_nodes(model_id):
     """
     Update the nodes for a model, return the number of nodes.
@@ -18,7 +39,7 @@ def update_model_nodes(model_id):
         raise Exception('Model id does not exist in the database')
 
     # Get the node data
-    nodes = get_nodes_data(model_instance.filename)
+    nodes = get_model_content_data('model_nodes.py', model_instance.filename)
 
     # Update the database
     for node in nodes:
@@ -28,13 +49,13 @@ def update_model_nodes(model_id):
     return len(nodes)
 
 
-def get_nodes_data(filename):
+def get_model_content_data(script, filename):
     """
     Launch ssh command and retrieve outputs
     """
     # Launch SSH request to the server and grab the stdout
     timeout = False
-    cmd = 'project_cyder/web/docker_django/worker/model_content.py ' + str(filename)
+    cmd = 'project_cyder/web/docker_django/worker/' + script + ' ' + str(filename)
     output, status = run_ssh_command(cmd, timeout=timeout)
 
     # Parse ssh output

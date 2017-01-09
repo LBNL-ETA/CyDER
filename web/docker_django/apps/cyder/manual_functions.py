@@ -4,7 +4,7 @@ import models as m
 import csv
 
 
-def node_itinialization():
+def nodes_itinialization():
     """
     """
     # Remove all the nodes
@@ -16,6 +16,22 @@ def node_itinialization():
     for model in all_models:
         number_of_nodes = tool.update_model_nodes(model.id)
         print("Updated " + str(model.filename) + ' with ' + str(number_of_nodes) + ' nodes.')
+
+    return True
+
+
+def devices_itinialization():
+    """
+    """
+    # Remove all the nodes
+    devices = m.Devices.objects.all()
+    for device in devices:
+        device.delete()
+
+    all_models = m.Model.objects.all()
+    for model in all_models:
+        number_of_devices = tool.update_model_devices(model.id)
+        print("Updated " + str(model.filename) + ' with ' + str(number_of_devices) + ' nodes.')
 
     return True
 
