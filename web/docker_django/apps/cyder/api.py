@@ -1,12 +1,13 @@
 from __future__ import division
 from django.shortcuts import render, redirect
+from django.db.models import Count
 from django.shortcuts import get_list_or_404, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.http import Http404
 from django.contrib.auth.models import User
-from .models import Model, CalibrationHistory, CurrentCalibration, CalibrationResult, UserModel, Node
+from .models import Model, CalibrationHistory, CurrentCalibration, CalibrationResult, UserModel, Node, Devices
 from .models import CalibrationData
 from .form import UserModelDescriptionForm
 from . import tool
@@ -50,6 +51,10 @@ def model_info_dict(request, id):
     if not model:
         raise Http404('No corresponding model in the database')
     return_dict['model'] = list(model.values())[0]
+
+    # Add the counts of the different devices
+    devices = Devices.objects.filter(model=model)
+    return_dict['devices'] = devices.values('device_type').order_by().annotate(count=Count('device_type')).order_by('count')
 
     # Add the current calibration values
     return_dict['current_calibration'] = list(CurrentCalibration.objects.filter(model=model[0]).values())

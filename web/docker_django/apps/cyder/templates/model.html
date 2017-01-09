@@ -34,6 +34,20 @@
   <br>
 
   <div class="text-center">
+    <p>List of devices:</p>
+  </div>
+
+  <div style="text-align:left;">
+    <ul style="list-style-position: inside;">
+      {% for value in devices %}
+      <li>{{ value.device_type }} | count: {{ value.count }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <br>
+
+  <div class="text-center">
     <p>Last calibrations:</p>
   </div>
 
