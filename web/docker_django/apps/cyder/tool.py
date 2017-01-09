@@ -160,7 +160,7 @@ def run_ssh_command(cmd, timeout=10):
     timeout [seconds]
     """
     # Launch ssh query
-    ssh = subprocess.Popen(["ssh","Jonathan@128.3.12.69", "python", cmd],
+    ssh = subprocess.Popen(["ssh","Jonathan@128.3.12.69", "python", "-i", cmd],
                            shell=False, stdout=subprocess.PIPE, bufsize=1000000,
                            stderr=subprocess.PIPE)
 

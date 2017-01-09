@@ -10,8 +10,10 @@ import functions
 try:
     parser = argparse.ArgumentParser(description='Option to pick a model')
     parser.add_argument('filename')
+    parser.add_argument('temp_filename')
     args = parser.parse_args()
     model_filename = str(args.filename)
+    temp_filename = str(args.temp_filename)
 except:
     sys.exit('Error: could not retrieve argument')
 
@@ -22,7 +24,5 @@ cympy.study.Open(filename)
 # Get all the node informations
 nodes = functions.list_nodes()
 
-# Output to the console each line is a node
-lenght = len(nodes)
-for index in range(0, lenght):
-    print(nodes.ix[index][['node_id', 'section_id', 'latitude', 'longitude']].to_dict())
+# Save
+nodes.to_csv(temp_filename)
