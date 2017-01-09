@@ -10,10 +10,8 @@ import functions
 try:
     parser = argparse.ArgumentParser(description='Option to pick a model')
     parser.add_argument('filename')
-    parser.add_argument('temp_filename')
     args = parser.parse_args()
     model_filename = str(args.filename)
-    temp_filename = str(args.temp_filename)
 except:
     sys.exit('Error: could not retrieve argument')
 
@@ -26,5 +24,9 @@ devices = functions.list_devices()
 devices = functions.get_distance(devices)
 devices = functions.get_coordinates(devices)
 
-# Save
-devices.to_csv(temp_filename)
+# Output to the console each line is a node
+lenght = len(devices)
+for index in range(0, lenght):
+    print(devices.ix[index][['device_number', 'device_type', 'device_type_id',
+                             'distance', 'section_id',
+                             'latitude', 'longitude']].to_dict())
