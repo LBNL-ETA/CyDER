@@ -161,7 +161,7 @@ def my_models_info_dict(request):
 @login_required
 def my_model_update_description(request, id):
     return_dict = {}
-    status, form, instance = _my_model_update_description(request, id)
+    status, form = _my_model_update_description(request, id)
     return_dict['status'] = "False"
     if status:
         return_dict['status'] = "True"
@@ -177,7 +177,7 @@ def _my_model_update_description(request, id):
         status = True
 
     # Return form plus status if successfully saved
-    return (status, form, instance)
+    return (status, form)
 
 
 @login_required

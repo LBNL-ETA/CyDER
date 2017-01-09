@@ -1,5 +1,6 @@
 from __future__ import division
 from django.shortcuts import render, redirect
+from django.shortcuts import get_list_or_404, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
@@ -34,8 +35,14 @@ def my_models(request):
 
 @login_required
 def my_models_settings(request, id):
-    status, form, instance = api._my_model_update_description(request, id)
+    status, form = api._my_model_update_description(request, id)
     if status:
         messages.add_message(request, messages.SUCCESS, 'The description was updated!')
 
-    return render(request, 'my_models_settings.html', {'form': form, 'usermodel_id': id, 'model_id':instance.model.id})
+    return render(request, 'my_models_settings.html', {'form': form, 'usermodel_id': id, 'model_id': form.instance.model.id})
+
+
+@login_required
+def my_models_add_devices(request, id):
+    user_model = get_object_or_404(m.UserModel, id=id)
+    return render(request, 'my_models_add_devices.html', {'usermodel_id': id, 'model_id': user_model.model.id})
