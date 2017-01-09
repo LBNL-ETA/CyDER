@@ -57,7 +57,7 @@ The installation directory should contain the following subdirectories:
 - ``dev/cymdistpy/``
 
   - ``bin/``
-    (Scripts for running unit tests)
+    (Python scripts for running unit tests)
 
   - ``cymdist/``
     (Python scripts for communicating with CYMDIST)
@@ -66,13 +66,13 @@ The installation directory should contain the following subdirectories:
     (Documentation)
 
   - ``fmuChecker/``
-    (fmuChecker binaries for running unit test)
+    (fmuChecker binaries for running unit tests)
 
   - ``fmus/``
     (FMUs folder)
 
   - ``parser/``
-    (Python scripts, Modelica templates and xsd validator files)
+    (Python scripts, Modelica templates and XML validator files)
     
 
 3. Add following folders to your system path: 
