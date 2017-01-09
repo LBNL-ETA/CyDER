@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CYMDISTModelDescription
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  fmiVersion="2.0"
+  modelName="HL0004"
+  description="Input data for a CYMDIST FMU"
+  generationTool="CYMDISTPy">
+  <ModelVariables>
+    <ScalarVariable
+      name="VMAG_A"
+      description="VMAG_A"
+      causality="input">
+      <Real
+        unit="kV"
+        start="0.0"/>
+    </ScalarVariable>
+    <ScalarVariable
+      name="voltage_A"
+      description="voltage_A"
+      causality="output">
+      <Real
+        unit="V"/>
+      <Device
+        name="HOLLISTER_2104"/>
+    </ScalarVariable>
+  </ModelVariables>
+</CYMDISTModelDescription>

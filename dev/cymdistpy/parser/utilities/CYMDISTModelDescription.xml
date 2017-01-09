@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CYMDISTModelDescription
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  fmiVersion="2.0"
+  modelName="CYMDIST"
+  description="Input data for a CYMDIST FMU"
+  generationTool="CYMDISTPy">
+  <ModelVariables>
+    <ScalarVariable
+      name="par1"
+      description="First parameter"
+      causality="parameter">
+      <Real
+        unit="Ohm"
+        start="1.0"/>
+    </ScalarVariable>
+    <ScalarVariable
+      name="par2"
+      description="Second parameter"
+      causality="parameter">
+      <Real
+        unit="Ohm"
+        start="10.0"/>
+    </ScalarVariable>
+    <ScalarVariable
+      name="u"
+      description="First input"
+      causality="input">
+      <Real
+        unit="A"
+        start="1.0"/>
+    </ScalarVariable>
+    <ScalarVariable
+      name="y"
+      description="First output"
+      causality="output">
+      <Real
+        unit="V"/>
+      <Device
+        name="dev1"/>
+    </ScalarVariable>
+    <ScalarVariable
+      name="u1"
+      description="Second input"
+      causality="input">
+      <Real
+        unit="A"
+        start="2.0"/>
+    </ScalarVariable>
+    <ScalarVariable
+      name="y1"
+      description="Second output"
+      causality="output">
+      <Real
+        unit="V"/>
+      <Device
+        name="dev1"/>
+    </ScalarVariable>
+  </ModelVariables>
+</CYMDISTModelDescription>
