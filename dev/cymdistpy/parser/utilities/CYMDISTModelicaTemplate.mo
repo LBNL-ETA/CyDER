@@ -96,7 +96,7 @@ protected
   }"Device variables names to be sent to CYMDIST";
   {%- endif %}
   {% if (parameter_variable_names|length==0) -%} 
-  parameter String dblParNam[nDblPar] 
+  parameter String dblParNam[nDblPar](each start="") 
     "Parameter variables names to be sent to CYMDIST";
   {%- else %}
   {% set comma = joiner(",") -%}
