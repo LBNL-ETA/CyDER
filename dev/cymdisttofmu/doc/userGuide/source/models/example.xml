@@ -4,7 +4,7 @@
   fmiVersion="2.0"
   modelName="HL0004"
   description="Input data for a CYMDIST FMU"
-  generationTool="CYMDISTPy">
+  generationTool="CYMDISTToFMU">
   <ModelVariables>
     <ScalarVariable
       name="VMAG_A"

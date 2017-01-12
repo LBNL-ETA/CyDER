@@ -98,10 +98,10 @@
             
   <div class="section" id="installation-and-configuration">
 <span id="installation"></span><h1>3. Installation and Configuration<a class="headerlink" href="#installation-and-configuration" title="Permalink to this headline">¶</a></h1>
-<p>This chapter describes how to install, configure and uninstall CYMDISTPy.</p>
+<p>This chapter describes how to install, configure and uninstall CYMDISTToFMU.</p>
 <div class="section" id="software-requirements">
 <h2>3.1. Software requirements<a class="headerlink" href="#software-requirements" title="Permalink to this headline">¶</a></h2>
-<p>To export CYMDIST as an FMU, CYMDISTPy needs:</p>
+<p>To export CYMDIST as an FMU, CYMDISTToFMU needs:</p>
 <ol class="arabic simple">
 <li>Python 3.4.x. 32bit</li>
 <li>jinja2</li>
@@ -113,7 +113,7 @@
 <li>C-Compiler (for cython and Modelica)</li>
 <li>Buildings Library 4.0.0 and higher</li>
 </ol>
-<p>CYMDISTPy has been tested with:</p>
+<p>CYMDISTToFMU has been tested with:</p>
 <ul class="simple">
 <li>Buildings Library version 4.0.0 (Can be downloaded from <a class="reference external" href="http://simulationresearch.lbl.gov/modelica/download.html">here</a>)</li>
 <li>Dymola 2017 (Modelica Parser)</li>
@@ -122,14 +122,14 @@
 </div>
 <div class="section" id="installation-directory">
 <span id="id1"></span><h2>3.2. Installation<a class="headerlink" href="#installation-directory" title="Permalink to this headline">¶</a></h2>
-<p>To install CYMDISTPy, proceed as follows:</p>
+<p>To install CYMDISTToFMU, proceed as follows:</p>
 <ol class="arabic simple">
 <li>Download the installation file from the <a class="reference internal" href="download.html"><span class="doc">Download</span></a> page.</li>
 <li>Unzip the installation file into any subdirectory (hereafter referred to as the &#8220;installation directory&#8221;).</li>
 </ol>
 <p>The installation directory should contain the following subdirectories:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">dev/cymdistpy/</span></code><ul>
+<li><code class="docutils literal"><span class="pre">dev/cymdisttofmu/</span></code><ul>
 <li><code class="docutils literal"><span class="pre">bin/</span></code>
 (Python scripts for running unit tests)</li>
 <li><code class="docutils literal"><span class="pre">cymdist/</span></code>
@@ -170,13 +170,13 @@ into a command prompt to see if the right version of Python starts up.</p>
 </div></blockquote>
 <ol class="arabic" start="4">
 <li><p class="first">Install Python dependencies by running</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>pip install -r bin/cymdistpy-dependencies.txt
+<div class="highlight-none"><div class="highlight"><pre><span></span>pip install -r bin/cymdisttofmu-dependencies.txt
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <ul class="last simple">
-<li><code class="docutils literal"><span class="pre">cymdist-dependencies.txt</span></code> includes the versions of the Python modules which were tested.</li>
+<li><code class="docutils literal"><span class="pre">cymdisttofmu-dependencies.txt</span></code> includes the versions of the Python modules which were tested.</li>
 <li><code class="docutils literal"><span class="pre">lxml</span></code> cannot be installed using <code class="docutils literal"><span class="pre">pip</span></code>. Please download and install the executable (<code class="docutils literal"><span class="pre">lxml-3.4.4.win32-py3.4.exe</span></code>) from <a class="reference external" href="https://pypi.python.org/pypi/lxml/3.4.4">PyPyi</a>.</li>
 </ul>
 </div>
@@ -185,7 +185,7 @@ into a command prompt to see if the right version of Python starts up.</p>
 </div>
 <div class="section" id="uninstallation">
 <h2>3.3. Uninstallation<a class="headerlink" href="#uninstallation" title="Permalink to this headline">¶</a></h2>
-<p>To uninstall CYMDISTPy, delete the <a class="reference internal" href="#installation-directory">installation directory</a>.</p>
+<p>To uninstall CYMDISTToFMU, delete the <a class="reference internal" href="#installation-directory">installation directory</a>.</p>
 </div>
 </div>
 
