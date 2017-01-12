@@ -11,12 +11,12 @@ import logging
 from subprocess import call
 
 # Appending parser_path to the system path os required to be able
-# to find the CYMDISTWritter model from this directory
+# to find the CYMDISTToFMU model from this directory
 script_path = os.path.dirname(os.path.realpath(__file__))
 parser_path = os.path.abspath(os.path.join(script_path, '..', 'parser'))
 sys.path.append(parser_path)
 
-import CYMDISTWritter as cymwritter
+import CYMDISTToFMU as cymdist
 
 BUILDINGS_PATH = ''
 utilities_path = os.path.abspath(os.path.join(script_path, '..', 'parser', 'utilities'))
@@ -26,7 +26,7 @@ INPUT_FILE_PATH = os.path.join(utilities_path, 'CYMDIST.inp')
 MOT_PATH = os.path.join(utilities_path, 'CYMDISTModelicaTemplate.mo')
 MOST_PATH = os.path.join(utilities_path, 'CYMDISTModelicaTemplate.mos')
 
-CYMDIST_T = cymwritter.CYMDISTWritter(INPUT_FILE_PATH,
+CYMDIST_T = cymdist.CYMDISTToFMU(INPUT_FILE_PATH,
                                       XML_INPUT_PATH,
                                       BUILDINGS_PATH,
                                       MOT_PATH, MOST_PATH,
@@ -43,11 +43,11 @@ class Tester(unittest.TestCase):
         '''
 
         # Array does not contain duplicates variables.
-        cymwritter.check_duplicates(['x1', 'x2', 'x3', 'x4'])
+        cymdist.check_duplicates(['x1', 'x2', 'x3', 'x4'])
 
         # Array contain duplicates variables.
         with self.assertRaises(AssertionError):
-            cymwritter.check_duplicates(['x1', 'x1', 'x3', 'x4'])
+            cymdist.check_duplicates(['x1', 'x1', 'x3', 'x4'])
 
     def test_sanitize_name(self):
         '''  Test the function sanitize_name().
@@ -55,10 +55,10 @@ class Tester(unittest.TestCase):
         '''
 
         # Testing name conversions.
-        name = cymwritter.sanitize_name('test+name')
+        name = cymdist.sanitize_name('test+name')
         self.assertEqual(name, 'test_name', 'Names are not matching.')
 
-        name = cymwritter.sanitize_name('0test+*.name')
+        name = cymdist.sanitize_name('0test+*.name')
         self.assertEqual(name, 'f_0test___name', 'Names are not matching.')
 
     def test_xml_validator(self):

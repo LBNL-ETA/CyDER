@@ -4,8 +4,8 @@
 
 Introduction
 ============
-This user manual explains how to install and use CYMDISTPy.
-CYMDISTPy is a software package written in Python which allows 
+This user manual explains how to install and use CYMDISTToFMU.
+CYMDISTToFMU is a software package written in Python which allows 
 users to export the distribution simulation program `CYMDIST <http://www.cyme.com>`_ version 7.2 
 or as a :term:`Functional Mock-up Unit` (FMU) for co-simulation 
 using the :term:`Functional Mock-up Interface` (FMI) 

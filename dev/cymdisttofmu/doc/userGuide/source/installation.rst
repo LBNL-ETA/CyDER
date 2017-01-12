@@ -5,13 +5,13 @@
 Installation and Configuration
 ==============================
 
-This chapter describes how to install, configure and uninstall CYMDISTPy.
+This chapter describes how to install, configure and uninstall CYMDISTToFMU.
 
 
 Software requirements
 ^^^^^^^^^^^^^^^^^^^^^
 
-To export CYMDIST as an FMU, CYMDISTPy needs:
+To export CYMDIST as an FMU, CYMDISTToFMU needs:
 
 1. Python 3.4.x. 32bit
 
@@ -32,7 +32,7 @@ To export CYMDIST as an FMU, CYMDISTPy needs:
 9. Buildings Library 4.0.0 and higher
 
 
-CYMDISTPy has been tested with:
+CYMDISTToFMU has been tested with:
 
 
 - Buildings Library version 4.0.0 (Can be downloaded from `here <http://simulationresearch.lbl.gov/modelica/download.html>`_)
@@ -45,7 +45,7 @@ CYMDISTPy has been tested with:
 Installation
 ^^^^^^^^^^^^
 
-To install CYMDISTPy, proceed as follows:
+To install CYMDISTToFMU, proceed as follows:
 
 1. Download the installation file from the :doc:`download` page.
 
@@ -54,7 +54,7 @@ To install CYMDISTPy, proceed as follows:
 
 The installation directory should contain the following subdirectories:
 
-- ``dev/cymdistpy/``
+- ``dev/cymdisttofmu/``
 
   - ``bin/``
     (Python scripts for running unit tests)
@@ -102,12 +102,12 @@ The installation directory should contain the following subdirectories:
 
    .. code-block:: none
    
-      pip install -r bin/cymdistpy-dependencies.txt
+      pip install -r bin/cymdisttofmu-dependencies.txt
 
 
    .. note:: 
 
-     - ``cymdist-dependencies.txt`` includes the versions of the Python modules which were tested.
+     - ``cymdisttofmu-dependencies.txt`` includes the versions of the Python modules which were tested.
 
      - ``lxml`` cannot be installed using ``pip``. Please download and install the executable (``lxml-3.4.4.win32-py3.4.exe``) from `PyPyi <https://pypi.python.org/pypi/lxml/3.4.4>`_. 
    
@@ -116,4 +116,4 @@ The installation directory should contain the following subdirectories:
 Uninstallation
 ^^^^^^^^^^^^^^
 
-To uninstall CYMDISTPy, delete the `installation directory`_.
+To uninstall CYMDISTToFMU, delete the `installation directory`_.

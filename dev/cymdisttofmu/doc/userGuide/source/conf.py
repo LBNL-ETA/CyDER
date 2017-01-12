@@ -41,7 +41,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'CYMDISTPy'
+project = u'CYMDISTToFMU'
 copyright = u'2015-2018, The Regents of the University of California (through Lawrence Berkeley National Laboratory)'
 
 # The version info for the project you're documenting, acts as replacement for

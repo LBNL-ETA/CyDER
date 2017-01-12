@@ -12,7 +12,7 @@ The following requirements must be met to import an run FMU that contains CYMDIS
 2. CYME version 7.2 must be installed. CYME can be downloaded from `www.cyme.com <https://www.cyme.com>`_.
 
 3. The ``cymdist`` functions folder must be added to the ``PYTHONPATH``. 
-   The ``cymdist`` functions folder can be found in the distribution of CYMDISTPy. It is in ``dev\cymdist``. 
+   The ``cymdist`` functions folder can be found in the distribution of CYMDISTToFMU. It is in ``dev\cymdist``. 
 
    To add the ``cymdist`` functions folder to the ``PYTHONPATH``:
 
@@ -26,7 +26,7 @@ The following requirements must be met to import an run FMU that contains CYMDIS
      
    - In the Edit System Variable (or New System Variable) window, 
      specify the value of the PYTHONPATH environment variable 
-	 which should be in our case be ``dev\cymdist``. 
+	 which should be in our case be ``dev\cymdisttofmu\cymdist``. 
 
 4. The CYMDIST Python API scripts directory must be added to the ``PYTHONPATH``.
 

@@ -45,5 +45,5 @@ To parametrize the ``ScalarVariable`` as an output variable, the user needs to
    
 .. note:: 
    
-     To avoid name-clash, CYMDISTPy concatenates the name of the output with the name of 
+     To avoid name-clash, CYMDISTToFMU concatenates the name of the output with the name of 
      the device to make it unique. The new output name will have the form ``outputName_DeviceName``.

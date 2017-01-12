@@ -104,7 +104,7 @@ def main():
         log.error('Missing required input, <path-to-input-file>')
         parser.print_help()
         sys.exit(1)
-    CYMDIST = CYMDISTWritter(grid_model_path,
+    CYMDIST = CYMDISTToFMU(grid_model_path,
                              input_file_path,
                              buildings_lib_path,
                              MO_TEMPLATE_PATH,
@@ -296,7 +296,7 @@ def zip_fmu(dirPath=None, zipFilePath=None, includeDirInZip=True):
     outFile.close()
 
 
-class CYMDISTWritter(object):
+class CYMDISTToFMU(object):
 
     """CYMDIST FMU writer.
 
