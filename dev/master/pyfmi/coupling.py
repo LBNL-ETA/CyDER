@@ -1,5 +1,6 @@
 from pyfmi import load_fmu
 from pyfmi.master import Master
+from datetime import datetime
 import os
 
 def simulate_single_fmu():
@@ -48,13 +49,16 @@ def simulate_multiple_fmus():
     
     coupled_simulation = Master (models, connections)
     opts=coupled_simulation.simulate_options()
-    #opts['solver']='CVode'
-    opts['step_size']=1
+    opts['step_size']=1.0
+    opts['logging']=True
+    print(str(opts))
+    start = datetime.now()
     res=coupled_simulation.simulate(options=opts, 
                             start_time=0.0, 
                             final_time=1.0)
-    print (coupled_simulation.get_log())
-    print ("This is the coupled simulation results " + str(res))
+    end = datetime.now()
+    print('Ran a coupled CYMDIST/GridDyn simulation in ' +
+          str((end - start).total_seconds()) + ' seconds.')
         
 if __name__ == '__main__':
     #simulate_single_fmu()
