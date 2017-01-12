@@ -61,7 +61,7 @@ def main():
     
     # Configure the argument parser
     parser = argparse.ArgumentParser(description='Export CYMDIST as a Functional Mock-up Unit'\
-                                      ' (FMU) for model exchange 2.0.')
+                                      ' (FMU) for co-simulation 2.0.')
     cymdist_group = parser.add_argument_group("Required arguments to export CYMDIST as an FMU")
 
     cymdist_group.add_argument("-g", "--grid-model-path", required=True,
@@ -153,7 +153,7 @@ def print_cmd_line_usage():
           '-g <path-to-grid-file>  [-i <path-to-input-file>]'
           ' [-b] <path-to-Buildings-file> [-x] <path-to-xsd-file>')
     print('-- Export a CYMDIST model as a Functional Mockup Unit' + \
-          ' (FMU) for model exchange 2.0')
+          ' (FMU) for co-simulation 2.0')
     print('-- Input -g, Path to the grid model (required)')
     print('-- Input -i, Path to the input file (required)')
     print('-- Input -b, Path to the Buildings library')
@@ -305,7 +305,7 @@ class CYMDISTWritter(object):
     a pre-defined XML schema, extracting the
     variables attributes, writing a Modelica
     model of a CYMDIST model and exporting
-    the model as an FMU for model exchange 2.0.
+    the model as an FMU for co-simulation 2.0.
 
     """
 
