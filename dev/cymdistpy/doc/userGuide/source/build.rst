@@ -62,7 +62,7 @@ The main functions of CYMDISTPy are
  - reading, validating, and parsing the CYMDIST XML input file. 
    This includes removing and replacing invalid characters in variable names such as ``*+-`` with ``_``,
  - writing Modelica code with valid inputs and outputs names,
- - invoking Dymola to compile the Modelica code as an FMU for model exchange 2.0.
+ - invoking Dymola to compile the Modelica code as an FMU for co-simulation 2.0.
 
 .. note:: 
 
