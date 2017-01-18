@@ -1,5 +1,5 @@
 import docker_django.apps.cyder.models as m
-import tool
+import model_update as u
 import models as m
 import csv
 
@@ -14,7 +14,7 @@ def nodes_itinialization():
 
     all_models = m.Model.objects.all()
     for model in all_models:
-        number_of_nodes = tool.update_model_nodes(model.id)
+        number_of_nodes = u.update_model_nodes(model.id)
         print("Updated " + str(model.filename) + ' with ' + str(number_of_nodes) + ' nodes.')
 
     return True
@@ -30,7 +30,7 @@ def devices_itinialization():
 
     all_models = m.Model.objects.all()
     for model in all_models:
-        number_of_devices = tool.update_model_devices(model.id)
+        number_of_devices = u.update_model_devices(model.id)
         print("Updated " + str(model.filename) + ' with ' + str(number_of_devices) + ' nodes.')
 
     return True

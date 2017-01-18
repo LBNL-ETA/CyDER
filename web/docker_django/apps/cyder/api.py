@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from .models import Model, CalibrationHistory, CurrentCalibration, CalibrationResult, UserModel, Node, Devices
 from .models import CalibrationData
 from .form import UserModelDescriptionForm
-from . import tool
+from . import calibration
 from redis import Redis
 import pdb
 
@@ -88,7 +88,7 @@ def calibration_info_dict(request, id):
 def model_calibrate(request, id):
     """API but still return webpage"""
     # Launch a calibration and save to the DB
-    tool.calibration_process(id)
+    calibration.calibrate(id)
     return render(request, 'model.html', model_info_dict(request, id))
 
 

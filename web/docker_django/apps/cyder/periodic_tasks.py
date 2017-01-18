@@ -1,7 +1,7 @@
 from __future__ import division
 from celery import shared_task
 import datetime as dt
-from . import tool
+from . import calibration
 import models as m
 
 @shared_task
@@ -17,7 +17,7 @@ def calibrate_models():
 
     for model_id in model_ids:
         try:
-            tool.calibration_process(model_id)
+            calibration.calibrate(model_id)
         except:
             # Log the error message
             print('Error')
