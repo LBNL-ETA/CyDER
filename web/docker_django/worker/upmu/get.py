@@ -25,7 +25,8 @@ def get_upmu_data(event_time, PMU_name):
          'VMag_A': , 'VMag_B': , 'VMag_C': }
     """
 
-    uuid_str = str(np.genfromtxt(PMU_name + '_uuids.txt',dtype='str')).split(',')
+    path = "CyDER/web/docker_django/worker/upmu/"
+    uuid_str = str(np.genfromtxt(path + PMU_name + '_uuids.txt',dtype='str')).split(',')
     uuid_name = ["L1Mag", "L2Mag", "L3Mag", "C1Mag", "C2Mag", "C3Mag", \
                  "L1Ang", "L2Ang", "L3Ang", "C1Ang", "C2Ang", "C3Ang"]
 
