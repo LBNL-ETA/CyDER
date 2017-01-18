@@ -6,9 +6,11 @@ import pytz
 from datetime import datetime
 import pandas as pd
 
+
 def ConvertDateTimeToEpoch_ns(dt):
     #converts the datetime object to epoch time in nanoseconds
     return (int(dt.strftime('%s'))*1e6 + dt.microsecond)*1e3
+
 
 def get_upmu_data(event_time, PMU_name):
     """Retrieves instantaneous P, Q, and voltage magnitude for specified datetime.
@@ -68,16 +70,28 @@ def get_upmu_data(event_time, PMU_name):
 
     return df_full
 
-connection = btrdb.BTrDBConnection("miranda.cs.berkeley.edu", 4410)
-context = connection.newContext()
+# connection = btrdb.BTrDBConnection("miranda.cs.berkeley.edu", 4410)
+# context = connection.newContext()
+#
+# western = pytz.timezone('America/Los_Angeles')
+# time_period = western.localize(datetime(2016,11,1,12,0,0))
+#
+#
+#
+#
+#
+# print("Retrieving data...")
+# upmudata = get_upmu_data(time_period, 'grizzly_bus1')
+# print(upmudata)
 
-western = pytz.timezone('America/Los_Angeles')
-time_period = western.localize(datetime(2016,11,1,12,0,0))
-
-
-
-
-
-print("Retrieving data...")
-upmudata = get_upmu_data(time_period, 'grizzly_bus1')
-print(upmudata)
+udata = {'VMAG_A': 7287.4208984375,
+         'VMAG_B': 7299.921875,
+         'VMAG_C': 7318.2822265625,
+         'P_A': 7272.5364248477308,
+         'P_B': 2118.3817519608633,
+         'P_C': 6719.1867010705246,
+         'Q_A': -284.19075651498088,
+         'Q_B': -7184.1189935099919,
+         'Q_C': 3564.4269660296022,
+         'units': ('kW', 'kVAR', 'V')}
+print(udata)  # upmu data
