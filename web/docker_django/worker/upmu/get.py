@@ -51,14 +51,14 @@ def get_upmu_data(dates, PMU_name):
 
     # Calculate the results
     pdb.set_trace()
-    frame['P_A'] = (frame['L1Mag']*frame['C1Mag']*np.cos(np.radians(frame['L1Ang'] - frame['C1Ang'])))*1e-3
-    frame['Q_A'] = (frame['L1Mag']*frame['C1Mag']*np.sin(np.radians(frame['L1Ang'] - frame['C1Ang'])))*1e-3
+    frame['P_A'] = (frame['L1Mag']*frame['C1Mag']*np.cos(np.radians(list(frame['L1Ang'] - frame['C1Ang']))))*1e-3
+    frame['Q_A'] = (frame['L1Mag']*frame['C1Mag']*np.sin(np.radians(list(frame['L1Ang'] - frame['C1Ang']))))*1e-3
 
-    frame['P_B'] = (frame['L2Mag']*frame['C2Mag']*np.cos(np.radians(frame['L2Ang'] - frame['C2Ang'])))*1e-3
-    frame['Q_B'] = (frame['L2Mag']*frame['C2Mag']*np.sin(np.radians(frame['L2Ang'] - frame['C2Ang'])))*1e-3
+    frame['P_B'] = (frame['L2Mag']*frame['C2Mag']*np.cos(np.radians(list(frame['L2Ang'] - frame['C2Ang']))))*1e-3
+    frame['Q_B'] = (frame['L2Mag']*frame['C2Mag']*np.sin(np.radians(list(frame['L2Ang'] - frame['C2Ang']))))*1e-3
 
-    frame['P_C'] = (frame['L3Mag']*frame['C3Mag']*np.cos(np.radians(frame['L3Ang'] - frame['C3Ang'])))*1e-3
-    frame['Q_C'] = (frame['L3Mag']*frame['C3Mag']*np.sin(np.radians(frame['L3Ang'] - frame['C3Ang'])))*1e-3
+    frame['P_C'] = (frame['L3Mag']*frame['C3Mag']*np.cos(np.radians(list(frame['L3Ang'] - frame['C3Ang']))))*1e-3
+    frame['Q_C'] = (frame['L3Mag']*frame['C3Mag']*np.sin(np.radians(list(frame['L3Ang'] - frame['C3Ang']))))*1e-3
 
     return frame
 
