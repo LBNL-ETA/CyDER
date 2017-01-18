@@ -56,7 +56,7 @@ def get_model_content_data(script, filename):
 
     # Parse ssh output
     if output is not False:
-        result = t.parse_dataframe_ssh_output(output, status)
+        result = t.parse_ssh_list(output, status)
     else:
         raise Exception('SSH request to the server took more than ' +
                         str(timeout) + ' seconds')

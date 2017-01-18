@@ -9,7 +9,7 @@ def calibrate(model_id):
     Launch individual calibration function and save to the DB
     """
     # Get the calibration data
-    sim_result = get_calibration_data(model_id)
+    sim_result = get_simulation_result(model_id)
 
     # Find the new impedances
     impedances = get_calibrated_impedances(sim_result)
@@ -44,7 +44,7 @@ def calibrate(model_id):
     return True
 
 
-def get_calibration_data(model_id):
+def get_simulation_result(model_id):
     """
     Send and ssh request and parse the results.
     CMD launch a python script on the host computer.
@@ -65,7 +65,7 @@ def get_calibration_data(model_id):
     # Parse ssh output
     if output is not False:
         keys = ['upmu', 'voltages', 'currents']
-        result = t.parse_ssh_output(output, keys, status)
+        result = t.parse_ssh_dict(output, keys, status)
     else:
         raise Exception('SSH request to the server took more than ' +
                         str(timeout) + ' seconds')

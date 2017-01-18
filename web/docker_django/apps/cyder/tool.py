@@ -7,13 +7,13 @@ import ast
 import pdb
 
 
-def run_ssh_command(cmd, timeout=10):
+def run_ssh_command(cmd, timeout=10, server="Jonathan@128.3.12.69"):
     """
     Send a ssh request and check if the request is not hanging.
     timeout [seconds]
     """
     # Launch ssh query
-    ssh = subprocess.Popen(["ssh","Jonathan@128.3.12.69", "python", cmd],
+    ssh = subprocess.Popen(["ssh", server, "python", cmd],
                            shell=False, stdout=subprocess.PIPE, bufsize=1000000,
                            stderr=subprocess.PIPE)
 
@@ -32,7 +32,7 @@ def run_ssh_command(cmd, timeout=10):
     return False, ssh.stderr.readlines()
 
 
-def parse_ssh_output(output, keys, status):
+def parse_ssh_dict(output, keys, status):
     """
     Parse the output of an ssh request.
     Output lenght must be the same as keys lenght.
@@ -54,7 +54,7 @@ def parse_ssh_output(output, keys, status):
     return result
 
 
-def parse_dataframe_ssh_output(output, status):
+def parse_ssh_list(output, status):
     """
     Parse the output from a dataframe where every row is a different line
     """
