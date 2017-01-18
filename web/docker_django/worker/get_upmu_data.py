@@ -25,7 +25,7 @@ def get_upmu_data(event_time, PMU_name):
     uuid_str = str(np.genfromtxt(PMU_name + '_uuids.txt',dtype='str')).split(',')
     uuid_name = ["L1Mag", "L2Mag", "L3Mag", "C1Mag", "C2Mag", "C3Mag", \
                  "L1Ang", "L2Ang", "L3Ang", "C1Ang", "C2Ang", "C3Ang"]
-    
+
     data_full = []
 
     u = []
@@ -37,21 +37,21 @@ def get_upmu_data(event_time, PMU_name):
 
     for i in range(0,len(u)):
         results = connection.queryStandardValues(u[i], st, et, version=0)
-        
+
         times_full = []
         vals_full = []
 
         for j in range(0,len(results[0])):
             times_full.append(results[0][j][0])
             vals_full.append(results[0][j][1])
-            
-        
+
+
         #check if we're pulling angle measurements
 
         data_full.append(vals_full)
 
     data_full = np.array(data_full).transpose()
-    
+
 #data has n entries, each is a list of measurements
     df_full = pd.DataFrame(data_full, columns=uuid_name, index=times_full)
 
@@ -79,5 +79,5 @@ time_period = western.localize(datetime(2016,11,1,12,0,0))
 
 
 print("Retrieving data...")
-upmudata = get_upmu_data(time_period, 'grizzly_bus1')
+upmudata = get_upmu_data(time_period, '/LBNL/grizzly_bus1/')
 print(upmudata)
