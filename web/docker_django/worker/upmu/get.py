@@ -108,7 +108,7 @@ else:
     dates = [date_from]
 
 for date in dates:
-    udata = {'date': date,
+    udata = {'date': date.strftime("%Y-%m-%d_%H:%M:%S"),
              'VMAG_A': 7287.4208984375,
              'VMAG_B': 7299.921875,
              'VMAG_C': 7318.2822265625,
