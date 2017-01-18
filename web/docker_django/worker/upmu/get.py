@@ -38,7 +38,7 @@ def get_upmu_data(event_time, PMU_name):
     st = ConvertDateTimeToEpoch_ns(event_time)
     et = st + 10e9
 
-    for i in range(0,len(u)):
+    for i in range(0, 1):
         results = connection.queryStandardValues(u[i], st, et, version=0)
 
         times_full = []
