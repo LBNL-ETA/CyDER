@@ -63,7 +63,7 @@ connection = btrdb.BTrDBConnection("miranda.cs.berkeley.edu", 4410)
 context = connection.newContext()
 
 western = pytz.timezone('America/Los_Angeles')
-time_period = western.localize(datetime(2016,11,1,12,0,0))
+time_period = western.localize(datetime.datetime(2016, 11, 1, 12, 0, 0))
 
 print("Retrieving data...")
 upmudata = get_upmu_data([time_period], 'grizzly_bus1')
