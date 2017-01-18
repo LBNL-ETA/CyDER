@@ -97,9 +97,9 @@ except:
 
 
 # Create datetimes every minutes
-date_from = d.strptime(date_from, "%Y-%m-%d_%H:%M:%S")
+date_from = d.datetime.strptime(date_from, "%Y-%m-%d_%H:%M:%S")
 if not date_to in "False":
-    date_to = d.strptime(date_to, "%Y-%m-%d_%H:%M:%S")
+    date_to = d.datetime.strptime(date_to, "%Y-%m-%d_%H:%M:%S")
     delta_minutes = int((date_to - date_from).total_seconds() / 60)
     if delta_minutes < 1:
         raise Exception('Needs at least a minute between date_to and date_from')
