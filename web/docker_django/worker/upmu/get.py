@@ -26,9 +26,7 @@ def get_upmu_data(dates, PMU_name):
     """
 
     # Change all the dates into epoch time in nanoseconds
-    event_times = []
-    for value in dates:
-        event_times.append(convert_datetime_to_epoch_ns(value))
+    event_times = [convert_datetime_to_epoch_ns(value) for value in dates]
 
     # Get the ids of the parameters to retrieve (each id is location and measure type unique)
     path = "CyDER/web/docker_django/worker/upmu/"
@@ -36,27 +34,32 @@ def get_upmu_data(dates, PMU_name):
     ids = [uuid.UUID(value) for value in ids]
     names = ["L1Mag", "L2Mag", "L3Mag", "C1Mag", "C2Mag", "C3Mag",
             "L1Ang", "L2Ang", "L3Ang", "C1Ang", "C2Ang", "C3Ang"]
+    result_names = ['P_A', 'Q_A', 'P_B', 'Q_B', 'P_C', 'Q_C', 'VMAG_A',
+                    'VMAG_B', 'VMAG_C', 'datetime', 'units']
 
-    # Create the frame holding the results
-    frame = pandas.DataFrame(index=event_times, columns=names)
+    # Create the frame holding the measured data and the results
+    column_names = []
+    column_names.extend(names)
+    column_names.extend(result_names)
+    frame = pandas.DataFrame(index=event_times, columns=column_names)
 
     # Query the values
-    for value_time in event_times:
-        for value_id in ids:
-            results = connection.queryNearestValue(value_id, value_time, True, version=0)
-            pdb.set_trace()
+    for value_epoch_time, value_date in zip(event_times, dates):
+        for value_id, value_name in zip(ids, names):
+            query = connection.queryNearestValue(value_id, value_epoch_time, True, version=0)
+            frame.loc[value_epoch_time, value_name] = query[0][0][1]
 
+    # Calculate the results
+    frame['P_A'] = (frame['L1Mag']*frame['C1Mag']*numpy.cos(numpy.radians(frame['L1Ang'] - frame['C1Ang'])))*1e-3
+    frame['Q_A'] = (frame['L1Mag']*frame['C1Mag']*numpy.sin(numpy.radians(frame['L1Ang'] - frame['C1Ang'])))*1e-3
 
-    df_full['P_A'] = (df_full['L1Mag']*df_full['C1Mag']*np.cos(np.radians(df_full['L1Ang'] - df_full['C1Ang'])))*1e-3
-    df_full['Q_A'] = (df_full['L1Mag']*df_full['C1Mag']*np.sin(np.radians(df_full['L1Ang'] - df_full['C1Ang'])))*1e-3
+    frame['P_B'] = (frame['L2Mag']*frame['C2Mag']*numpy.cos(numpy.radians(frame['L2Ang'] - frame['C2Ang'])))*1e-3
+    frame['Q_B'] = (frame['L2Mag']*frame['C2Mag']*numpy.sin(numpy.radians(frame['L2Ang'] - frame['C2Ang'])))*1e-3
 
-    df_full['P_B'] = (df_full['L2Mag']*df_full['C2Mag']*np.cos(np.radians(df_full['L2Ang'] - df_full['C2Ang'])))*1e-3
-    df_full['Q_B'] = (df_full['L2Mag']*df_full['C2Mag']*np.sin(np.radians(df_full['L2Ang'] - df_full['C2Ang'])))*1e-3
+    frame['P_C'] = (frame['L3Mag']*frame['C3Mag']*numpy.cos(numpy.radians(frame['L3Ang'] - frame['C3Ang'])))*1e-3
+    frame['Q_C'] = (frame['L3Mag']*frame['C3Mag']*numpy.sin(numpy.radians(frame['L3Ang'] - frame['C3Ang'])))*1e-3
 
-    df_full['P_C'] = (df_full['L3Mag']*df_full['C3Mag']*np.cos(np.radians(df_full['L3Ang'] - df_full['C3Ang'])))*1e-3
-    df_full['Q_C'] = (df_full['L3Mag']*df_full['C3Mag']*np.sin(np.radians(df_full['L3Ang'] - df_full['C3Ang'])))*1e-3
-
-    return df_full
+    return frame
 
 
 connection = btrdb.BTrDBConnection("miranda.cs.berkeley.edu", 4410)
@@ -66,8 +69,8 @@ western = pytz.timezone('America/Los_Angeles')
 time_period = western.localize(datetime.datetime(2016, 11, 1, 12, 0, 0))
 
 print("Retrieving data...")
-upmudata = get_upmu_data([time_period], 'grizzly_bus1')
-print(upmudata)
+frame = get_upmu_data([time_period], 'grizzly_bus1')
+pdb.set_trace()
 
 
 # # Retrieve model name
