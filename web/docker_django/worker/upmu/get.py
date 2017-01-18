@@ -6,6 +6,7 @@ import pytz
 from datetime import datetime
 import pandas as pd
 import argparse
+import pdb
 
 
 def ConvertDateTimeToEpoch_ns(dt):
@@ -29,18 +30,17 @@ def get_upmu_data(event_time, PMU_name):
     uuid_str = str(np.genfromtxt(path + PMU_name + '_uuids.txt',dtype='str')).split(',')
     uuid_name = ["L1Mag", "L2Mag", "L3Mag", "C1Mag", "C2Mag", "C3Mag", \
                  "L1Ang", "L2Ang", "L3Ang", "C1Ang", "C2Ang", "C3Ang"]
-
+    pdb.set_trace()
     data_full = []
 
     u = []
     for i in range(0,len(uuid_str)):
         u.append(uuid.UUID(uuid_str[i]))
 
-    st = ConvertDateTimeToEpoch_ns(event_time)
-    et = st + 10e9
+    event_time = ConvertDateTimeToEpoch_ns(event_time)
 
-    for i in range(0, 1):
-        results = connection.queryStandardValues(u[i], st, et, version=0)
+    for i in range(0, len(u)):
+        results = connection.queryNearestValue(u[i], event_time, True, version=0)
 
         times_full = []
         vals_full = []
