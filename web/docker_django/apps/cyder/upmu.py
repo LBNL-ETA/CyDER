@@ -5,4 +5,6 @@ import tool as t
 
 
 def get(location, datetime):
+    date_from = dt.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+    date_to = "False"
     pass
