@@ -103,7 +103,7 @@ if not date_to in "False":
     delta_minutes = int((date_to - date_from).total_seconds() / 60)
     if delta_minutes < 1:
         raise Exception('Needs at least a minute between date_to and date_from')
-    dates = [date_from + datetime.timedelta(minutes=x) for x in range(0, delta_minutes)]
+    dates = [date_from + d.timedelta(minutes=x) for x in range(0, delta_minutes)]
 else:
     dates = [date_from]
 
