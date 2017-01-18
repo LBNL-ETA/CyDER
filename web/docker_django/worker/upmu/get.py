@@ -59,6 +59,11 @@ def get_upmu_data(dates, PMU_name):
 
     frame['P_C'] = (frame['L3Mag']*frame['C3Mag']*np.cos(np.radians(list(frame['L3Ang'] - frame['C3Ang']))))*1e-3
     frame['Q_C'] = (frame['L3Mag']*frame['C3Mag']*np.sin(np.radians(list(frame['L3Ang'] - frame['C3Ang']))))*1e-3
+    frame['units'] = [('kW', 'kVAR', 'V') for index in range(0, len(frame))]
+    frame['datetime'] = dates
+    frame['VMAG_A'] = frame['L1Mag']
+    frame['VMAG_B'] = frame['L2Mag']
+    frame['VMAG_C'] = frame['L3Mag']
 
     return frame
 
@@ -68,9 +73,10 @@ context = connection.newContext()
 
 western = pytz.timezone('America/Los_Angeles')
 time_period = western.localize(datetime.datetime(2016, 11, 1, 12, 0, 0))
+time_period2 = western.localize(datetime.datetime(2016, 11, 2, 12, 0, 0))
 
 print("Retrieving data...")
-frame = get_upmu_data([time_period], 'grizzly_bus1')
+frame = get_upmu_data([time_period, time_period2], 'grizzly_bus1')
 pdb.set_trace()
 
 
