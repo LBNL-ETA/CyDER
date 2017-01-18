@@ -1,6 +1,6 @@
 import btrdb
 import datetime
-import numpy
+import numpy as np
 import uuid
 import pytz
 import pandas
@@ -30,7 +30,7 @@ def get_upmu_data(dates, PMU_name):
 
     # Get the ids of the parameters to retrieve (each id is location and measure type unique)
     path = "CyDER/web/docker_django/worker/upmu/"
-    ids = str(numpy.genfromtxt(path + PMU_name + '_uuids.txt', dtype='str')).split(',')
+    ids = str(np.genfromtxt(path + PMU_name + '_uuids.txt', dtype='str')).split(',')
     ids = [uuid.UUID(value) for value in ids]
     names = ["L1Mag", "L2Mag", "L3Mag", "C1Mag", "C2Mag", "C3Mag",
             "L1Ang", "L2Ang", "L3Ang", "C1Ang", "C2Ang", "C3Ang"]
@@ -51,14 +51,14 @@ def get_upmu_data(dates, PMU_name):
 
     # Calculate the results
     pdb.set_trace()
-    frame['P_A'] = (frame['L1Mag']*frame['C1Mag']*numpy.cos(numpy.radians(frame['L1Ang'] - frame['C1Ang'])))*1e-3
-    frame['Q_A'] = (frame['L1Mag']*frame['C1Mag']*numpy.sin(numpy.radians(frame['L1Ang'] - frame['C1Ang'])))*1e-3
+    frame['P_A'] = (frame['L1Mag']*frame['C1Mag']*np.cos(np.radians(frame['L1Ang'] - frame['C1Ang'])))*1e-3
+    frame['Q_A'] = (frame['L1Mag']*frame['C1Mag']*np.sin(np.radians(frame['L1Ang'] - frame['C1Ang'])))*1e-3
 
-    frame['P_B'] = (frame['L2Mag']*frame['C2Mag']*numpy.cos(numpy.radians(frame['L2Ang'] - frame['C2Ang'])))*1e-3
-    frame['Q_B'] = (frame['L2Mag']*frame['C2Mag']*numpy.sin(numpy.radians(frame['L2Ang'] - frame['C2Ang'])))*1e-3
+    frame['P_B'] = (frame['L2Mag']*frame['C2Mag']*np.cos(np.radians(frame['L2Ang'] - frame['C2Ang'])))*1e-3
+    frame['Q_B'] = (frame['L2Mag']*frame['C2Mag']*np.sin(np.radians(frame['L2Ang'] - frame['C2Ang'])))*1e-3
 
-    frame['P_C'] = (frame['L3Mag']*frame['C3Mag']*numpy.cos(numpy.radians(frame['L3Ang'] - frame['C3Ang'])))*1e-3
-    frame['Q_C'] = (frame['L3Mag']*frame['C3Mag']*numpy.sin(numpy.radians(frame['L3Ang'] - frame['C3Ang'])))*1e-3
+    frame['P_C'] = (frame['L3Mag']*frame['C3Mag']*np.cos(np.radians(frame['L3Ang'] - frame['C3Ang'])))*1e-3
+    frame['Q_C'] = (frame['L3Mag']*frame['C3Mag']*np.sin(np.radians(frame['L3Ang'] - frame['C3Ang'])))*1e-3
 
     return frame
 
