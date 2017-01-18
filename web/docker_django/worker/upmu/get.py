@@ -71,52 +71,51 @@ def get_upmu_data(event_time, PMU_name):
     return df_full
 
 
-# connection = btrdb.BTrDBConnection("miranda.cs.berkeley.edu", 4410)
-# context = connection.newContext()
+connection = btrdb.BTrDBConnection("miranda.cs.berkeley.edu", 4410)
+context = connection.newContext()
+
+western = pytz.timezone('America/Los_Angeles')
+time_period = western.localize(datetime(2016,11,1,12,0,0))
+
+print("Retrieving data...")
+upmudata = get_upmu_data(time_period, 'grizzly_bus1')
+print(upmudata)
+
+
+# # Retrieve model name
+# try:
+#     parser = argparse.ArgumentParser(description='Select dates and location')
+#     parser.add_argument('date_from')
+#     parser.add_argument('date_to')
+#     # parser.add_argument('location')
+#     args = parser.parse_args()
+#     date_from = str(args.date_from)
+#     date_to = str(args.date_to)
+#     # location = str(args.location)
+# except:
+#     sys.exit('Error: could not retrieve argument')
 #
-# western = pytz.timezone('America/Los_Angeles')
-# time_period = western.localize(datetime(2016,11,1,12,0,0))
+# # Create datetimes every minutes
+# date_from = d.datetime.strptime(date_from, "%Y-%m-%d_%H:%M:%S")
+# if not date_to in "False":
+#     date_to = d.datetime.strptime(date_to, "%Y-%m-%d_%H:%M:%S")
+#     delta_minutes = int((date_to - date_from).total_seconds() / 60)
+#     if delta_minutes < 1:
+#         raise Exception('Needs at least a minute between date_to and date_from')
+#     dates = [date_from + d.timedelta(minutes=x) for x in range(0, delta_minutes)]
+# else:
+#     dates = [date_from]
 #
-# print("Retrieving data...")
-# upmudata = get_upmu_data(time_period, 'grizzly_bus1')
-# print(upmudata)
-
-
-# Retrieve model name
-try:
-    parser = argparse.ArgumentParser(description='Select dates and location')
-    parser.add_argument('date_from')
-    parser.add_argument('date_to')
-    # parser.add_argument('location')
-    args = parser.parse_args()
-    date_from = str(args.date_from)
-    date_to = str(args.date_to)
-    # location = str(args.location)
-except:
-    sys.exit('Error: could not retrieve argument')
-
-
-# Create datetimes every minutes
-date_from = d.datetime.strptime(date_from, "%Y-%m-%d_%H:%M:%S")
-if not date_to in "False":
-    date_to = d.datetime.strptime(date_to, "%Y-%m-%d_%H:%M:%S")
-    delta_minutes = int((date_to - date_from).total_seconds() / 60)
-    if delta_minutes < 1:
-        raise Exception('Needs at least a minute between date_to and date_from')
-    dates = [date_from + d.timedelta(minutes=x) for x in range(0, delta_minutes)]
-else:
-    dates = [date_from]
-
-for date in dates:
-    udata = {'date': date.strftime("%Y-%m-%d_%H:%M:%S"),
-             'VMAG_A': 7287.4208984375,
-             'VMAG_B': 7299.921875,
-             'VMAG_C': 7318.2822265625,
-             'P_A': 7272.5364248477308,
-             'P_B': 2118.3817519608633,
-             'P_C': 6719.1867010705246,
-             'Q_A': -284.19075651498088,
-             'Q_B': -7184.1189935099919,
-             'Q_C': 3564.4269660296022,
-             'units': ('kW', 'kVAR', 'V')}
-    print(udata)  # upmu data
+# for date in dates:
+#     udata = {'date': date.strftime("%Y-%m-%d_%H:%M:%S"),
+#              'VMAG_A': 7287.4208984375,
+#              'VMAG_B': 7299.921875,
+#              'VMAG_C': 7318.2822265625,
+#              'P_A': 7272.5364248477308,
+#              'P_B': 2118.3817519608633,
+#              'P_C': 6719.1867010705246,
+#              'Q_A': -284.19075651498088,
+#              'Q_B': -7184.1189935099919,
+#              'Q_C': 3564.4269660296022,
+#              'units': ('kW', 'kVAR', 'V')}
+#     print(udata)  # upmu data
