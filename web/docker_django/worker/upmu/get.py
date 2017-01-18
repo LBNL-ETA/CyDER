@@ -1,64 +1,51 @@
 import btrdb
-import datetime as d
-import numpy as np
+import datetime
+import numpy
 import uuid
 import pytz
-from datetime import datetime
-import pandas as pd
+import pandas
 import argparse
 import pdb
 
 
-def ConvertDateTimeToEpoch_ns(dt):
+def convert_datetime_to_epoch_ns(dt):
     #converts the datetime object to epoch time in nanoseconds
-    return (int(dt.strftime('%s'))*1e6 + dt.microsecond)*1e3
+    return (int(dt.strftime('%s')) * 1e6 + dt.microsecond) * 1e3
 
 
-def get_upmu_data(event_time, PMU_name):
+def get_upmu_data(dates, PMU_name):
     """Retrieves instantaneous P, Q, and voltage magnitude for specified datetime.
 
     Args:
-        inputdt (datetime): timezone aware datetime object
-        upmu_path (str): e.g., '/LBNL/grizzly_bus1/'
+        dates (datetime): list of datetime objects
+        PMU_name (str): e.g., 'grizzly_bus1'
     Returns:
         {'P_A': , 'Q_A': , 'P_B': , 'Q_B': , 'P_C': , 'Q_C': ,
          'units': ('kW', 'kVAR'),
          'VMag_A': , 'VMag_B': , 'VMag_C': }
     """
 
+    # Change all the dates into epoch time in nanoseconds
+    event_times = []
+    for value in dates:
+        event_times.append(convert_datetime_to_epoch_ns(value))
+
+    # Get the ids of the parameters to retrieve (each id is location and measure type unique)
     path = "CyDER/web/docker_django/worker/upmu/"
-    uuid_str = str(np.genfromtxt(path + PMU_name + '_uuids.txt',dtype='str')).split(',')
-    uuid_name = ["L1Mag", "L2Mag", "L3Mag", "C1Mag", "C2Mag", "C3Mag", \
-                 "L1Ang", "L2Ang", "L3Ang", "C1Ang", "C2Ang", "C3Ang"]
-    pdb.set_trace()
-    data_full = []
+    ids = str(numpy.genfromtxt(path + PMU_name + '_uuids.txt', dtype='str')).split(',')
+    ids = [uuid.UUID(value) for value in ids]
+    names = ["L1Mag", "L2Mag", "L3Mag", "C1Mag", "C2Mag", "C3Mag",
+            "L1Ang", "L2Ang", "L3Ang", "C1Ang", "C2Ang", "C3Ang"]
 
-    u = []
-    for i in range(0,len(uuid_str)):
-        u.append(uuid.UUID(uuid_str[i]))
+    # Create the frame holding the results
+    frame = pandas.DataFrame(index=event_times, columns=names)
 
-    event_time = ConvertDateTimeToEpoch_ns(event_time)
+    # Query the values
+    for value_time in event_times:
+        for value_id in ids:
+            results = connection.queryNearestValue(value_id, value_time, True, version=0)
+            pdb.set_trace()
 
-    for i in range(0, len(u)):
-        results = connection.queryNearestValue(u[i], event_time, True, version=0)
-
-        times_full = []
-        vals_full = []
-
-        for j in range(0,len(results[0])):
-            times_full.append(results[0][j][0])
-            vals_full.append(results[0][j][1])
-
-
-        # check if we're pulling angle measurements
-        data_full.append(vals_full)
-
-    data_full = np.array(data_full).transpose()
-
-    # data has n entries, each is a list of measurements
-    df_full = pd.DataFrame(data_full, columns=uuid_name, index=times_full)
-
-    output_dict = {}
 
     df_full['P_A'] = (df_full['L1Mag']*df_full['C1Mag']*np.cos(np.radians(df_full['L1Ang'] - df_full['C1Ang'])))*1e-3
     df_full['Q_A'] = (df_full['L1Mag']*df_full['C1Mag']*np.sin(np.radians(df_full['L1Ang'] - df_full['C1Ang'])))*1e-3
@@ -79,7 +66,7 @@ western = pytz.timezone('America/Los_Angeles')
 time_period = western.localize(datetime(2016,11,1,12,0,0))
 
 print("Retrieving data...")
-upmudata = get_upmu_data(time_period, 'grizzly_bus1')
+upmudata = get_upmu_data([time_period], 'grizzly_bus1')
 print(upmudata)
 
 
