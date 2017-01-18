@@ -79,5 +79,5 @@ time_period = western.localize(datetime(2016,11,1,12,0,0))
 
 
 print("Retrieving data...")
-upmudata = get_upmu_data(time_period, '/LBNL/grizzly_bus1/')
+upmudata = get_upmu_data(time_period, 'grizzly_bus1')
 print(upmudata)
