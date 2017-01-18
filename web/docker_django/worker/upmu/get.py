@@ -50,6 +50,7 @@ def get_upmu_data(dates, PMU_name):
             frame.loc[value_epoch_time, value_name] = query[0][0][1]
 
     # Calculate the results
+    pdb.set_trace()
     frame['P_A'] = (frame['L1Mag']*frame['C1Mag']*numpy.cos(numpy.radians(frame['L1Ang'] - frame['C1Ang'])))*1e-3
     frame['Q_A'] = (frame['L1Mag']*frame['C1Mag']*numpy.sin(numpy.radians(frame['L1Ang'] - frame['C1Ang'])))*1e-3
 
