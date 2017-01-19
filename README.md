@@ -10,6 +10,8 @@ None automatic steps before installing:
   - touch gunicorn.log
   - ssh-keygen (3 times enter)
   - ssh-copy-id Jonathan@128.3.12.69 (host password)
+  - ssh-keygen (custom naming)
+  - ssh-copy-id cyder@bt-eplus.dhcp.lbl.gov  (host password)
   - python manage.py migrate cyder
   - python manage.py shell
   - import docker_django.apps.cyder.manual_functions as f

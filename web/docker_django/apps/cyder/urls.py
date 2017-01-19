@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^api/my_models/remove/(?P<id>\d+)/$', api.remove_model, name='remove_model'),
     url(r'^api/my_models/copy/(?P<id>\d+)/$', api.copy_model, name='copy_model'),
     url(r'^api/my_models/set/description/(?P<id>\d+)/$', api.my_model_update_description, name='set_description'),
+    url(r'^api/upmu/get/$', api.get_upmu_data, name='get-upmu-data'),
 ]

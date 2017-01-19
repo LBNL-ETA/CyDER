@@ -60,7 +60,7 @@ def get_upmu_data(dates, PMU_name):
     frame['P_C'] = (frame['L3Mag']*frame['C3Mag']*np.cos(np.radians(list(frame['L3Ang'] - frame['C3Ang']))))*1e-3
     frame['Q_C'] = (frame['L3Mag']*frame['C3Mag']*np.sin(np.radians(list(frame['L3Ang'] - frame['C3Ang']))))*1e-3
     frame['units'] = [('kW', 'kVAR', 'V') for index in range(0, len(frame))]
-    frame['datetime'] = [value.strftime("%Y-%m-%d_%H:%M:%S") for value in dates]
+    frame['datetime'] = [value.strftime("%Y-%m-%d %H:%M:%S") for value in dates]
 
     # Added for simplicity
     frame['epoch_time'] = event_times

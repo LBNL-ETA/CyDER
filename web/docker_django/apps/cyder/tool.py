@@ -7,15 +7,16 @@ import ast
 import pdb
 
 
-def run_ssh_command(cmd, timeout=10, server="Jonathan@128.3.12.69"):
+def run_ssh_command(cmd, timeout=10, server="Jonathan@128.3.12.69", arg=[]):
     """
     Send a ssh request and check if the request is not hanging.
     timeout [seconds]
     """
     # Launch ssh query
-    ssh = subprocess.Popen(["ssh", server, "python", cmd],
-                           shell=False, stdout=subprocess.PIPE, bufsize=1000000,
-                           stderr=subprocess.PIPE)
+    long_cmd = ["ssh", server, "python", cmd]
+    long_cmd.extend(arg)
+    ssh = subprocess.Popen(long_cmd, shell=False, stdout=subprocess.PIPE,
+                           bufsize=1000000, stderr=subprocess.PIPE)
 
     if not timeout:
         return ssh.stdout.readlines(), 'Success'
