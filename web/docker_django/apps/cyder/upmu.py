@@ -7,7 +7,7 @@ def get(location, date_from, date_to):
     # Prepare input
     date_from = date_from.strftime("%Y-%m-%d_%H:%M:%S")
     if date_to:
-        date_to = date_from.strftime("%Y-%m-%d_%H:%M:%S")
+        date_to = date_to.strftime("%Y-%m-%d_%H:%M:%S")
     else:
         date_to = "False"
 
