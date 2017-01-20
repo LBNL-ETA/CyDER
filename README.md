@@ -27,8 +27,6 @@ None automatic steps when updating
 Current task: Finish calibration process with new upmu data
   - add breaker number and id type in arg
 Next steps:
-  - Add a setting page with a menu of actions
-  - Change markers for dots?
   - Create a graph of previous calibrations
   - Create a REST API
   - Create a Upmu page

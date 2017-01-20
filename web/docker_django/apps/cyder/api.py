@@ -67,9 +67,7 @@ def model_info_dict(request, id):
     # Along with the history of calibrations add the values found
     for index, row in enumerate(return_dict['history']):
         temp_calibration = CalibrationResult.objects.get(calibration=row['id'])
-        return_dict['history'][index]['z_a'] = temp_calibration.impedance_a
-        return_dict['history'][index]['z_b'] = temp_calibration.impedance_b
-        return_dict['history'][index]['z_c'] = temp_calibration.impedance_c
+        return_dict['history'][index]['z'] = temp_calibration.impedance
     return return_dict
 
 

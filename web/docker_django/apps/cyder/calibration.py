@@ -2,6 +2,7 @@ from __future__ import division
 import models as m
 import datetime as dt
 import tool as t
+import upmu
 
 
 def calibrate(model_id):
@@ -33,9 +34,7 @@ def calibrate(model_id):
     history.save()
     calibration_result = m.CalibrationResult(
         calibration=history,
-        impedance_a=impedances['impedances']['A'],
-        impedance_b=impedances['impedances']['B'],
-        impedance_c=impedances['impedances']['C'])
+        impedance=impedances['impedances']['A'])
     calibration_result.save()
     calibration_data = m.CalibrationData(
         calibration=history,

@@ -92,6 +92,17 @@
   <script type="text/javascript">
   var url = "/api/nodes/get/{{ model.id }}";
   var data
+
+  // Circle definition
+  var circle ={
+   path: google.maps.SymbolPath.CIRCLE,
+   fillColor: 'red',
+   fillOpacity: .4,
+   scale: 4.5,
+   strokeColor: 'white',
+   strokeWeight: 1
+  };
+
   d3.json(url, function (json) {
     // Save data in global scope
     data = json

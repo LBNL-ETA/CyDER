@@ -4,7 +4,7 @@ from . import models
 
 class ModelAdmin(admin.ModelAdmin):
     list_display = ('id', 'region', 'filename')
-    list_display_links = ('id')
+    list_display_links = ('id', 'region')
     search_fields = ('region', 'area', 'city')
     list_per_page = 25
 
@@ -18,28 +18,28 @@ class CalibrationHistoryAdmin(admin.ModelAdmin):
 
 class UserModelAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'model', 'name', 'description', 'simulation_date')
-    list_display_links = ('id')
+    list_display_links = ('id', 'user', 'model')
     search_fields = ('model__region', 'model__area', 'model__city', 'user_username')
     list_per_page = 25
 
 
 class CurrentCalibrationAdmin(admin.ModelAdmin):
     list_display = ('id', 'model')
-    list_display_links = ('id')
+    list_display_links = ('id', 'model')
     search_fields = ('model__region', 'model__area', 'model__city')
     list_per_page = 25
 
 
 class CalibrationDataAdmin(admin.ModelAdmin):
     list_display = ('id', 'calibration', 'p_a', 'p_b', 'p_c')
-    list_display_links = ('id')
+    list_display_links = ('id', 'calibration')
     search_fields = ('calibration__model__region', 'calibration__model__area')
     list_per_page = 25
 
 
 class DevicesAdmin(admin.ModelAdmin):
     list_display = ('id', 'model', 'device_number', 'device_type', 'distance')
-    list_display_links = ('id')
+    list_display_links = ('id', 'model', 'device_number')
     search_fields = ('model__region', 'model__area', 'model__city', 'device_type', 'distance')
     list_per_page = 25
 
