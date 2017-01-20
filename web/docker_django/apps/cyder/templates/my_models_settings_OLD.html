@@ -1,0 +1,50 @@
+{% extends "_base.html" %}
+{% block content %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+
+<div style="max-width: 500px; margin: 0 auto;">
+  <div class="text-center">
+    <h1><b>CyDER</b></h1>
+    <br>
+    <p>Click the "Simulate" button at the bottom to launch the simulation</p>
+  </div>
+
+  {% csrf_token %}
+  {% crispy form %}
+
+  <hr style="height:1px;border:none;color:#333;background-color:#333;">
+
+</div>
+
+<div class="row" style="max-width: 500px; margin: 0 auto;">
+  <div class="col-lg-5 pull-left" style="margin-top: 20px; padding-left: 0px;">
+    <p><b>Add a load or a PV: </b></p>
+  </div>
+  <a class="button1" href="/my_models_add_devices/{{ usermodel_id }}">Add device</a>
+</div>
+
+<br>
+
+<div style="max-width: 500px; margin: 0 auto;">
+  <div style="text-align:left;">
+    <p>List of added devices:</p>
+    <p><i>No devices added.</i></p>
+    <!-- <ul style="list-style-position: inside;">
+      <li>No devices</li>
+    </ul> -->
+  </div>
+  <hr style="height:1px;border:none;color:#333;background-color:#333;">
+</div>
+
+<br>
+<br>
+
+<div class="text-center">
+  <p>Launch the simulation!</p>
+  <a class="button1" href="#">Simulate</a>
+</div>
+
+
+{% endblock %}

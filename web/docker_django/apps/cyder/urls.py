@@ -8,9 +8,10 @@ urlpatterns = [
     url(r'^model/(?P<id>\d+)/$', views.model, name='model'),
     url(r'^my_models/', views.my_models, name='my_models'),
     url(r'^calibration/(?P<id>\d+)/$', views.calibration, name='calibration'),
-    url(r'^my_models_settings/(?P<id>\d+)/$', views.my_models_settings, name='my_models_settings'),
+    url(r'^my_models_general_settings/(?P<id>\d+)/$', views.my_models_general_settings, name='my_models_general_settings'),
     url(r'^my_models_add_devices/(?P<id>\d+)/$', views.my_models_add_devices, name='my_models_add_devices'),
-    url(r'^my_models_settings2/$', views.my_models_settings2, name='my_models_settings2'),
+    url(r'^my_models_settings/(?P<id>\d+)/$', views.my_models_settings, name='my_models_settings'),
+    url(r'^my_models_review/(?P<id>\d+)/$', views.my_models_review, name='my_models_review'),
 
     # API URLs
     url(r'^api/home/get/$', api.home_info, name='home_info'),

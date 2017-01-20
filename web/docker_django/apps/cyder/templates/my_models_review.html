@@ -1,0 +1,27 @@
+{% extends "_base.html" %}
+{% block content %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+
+<div style="max-width: 500px; margin: 0 auto;">
+  <div class="text-center">
+    <h1><b>CyDER</b></h1>
+    <br>
+    <p>Click the "Simulate" button at the bottom to launch the simulation</p>
+  </div>
+
+  <br>
+  <br>
+
+  <div class="text-center">
+    <p>Launch the simulation!</p>
+    <div class="row">
+      <a class="button3" href="/my_models/">Back</a>
+      <a class="button1" href="#">Simulate</a>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

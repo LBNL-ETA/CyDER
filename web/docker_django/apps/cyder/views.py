@@ -34,17 +34,22 @@ def my_models(request):
 
 
 @login_required
-def my_models_settings2(request):
-    return render(request, 'my_models_settings2.html')
+def my_models_settings(request, id):
+    return render(request, 'my_models_settings.html', {'usermodel_id': id})
 
 
 @login_required
-def my_models_settings(request, id):
+def my_models_review(request, id):
+    return render(request, 'my_models_review.html', {'usermodel_id': id})
+
+
+@login_required
+def my_models_general_settings(request, id):
     status, form = api._my_model_update_description(request, id)
     if status:
         messages.add_message(request, messages.SUCCESS, 'The description was updated!')
 
-    return render(request, 'my_models_settings.html', {'form': form, 'usermodel_id': id, 'model_id': form.instance.model.id})
+    return render(request, 'my_models_general_settings.html', {'form': form, 'usermodel_id': id, 'model_id': form.instance.model.id})
 
 
 @login_required
