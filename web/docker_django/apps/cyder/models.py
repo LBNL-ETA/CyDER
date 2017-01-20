@@ -15,6 +15,9 @@ class Model(models.Model):
     version = models.CharField(max_length=50, null=True, blank=True)
     upmu_location = models.CharField(max_length=50, null=True, blank=True)
 
+    def __str__(self):
+        return u"%s %s" % (self.region, self.filename)
+
 
 class Node(models.Model):
     """docstring for Node."""
@@ -60,6 +63,9 @@ class CalibrationHistory(models.Model):
     date = models.DateTimeField(null=True, blank=True)
     updated = models.BooleanField(default=False)
     calibration_algorithm = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return u"%s %s" % (self.model.region, self.date)
 
 
 class CalibrationResult(models.Model):

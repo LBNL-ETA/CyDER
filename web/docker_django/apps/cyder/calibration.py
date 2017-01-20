@@ -8,8 +8,17 @@ def calibrate(model_id):
     """
     Launch individual calibration function and save to the DB
     """
+    # Get the upmu data
+    date_from = dt.datetime.now() - dt.timedelta(minutes=10)
+    date_to = False
+    upmu = upmu.get('not in use so far', date_from, date_to)
+    try:
+        upmu = upmu['data'][0]
+    except:
+        raise Exception("Upmu data was empty")
+
     # Get the calibration data
-    sim_result = get_simulation_result(model_id)
+    sim_result = get_simulation_result(model_id, upmu)
 
     # Find the new impedances
     impedances = get_calibrated_impedances(sim_result)
@@ -44,7 +53,7 @@ def calibrate(model_id):
     return True
 
 
-def get_simulation_result(model_id):
+def get_simulation_result(model_id, upmu):
     """
     Send and ssh request and parse the results.
     CMD launch a python script on the host computer.
@@ -57,14 +66,15 @@ def get_simulation_result(model_id):
 
     # Launch SSH request to the server and grab the stdout
     timeout = 10
-    model_parent_path = ''
-    cmd = ('project_cyder/web/docker_django/worker/calibration.py ' +
-           model_parent_path + str(model.filename) + ' ' + str(model.upmu_location))
-    output, status = t.run_ssh_command(cmd, timeout=timeout)
+    arg = [str(model.filename)]
+    upmu_arg_names = ['P_A', 'P_B', 'P_C', 'Q_A', 'Q_B', 'Q_C', 'VMAG_A', 'VMAG_B', 'VMAG_C']
+    arg.extend([upmu['name'] for name in upmu_arg_names])
+    cmd = ('project_cyder/web/docker_django/worker/calibration.py')
+    output, status = t.run_ssh_command(cmd, timeout=timeout, arg=arg)
 
     # Parse ssh output
     if output is not False:
-        keys = ['upmu', 'voltages', 'currents']
+        keys = ['upmu' ,'voltages', 'currents']
         result = t.parse_ssh_dict(output, keys, status)
     else:
         raise Exception('SSH request to the server took more than ' +

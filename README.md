@@ -23,3 +23,10 @@ None automatic steps when updating
   - python manage.py migrate cyder
   - sudo supervisorctl restart all
   - Launch a the test suite (need one...)
+
+Current task: Finish calibration process with new upmu data
+Next steps:
+  - Create a REST API
+  - Update admin database
+  - Change ssh for celery workers
+  - Create a script to update the system / or initialize.
