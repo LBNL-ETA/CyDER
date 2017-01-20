@@ -1,0 +1,44 @@
+{% extends "_base.html" %}
+{% block content %}
+{% load staticfiles %}
+
+
+<div style="max-width: 500px; margin: 0 auto;">
+  <div class="text-center">
+    <h1><b>CyDER</b></h1>
+    <br>
+    <p><b>Settings</b></p>
+  </div>
+
+  <hr style="height:1px;border:none;color:#333;background-color:#333;">
+
+  <div class="text-center">
+    <p><i>Set the simulation general settings (name, description...)</i></p>
+    <a class="button2" href="#">General settings</a>
+
+    <br>
+    <br>
+
+    <p><i>Add loads and/or generators</i></p>
+    <a class="button2" href="#">Add device</a>
+    <!-- /my_models_add_devices/{{ usermodel_id }} -->
+
+    <br>
+    <br>
+
+    <p><i>Set the scenarios you want to apply (time window, EV penetration, ...)</i></p>
+    <a class="button2" href="#">Set scenario</a>
+  </div>
+
+  <br>
+  <br>
+
+  <hr style="height:1px;border:none;color:#333;background-color:#333;">
+
+  <div class="text-center">
+    <p>Review the settings before launching the simulation!</p>
+    <a class="button1" href="#">Review</a>
+  </div>
+</div>
+
+{% endblock %}

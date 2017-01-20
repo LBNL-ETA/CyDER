@@ -36,6 +36,13 @@ class CalibrationDataAdmin(admin.ModelAdmin):
     search_fields = ('calibration__model__region', 'calibration__model__area')
     list_per_page = 25
 
+
+class DevicesAdmin(admin.ModelAdmin):
+    list_display = ('id', 'model', 'device_number', 'device_type', 'distance')
+    list_display_links = ('id')
+    search_fields = ('model__region', 'model__area', 'model__city', 'device_type', 'distance')
+    list_per_page = 25
+
 # Register your models here.
 admin.site.register(models.Model, ModelAdmin)
 admin.site.register(models.Node)
@@ -44,3 +51,4 @@ admin.site.register(models.CurrentCalibration, CurrentCalibrationAdmin)
 admin.site.register(models.CalibrationHistory, CalibrationHistoryAdmin)
 admin.site.register(models.CalibrationResult)
 admin.site.register(models.CalibrationData, CalibrationDataAdmin)
+admin.site.register(models.Devices, DevicesAdmin)

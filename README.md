@@ -25,8 +25,13 @@ None automatic steps when updating
   - Launch a the test suite (need one...)
 
 Current task: Finish calibration process with new upmu data
+  - add breaker number and id type in arg
 Next steps:
+  - Add a setting page with a menu of actions
+  - Change markers for dots?
+  - Create a graph of previous calibrations
   - Create a REST API
-  - Update admin database
+  - Create a Upmu page
+  - Create search pages using Django filter (models and devices)
   - Change ssh for celery workers
   - Create a script to update the system / or initialize.

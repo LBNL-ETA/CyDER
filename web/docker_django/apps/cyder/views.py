@@ -34,6 +34,11 @@ def my_models(request):
 
 
 @login_required
+def my_models_settings2(request):
+    return render(request, 'my_models_settings2.html')
+
+
+@login_required
 def my_models_settings(request, id):
     status, form = api._my_model_update_description(request, id)
     if status:

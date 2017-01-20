@@ -15,7 +15,7 @@
 
   <div class="text-center">
     <h1><b>CyDER</b></h1>
-    <p>Distribution grid model:</p>
+    <p><b>Distribution grid model:</b></p>
   </div>
 
   <div style="text-align:left;">
@@ -31,10 +31,15 @@
     </ul>
   </div>
 
+  <div class="text-center">
+    <a class="button1" href="/api/my_models/add/{{ model.id }}">Add model to<br>my collection</a>
+  </div>
+
+  <br>
   <br>
 
   <div class="text-center">
-    <p>List of devices:</p>
+    <p><b>List of devices:</b></p>
   </div>
 
   <div style="text-align:left;">
@@ -45,10 +50,15 @@
     </ul>
   </div>
 
+  <div class="text-center">
+    <a class="button2" href="#">Search</a>
+  </div>
+
+  <br>
   <br>
 
   <div class="text-center">
-    <p>Last calibrations:</p>
+    <p><b>Last calibrations:</b></p>
   </div>
 
   <div style="text-align:left;">
@@ -64,14 +74,14 @@
   </div>
 
   <div class="text-center">
-    <a class="button1" href="#">See all</a>
+    <a class="button2" href="#">See all</a>
   </div>
 
   <br>
   <br>
 
   <div class="text-center">
-    <p>Node map:</p>
+    <p><b>Node map:</b></p>
   </div>
 </div>
 
@@ -144,10 +154,5 @@
 
   });
   </script>
-
-  <div class="text-center">
-    <a class="button1" href="/api/model/calibrate/{{ model.id }}">Calibrate</a>
-    <a class="button1" href="/api/my_models/add/{{ model.id }}">Add model</a>
-  </div>
 
 {% endblock content %}
