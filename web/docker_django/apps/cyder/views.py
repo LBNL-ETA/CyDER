@@ -64,11 +64,9 @@ class ModelViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = m.Model.objects.all()
 
     def list(self, request):
-        queryset = m.Model.objects.all()
-        serializer = s.ModelSerializer(queryset, many=True)
+        serializer = s.ModelSerializer(m.Model.objects.all(), many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
-        model = get_object_or_404(m.Model, id=pk)
-        serializer = s.DetailModelSerializer(model)
+        serializer = s.DetailModelSerializer(get_object_or_404(m.Model, id=pk))
         return Response(serializer.data)
