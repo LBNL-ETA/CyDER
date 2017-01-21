@@ -44,6 +44,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'crispy_forms',
     'bootstrap3_datetime',
+    'rest_framework',
+    'rest_framework_swagger',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -132,3 +134,14 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Page after login
 LOGIN_REDIRECT_URL = '/home'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAdminUser',
+    ],
+    'PAGE_SIZE': 10,
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.JSONRenderer',
+    )
+}

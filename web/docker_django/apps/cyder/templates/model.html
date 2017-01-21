@@ -44,7 +44,7 @@
 
   <div style="text-align:left;">
     <ul style="list-style-position: inside;">
-      {% for value in devices %}
+      {% for value in model.devices %}
       <li>{{ value.device_type }} | count: {{ value.count }}</li>
       {% endfor %}
     </ul>
@@ -64,8 +64,7 @@
   <div style="text-align:left;">
     <ul style="list-style-position: inside;">
       {% for value in history %}
-      <li>{{ value.date|date:"M d, Y" }} | ZA={{ value.z_a|floatformat:-2 }}
-        ZB={{ value.z_b|floatformat:-2 }} ZC={{ value.z_c|floatformat:-2 }}
+      <li>{{ value.date|date:"M d, Y" }} | Z={{ value.z|floatformat:-2 }}
         <a href="/calibration/{{ value.id }}">more details</a>
       </li>
       {% endfor %}

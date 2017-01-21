@@ -1,9 +1,19 @@
-from django.conf.urls import url
-
+from django.conf.urls import url, include
 from . import views
 from . import api
+from rest_framework import routers
+from rest_framework_swagger.views import get_swagger_view
+
+schema_view = get_swagger_view(title='CyDER API')
+
+router = routers.DefaultRouter()
+router.register(r'model', views.ModelViewSet)
 
 urlpatterns = [
+    url(r'^api2/', include(router.urls)),
+    url(r'^documentation/$', schema_view),
+
+    # Normal view to navigate in the website
     url(r'^home/$', views.home, name='home'),
     url(r'^model/(?P<id>\d+)/$', views.model, name='model'),
     url(r'^my_models/', views.my_models, name='my_models'),

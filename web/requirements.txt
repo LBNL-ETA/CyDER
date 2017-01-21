@@ -7,3 +7,5 @@ simplejson
 django-crispy-forms
 pdb
 django-bootstrap3-datetimepicker
+djangorestframework
+django-rest-swagger

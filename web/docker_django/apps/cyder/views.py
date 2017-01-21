@@ -7,7 +7,10 @@ from django.http import JsonResponse
 import models as m
 import api
 import ast
-
+from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework.decorators import detail_route
+import serializers as s
 
 @login_required
 def home(request):
@@ -16,11 +19,10 @@ def home(request):
 
 @login_required
 def model(request, id):
-    # Reduced history data
-    reduced_result = api.model_info_dict(request, id)
-    reduced_result['history'] = list(reversed(reduced_result['history']))[:5]
-
-    return render(request, 'model.html', reduced_result)
+    result_dict = {}
+    model = get_object_or_404(m.Model, id=id)
+    result_dict['model'] = s.DetailModelSerializer(model).data
+    return render(request, 'model.html', result_dict)
 
 
 @login_required
@@ -56,3 +58,17 @@ def my_models_general_settings(request, id):
 def my_models_add_devices(request, id):
     user_model = get_object_or_404(m.UserModel, id=id)
     return render(request, 'my_models_add_devices.html', {'usermodel_id': id, 'model_id': user_model.model.id})
+
+
+class ModelViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = m.Model.objects.all()
+
+    def list(self, request):
+        queryset = m.Model.objects.all()
+        serializer = s.ModelSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        model = get_object_or_404(m.Model, id=pk)
+        serializer = s.DetailModelSerializer(model)
+        return Response(serializer.data)
