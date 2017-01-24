@@ -50,7 +50,9 @@ lf.Run()
 
 # Get the positive sequence current
 current_positive_sequence = cympy.study.QueryInfoDevice("I1", breaker_name, int(breaker_type))
+current_positive_sequence_angle = cympy.study.QueryInfoDevice("I1angle", breaker_name, int(breaker_type))
 
 # # Print the results
 print(udata)  # upmu data
-print({'i1': current_positive_sequence})  # voltage results
+print({'i1mag': current_positive_sequence,
+       'i1angle': current_positive_sequence_angle})  # voltage results
