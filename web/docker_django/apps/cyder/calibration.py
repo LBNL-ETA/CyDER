@@ -91,7 +91,7 @@ def get_simulation_result(model, upmu, device):
 
     # Parse ssh output
     if output is not False:
-        keys = ['upmu' ,'voltages', 'currents']
+        keys = ['upmu' ,'voltage_mag', 'voltage_angle', 'current_mag', 'current_angle']
         result = t.parse_ssh_dict(output, keys, status)
     else:
         raise Exception('SSH request to the server took more than ' +
@@ -108,5 +108,5 @@ def get_calibrated_impedances(sim_result):
     {'umpu': ..., 'voltages': ..., 'currents': ...}
     """
 
-    result = ((sim_result['upmu']['VMAG_A'] - sim_result['voltages']['A']) / sim_result['currents']['A'])
+    result = ((sim_result['upmu']['VMAG_A'] - sim_result['voltage_mag']['A']) / sim_result['current_mag']['A'])
     return result
