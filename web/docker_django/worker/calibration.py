@@ -51,25 +51,25 @@ def load_allocation(values):
 
 
 # Retrieve model name
-try:
-    parser = argparse.ArgumentParser(description='Needs model and upmu data')
+# try:
+parser = argparse.ArgumentParser(description='Needs model and upmu data')
 
-    # Create args and parse them
-    arg_names = ['filename', 'breaker_name', 'breaker_type', 'P_A', 'P_B', 'P_C', 'Q_A', 'Q_B', 'Q_C', 'VMAG_A', 'VMAG_B', 'VMAG_C']
-    for arg_name in arg_names:
-        parser.add_argument(arg_name)
-    args = parser.parse_args()
+# Create args and parse them
+arg_names = ['filename', 'breaker_name', 'breaker_type', 'P_A', 'P_B', 'P_C', 'Q_A', 'Q_B', 'Q_C', 'VMAG_A', 'VMAG_B', 'VMAG_C']
+for arg_name in arg_names:
+    parser.add_argument(arg_name)
+args = parser.parse_args()
 
-    # Assign args to variable and cast right format
-    udata = {}
-    for arg_name in ['P_A', 'P_B', 'P_C', 'Q_A', 'Q_B', 'Q_C', 'VMAG_A', 'VMAG_B', 'VMAG_C']:
-        udate[arg_name] = float(args[arg_name])
-    model_filename = str(args.filename)
-    breaker_name = str(args.breaker_name)
-    breaker_type = str(args.breaker_type)
+# Assign args to variable and cast right format
+udata = {}
+for arg_name in ['P_A', 'P_B', 'P_C', 'Q_A', 'Q_B', 'Q_C', 'VMAG_A', 'VMAG_B', 'VMAG_C']:
+    udate[arg_name] = float(args[arg_name])
+model_filename = str(args.filename)
+breaker_name = str(args.breaker_name)
+breaker_type = str(args.breaker_type)
 
-except:
-    sys.exit('Error: could not retrieve argument')
+# except:
+#     sys.exit('Error: could not retrieve argument')
 
 # Open the model
 parent_path = 'D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//'
