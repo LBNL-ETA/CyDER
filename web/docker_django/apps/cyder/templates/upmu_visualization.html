@@ -1,0 +1,51 @@
+{% extends "_base.html" %}
+{% block content %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.4.3/d3.js" charset="utf-8"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<div style="max-width: 500px; margin: 0 auto;">
+
+  <div class="text-center">
+    <h1><b>CyDER</b></h1>
+    <p>Query uPMU data</p>
+    <br>
+  </div>
+</div>
+
+<div id="graph" style="width: 70%; height: 500px; margin: 0 auto;"></div>
+<script>
+  d3.json("/api2/upmu/2016-12-01_12:00:00/2016-12-01_13:00:00/", function(error, json) {
+    if (error) return console.warn(error);
+
+    console.log("Hello")
+    var x = [];
+    var y = [];
+
+    json.data.forEach(function(d){
+      x.push(d.datetime);
+      y.push(d.P_A)
+
+    });
+
+    var trace = {
+      x: x,
+      y: y,
+      mode: 'lines+markers',
+      type: 'scatter'
+    };
+
+    var layout = {
+      xaxis: {title: 'Time'},
+      yaxis: {title: 'Power (kW)'},
+    };
+
+    var data = [trace];
+
+    Plotly.newPlot('graph', data, layout);
+  });
+</script>
+
+
+{% endblock content %}

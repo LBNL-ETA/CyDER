@@ -11,6 +11,7 @@ router.register(r'model', views.ModelViewSet)
 
 urlpatterns = [
     url(r'^api2/', include(router.urls)),
+    url(r'^api2/upmu/(?P<date_from>[^/]+)/(?P<date_to>[^/]+)/$', views.upmu, name='upmu'),
     url(r'^documentation/$', schema_view),
 
     # Normal view to navigate in the website
@@ -22,6 +23,7 @@ urlpatterns = [
     url(r'^my_models_add_devices/(?P<id>\d+)/$', views.my_models_add_devices, name='my_models_add_devices'),
     url(r'^my_models_settings/(?P<id>\d+)/$', views.my_models_settings, name='my_models_settings'),
     url(r'^my_models_review/(?P<id>\d+)/$', views.my_models_review, name='my_models_review'),
+    url(r'^show_upmu_data/$', views.show_upmu_data, name='show_upmu_data'),
 
     # API URLs
     url(r'^api/home/get/$', api.home_info, name='home_info'),

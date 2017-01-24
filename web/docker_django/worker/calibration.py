@@ -11,7 +11,7 @@ try:
     parser = argparse.ArgumentParser(description='Needs model and upmu data')
 
     # Create args and parse them
-    arg_names = ['filename', 'P_A', 'P_B', 'P_C', 'Q_A', 'Q_B', 'Q_C', 'VMAG_A', 'VMAG_B', 'VMAG_C']
+    arg_names = ['filename', 'breaker_name', 'breaker_type', 'P_A', 'P_B', 'P_C', 'Q_A', 'Q_B', 'Q_C', 'VMAG_A', 'VMAG_B', 'VMAG_C']
     for arg_name in arg_names:
         parser.add_argument(arg_name)
     args = parser.parse_args()
@@ -21,6 +21,8 @@ try:
     for arg_name in ['P_A', 'P_B', 'P_C', 'Q_A', 'Q_B', 'Q_C', 'VMAG_A', 'VMAG_B', 'VMAG_C']:
         udate[arg_name] = float(args[arg_name])
     model_filename = str(args.filename)
+    breaker_name = str(args.breaker_name)
+    breaker_type = str(args.breaker_type)
 
 except:
     sys.exit('Error: could not retrieve argument')
@@ -49,9 +51,15 @@ lf = cympy.sim.LoadFlow()
 lf.Run()
 
 # Get the voltages at breaker
+v_A = cympy.study.QueryInfoDevice("VpuA", breaker_name, int(breaker_type))
+v_B = cympy.study.QueryInfoDevice("VpuB", breaker_name, int(breaker_type))
+v_C = cympy.study.QueryInfoDevice("VpuC", breaker_name, int(breaker_type))
 
+i_A = cympy.study.QueryInfoDevice("VpuA", breaker_name, int(breaker_type))
+i_B = cympy.study.QueryInfoDevice("VpuB", breaker_name, int(breaker_type))
+i_C = cympy.study.QueryInfoDevice("VpuC", breaker_name, int(breaker_type))
 
 # # Print the results
 print(udata)  # upmu data
-print({'A': 7287.42, 'B':7299.92, 'C':7318.28})  # voltage results
-print({'A': 997.9, 'B': 290.2, 'C': 918.1})  # current results
+print({'A': v_A, 'B': v_B, 'C': v_C})  # voltage results
+print({'A': i_A, 'B': i_B, 'C': i_C})  # current results

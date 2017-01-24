@@ -27,9 +27,13 @@ None automatic steps when updating
 Current task: Finish calibration process with new upmu data
   - add breaker number and id type in arg
 Next steps:
+  - Search source impedance calculation
   - Create a graph of previous calibrations
-  - Create a REST API
-  - Create a Upmu page
+  - Create a Upmu page *****
   - Create search pages using Django filter (models and devices)
+  - Create a REST API
+  - Launch normal simulation
+  - visualize result of normal simulations
+  - Create a vehicle simulation scenario
   - Change ssh for celery workers
   - Create a script to update the system / or initialize.

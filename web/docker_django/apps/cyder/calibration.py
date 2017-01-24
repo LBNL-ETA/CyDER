@@ -9,17 +9,11 @@ def calibrate(model_id):
     """
     Launch individual calibration function and save to the DB
     """
-    # Get the upmu data
-    date_from = dt.datetime.now() - dt.timedelta(minutes=10)
-    date_to = False
-    upmu = upmu.get('not in use so far', date_from, date_to)
-    try:
-        upmu = upmu['data'][0]
-    except:
-        raise Exception("Upmu data was empty")
+    # Get the data necessary for the calibration
+    upmu, model, device = get_calibration_data(model_id)
 
-    # Get the calibration data
-    sim_result = get_simulation_result(model_id, upmu)
+    # Launch simulation
+    sim_result = get_simulation_result(model, upmu, device)
 
     # Find the new impedances
     impedances = get_calibrated_impedances(sim_result)
@@ -28,7 +22,7 @@ def calibrate(model_id):
     temp_model = m.Model.objects.get(id=model_id)
     history = m.CalibrationHistory(
         model=temp_model,
-        date=dt.datetime.now() - dt.timedelta(hours=1),
+        date=dt.datetime.now() - dt.timedelta(minutes=10),
         updated=False,
         calibration_algorithm="Basic")
     history.save()
@@ -52,22 +46,46 @@ def calibrate(model_id):
     return True
 
 
-def get_simulation_result(model_id, upmu):
+def get_calibration_data(model_id):
     """
-    Send and ssh request and parse the results.
-    CMD launch a python script on the host computer.
+    Return all the data to launch a calibration.
+    It includes model filename, breaker number and type id as well as uPMU data.
     """
-    # Query the model information
+    # Get the upmu data 10 minute in the past to avoid problem?
+    date_from = dt.datetime.now() - dt.timedelta(minutes=10)
+    date_to = False
+    upmu = upmu.get('not in use so far', date_from, date_to)
+    try:
+        upmu = upmu['data'][0]
+    except:
+        raise Exception("Upmu data was empty")
+
+    # Get the model's filename
     try:
         model = m.Model.objects.get(id=model_id)
     except:
         raise Exception('Model id does not exist in the database')
 
+    # Get the breaker number and type_id
+    try:
+        devices = m.Devices.objects.filter(model_id=model_id, device_type="Breaker type.")
+        device = devices[0]
+    except:
+        raise Exception("No breaker available for this model")
+
+    return upmu, model, device
+
+
+def get_simulation_result(model, upmu, device):
+    """
+    Send and ssh request and parse the results.
+    CMD launch a python script on the host computer.
+    """
     # Launch SSH request to the server and grab the stdout
     timeout = 10
-    arg = [str(model.filename)]
+    arg = [str(model.filename), str(device.device_number), str(device.device_type)]
     upmu_arg_names = ['P_A', 'P_B', 'P_C', 'Q_A', 'Q_B', 'Q_C', 'VMAG_A', 'VMAG_B', 'VMAG_C']
-    arg.extend([upmu['name'] for name in upmu_arg_names])
+    arg.extend([upmu[name] for name in upmu_arg_names])
     cmd = ('project_cyder/web/docker_django/worker/calibration.py')
     output, status = t.run_ssh_command(cmd, timeout=timeout, arg=arg)
 
@@ -89,10 +107,6 @@ def get_calibrated_impedances(sim_result):
     sim_result format is expected to be:
     {'umpu': ..., 'voltages': ..., 'currents': ...}
     """
-    result = {'impedances':{}}
-    phases = ['A', 'B', 'C']
-    for phase in phases:
-        result['impedances'][phase] = (sim_result['voltages'][phase] /
-                                       sim_result['currents'][phase])
 
+    result = ((sim_result['upmu']['VMAG_A'] - sim_result['voltages']['A']) / sim_result['currents']['A'])
     return result

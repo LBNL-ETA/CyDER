@@ -10,7 +10,10 @@ import ast
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route
+from rest_framework.decorators import api_view
 import serializers as s
+import datetime
+import upmu as u
 
 @login_required
 def home(request):
@@ -70,3 +73,26 @@ class ModelViewSet(viewsets.ReadOnlyModelViewSet):
     def retrieve(self, request, pk=None):
         serializer = s.DetailModelSerializer(get_object_or_404(m.Model, id=pk))
         return Response(serializer.data)
+
+
+@api_view(['GET'])
+def upmu(request, date_from, date_to):
+    """
+    List all snippets, or create a new snippet.
+    """
+    if request.method == 'GET':
+        # Prepare input
+        date_from = datetime.datetime.strptime(date_from, "%Y-%m-%d_%H:%M:%S")
+        if date_to not in "False":
+            date_to = datetime.datetime.strptime(date_to, "%Y-%m-%d_%H:%M:%S")
+        else:
+            date_to = False
+
+        return_dict = {}
+        return_dict['data'] = u.get('not in use so far', date_from, date_to)
+        return Response(return_dict)
+
+
+@login_required
+def show_upmu_data(request):
+    return render(request, 'upmu_visualization.html', {})
