@@ -59,7 +59,7 @@ def get_upmu_data(dates, PMU_name):
 
     frame['P_C'] = (frame['L3Mag']*frame['C3Mag']*np.cos(np.radians(list(frame['L3Ang'] - frame['C3Ang']))))*1e-3
     frame['Q_C'] = (frame['L3Mag']*frame['C3Mag']*np.sin(np.radians(list(frame['L3Ang'] - frame['C3Ang']))))*1e-3
-    frame['units'] = [('kW', 'kVAR', 'V') for index in range(0, len(frame))]
+    frame['units'] = [('kW', 'kVAR', 'V', 'A', 'deg') for index in range(0, len(frame))]
     frame['datetime'] = [value.strftime("%Y-%m-%d %H:%M:%S") for value in dates]
 
     # Added for simplicity
@@ -76,11 +76,11 @@ try:
     parser = argparse.ArgumentParser(description='Select dates and location')
     parser.add_argument('date_from')
     parser.add_argument('date_to')
-    # parser.add_argument('location')
+    parser.add_argument('location')
     args = parser.parse_args()
     date_from = str(args.date_from)
     date_to = str(args.date_to)
-    # location = str(args.location)
+    location = str(args.location)
 except:
     sys.exit('Error: could not retrieve argument')
 
@@ -106,8 +106,8 @@ if not date_to in "False":
 else:
     dates = [western.localize(date_from)]
 
-# Get the data from the database for each datetime
-frame = get_upmu_data(dates, 'grizzly_bus1')
+# Get the data from the database for each datetime at location
+frame = get_upmu_data(dates, location)
 
 # Print the output
 for index in range(0, len(frame)):

@@ -54,7 +54,7 @@ def get_calibration_data(model_id):
     # Get the upmu data 10 minute in the past to avoid problem?
     date_from = dt.datetime.now() - dt.timedelta(minutes=10)
     date_to = False
-    upmu = upmu.get('not in use so far', date_from, date_to)
+    upmu = upmu.get('grizzly_bus1', date_from, date_to)
     try:
         upmu = upmu['data'][0]
     except:
@@ -91,7 +91,7 @@ def get_simulation_result(model, upmu, device):
 
     # Parse ssh output
     if output is not False:
-        keys = ['upmu' ,'voltage_mag', 'voltage_angle', 'current_mag', 'current_angle']
+        keys = ['upmu' ,'current']
         result = t.parse_ssh_dict(output, keys, status)
     else:
         raise Exception('SSH request to the server took more than ' +
@@ -107,6 +107,8 @@ def get_calibrated_impedances(sim_result):
     sim_result format is expected to be:
     {'umpu': ..., 'voltages': ..., 'currents': ...}
     """
+    # Get all values as a complex
 
-    result = ((sim_result['upmu']['VMAG_A'] - sim_result['voltage_mag']['A']) / sim_result['current_mag']['A'])
+    # Simple equation
+    result = ((sim_result['upmu']['VMAG_A'] - sim_result['upmu']['VMAG_A']) / sim_result['upmu']['VMAG_A'])
     return result

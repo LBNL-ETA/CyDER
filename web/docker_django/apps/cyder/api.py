@@ -200,5 +200,5 @@ def get_upmu_data(request):
     return_dict = {}
     date_from = datetime.datetime(2016, 12, 1, 12, 00, 00)
     date_to = datetime.datetime(2016, 12, 1, 12, 03, 00)
-    return_dict['data'] = upmu.get('not in use so far', date_from, date_to)
+    return_dict['data'] = upmu.get('grizzly_bus1', date_from, date_to)
     return JsonResponse(return_dict)

@@ -76,7 +76,7 @@ class ModelViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 @api_view(['GET'])
-def upmu(request, date_from, date_to):
+def upmu(request, date_from, date_to, location):
     """
     List all snippets, or create a new snippet.
     """
@@ -89,7 +89,7 @@ def upmu(request, date_from, date_to):
             date_to = False
 
         return_dict = {}
-        return_dict['data'] = u.get('not in use so far', date_from, date_to)
+        return_dict['data'] = u.get(location, date_from, date_to)
         return Response(return_dict)
 
 

@@ -11,7 +11,7 @@ router.register(r'model', views.ModelViewSet)
 
 urlpatterns = [
     url(r'^api2/', include(router.urls)),
-    url(r'^api2/upmu/(?P<date_from>[^/]+)/(?P<date_to>[^/]+)/$', views.upmu, name='upmu'),
+    url(r'^api2/upmu/(?P<date_from>[^/]+)/(?P<date_to>[^/]+)/(?P<location>[^/]+)/$', views.upmu, name='upmu'),
     url(r'^documentation/$', schema_view),
 
     # Normal view to navigate in the website

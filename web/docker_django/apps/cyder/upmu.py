@@ -14,7 +14,7 @@ def get(location, date_from, date_to):
     # Run ssh command
     timeout = 30
     cmd = "CyDER/web/docker_django/worker/upmu/get.py"
-    arg = [date_from, date_to]
+    arg = [date_from, date_to, location]
     output, status = t.run_ssh_command(cmd, timeout=timeout,
                                      server="cyder@bt-eplus.dhcp.lbl.gov", arg=arg)
 
