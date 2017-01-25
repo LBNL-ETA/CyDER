@@ -15,6 +15,8 @@ def run_ssh_command(cmd, timeout=10, server="Jonathan@128.3.12.69", arg=[]):
     # Launch ssh query
     long_cmd = ["ssh", server, "python", cmd]
     long_cmd.extend(arg)
+    # if server in "Jonathan@128.3.12.69":
+    #     raise Exception(str(long_cmd))
     ssh = subprocess.Popen(long_cmd, shell=False, stdout=subprocess.PIPE,
                            bufsize=1000000, stderr=subprocess.PIPE)
 

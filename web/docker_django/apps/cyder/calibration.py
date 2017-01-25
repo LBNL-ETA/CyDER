@@ -94,7 +94,7 @@ def get_simulation_result(model, upmu, device):
     """
     # Launch SSH request to the server and grab the stdout
     timeout = 30
-    arg = [str(model.filename), str(device.device_number), str(device.device_type)]
+    arg = [str(model.filename), str(device.device_number), str(device.device_type_id)]
     upmu_arg_names = ['P_A', 'P_B', 'P_C', 'Q_A', 'Q_B', 'Q_C', 'VMAG_A', 'VMAG_B', 'VMAG_C']
     arg.extend([str(upmu[name]) for name in upmu_arg_names])
     cmd = ('project_cyder/web/docker_django/worker/calibration.py')
@@ -119,6 +119,7 @@ def get_calibrated_impedances(sim_result, upmu, upmu2):
     {'umpu': ..., 'voltages': ..., 'currents': ...}
     """
     # Get all values as a complex
+    # raise Exception(str(sim_result))
     i1 = sim_result['current']['i1mag'] * numpy.exp(1j * numpy.deg2rad(sim_result['current']['i1angle']))
     va_breaker = upmu['L1Mag'] * numpy.exp(1j * numpy.deg2rad(upmu['L1Ang']))
     vb_breaker = upmu['L2Mag'] * numpy.exp(1j * numpy.deg2rad(upmu['L2Ang']))
