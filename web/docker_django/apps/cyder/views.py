@@ -14,6 +14,10 @@ from rest_framework.decorators import api_view
 import serializers as s
 import datetime
 import upmu as u
+import calibration as c
+import sys
+import traceback
+
 
 @login_required
 def home(request):
@@ -28,9 +32,9 @@ def model(request, id):
     return render(request, 'model.html', result_dict)
 
 
-@login_required
-def calibration(request, id):
-    return render(request, 'calibration.html', api.calibration_info_dict(request, id))
+# @login_required
+# def calibration(request, id):
+#     return render(request, 'calibration.html', api.calibration_info_dict(request, id))
 
 
 @login_required
@@ -91,6 +95,19 @@ def upmu(request, date_from, date_to, location):
         return_dict = {}
         return_dict['data'] = u.get(location, date_from, date_to)
         return Response(return_dict)
+
+
+@api_view(['GET'])
+def calibration(request, id):
+    """
+    List all snippets, or create a new snippet.
+    """
+    if request.method == 'GET':
+        try:
+            data = c.calibrate(id)
+        except:
+            return Response({'error': str(traceback.format_exc())})
+        return Response(data)
 
 
 @login_required

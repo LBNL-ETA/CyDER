@@ -2,7 +2,8 @@ from __future__ import division
 import models as m
 import datetime as dt
 import tool as t
-import upmu
+import upmu as u
+import numpy
 
 
 def calibrate(model_id):
@@ -10,13 +11,13 @@ def calibrate(model_id):
     Launch individual calibration function and save to the DB
     """
     # Get the data necessary for the calibration
-    upmu, model, device = get_calibration_data(model_id)
+    upmu, upmu2, model, device = get_calibration_data(model_id)
 
     # Launch simulation
     sim_result = get_simulation_result(model, upmu, device)
 
     # Find the new impedances
-    impedances = get_calibrated_impedances(sim_result)
+    impedance_real, impedance_imag = get_calibrated_impedances(sim_result, upmu, upmu2)
 
     # Update the database
     temp_model = m.Model.objects.get(id=model_id)
@@ -28,19 +29,20 @@ def calibrate(model_id):
     history.save()
     calibration_result = m.CalibrationResult(
         calibration=history,
-        impedance=impedances['impedances']['A'])
+        impedance_real=impedance_real,
+        impedance_imag=impedance_imag)
     calibration_result.save()
     calibration_data = m.CalibrationData(
         calibration=history,
-        p_a=sim_result['upmu']['P_A'],
-        p_b=sim_result['upmu']['P_B'],
-        p_c=sim_result['upmu']['P_C'],
-        q_a=sim_result['upmu']['Q_A'],
-        q_b=sim_result['upmu']['Q_B'],
-        q_c=sim_result['upmu']['Q_C'],
-        voltage_a=sim_result['upmu']['VMAG_A'],
-        voltage_b=sim_result['upmu']['VMAG_B'],
-        voltage_c=sim_result['upmu']['VMAG_C'])
+        p_a=upmu['P_A'],
+        p_b=upmu['P_B'],
+        p_c=upmu['P_C'],
+        q_a=upmu['Q_A'],
+        q_b=upmu['Q_B'],
+        q_c=upmu['Q_C'],
+        voltage_a=upmu['VMAG_A'],
+        voltage_b=upmu['VMAG_B'],
+        voltage_c=upmu['VMAG_C'])
     calibration_data.save()
 
     return True
@@ -54,11 +56,20 @@ def get_calibration_data(model_id):
     # Get the upmu data 10 minute in the past to avoid problem?
     date_from = dt.datetime.now() - dt.timedelta(minutes=10)
     date_to = False
-    upmu = upmu.get('grizzly_bus1', date_from, date_to)
+
+    # Get the breaker data
+    upmu = u.get('grizzly_bus1', date_from, date_to)
     try:
-        upmu = upmu['data'][0]
+        upmu = upmu[0]
     except:
-        raise Exception("Upmu data was empty")
+        raise Exception("Upmu data at breaker was empty")
+
+    # Get further down the line data
+    upmu2 = u.get('a6_bus1', date_from, date_to)
+    try:
+        upmu2 = upmu2[0]
+    except:
+        raise Exception("Upmu data further down the line was empty")
 
     # Get the model's filename
     try:
@@ -73,7 +84,7 @@ def get_calibration_data(model_id):
     except:
         raise Exception("No breaker available for this model")
 
-    return upmu, model, device
+    return upmu, upmu2, model, device
 
 
 def get_simulation_result(model, upmu, device):
@@ -85,13 +96,13 @@ def get_simulation_result(model, upmu, device):
     timeout = 10
     arg = [str(model.filename), str(device.device_number), str(device.device_type)]
     upmu_arg_names = ['P_A', 'P_B', 'P_C', 'Q_A', 'Q_B', 'Q_C', 'VMAG_A', 'VMAG_B', 'VMAG_C']
-    arg.extend([upmu[name] for name in upmu_arg_names])
+    arg.extend([str(upmu[name]) for name in upmu_arg_names])
     cmd = ('project_cyder/web/docker_django/worker/calibration.py')
     output, status = t.run_ssh_command(cmd, timeout=timeout, arg=arg)
 
     # Parse ssh output
     if output is not False:
-        keys = ['upmu' ,'current']
+        keys = ['current']
         result = t.parse_ssh_dict(output, keys, status)
     else:
         raise Exception('SSH request to the server took more than ' +
@@ -101,14 +112,26 @@ def get_simulation_result(model, upmu, device):
     return result
 
 
-def get_calibrated_impedances(sim_result):
+def get_calibrated_impedances(sim_result, upmu, upmu2):
     """
     From simulation results get the equivalent impedance of the grid model
     sim_result format is expected to be:
     {'umpu': ..., 'voltages': ..., 'currents': ...}
     """
     # Get all values as a complex
+    i1 = sim_result['current']['i1mag'] * numpy.exp(1j * numpy.deg2rad(sim_result['current']['i1angle']))
+    va_breaker = upmu['L1Mag'] * numpy.exp(1j * numpy.deg2rad(upmu['L1Ang']))
+    vb_breaker = upmu['L2Mag'] * numpy.exp(1j * numpy.deg2rad(upmu['L2Ang']))
+    vc_breaker = upmu['L3Mag'] * numpy.exp(1j * numpy.deg2rad(upmu['L3Ang']))
+    va_downstream = upmu2['L1Mag'] * numpy.exp(1j * numpy.deg2rad(upmu2['L1Ang']))
+    vb_downstream = upmu2['L2Mag'] * numpy.exp(1j * numpy.deg2rad(upmu2['L2Ang']))
+    vc_downstream = upmu2['L3Mag'] * numpy.exp(1j * numpy.deg2rad(upmu2['L3Ang']))
+
+    # Get the positive sequence for breaker and downstream
+    a = 1 * numpy.exp(1j * numpy.deg2rad(120))
+    v1_breaker = (va_breaker + a * vb_breaker + a * a * vc_breaker) / 3
+    v1_downstream = (va_downstream + a * vb_downstream + a * a * vc_downstream) / 3
 
     # Simple equation
-    result = ((sim_result['upmu']['VMAG_A'] - sim_result['upmu']['VMAG_A']) / sim_result['upmu']['VMAG_A'])
-    return result
+    result = (v1_breaker - v1_downstream) / i1
+    return result.real, result.imag

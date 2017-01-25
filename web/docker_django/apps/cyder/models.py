@@ -71,7 +71,8 @@ class CalibrationHistory(models.Model):
 class CalibrationResult(models.Model):
     """docstring for CalibrationData."""
     calibration = models.OneToOneField(CalibrationHistory, null=True, blank=True)
-    impedance = models.FloatField(null=True, blank=True)
+    impedance_real = models.FloatField(null=True, blank=True)
+    impedance_imag = models.FloatField(null=True, blank=True)
 
 
 class CalibrationData(models.Model):
