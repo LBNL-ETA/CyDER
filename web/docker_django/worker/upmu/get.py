@@ -111,6 +111,4 @@ frame = get_upmu_data(dates, location)
 
 # Print the output
 for index in range(0, len(frame)):
-    print(frame.iloc[index][['P_A', 'Q_A', 'P_B', 'Q_B', 'P_C', 'Q_C',
-                             'VMAG_A', 'VMAG_B', 'VMAG_C', 'datetime',
-                             'epoch_time', 'units']].to_dict())
+    print(frame.iloc[index].to_dict())
