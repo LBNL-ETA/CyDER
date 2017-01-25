@@ -40,11 +40,8 @@ def parse_ssh_dict(output, keys, status):
     """
     # Check if the lenght is the same
     if len(output) != len(keys):
-        print('#####')
-        print('output:' + str(output))
-        print('status:' + str(status))
-        print('#####')
-        raise Exception('The output from the ssh request was not the right lenght')
+        raise Exception('The output from the ssh request was not the right lenght ' +
+                        'OUTPUT: ' + str(output))
 
     # Parse the string
     result = {}

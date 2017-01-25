@@ -93,7 +93,7 @@ def get_simulation_result(model, upmu, device):
     CMD launch a python script on the host computer.
     """
     # Launch SSH request to the server and grab the stdout
-    timeout = 10
+    timeout = 30
     arg = [str(model.filename), str(device.device_number), str(device.device_type)]
     upmu_arg_names = ['P_A', 'P_B', 'P_C', 'Q_A', 'Q_B', 'Q_C', 'VMAG_A', 'VMAG_B', 'VMAG_C']
     arg.extend([str(upmu[name]) for name in upmu_arg_names])
