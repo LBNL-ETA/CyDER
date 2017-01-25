@@ -154,8 +154,8 @@ def list_nodes():
 
 
 def _describe_object(device):
-        for value in cympy.dm.Describe(device.GetObjType()):
-            print(value.Name)
+    for value in cympy.dm.Describe(device.GetObjType()):
+        print(value.Name)
 
 
 def get_device(id, device_type, verbose=False):
@@ -255,31 +255,37 @@ def load_allocation(values):
     la.Run([networks[0]])
 
 
-def get_voltage(devices):
+def get_voltage(frame, is_node=False):
     """
     Args:
-        devices (DataFrame): list of all the devices to include
+        devices (DataFrame): list of all the devices or nodes to include
 
     Return:
         devices_voltage (DataFrame): devices and their corresponding voltage for
             each phase
     """
     # Create a new frame to hold the results
-    voltage = devices.copy()
+    voltage = frame.copy()
 
     # Reset or create new columns to hold the result
     voltage['voltage_A'] = [0] * len(voltage)
     voltage['voltage_B'] = [0] * len(voltage)
     voltage['voltage_C'] = [0] * len(voltage)
 
-    for device in devices.itertuples():
-        # Get the according voltage per phase in a pandas dataframe
-        voltage.loc[device.Index, 'voltage_A'] = cympy.study.QueryInfoDevice(
-            "VpuA", device.device_number, int(device.device_type_id))
-        voltage.loc[device.Index, 'voltage_B'] = cympy.study.QueryInfoDevice(
-            "VpuB", device.device_number, int(device.device_type_id))
-        voltage.loc[device.Index, 'voltage_C'] = cympy.study.QueryInfoDevice(
-            "VpuC", device.device_number, int(device.device_type_id))
+    for value in frame.itertuples():
+        if not is_node:
+            # Get the according voltage per phase in a pandas dataframe
+            voltage.loc[value.Index, 'voltage_A'] = cympy.study.QueryInfoDevice(
+                "VpuA", value.device_number, int(value.device_type_id))
+            voltage.loc[value.Index, 'voltage_B'] = cympy.study.QueryInfoDevice(
+                "VpuB", value.device_number, int(value.device_type_id))
+            voltage.loc[value.Index, 'voltage_C'] = cympy.study.QueryInfoDevice(
+                "VpuC", value.device_number, int(value.device_type_id))
+        else:
+            # Get the according voltage per phase in a pandas dataframe
+            voltage.loc[value.Index, 'voltage_A'] = cympy.study.QueryInfoNode("VpuA", value.node_id)
+            voltage.loc[value.Index, 'voltage_B'] = cympy.study.QueryInfoNode("VpuB", value.node_id)
+            voltage.loc[value.Index, 'voltage_C'] = cympy.study.QueryInfoNode("VpuC", value.node_id)
 
     # Cast the right type
     for column in ['voltage_A', 'voltage_B', 'voltage_C']:
@@ -459,46 +465,3 @@ def get_unbalanced_line(devices):
     voltage['diff_with_mean'] = voltage[['mean_voltage_ABC', 'voltage_A', 'voltage_B', 'voltage_C']].apply(_diff, axis=1)
 
     return voltage
-
-
-def get_upmu_data(inputdt, upmu_path):
-    """Retrieves instantaneous P, Q, and voltage magnitude for specified datetime.
-
-    Args:
-        inputdt (datetime): timezone aware datetime object
-        upmu_path (str): e.g., '/LBNL/grizzly_bus1/'
-    Returns:
-        {'P_A': , 'Q_A': , 'P_B': , 'Q_B': , 'P_C': , 'Q_C': ,
-         'units': ('kW', 'kVAR'),
-         'VMAG_A': , 'VMAG_B': , 'VMAG_C': }
-    """
-    bc = btrdb.HTTPConnection("miranda.cs.berkeley.edu")
-    ur = btrdb.UUIDResolver("miranda.cs.berkeley.edu", "uuidresolver", "uuidpass", "upmu")
-
-    # convert dt to nanoseconds since epoch
-    epochns = btrdb.date(inputdt.strftime('%Y-%m-%dT%H:%M:%S'))
-
-    # retrieve raw data from btrdb
-    upmu_data = {}
-    streams = ['L1MAG', 'L2MAG', 'L3MAG', 'C1MAG', 'C2MAG', 'C3MAG', 'L1ANG', 'L2ANG', 'L3ANG', 'C1ANG', 'C2ANG', 'C3ANG']
-    for s in streams:
-        pt = bc.get_stat(ur.resolve(upmu_path + s), epochns, epochns + int(9e6))
-        upmu_data[s] = pt[0][2]
-
-    output_dict = {}
-
-    output_dict['P_A'] = (upmu_data['L1MAG']*upmu_data['C1MAG']*np.cos(upmu_data['L1ANG'] - upmu_data['C1ANG']))*1e-3
-    output_dict['Q_A'] = (upmu_data['L1MAG']*upmu_data['C1MAG']*np.sin(upmu_data['L1ANG'] - upmu_data['C1ANG']))*1e-3
-
-    output_dict['P_B'] = (upmu_data['L2MAG']*upmu_data['C2MAG']*np.cos(upmu_data['L2ANG'] - upmu_data['C2ANG']))*1e-3
-    output_dict['Q_B'] = (upmu_data['L2MAG']*upmu_data['C2MAG']*np.sin(upmu_data['L2ANG'] - upmu_data['C2ANG']))*1e-3
-
-    output_dict['P_C'] = (upmu_data['L3MAG']*upmu_data['C3MAG']*np.cos(upmu_data['L3ANG'] - upmu_data['C3ANG']))*1e-3
-    output_dict['Q_C'] = (upmu_data['L3MAG']*upmu_data['C3MAG']*np.sin(upmu_data['L3ANG'] - upmu_data['C3ANG']))*1e-3
-
-    output_dict['units'] = ('kW', 'kVAR', 'V')
-
-    output_dict['VMAG_A'] = upmu_data['L1MAG']
-    output_dict['VMAG_B'] = upmu_data['L2MAG']
-    output_dict['VMAG_C'] = upmu_data['L3MAG']
-    return output_dict
