@@ -32,7 +32,9 @@ def run_ssh_command(cmd, timeout=10, server="Jonathan@128.3.12.69", arg=[]):
 
     # The ssh query was longer than timeout duration
     ssh.kill()
-    return False, ssh.stderr.readlines()
+    raise Exception('SSH request to the server took more than ' +
+                    str(timeout) + ' seconds | Error was: ' +
+                    str(ssh.stderr.readlines()))
 
 
 def parse_ssh_dict(output, keys, status):
