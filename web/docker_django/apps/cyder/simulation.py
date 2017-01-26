@@ -10,12 +10,12 @@ def simulate(pk):
     """
     # Get the model id from the model user id
     try:
-        model_user = m.UserModel.objects.get(id=pk)
+        user_model = m.UserModel.objects.get(id=pk)
     except:
         raise Exception("Model User " + str(pk) + " does not exist")
 
     # Get the model corresponding to it
-    model = model_user.model
+    model = user_model.model
 
     # Launch simulation
     timeout = False
@@ -25,5 +25,11 @@ def simulate(pk):
 
     # Parse the results
     result = t.parse_ssh_list(output, status)
+
+    # Wipe out previous results if any
+    m.NodeResult.objects.filter(usermodel=user_model).delete()
+
+    # Save results back to the database
+    [m.NodeResult(usermodel=user_model, **node).save() for node in results]
 
     return result

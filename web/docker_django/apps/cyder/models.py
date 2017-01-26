@@ -49,6 +49,15 @@ class UserModel(models.Model):
     simulation_date = models.DateTimeField(null=True, blank=True)
 
 
+class NodeResult(models.Model):
+    """docstring for NodeResult."""
+    usermodel = models.ForeignKey(UserModel, null=True, blank=True)
+    node_id = models.CharField(max_length=50, null=True, blank=True)
+    voltage_A = models.FloatField(null=True, blank=True)
+    voltage_B = models.FloatField(null=True, blank=True)
+    voltage_C = models.FloatField(null=True, blank=True)
+
+
 class CurrentCalibration(models.Model):
     """docstring for CalibrationData."""
     model = models.OneToOneField(Model, null=True, blank=True)
