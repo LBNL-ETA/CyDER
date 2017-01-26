@@ -32,7 +32,7 @@ nodes = functions.list_nodes()
 nodes = functions.get_voltage(nodes, is_node=True)
 
 # Replace nan value by None
-import pdb; pdb.set_trace()
+nodes = nodes.fillna("None")
 
 # Print the results
 for index in range(0, len(nodes)):
