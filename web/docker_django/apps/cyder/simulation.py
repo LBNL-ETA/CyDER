@@ -17,4 +17,12 @@ def simulate(pk):
     model = model_user.model
 
     # Launch simulation
-    pass
+    timeout = 30
+    arg = [str(model.filename)]
+    cmd = ('project_cyder/web/docker_django/worker/simulation.py')
+    output, status = t.run_ssh_command(cmd, timeout=timeout, arg=arg)
+
+    # Parse the results
+    result = t.parse_ssh_list(output, status)
+
+    return result
