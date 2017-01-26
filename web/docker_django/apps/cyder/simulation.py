@@ -29,7 +29,13 @@ def simulate(pk):
     # Wipe out previous results if any
     m.NodeResult.objects.filter(usermodel=user_model).delete()
 
+    # Change "None" to None
+    for index, node in enumerate(result):
+        for key, value in node.items():
+            if value == "None":
+                result[index][key] = None
+
     # Save results back to the database
-    [m.NodeResult(usermodel=user_model, **node).save() for node in results]
+    [m.NodeResult(usermodel=user_model, **node).save() for node in result]
 
     return result
