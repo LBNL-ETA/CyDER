@@ -1,3 +1,4 @@
+from __future__ import division
 import docker_django.apps.cyder.models as m
 import model_update as u
 import models as m

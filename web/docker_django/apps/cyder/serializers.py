@@ -1,3 +1,4 @@
+from __future__ import division
 from rest_framework import serializers
 from django.db.models import Count
 from . import models

@@ -1,3 +1,4 @@
+from __future__ import division
 from django.forms import ModelForm, Textarea
 from .models import UserModel
 from bootstrap3_datetime.widgets import DateTimePicker

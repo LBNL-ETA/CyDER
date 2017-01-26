@@ -13,6 +13,7 @@ None automatic steps before installing:
   - ssh-keygen (custom naming)
   - ssh-copy-id cyder@bt-eplus.dhcp.lbl.gov  (host password)
   - python manage.py migrate cyder
+  - scp init_DB file to the static repository within apps
   - python manage.py shell
   - import docker_django.apps.cyder.manual_functions as f
   - f.database_initialization()
