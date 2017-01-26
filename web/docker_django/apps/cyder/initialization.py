@@ -4,7 +4,7 @@ import models as m
 import csv
 
 
-def nodes_itinialization():
+def nodes():
     """
     """
     # Remove all the nodes
@@ -20,7 +20,7 @@ def nodes_itinialization():
     return True
 
 
-def devices_itinialization():
+def devices():
     """
     """
     # Remove all the nodes
@@ -36,7 +36,7 @@ def devices_itinialization():
     return True
 
 
-def database_initialization(filename='/usr/src/app/docker_django/static/init_DB.csv'):
+def feeders(filename='/usr/src/app/docker_django/static/init_DB.csv'):
     """
     Initialize the database from a csv file.
     (remove previous instances)

@@ -37,6 +37,13 @@ class CalibrationDataAdmin(admin.ModelAdmin):
     list_per_page = 25
 
 
+class CalibrationResultAdmin(admin.ModelAdmin):
+    list_display = ('id', 'calibration', 'impedance_real', 'impedance_imag')
+    list_display_links = ('id', 'calibration')
+    search_fields = ('calibration__model__region', 'calibration__model__area', 'impedance_real')
+    list_per_page = 25
+
+
 class DevicesAdmin(admin.ModelAdmin):
     list_display = ('id', 'model', 'device_number', 'device_type', 'distance')
     list_display_links = ('id', 'model', 'device_number')
@@ -49,6 +56,6 @@ admin.site.register(models.Node)
 admin.site.register(models.UserModel, UserModelAdmin)
 admin.site.register(models.CurrentCalibration, CurrentCalibrationAdmin)
 admin.site.register(models.CalibrationHistory, CalibrationHistoryAdmin)
-admin.site.register(models.CalibrationResult)
+admin.site.register(models.CalibrationResult, CalibrationResultAdmin)
 admin.site.register(models.CalibrationData, CalibrationDataAdmin)
 admin.site.register(models.Devices, DevicesAdmin)
