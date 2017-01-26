@@ -45,7 +45,7 @@ def calibrate(model_id):
         voltage_c=upmu['VMAG_C'])
     calibration_data.save()
 
-    return True
+    return impedance_real, impedance_imag
 
 
 def get_calibration_data(model_id):

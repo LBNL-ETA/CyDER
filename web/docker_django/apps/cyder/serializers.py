@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.db.models import Count
 from . import models
+import traceback
 import sys
 
 
@@ -45,13 +46,13 @@ class DetailModelSerializer(serializers.ModelSerializer):
 
             for index, value in enumerate(history):
                 # Get the Calibration results
-                source_impedance = models.CalibrationResult.objects.filter(calibration=value.id)
+                source_impedance = models.CalibrationResult.objects.filter(calibration=value['id'])
                 if source_impedance:
-                    history[index]['z_real'] = source_impedance.impedance_real
-                    history[index]['z_imag'] = source_impedance.impedance_imag
+                    history[index]['z_real'] = source_impedance[0].impedance_real
+                    history[index]['z_imag'] = source_impedance[0].impedance_imag
                 else:
                     history[index]['z_real'] = 0
                     history[index]['z_imag'] = 0
         except:
-            return str(sys.exc_info()[0])
+            return str(traceback.format_exc())
         return history

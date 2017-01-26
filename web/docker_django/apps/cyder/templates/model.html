@@ -64,7 +64,7 @@
 
   <div style="text-align:left;">
     <ul style="list-style-position: inside;">
-      {% for value in history %}
+      {% for value in model.source_impedances %}
       <li>{{ value.date|date:"M d, Y" }} | Z={{ value.z_real|floatformat:-2 }}+{{ value.z_imag|floatformat:-2 }}j
         <a href="/calibration/{{ value.id }}">more details</a>
       </li>
