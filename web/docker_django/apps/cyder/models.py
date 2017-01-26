@@ -48,6 +48,9 @@ class UserModel(models.Model):
     description = models.TextField(null=True, blank=True)
     simulation_date = models.DateTimeField(null=True, blank=True)
 
+    def __str__(self):
+        return u"%s %s" % (self.user, self.model)
+
 
 class NodeResult(models.Model):
     """docstring for NodeResult."""

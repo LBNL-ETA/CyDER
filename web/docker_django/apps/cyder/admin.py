@@ -50,9 +50,18 @@ class DevicesAdmin(admin.ModelAdmin):
     search_fields = ('model__region', 'model__area', 'model__city', 'device_type', 'distance')
     list_per_page = 25
 
+
+class NodeResultAdmin(admin.ModelAdmin):
+    list_display = ('id', 'usermodel', 'node_id', 'voltage_A', 'voltage_B', 'voltage_C')
+    list_display_links = ('id', 'usermodel')
+    search_fields = ('usermodel', 'node_id')
+    list_per_page = 25
+
+
 # Register your models here.
 admin.site.register(models.Model, ModelAdmin)
 admin.site.register(models.Node)
+admin.site.register(models.NodeResult, NodeResultAdmin)
 admin.site.register(models.UserModel, UserModelAdmin)
 admin.site.register(models.CurrentCalibration, CurrentCalibrationAdmin)
 admin.site.register(models.CalibrationHistory, CalibrationHistoryAdmin)
