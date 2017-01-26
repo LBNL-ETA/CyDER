@@ -62,6 +62,7 @@ def parse_ssh_list(output, status):
     """
     result = []
     for string in output:
+        pdb.set_trace()
         dict_string = '{' + string.split('{', 1)[1].split('}')[0] + '}'
         result.append(ast.literal_eval(dict_string))
 

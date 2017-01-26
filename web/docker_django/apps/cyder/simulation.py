@@ -1,6 +1,7 @@
 from __future__ import division
 import models as m
 import tool as t
+import pdb
 
 
 def simulate(pk):
@@ -17,7 +18,7 @@ def simulate(pk):
     model = model_user.model
 
     # Launch simulation
-    timeout = 30
+    timeout = False
     arg = [str(model.filename)]
     cmd = ('project_cyder/web/docker_django/worker/simulation.py')
     output, status = t.run_ssh_command(cmd, timeout=timeout, arg=arg)

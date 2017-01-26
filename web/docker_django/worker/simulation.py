@@ -31,6 +31,9 @@ lf.Run()
 nodes = functions.list_nodes()
 nodes = functions.get_voltage(nodes, is_node=True)
 
+# Replace nan value by None
+import pdb; pdb.set_trace()
+
 # Print the results
 for index in range(0, len(nodes)):
     print(nodes.ix[index][['node_id', 'voltage_A', 'voltage_B', 'voltage_C']].to_dict())
