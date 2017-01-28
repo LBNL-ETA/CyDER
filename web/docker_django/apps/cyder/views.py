@@ -7,16 +7,18 @@ from django.http import JsonResponse
 import models as m
 import api
 import ast
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins, status
 from rest_framework.response import Response
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.decorators import api_view
 import serializers as s
 import datetime
 import upmu as u
 import calibration as c
+import simulation as sim
 import sys
 import traceback
+from .filter import NodeResultFilter
 
 
 @login_required
@@ -79,6 +81,41 @@ class ModelViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
+class UserModelViewSet(mixins.RetrieveModelMixin,
+                       viewsets.GenericViewSet):
+    queryset = m.UserModel.objects.all()
+    http_method_names = ['get', 'head', 'post']
+
+    def retrieve(self, request, pk):
+        serializer = s.UserModelSerializer(get_object_or_404(m.UserModel, id=pk))
+        return Response(serializer.data)
+
+    @detail_route(methods=['POST'], serializer_class=s.ActionSerializer)
+    def simulate(self, request, pk):
+        try:
+            sim.simulate(pk)
+        except:
+            return Response({'error': str(traceback.format_exc())})
+        return Response({'status': 'success'})
+
+
+class NodeResultViewSet(mixins.ListModelMixin,
+                        viewsets.GenericViewSet):
+    filter_backends = (NodeResultFilter,)
+    queryset = m.NodeResult.objects.all()
+    pagination_class = None
+
+    def list(self, request):
+        sim_id = request.GET.get("simulation_id", None)
+        node_id = request.GET.get("node_id", None)
+        if node_id:
+            queryset = m.NodeResult.objects.filter(usermodel=sim_id, node_id=node_id)
+        else:
+            queryset = m.NodeResult.objects.filter(usermodel=sim_id)
+        serializer = s.NodeResultSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
 @api_view(['GET'])
 def upmu(request, date_from, date_to, location):
     """
@@ -113,3 +150,18 @@ def calibration(request, id):
 @login_required
 def show_upmu_data(request):
     return render(request, 'upmu_visualization.html', {})
+
+# SNIPET
+# class MyView(mixins.CreateModelMixin,
+#                        mixins.RetrieveModelMixin,
+#                        mixins.UpdateModelMixin,
+#                        mixins.DestroyModelMixin,
+#                        mixins.ListModelMixin,
+#                        GenericViewSet):
+
+# serializer = s.PkSerializer(data=request.data)
+# if serializer.is_valid():
+#     return Response(serializer.data)
+# else:
+#     return Response(serializer.errors,
+#                     status=status.HTTP_400_BAD_REQUEST)

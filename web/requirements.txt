@@ -10,3 +10,5 @@ django-bootstrap3-datetimepicker
 djangorestframework
 django-rest-swagger
 numpy
+markdown
+django-filter

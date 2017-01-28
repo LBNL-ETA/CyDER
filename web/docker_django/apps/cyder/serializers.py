@@ -6,15 +6,42 @@ import traceback
 import sys
 
 
+class ActionSerializer(serializers.Serializer):
+    options = serializers.CharField(max_length=200)
+    description = serializers.CharField(max_length=200)
+
+
 class ModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Model
         fields = '__all__'
 
 
+class UserModelSerializer(serializers.ModelSerializer):
+    model_region = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.UserModel
+        fields = '__all__'
+
+    def get_model_region(self, obj):
+        try:
+            temp = models.Model.objects.filter(id=self.instance.model.id)
+            regions = [value.region for value in temp]
+        except:
+            return str(traceback.format_exc())
+        return regions
+
+
 class NodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Node
+        fields = '__all__'
+
+
+class NodeResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.NodeResult
         fields = '__all__'
 
 

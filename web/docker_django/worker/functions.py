@@ -136,11 +136,13 @@ def list_nodes():
     nodes['section_id'] = [0] * len(nodes)
     nodes['latitude'] = [0] * len(nodes)
     nodes['longitude'] = [0] * len(nodes)
+    nodes['distance'] = [0] * len(nodes)
 
     for node in nodes.itertuples():
         nodes.loc[node.Index, 'section_id'] = cympy.study.QueryInfoNode("SectionId", node.node_id)
         nodes.loc[node.Index, 'latitude'] = cympy.study.QueryInfoNode("CoordY", node.node_id)
         nodes.loc[node.Index, 'longitude'] = cympy.study.QueryInfoNode("CoordX", node.node_id)
+        nodes.loc[node.Index, 'distance'] = cympy.study.QueryInfoNode("Distance", node.node_id)
 
     # Cast the right type
     for column in ['latitude']:
@@ -149,6 +151,10 @@ def list_nodes():
     # Cast the right type
     for column in ['longitude']:
         nodes[column] = nodes[column].apply(lambda x: None if x is '' else float(x) / (100000))
+
+    # Cast the right type
+    for column in ['distance']:
+        nodes[column] = nodes[column].apply(lambda x: None if x is '' else float(x))
 
     return nodes
 

@@ -8,6 +8,8 @@ schema_view = get_swagger_view(title='CyDER API')
 
 router = routers.DefaultRouter()
 router.register(r'model', views.ModelViewSet)
+router.register(r'simulation', views.UserModelViewSet)
+router.register(r'simulation_node_result', views.NodeResultViewSet)
 
 urlpatterns = [
     url(r'^api2/', include(router.urls)),
