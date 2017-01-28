@@ -84,7 +84,7 @@ class ModelViewSet(viewsets.ReadOnlyModelViewSet):
 class UserModelViewSet(mixins.RetrieveModelMixin,
                        viewsets.GenericViewSet):
     queryset = m.UserModel.objects.all()
-    http_method_names = ['get', 'head', 'post']
+    # http_method_names = ['get', 'head', 'post']
 
     def retrieve(self, request, pk):
         serializer = s.UserModelSerializer(get_object_or_404(m.UserModel, id=pk))
@@ -150,6 +150,11 @@ def calibration(request, id):
 @login_required
 def show_upmu_data(request):
     return render(request, 'upmu_visualization.html', {})
+
+
+@login_required
+def show_node_result(request, id):
+    return render(request, 'node_result_visualization.html', {'simulation_id': id})
 
 # SNIPET
 # class MyView(mixins.CreateModelMixin,

@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^my_models_settings/(?P<id>\d+)/$', views.my_models_settings, name='my_models_settings'),
     url(r'^my_models_review/(?P<id>\d+)/$', views.my_models_review, name='my_models_review'),
     url(r'^show_upmu_data/$', views.show_upmu_data, name='show_upmu_data'),
+    url(r'^show_node_result/(?P<id>\d+)/$', views.show_node_result, name='show_node_result'),
 
     # API URLs
     url(r'^api/home/get/$', api.home_info, name='home_info'),

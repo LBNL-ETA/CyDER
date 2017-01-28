@@ -1,0 +1,71 @@
+{% extends "_base.html" %}
+{% block content %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.4.3/d3.js" charset="utf-8"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<div style="max-width: 500px; margin: 0 auto;">
+
+  <div class="text-center">
+    <h1><b>CyDER</b></h1>
+    <p>Simulation result:</p>
+    <br>
+  </div>
+</div>
+
+<div id="graph" style="width: 70%; height: 500px; margin: 0 auto;"></div>
+<script>
+  d3.json("/api2/simulation_node_result/?simulation_id={{ simulation_id }}", function(error, json) {
+    if (error) return console.warn(error);
+
+    var x = [];
+    var y1 = [];
+    var y2 = [];
+    var y3 = [];
+
+    json.forEach(function(d){
+      x.push(d.distance / 1000);
+      y1.push(d.voltage_A)
+      y2.push(d.voltage_B)
+      y3.push(d.voltage_C)
+
+    });
+
+    var trace = {
+      x: x,
+      y: y1,
+      mode: 'markers',
+      type: 'scatter',
+      name: 'Phase A'
+    };
+
+    var trace2 = {
+      x: x,
+      y: y2,
+      mode: 'markers',
+      type: 'scatter',
+      name: 'Phase B'
+    };
+
+    var trace3 = {
+      x: x,
+      y: y3,
+      mode: 'markers',
+      type: 'scatter',
+      name: 'Phase C'
+    };
+
+    var layout = {
+      xaxis: {title: 'Distance (km)'},
+      yaxis: {title: 'Voltage (pu)'},
+    };
+
+    var data = [trace, trace2, trace3];
+
+    Plotly.newPlot('graph', data, layout);
+  });
+</script>
+
+
+{% endblock content %}
