@@ -25,7 +25,19 @@
       <a class="button1" style="padding: 5px 5px; font-size: 14px;" href="/my_models_review/{{ value.id }}">Simulate</a>
       <a class="button1" style="padding: 5px 5px; font-size: 14px;" href="/show_node_result/{{ value.id }}">View results</a>
     </div>
+
+    <div class="text-center">
+      {% if value.in_progress %}
+        <h4>Status: <span class="label label-danger">Simulating...</span></h4>
+      {% elif value.result_available %}
+        <h4>Status: <span class="label label-success">Results available</span></h4>
+      {% else %}
+        <h4>Status: <span class="label label-warning">Waiting for user inputs</span></h4>
+      {% endif %}
+    </div>
+
     <br>
+
     {% endfor %}
     </ul>
   </div>

@@ -3,6 +3,9 @@
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.0.1/spin.min.js'></script>
+<script src="/static/js.cookie.js"></script>
 
 <div style="max-width: 500px; margin: 0 auto;">
   <div class="text-center">
@@ -11,17 +14,91 @@
     <p>Click the "Simulate" button at the bottom to launch the simulation</p>
   </div>
 
+<div id="review" style="max-width: 500px; margin: 0 auto;">
+  <div style="text-align:left;">
+    <ul style="list-style-position: inside;">
+      <li>Id: {{ model.id }}</li>
+      <li>Region: {{ model.region }}</li>
+      <li>Area: {{ model.area }}</li>
+      <li>City: {{ model.city }}</li>
+      <!-- <li>Latitude: {{ model.lat }}</li>
+      <li>Longitude: {{ model.lon }}</li>
+      <li>Filename: {{ model.filename }}</li> -->
+      <li>Breaker name: {{ model.breaker_name }}</li>
+    </ul>
+  </div>
+
+  <div class="text-center">
+    <p><b>List of devices:</b></p>
+  </div>
+
+  <div style="text-align:left;">
+    <ul style="list-style-position: inside;">
+      {% for value in model.devices %}
+      <li>{{ value.device_type }} | count: {{ value.count }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
   <br>
   <br>
 
   <div class="text-center">
     <p>Launch the simulation!</p>
-    <div class="row">
+    <div id="option" class="row">
       <a class="button3" href="/my_models/">Back</a>
-      <a class="button1" href="/api2/simulation/{{ usermodel_id }}/simulate/?format=json">Simulate</a>
+      <a id="simulate" class="button1">Simulate</a>
     </div>
   </div>
 </div>
+
+<script>
+// loader settings
+var opts = {
+  lines: 9, // The number of lines to draw
+  length: 9, // The length of each line
+  width: 5, // The line thickness
+  radius: 14, // The radius of the inner circle
+  color: '#EE3124', // #rgb or #rrggbb or array of colors
+  speed: 1.9, // Rounds per second
+  trail: 40, // Afterglow percentage
+  className: 'spinner', // The CSS class to assign to the spinner
+};
+
+var csrftoken = Cookies.get('csrftoken');
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+$(document).ready(function(){
+  $("#simulate").click(function(){
+      // trigger loader
+      var target = document.getElementById("option");
+      var spinner = new Spinner(opts).spin(target);
+
+      // Send post request
+      $.post("/api2/simulation/{{ usermodel_id }}/simulate/?format=json",
+      {
+        "options": "string",
+        "description": "string"
+      },
+      function(data, status){
+          // stop spin.js loader
+          spinner.stop();
+      });
+  });
+});
+</script>
 
 
 {% endblock %}

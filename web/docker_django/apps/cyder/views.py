@@ -51,7 +51,12 @@ def my_models_settings(request, id):
 
 @login_required
 def my_models_review(request, id):
-    return render(request, 'my_models_review.html', {'usermodel_id': id})
+    result_dict = {}
+    result_dict['usermodel_id'] = id
+    usermodel = get_object_or_404(m.UserModel, id=id)
+    model = get_object_or_404(m.Model, id=usermodel.model_id)
+    result_dict['model'] = s.DetailModelSerializer(model).data
+    return render(request, 'my_models_review.html', result_dict)
 
 
 @login_required
@@ -93,9 +98,23 @@ class UserModelViewSet(mixins.RetrieveModelMixin,
     @detail_route(methods=['POST'], serializer_class=s.ActionSerializer)
     def simulate(self, request, pk):
         try:
+            # Change simulation status
+            usermodel = m.UserModel.objects.get(id=pk)
+            usermodel.in_progress = True
+            usermodel.save()
+
+            # Launch simulation
             sim.simulate(pk)
         except:
+            usermodel.status = str(traceback.format_exc())
+            usermodel.save()
             return Response({'error': str(traceback.format_exc())})
+
+        # Change status to done
+        usermodel.in_progress = False
+        usermodel.status = "Success"
+        usermodel.result_available = True
+        usermodel.save()
         return Response({'status': 'success'})
 
 
