@@ -117,6 +117,11 @@ class UserModelViewSet(mixins.RetrieveModelMixin,
         usermodel.save()
         return Response({'status': 'success'})
 
+    # @detail_route(methods=['POST'], serializer_class=s.ActionSerializer)
+    # def general_settings(self, request, pk):
+    #     instance = get_object_or_404(UserModel, id=id)
+    #     form = UserModelDescriptionForm(request.POST or None, instance=instance)
+
 
 class NodeResultViewSet(mixins.ListModelMixin,
                         viewsets.GenericViewSet):
