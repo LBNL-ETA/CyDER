@@ -25,16 +25,11 @@ None automatic steps when updating
   - sudo supervisorctl restart all
   - Launch a the test suite (need one...)
 
-Current task: Finish calibration process with new upmu data
-  - add breaker number and id type in arg
+
 Next steps:
-  - Search source impedance calculation
   - Create a graph of previous calibrations
-  - Create a Upmu page *****
   - Create search pages using Django filter (models and devices)
   - Create a REST API
-  - Launch normal simulation
-  - visualize result of normal simulations
   - Create a vehicle simulation scenario
   - Change ssh for celery workers
   - Create a script to update the system / or initialize.
