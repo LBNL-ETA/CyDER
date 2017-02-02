@@ -6,7 +6,6 @@ import pickle
 import numpy as np
 try:
     import cympy
-    import btrdb
 except:
     # Only installed on the Cymdist server
     pass
@@ -27,10 +26,10 @@ def fmu_wrapper(model_filename, input_values, input_names,
     Example:
         >>> write_results = 0  # (or False)
         >>> model_filename = 'HL0004.sxst'
-        >>> input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'P_A', 'P_B', 'P_C', 'Q_A', 'Q_B', 'Q_C']
-        >>> input_values = [7287, 7299, 7318, 7272, 2118, 6719, -284, -7184, 3564]
-        >>> output_names = ['voltage_A', 'voltage_B', 'voltage_C']
-        >>> output_device_names = ['HOLLISTER_2104', 'HOLLISTER_2104', 'HOLLISTER_2104']
+        >>> input_names = ['VMag_A', 'VMag_B', 'VMag_C', 'VAng_A', 'VAng_B', 'VAng_C']
+        >>> input_values = [1000, 1500, 1200, 0.95, 0.98, 0.96]
+        >>> output_names = ['PA', 'PB', 'PC', 'QA', 'QB', 'QC']
+        >>> output_device_names = ['HOLLISTER_2104', 'HOLLISTER_2104', 'HOLLISTER_2104', 'HOLLISTER_2104', 'HOLLISTER_2104', 'HOLLISTER_2104']
 
         >>> fmu_wrapper(model_filename, input_values, input_names,
                         output_names, output_device_names, write_result)
@@ -40,24 +39,21 @@ def fmu_wrapper(model_filename, input_values, input_names,
     cympy.study.Open(model_filename)
 
     # Create a dictionary from the input values and input names
-    udata = {}
+    input_data = {}
     for name, value in zip(input_names, input_values):
-        udata[name] = value
+        input_data[name] = value
 
-    # Run load allocation function to set input values
-    load_allocation(udata)
+    # Set up the right voltage [V to kV]
+    cympy.study.SetValueTopo(input_data['VMag_A'] / 1000,
+        "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage1", networks[0])
+    cympy.study.SetValueTopo(input_data['VMag_B'] / 1000,
+        "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage2", networks[0])
+    cympy.study.SetValueTopo(input_data['VMag_C'] / 1000,
+        "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage3", networks[0])
 
     # Run the power flow
     lf = cympy.sim.LoadFlow()
     lf.Run()
-
-    # Get the full output data <--- optimize this part to gain time
-    devices = list_devices()
-    devices = get_voltage(devices)
-    devices = get_overload(devices)
-    devices = get_load(devices)
-    devices = get_unbalanced_line(devices)
-    devices = get_distance(devices)
 
     # Write full results?
     if write_result:
@@ -71,15 +67,18 @@ def fmu_wrapper(model_filename, input_values, input_names,
         with open(model_filename + '_result_.pickle', 'wb') as output_file:
             pickle.dump(temp, output_file, protocol=2)
 
-    # Filter the result for the right outputs value
+    # Return the right values
     output = []
-    DEFAULT_VALUE = 0  # value to output in case of a NaN value
-    for device_name, category in zip(output_device_names, output_names):
-        temp = devices[devices.device_number == device_name][category]
-
-        if not temp.isnull().any():
-            output.append(temp.iloc[0])
-        else:
+    DEFAULT_VALUE = 0  # value to output in case of a NaN value or an error
+    for device_number, category in zip(output_device_names, output_names):
+        try:
+            # TO DO: Change Query info per device with query info per node
+            temp = cympy.study.QueryInfoDevice(category, device_number, 2)  # 2 is the id for breakers
+            if temp:
+                output.append(temp)
+            else:
+                output.append(DEFAULT_VALUE)
+        except:
             output.append(DEFAULT_VALUE)
 
     return output
