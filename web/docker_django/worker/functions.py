@@ -12,27 +12,27 @@ except:
 
 
 def fmu_wrapper(model_filename, input_values, input_names,
-                output_names, output_device_names, write_result):
+                output_names, output_nodes, write_result=False):
     """Communicate with the FMU to launch a Cymdist simulation
 
     Args:
         model_filename (String): path to the cymdist grid model
         input_values (List): list of float with the same order as input_names
         input_names (List): list of String to describe the list of values
-        output_names (List): list of String output names [voltage_A, voltage_B, ...]
-        output_device_names (List): list of String output device name (same lenght as output_names)
-        write_result (Boolean): if True the entire results are saved to the file system (add ~30secs)
+        output_names (List): list of String output names (for a full list of option consult CymDIST docs)
+        output_nodes (List): list of String corresponding to node ids for each output_names
+        write_result (Boolean): [Optional] if True the entire results are saved to the file system (add ~30secs)
 
     Example:
+        >>> model_filename = 'AT0001.sxst'
+        >>> input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
+        >>> input_values = [7270, 7270, 7270, 0, -120, 120]
+        >>> output_names = ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC']
+        >>> output_nodes = ['1100108926', '1100108926', '1100108926', '1100108926', '1100108926', '1100108926']
         >>> write_results = 0  # (or False)
-        >>> model_filename = 'HL0004.sxst'
-        >>> input_names = ['VMag_A', 'VMag_B', 'VMag_C', 'VAng_A', 'VAng_B', 'VAng_C']
-        >>> input_values = [1000, 1500, 1200, 0.95, 0.98, 0.96]
-        >>> output_names = ['PA', 'PB', 'PC', 'QA', 'QB', 'QC']
-        >>> output_device_names = ['HOLLISTER_2104', 'HOLLISTER_2104', 'HOLLISTER_2104', 'HOLLISTER_2104', 'HOLLISTER_2104', 'HOLLISTER_2104']
 
         >>> fmu_wrapper(model_filename, input_values, input_names,
-                        output_names, output_device_names, write_result)
+                        output_names, output_nodes, write_result)
     """
 
     # Open the model
@@ -43,12 +43,15 @@ def fmu_wrapper(model_filename, input_values, input_names,
     for name, value in zip(input_names, input_values):
         input_data[name] = value
 
-    # Set up the right voltage [V to kV]
-    cympy.study.SetValueTopo(input_data['VMag_A'] / 1000,
+    # Get a list of networks
+    networks = cympy.study.ListNetworks()
+
+    # Set up the right voltage in kV (input must be V)
+    cympy.study.SetValueTopo(input_data['VMAG_A'] / 1000,
         "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage1", networks[0])
-    cympy.study.SetValueTopo(input_data['VMag_B'] / 1000,
+    cympy.study.SetValueTopo(input_data['VMAG_B'] / 1000,
         "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage2", networks[0])
-    cympy.study.SetValueTopo(input_data['VMag_C'] / 1000,
+    cympy.study.SetValueTopo(input_data['VMAG_C'] / 1000,
         "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage3", networks[0])
 
     # Run the power flow
@@ -70,10 +73,9 @@ def fmu_wrapper(model_filename, input_values, input_names,
     # Return the right values
     output = []
     DEFAULT_VALUE = 0  # value to output in case of a NaN value or an error
-    for device_number, category in zip(output_device_names, output_names):
+    for node_id, category in zip(output_nodes, output_names):
         try:
-            # TO DO: Change Query info per device with query info per node
-            temp = cympy.study.QueryInfoDevice(category, device_number, 2)  # 2 is the id for breakers
+            temp = cympy.study.QueryInfoNode(category, node_id)
             if temp:
                 output.append(temp)
             else:
