@@ -26,29 +26,36 @@ parent_path = 'D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//
 cympy.study.Open(parent_path + model_filename)
 
 # Select the section id
-nodes = functions.list_nodes()
-ids = list(set(nodes.section_id.values()))
-power_demand = [0] * len(ids)
+devices = functions.list_devices()
+power_demand = 6.6  # [kW]
+ids = list(set(devices[devices.device_type_id == 14].device_number.values()))
+phase_dict = {'A': cympy.enums.Phase.A,
+              'B': cympy.enums.Phase.B,
+              'C': cympy.enums.Phase.C}
 
-# For each vehicle plugged
-for index in range(0, nb_vehicles):
-    # Pick a random number from 0 to len(ids)
-    x = randint(0, len(ids))
-    # Assign power demand
-    power_demand[x] += 6600
+while vehicle_count <= nb_vehicles:
+    # Pick a random spot load
+    index = randint(0, len(ids))
+    
+    config = cympy.study.QueryInfoDevice("LoadConfig", ids[index], 14)
+    if config in 'Yg':
+        phases = list(cympy.study.QueryInfoDevice("Phase", ids[index], 14))
+        power = power_demand / len(phases)
+        spot = cympy.study.GetLoad(ids[index], cympy.enums.LoadType.Spot)
+        for phase in phases:
+            spot.SetValue("LoadValue.KW", ids[index], phase_dict[phase], "DEFAULT")
+        vehicle_count += 1
 
-# Add a load on the section with a non null power demand
-for pk, power in zip(ids, power_demand):
-    if power != 0:
-        device = functions.add_device(device_name, cympy.enums.DeviceType.Photovoltaic, pk)
-        SetInfoDevice(device, "load", power)
+    else:
+        # Pick another node
+        Flag = False
 
 # Run the power flow
 lf = cympy.sim.LoadFlow()
 lf.Run()
 
 # Get the results
-# nodes = functions.list_nodes()
+nodes = functions.list_nodes()
 nodes = functions.get_voltage(nodes, is_node=True)
 
 # Replace nan value by None
