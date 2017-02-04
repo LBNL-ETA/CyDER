@@ -6,7 +6,6 @@ import cympy
 import functions
 from random import randint
 
-
 # Retrieve model name
 try:
     parser = argparse.ArgumentParser(description='Needs model and upmu data')
@@ -28,22 +27,28 @@ cympy.study.Open(parent_path + model_filename)
 # Select the section id
 devices = functions.list_devices()
 power_demand = 6.6  # [kW]
-ids = list(set(devices[devices.device_type_id == 14].device_number.values()))
+ids = list(set(devices[devices.device_type_id == 14].device_number.values))
 phase_dict = {'A': cympy.enums.Phase.A,
               'B': cympy.enums.Phase.B,
               'C': cympy.enums.Phase.C}
 
+vehicle_count = 0
 while vehicle_count <= nb_vehicles:
     # Pick a random spot load
     index = randint(0, len(ids))
     
     config = cympy.study.QueryInfoDevice("LoadConfig", ids[index], 14)
-    if config in 'Yg':
+    phase_type = cympy.study.QueryInfoDevice("PhaseType", ids[index], 14)
+    if config in 'Yg' and phase_type in 'ByPhase':
         phases = list(cympy.study.QueryInfoDevice("Phase", ids[index], 14))
         power = power_demand / len(phases)
-        spot = cympy.study.GetLoad(ids[index], cympy.enums.LoadType.Spot)
-        for phase in phases:
-            spot.SetValue("LoadValue.KW", ids[index], phase_dict[phase], "DEFAULT")
+        print(ids[index])
+        print(phases)
+        for phase in range(0, len(phases)):
+            cympy.study.SetValueDevice(
+                power,
+                'CustomerLoads[0].CustomerLoadModels[0].CustomerLoadValues[' + str(phase) + '].LoadValue.KW',
+                ids[index], 14)
         vehicle_count += 1
 
     else:
