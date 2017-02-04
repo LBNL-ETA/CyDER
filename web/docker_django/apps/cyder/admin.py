@@ -31,7 +31,7 @@ class CurrentCalibrationAdmin(admin.ModelAdmin):
 
 
 class CalibrationDataAdmin(admin.ModelAdmin):
-    list_display = ('id', 'calibration', 'p_a', 'p_b', 'p_c')
+    list_display = ('id', 'calibration')
     list_display_links = ('id', 'calibration')
     search_fields = ('calibration__model__region', 'calibration__model__area')
     list_per_page = 25

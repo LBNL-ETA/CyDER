@@ -96,12 +96,39 @@ class CalibrationResult(models.Model):
 class CalibrationData(models.Model):
     """docstring for CalibrationData."""
     calibration = models.OneToOneField(CalibrationHistory, null=True, blank=True)
-    p_a = models.FloatField(null=True, blank=True)
-    p_b = models.FloatField(null=True, blank=True)
-    p_c = models.FloatField(null=True, blank=True)
-    q_a = models.FloatField(null=True, blank=True)
-    q_b = models.FloatField(null=True, blank=True)
-    q_c = models.FloatField(null=True, blank=True)
-    voltage_a = models.FloatField(null=True, blank=True)
-    voltage_b = models.FloatField(null=True, blank=True)
-    voltage_c = models.FloatField(null=True, blank=True)
+
+    # uPMU data at the feeder
+    p_a_feeder = models.FloatField(null=True, blank=True)
+    p_b_feeder = models.FloatField(null=True, blank=True)
+    p_c_feeder = models.FloatField(null=True, blank=True)
+    q_a_feeder = models.FloatField(null=True, blank=True)
+    q_b_feeder = models.FloatField(null=True, blank=True)
+    q_c_feeder = models.FloatField(null=True, blank=True)
+    volt_mag_a_feeder = models.FloatField(null=True, blank=True)
+    volt_mag_b_feeder = models.FloatField(null=True, blank=True)
+    volt_mag_c_feeder = models.FloatField(null=True, blank=True)
+    volt_ang_a_feeder = models.FloatField(null=True, blank=True)
+    volt_ang_b_feeder = models.FloatField(null=True, blank=True)
+    volt_ang_c_feeder = models.FloatField(null=True, blank=True)
+    v1_real_feeder = models.FloatField(null=True, blank=True)
+    v1_imag_feeder = models.FloatField(null=True, blank=True)
+
+    # uPMU data downstream
+    p_a_downstream = models.FloatField(null=True, blank=True)
+    p_b_downstream = models.FloatField(null=True, blank=True)
+    p_c_downstream = models.FloatField(null=True, blank=True)
+    q_a_downstream = models.FloatField(null=True, blank=True)
+    q_b_downstream = models.FloatField(null=True, blank=True)
+    q_c_downstream = models.FloatField(null=True, blank=True)
+    volt_mag_a_downstream = models.FloatField(null=True, blank=True)
+    volt_mag_b_downstream = models.FloatField(null=True, blank=True)
+    volt_mag_c_downstream = models.FloatField(null=True, blank=True)
+    volt_ang_a_downstream = models.FloatField(null=True, blank=True)
+    volt_ang_b_downstream = models.FloatField(null=True, blank=True)
+    volt_ang_c_downstream = models.FloatField(null=True, blank=True)
+    v1_real_downstream = models.FloatField(null=True, blank=True)
+    v1_imag_downstream = models.FloatField(null=True, blank=True)
+
+    # Simulation results
+    i1_real_sim = models.FloatField(null=True, blank=True)
+    i1_imag_sim = models.FloatField(null=True, blank=True)

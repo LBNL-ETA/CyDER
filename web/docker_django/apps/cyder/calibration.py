@@ -17,7 +17,8 @@ def calibrate(model_id):
     sim_result = get_simulation_result(model, upmu, device)
 
     # Find the new impedances
-    impedance_real, impedance_imag = get_calibrated_impedances(sim_result, upmu, upmu2)
+    impedance_real, impedance_imag, v1_breaker, v1_downstream, i1_sim = get_calibrated_impedances(
+        sim_result, upmu, upmu2)
 
     # Update the database
     temp_model = m.Model.objects.get(id=model_id)
@@ -34,15 +35,36 @@ def calibrate(model_id):
     calibration_result.save()
     calibration_data = m.CalibrationData(
         calibration=history,
-        p_a=upmu['P_A'],
-        p_b=upmu['P_B'],
-        p_c=upmu['P_C'],
-        q_a=upmu['Q_A'],
-        q_b=upmu['Q_B'],
-        q_c=upmu['Q_C'],
-        voltage_a=upmu['VMAG_A'],
-        voltage_b=upmu['VMAG_B'],
-        voltage_c=upmu['VMAG_C'])
+        p_a_feeder=upmu['P_A'],
+        p_b_feeder=upmu['P_B'],
+        p_c_feeder=upmu['P_C'],
+        q_a_feeder=upmu['Q_A'],
+        q_b_feeder=upmu['Q_B'],
+        q_c_feeder=upmu['Q_C'],
+        volt_mag_a_feeder=upmu['L1Mag'],
+        volt_mag_b_feeder=upmu['L2Mag'],
+        volt_mag_c_feeder=upmu['L3Mag'],
+        volt_ang_a_feeder=upmu['L1Ang'],
+        volt_ang_b_feeder=upmu['L2Ang'],
+        volt_ang_c_feeder=upmu['L3Ang'],
+        v1_real_feeder=v1_breaker.real,
+        v1_imag_feeder=v1_breaker.imag,
+        p_a_downstream=upmu2['P_A'],
+        p_b_downstream=upmu2['P_B'],
+        p_c_downstream=upmu2['P_C'],
+        q_a_downstream=upmu2['Q_A'],
+        q_b_downstream=upmu2['Q_B'],
+        q_c_downstream=upmu2['Q_C'],
+        volt_mag_a_downstream=upmu2['L1Mag'],
+        volt_mag_b_downstream=upmu2['L2Mag'],
+        volt_mag_c_downstream=upmu2['L3Mag'],
+        volt_ang_a_downstream=upmu2['L1Ang'],
+        volt_ang_b_downstream=upmu2['L2Ang'],
+        volt_ang_c_downstream=upmu2['L3Ang'],
+        v1_real_downstream=v1_downstream.real,
+        v1_imag_downstream=v1_downstream.imag,
+        i1_real_sim=i1_sim.real,
+        i1_imag_sim=i1_sim.imag)
     calibration_data.save()
 
     return impedance_real, impedance_imag
@@ -135,4 +157,4 @@ def get_calibrated_impedances(sim_result, upmu, upmu2):
 
     # Simple equation
     result = (v1_breaker - v1_downstream) / i1
-    return result.real, result.imag
+    return result.real, result.imag, v1_breaker, v1_downstream, i1

@@ -16,18 +16,79 @@
     <br>
   </div>
 
+  <div class="text-center">
+    <p>Calibration data for:</p>
+  </div>
   <div style="text-align:left;">
     <ul style="list-style-position: inside;">
-      <li>Id: {{ calibration_data.calibration_id }}</li>
-      <li>Active power A: {{ calibration_data.p_a|floatformat:-2 }} kW</li>
-      <li>Active power B: {{ calibration_data.p_b|floatformat:-2 }} kW</li>
-      <li>Active power C: {{ calibration_data.p_c|floatformat:-2 }} kW</li>
-      <li>Reactive power A: {{ calibration_data.q_a|floatformat:-2 }} kvar</li>
-      <li>Reactive power B: {{ calibration_data.q_b|floatformat:-2 }} kvar</li>
-      <li>Reactive power C: {{ calibration_data.q_c|floatformat:-2 }} kvar</li>
-      <li>Voltage A: {{ calibration_data.voltage_a|floatformat:-2 }} V</li>
-      <li>Voltage B: {{ calibration_data.voltage_b|floatformat:-2 }} V</li>
-      <li>Voltage C: {{ calibration_data.voltage_c|floatformat:-2 }} V</li>
+      <li>Model: {{ model }}</li>
+      <li>Date: {{ date }}</li>
+    </ul>
+  </div>
+
+  <br>
+
+  <div class="text-center">
+    <p>uPMU data at the feeder:</p>
+  </div>
+  <div style="text-align:left;">
+    <ul style="list-style-position: inside;">
+      <li>Active power A: {{ data.p_a_feeder|floatformat:-2 }} kW</li>
+      <li>Active power B: {{ data.p_b_feeder|floatformat:-2 }} kW</li>
+      <li>Active power C: {{ data.p_c_feeder|floatformat:-2 }} kW</li>
+      <li>Reactive power A: {{ data.q_a_feeder|floatformat:-2 }} kvar</li>
+      <li>Reactive power B: {{ data.q_b_feeder|floatformat:-2 }} kvar</li>
+      <li>Reactive power C: {{ data.q_c_feeder|floatformat:-2 }} kvar</li>
+      <li>Voltage magnitude A: {{ data.volt_mag_a_feeder|floatformat:-2 }} V</li>
+      <li>Voltage magnitude B: {{ data.volt_mag_b_feeder|floatformat:-2 }} V</li>
+      <li>Voltage magnitude C: {{ data.volt_mag_c_feeder|floatformat:-2 }} V</li>
+      <li>Voltage angle A: {{ data.volt_ang_a_feeder|floatformat:-2 }} deg</li>
+      <li>Voltage angle B: {{ data.volt_ang_b_feeder|floatformat:-2 }} deg</li>
+      <li>Voltage angle C: {{ data.volt_ang_c_feeder|floatformat:-2 }} deg</li>
+      <li>Voltage positive sequence: {{ data.v1_real_feeder|floatformat:-2 }} + {{ data.v1_imag_feeder|floatformat:-2 }}j</li>
+    </ul>
+  </div>
+
+  <br>
+
+  <div class="text-center">
+    <p>uPMU data downstream:</p>
+  </div>
+  <div style="text-align:left;">
+    <ul style="list-style-position: inside;">
+      <li>Active power A: {{ data.p_a_downstream|floatformat:-2 }} kW</li>
+      <li>Active power B: {{ data.p_b_downstream|floatformat:-2 }} kW</li>
+      <li>Active power C: {{ data.p_c_downstream|floatformat:-2 }} kW</li>
+      <li>Reactive power A: {{ data.q_a_downstream|floatformat:-2 }} kvar</li>
+      <li>Reactive power B: {{ data.q_b_downstream|floatformat:-2 }} kvar</li>
+      <li>Reactive power C: {{ data.q_c_downstream|floatformat:-2 }} kvar</li>
+      <li>Voltage magnitude A: {{ data.volt_mag_a_downstream|floatformat:-2 }} V</li>
+      <li>Voltage magnitude B: {{ data.volt_mag_b_downstream|floatformat:-2 }} V</li>
+      <li>Voltage magnitude C: {{ data.volt_mag_c_downstream|floatformat:-2 }} V</li>
+      <li>Voltage angle A: {{ data.volt_ang_a_downstream|floatformat:-2 }} V</li>
+      <li>Voltage angle B: {{ data.volt_ang_b_downstream|floatformat:-2 }} V</li>
+      <li>Voltage angle C: {{ data.volt_ang_c_downstream|floatformat:-2 }} V</li>
+      <li>Voltage positive sequence: {{ data.v1_real_downstream|floatformat:-2 }} + {{ data.v1_imag_feeder|floatformat:-2 }}j</li>
+    </ul>
+  </div>
+
+  <br>
+
+  <div class="text-center">
+    <p>Simulation result:</p>
+  </div>
+  <div style="text-align:left;">
+    <ul style="list-style-position: inside;">
+      <li>Current positive sequence: {{ data.i1_real_sim|floatformat:-2 }} + {{ data.i1_imag_sim|floatformat:-2 }}j</li>
+    </ul>
+  </div>
+
+  <div class="text-center">
+    <p>Impedance:</p>
+  </div>
+  <div style="text-align:left;">
+    <ul style="list-style-position: inside;">
+      <li>Z={{ results.impedance_real|floatformat:-2 }} + {{ results.impedance_imag|floatformat:-2 }}j</li>
     </ul>
   </div>
 </div>

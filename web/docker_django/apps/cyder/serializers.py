@@ -84,3 +84,52 @@ class DetailModelSerializer(serializers.ModelSerializer):
         except:
             return str(traceback.format_exc())
         return history
+
+
+class CalibrationHistorySerializer(serializers.ModelSerializer):
+    results = serializers.SerializerMethodField()
+    class Meta:
+        model = models.CalibrationHistory
+        exclude = []
+
+    def get_results(self, obj):
+        try:
+            # Get real and imaginary impedance values
+            result = models.CalibrationResult.objects.get(
+                calibration=obj.id)
+        except:
+            return str(traceback.format_exc())
+        return {'impedance_real': result.impedance_real,
+                'impedance_imag': result.impedance_imag}
+
+
+class CalibrationDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.CalibrationData
+        exclude = ['calibration']
+
+
+class SingleCalibrationHistorySerializer(serializers.ModelSerializer):
+    results = serializers.SerializerMethodField()
+    data = serializers.SerializerMethodField()
+    class Meta:
+        model = models.CalibrationHistory
+        exclude = []
+
+    def get_results(self, obj):
+        try:
+            # Get real and imaginary impedance values
+            result = models.CalibrationResult.objects.get(
+                calibration=self.instance.id)
+        except:
+            return str(traceback.format_exc())
+        return {'impedance_real': result.impedance_real,
+                'impedance_imag': result.impedance_imag}
+
+    def get_data(self, obj):
+        try:
+            query = models.CalibrationData.objects.get(calibration_id=self.instance.id)
+            serializer = CalibrationDataSerializer(query)
+        except:
+            return str(traceback.format_exc())
+        return serializer.data

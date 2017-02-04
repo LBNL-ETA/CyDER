@@ -18,7 +18,7 @@ import calibration as c
 import simulation as sim
 import sys
 import traceback
-from .filter import NodeResultFilter
+from .filter import NodeResultFilter, CalibrationHistoryFilter
 
 
 @login_required
@@ -34,9 +34,11 @@ def model(request, id):
     return render(request, 'model.html', result_dict)
 
 
-# @login_required
-# def calibration(request, id):
-#     return render(request, 'calibration.html', api.calibration_info_dict(request, id))
+@login_required
+def calibration(request, id):
+    query = get_object_or_404(m.CalibrationHistory, id=id)
+    serializer = s.SingleCalibrationHistorySerializer(query)
+    return render(request, 'calibration.html', serializer.data)
 
 
 @login_required
@@ -75,7 +77,7 @@ def my_models_add_devices(request, id):
 
 
 class ModelViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = m.Model.objects.all()
+    queryset = m.CalibrationHistory.objects.all()
 
     def list(self, request):
         serializer = s.ModelSerializer(m.Model.objects.all(), many=True)
@@ -84,6 +86,33 @@ class ModelViewSet(viewsets.ReadOnlyModelViewSet):
     def retrieve(self, request, pk=None):
         serializer = s.DetailModelSerializer(get_object_or_404(m.Model, id=pk))
         return Response(serializer.data)
+
+
+class CalibrationViewSet(mixins.RetrieveModelMixin,
+                         mixins.ListModelMixin,
+                         viewsets.GenericViewSet):
+    filter_backends = (CalibrationHistoryFilter,)
+    queryset = m.CalibrationHistory.objects.all()
+    pagination_class = None
+
+    def list(self, request):
+        model_id = request.GET.get("model_id", None)
+        queryset = m.CalibrationHistory.objects.filter(model_id=model_id)
+        serializer = s.CalibrationHistorySerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        query = get_object_or_404(m.CalibrationHistory, id=pk)
+        serializer = s.SingleCalibrationHistorySerializer(query)
+        return Response(serializer.data)
+
+    @detail_route(methods=['POST'], serializer_class=s.ActionSerializer)
+    def calibration(self, request, pk):
+        try:
+            data = c.calibrate(pk)
+        except:
+            return Response({'error': str(traceback.format_exc())})
+        return Response(data)
 
 
 class UserModelViewSet(mixins.RetrieveModelMixin,
@@ -158,17 +187,17 @@ def upmu(request, date_from, date_to, location):
         return Response(return_dict)
 
 
-@api_view(['GET'])
-def calibration(request, id):
-    """
-    List all snippets, or create a new snippet.
-    """
-    if request.method == 'GET':
-        try:
-            data = c.calibrate(id)
-        except:
-            return Response({'error': str(traceback.format_exc())})
-        return Response(data)
+# @api_view(['GET'])
+# def calibration(request, id):
+#     """
+#     List all snippets, or create a new snippet.
+#     """
+#     if request.method == 'GET':
+#         try:
+#             data = c.calibrate(id)
+#         except:
+#             return Response({'error': str(traceback.format_exc())})
+#         return Response(data)
 
 
 @login_required

@@ -10,18 +10,18 @@ router = routers.DefaultRouter()
 router.register(r'model', views.ModelViewSet)
 router.register(r'simulation', views.UserModelViewSet)
 router.register(r'simulation_node_result', views.NodeResultViewSet)
+router.register(r'calibration', views.CalibrationViewSet)
 
 urlpatterns = [
     url(r'^api2/', include(router.urls)),
     url(r'^api2/upmu/(?P<date_from>[^/]+)/(?P<date_to>[^/]+)/(?P<location>[^/]+)/$', views.upmu, name='upmu'),
-    url(r'^api2/calibration/(?P<id>[^/]+)/$', views.calibration, name='calibration2'),
     url(r'^documentation/$', schema_view),
 
     # Normal view to navigate in the website
     url(r'^home/$', views.home, name='home'),
     url(r'^model/(?P<id>\d+)/$', views.model, name='model'),
     url(r'^my_models/', views.my_models, name='my_models'),
-    # url(r'^calibration/(?P<id>\d+)/$', views.calibration, name='calibration'),
+    url(r'^calibration/(?P<id>\d+)/$', views.calibration, name='calibration'),
     url(r'^my_models_general_settings/(?P<id>\d+)/$', views.my_models_general_settings, name='my_models_general_settings'),
     url(r'^my_models_add_devices/(?P<id>\d+)/$', views.my_models_add_devices, name='my_models_add_devices'),
     url(r'^my_models_settings/(?P<id>\d+)/$', views.my_models_settings, name='my_models_settings'),
