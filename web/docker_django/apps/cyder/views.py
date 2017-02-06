@@ -169,6 +169,15 @@ class NodeResultViewSet(mixins.ListModelMixin,
         return Response(serializer.data)
 
 
+class ElectricVehicleScenarioViewSet(mixins.RetrieveModelMixin,
+                                     viewsets.GenericViewSet):
+    queryset = m.ElectricVehicleScenario.objects.all()
+
+    def retrieve(self, request, pk=None):
+        serializer = s.ElectricVehicleScenariolSerializer(get_object_or_404(m.ElectricVehicleScenario, usermodel_id=pk))
+        return Response(serializer.data)
+
+
 @api_view(['GET'])
 def upmu(request, date_from, date_to, location):
     """

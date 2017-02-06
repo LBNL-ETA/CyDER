@@ -17,6 +17,12 @@ class ModelSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ElectricVehicleScenarioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ElectricVehicleScenario
+        fields = '__all__'
+
+
 class UserModelSerializer(serializers.ModelSerializer):
     model_region = serializers.SerializerMethodField()
 

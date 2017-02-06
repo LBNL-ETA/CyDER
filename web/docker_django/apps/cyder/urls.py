@@ -11,6 +11,7 @@ router.register(r'model', views.ModelViewSet)
 router.register(r'simulation', views.UserModelViewSet)
 router.register(r'simulation_node_result', views.NodeResultViewSet)
 router.register(r'calibration', views.CalibrationViewSet)
+router.register(r'ev_scenario', views.ElectricVehicleScenarioViewSet)
 
 urlpatterns = [
     url(r'^api2/', include(router.urls)),
