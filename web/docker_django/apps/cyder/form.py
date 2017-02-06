@@ -11,14 +11,9 @@ class UserModelDescriptionForm(ModelForm):
 
     class Meta:
         model = UserModel
-        fields = ('name', 'description', 'simulation_date')
+        fields = ('name', 'description')
         widgets = {
           'description': Textarea(attrs={'rows':2, 'cols':20}),
-          'simulation_date': DateTimePicker(
-                options={"format": "YYYY-MM-DD HH:mm",
-                         "pickSeconds": False},
-                attrs={'placeholder': 'ex: 2016-06-17 23:50'}
-            )
         }
 
     def __init__(self, *args, **kwargs):
@@ -33,5 +28,14 @@ class UserModelDescriptionForm(ModelForm):
         self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
             Field('name', placeholder="New model's name"),
-            Field('description', placeholder="Model's description"),
-            Field('simulation_date'))
+            Field('description', placeholder="Model's description"))
+
+
+# widgets = {
+#   'description': Textarea(attrs={'rows':2, 'cols':20}),
+#   'simulation_date': DateTimePicker(
+#         options={"format": "YYYY-MM-DD HH:mm",
+#                  "pickSeconds": False},
+#         attrs={'placeholder': 'ex: 2016-06-17 23:50'}
+#     )
+# }

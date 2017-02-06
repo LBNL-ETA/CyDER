@@ -17,7 +17,7 @@ class CalibrationHistoryAdmin(admin.ModelAdmin):
 
 
 class UserModelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'model', 'name', 'description', 'simulation_date')
+    list_display = ('id', 'user', 'model', 'name', 'description', 'last_modified')
     list_display_links = ('id', 'user', 'model')
     search_fields = ('model__region', 'model__area', 'model__city', 'user_username')
     list_per_page = 25
