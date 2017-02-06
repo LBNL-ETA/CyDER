@@ -108,7 +108,6 @@ The standard invocation of the CYMDISTToFMU tool is:</p>
 <div class="highlight-none"><div class="highlight"><pre><span></span>&gt; python  &lt;scriptDir&gt;CYMDISTToFMU.py  \
   -g &lt;grid-model-path&gt;  \
   -i &lt;input-file-path&gt; \
-  -b &lt;buildings-lib-path&gt; \
   -r &lt;write-results&gt;
 </pre></div>
 </div>
@@ -117,7 +116,7 @@ This is the <code class="docutils literal"><span class="pre">parser</span></code
 See <a class="reference internal" href="installation.html"><span class="doc">Installation and Configuration</span></a> for details.</p>
 <p>An example of invoking <code class="docutils literal"><span class="pre">CYMDISTToFMU.py</span></code> on Windows is</p>
 <div class="highlight-none"><div class="highlight"><pre><span></span># Windows:
-&gt; python parser\CYMDISTToFMU.py -g C:\test.sxst -i test.xml -b modelica-buildings
+&gt; python parser\CYMDISTToFMU.py -g C:\test.sxst -i test.xml
 </pre></div>
 </div>
 <p>All file paths can be absolute or relative.
@@ -144,11 +143,7 @@ For readability, the rest of these instructions omit the paths to the script and
 <tr class="row-odd"><td>-i &lt;input-file-path&gt;</td>
 <td>Path to the input file (required)</td>
 </tr>
-<tr class="row-even"><td>-b &lt;buildings-lib-path&gt;</td>
-<td>Path to the Buildings library (<strong>required</strong> if not
-on the <code class="docutils literal"><span class="pre">MODELICAPATH</span></code></td>
-</tr>
-<tr class="row-odd"><td>-r &lt;write-results&gt;</td>
+<tr class="row-even"><td>-r &lt;write-results&gt;</td>
 <td>Flag for writing results.
 0 if results should not be written, 1 else. Default is 0</td>
 </tr>

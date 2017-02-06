@@ -29,13 +29,9 @@ To export CYMDIST as an FMU, CYMDISTToFMU needs:
 
 8. C-Compiler (for cython and Modelica)
 
-9. Buildings Library 4.0.0 and higher
-
 
 CYMDISTToFMU has been tested with:
 
-
-- Buildings Library version 4.0.0 (Can be downloaded from `here <http://simulationresearch.lbl.gov/modelica/download.html>`_)
 - Dymola 2017 (Modelica Parser)
 - Microsoft Visual Studio 10 Professional (Includes C-Compiler for cython and Modelica)
 

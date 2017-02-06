@@ -92,7 +92,7 @@
 for an FMU.</p>
 <p>To export CYMDIST as an FMU, the user needs to write an XML file which contains the list
 of inputs, outputs and parameters of the FMU. The XML snippet below shows how a user has to write such an input file.
-A template named <code class="docutils literal"><span class="pre">CYMDISTModeldescritpion.xml</span></code> which shows such a file is provided in the <code class="docutils literal"><span class="pre">parser\utilities</span></code> installation folder of CYMDISTPy.
+A template named <code class="docutils literal"><span class="pre">CYMDISTModeldescritpion.xml</span></code> which shows such a file is provided in the <code class="docutils literal"><span class="pre">parser\utilities</span></code> installation folder of CYMDISTToFMU.
 This template should be used and modify to create new XML input file.</p>
 <p>The following snippet shows an input file where the user defines one input and one output variable.</p>
 <div class="highlight-xml"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
@@ -127,7 +127,7 @@ This template should be used and modify to create new XML input file.</p>
   <span class="na">fmiVersion=</span><span class="s">&quot;2.0&quot;</span>
   <span class="na">modelName=</span><span class="s">&quot;HL0004&quot;</span>
   <span class="na">description=</span><span class="s">&quot;Input data for a CYMDIST FMU&quot;</span>
-  <span class="na">generationTool=</span><span class="s">&quot;CYMDISTPy&quot;</span><span class="nt">&gt;</span>
+  <span class="na">generationTool=</span><span class="s">&quot;CYMDISTToFMU&quot;</span><span class="nt">&gt;</span>
   <span class="nt">&lt;ModelVariables&gt;</span>
     <span class="nt">&lt;ScalarVariable</span>
       <span class="na">name=</span><span class="s">&quot;VMAG_A&quot;</span>
