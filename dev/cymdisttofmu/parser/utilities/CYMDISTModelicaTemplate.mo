@@ -163,7 +163,7 @@ equation
     end for;
       
     // Exchange data
-    yR = Buildings.Utilities.IO.Python34.Functions.cymdist(
+    yR = CYMDISTToFMU.Python34.Functions.cymdist(
       moduleName=moduleName,
       functionName=functionName,
       inputFileName=inputFileName,

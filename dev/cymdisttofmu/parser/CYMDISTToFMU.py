@@ -45,6 +45,7 @@ utilities_path=os.path.join(script_path, 'utilities')
 MO_TEMPLATE_PATH = os.path.join(utilities_path, CYMDISTModelicaTemplate_MO)
 MOS_TEMPLATE_PATH = os.path.join(utilities_path, CYMDISTModelicaTemplate_MOS)
 XSD_FILE_PATH = os.path.join(utilities_path, XSD_SCHEMA)
+BUILDINGS_LIB_PATH=os.path.join(script_path, 'libraries')
 
 #########################################
 # # TEST FILES TO BE PROVIDED BY THE USER
@@ -68,8 +69,8 @@ def main():
                         help="Path to the Grid model")
     cymdist_group.add_argument('-i', "--input-file-path", required=True,
                         help="Path to the input file")
-    cymdist_group.add_argument("-b", "--buildings-lib-path",
-                        help='Path to the Buildings library, e.g. c:\\test\\xxx\\modelica-buildings')
+    #cymdist_group.add_argument("-b", "--buildings-lib-path",
+    #                    help='Path to the Buildings library, e.g. c:\\test\\xxx\\modelica-buildings')
     cymdist_group.add_argument("-r", "--write-results",
                         type=int,
                         help='Flag for writing results. 1 for writing, 0 else. Default is 0')
@@ -81,14 +82,14 @@ def main():
     grid_model_path = args.grid_model_path
     input_file_path = args.input_file_path
 
-    buildings_lib_path = args.buildings_lib_path
-    if (buildings_lib_path is None):
-        log.info('The path to the Buildings library was not provided.')
-        log.info('Start searching the MODELICAPATH to see if it is defined.')
-        buildings_lib_path = os.environ.get('MODELICAPATH')
-        if (buildings_lib_path is None):
-            log.error('The path to the Buildings library was neither'
-                      +' provided nor found on the MODELICAPATH.')
+#     BUILDINGS_LIB_PATH = args.buildings_lib_path
+#     if (BUILDINGS_LIB_PATH is None):
+#         log.info('The path to the Buildings library was not provided.')
+#         log.info('Start searching the MODELICAPATH to see if it is defined.')
+#         BUILDINGS_LIB_PATH = os.environ.get('MODELICAPATH')
+#         if (BUILDINGS_LIB_PATH is None):
+#             log.error('The path to the Buildings library was neither'
+#                       +' provided nor found on the MODELICAPATH.')
     write_results = 0
     
     # Check if any errors
@@ -96,17 +97,17 @@ def main():
         log.error('Missing required input, <path-to-grid-model>')
         parser.print_help()
         sys.exit(1)
-    if(buildings_lib_path is None):
-        log.error('Missing required input, <path-to-buildings-lib>')
-        parser.print_help()
-        sys.exit(1)
+#     if(BUILDINGS_LIB_PATH is None):
+#         log.error('Missing required input, <path-to-buildings-lib>')
+#         parser.print_help()
+#         sys.exit(1)
     if(input_file_path is None):
         log.error('Missing required input, <path-to-input-file>')
         parser.print_help()
         sys.exit(1)
     CYMDIST = CYMDISTToFMU(grid_model_path,
                              input_file_path,
-                             buildings_lib_path,
+                             BUILDINGS_LIB_PATH,
                              MO_TEMPLATE_PATH,
                              MOS_TEMPLATE_PATH, 
                              XSD_FILE_PATH,
