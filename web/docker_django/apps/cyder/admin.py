@@ -23,6 +23,13 @@ class UserModelAdmin(admin.ModelAdmin):
     list_per_page = 25
 
 
+class ElectricVehicleScenarioAdmin(admin.ModelAdmin):
+    list_display = ('id', 'usermodel', 'nb_vehicles', 'is_active')
+    list_display_links = ('id', 'usermodel')
+    search_fields = ('usermodel', 'nb_vehicles')
+    list_per_page = 25
+
+
 class CurrentCalibrationAdmin(admin.ModelAdmin):
     list_display = ('id', 'model')
     list_display_links = ('id', 'model')
@@ -63,6 +70,7 @@ admin.site.register(models.Model, ModelAdmin)
 admin.site.register(models.Node)
 admin.site.register(models.NodeResult, NodeResultAdmin)
 admin.site.register(models.UserModel, UserModelAdmin)
+admin.site.register(models.ElectricVehicleScenario, ElectricVehicleScenarioAdmin)
 admin.site.register(models.CurrentCalibration, CurrentCalibrationAdmin)
 admin.site.register(models.CalibrationHistory, CalibrationHistoryAdmin)
 admin.site.register(models.CalibrationResult, CalibrationResultAdmin)

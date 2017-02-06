@@ -57,14 +57,14 @@ class UserModel(models.Model):
 
 class ElectricVehicleScenario(models.Model):
     """docstring for UserModel."""
-    usermodel = models.ForeignKey(UserModel, null=True, blank=True)
+    usermodel = models.OneToOneField(UserModel, null=True, blank=True)
     nb_vehicles = models.IntegerField(null=True, blank=True)
     is_active = models.BooleanField(default=False)
 
 
 class NodeResult(models.Model):
     """docstring for NodeResult."""
-    usermodel = models.ForeignKey(UserModel, null=True, blank=True)
+    usermodel = models.OneToOneField(UserModel, null=True, blank=True)
     node_id = models.CharField(max_length=50, null=True, blank=True)
     distance = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)

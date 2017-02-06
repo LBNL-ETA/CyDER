@@ -170,12 +170,23 @@ class NodeResultViewSet(mixins.ListModelMixin,
 
 
 class ElectricVehicleScenarioViewSet(mixins.RetrieveModelMixin,
+                                     mixins.CreateModelMixin,
                                      viewsets.GenericViewSet):
     queryset = m.ElectricVehicleScenario.objects.all()
+    serializer_class = s.ElectricVehicleScenarioSerializer
 
     def retrieve(self, request, pk=None):
-        serializer = s.ElectricVehicleScenariolSerializer(get_object_or_404(m.ElectricVehicleScenario, usermodel_id=pk))
+        serializer = s.ElectricVehicleScenarioSerializer(get_object_or_404(m.ElectricVehicleScenario, usermodel_id=pk))
         return Response(serializer.data)
+
+    def create(self, request):
+        serializer = s.ElectricVehicleScenarioSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            # usermodel = get_object_or_404(m.UserModel, id=serializer.data['usermodel'])
+            # m.ElectricVehicleScenario.objects.create(usermodel=usermodel, **serializer.data)
+        return Response({'status': 'success'})
 
 
 @api_view(['GET'])
