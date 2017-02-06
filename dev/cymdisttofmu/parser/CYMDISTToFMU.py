@@ -45,7 +45,7 @@ utilities_path=os.path.join(script_path, 'utilities')
 MO_TEMPLATE_PATH = os.path.join(utilities_path, CYMDISTModelicaTemplate_MO)
 MOS_TEMPLATE_PATH = os.path.join(utilities_path, CYMDISTModelicaTemplate_MOS)
 XSD_FILE_PATH = os.path.join(utilities_path, XSD_SCHEMA)
-BUILDINGS_LIB_PATH=os.path.join(script_path, 'libraries')
+BUILDINGS_LIB_PATH=os.path.join(script_path, 'libraries', 'modelica')
 
 #########################################
 # # TEST FILES TO BE PROVIDED BY THE USER
