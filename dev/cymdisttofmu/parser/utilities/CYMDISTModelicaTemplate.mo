@@ -84,11 +84,11 @@ protected
   }"Output variables names to be received from CYMDIST";
   {%- endif %}
   {% if (output_variable_names|length==0) -%} 
-  parameter String dblOutDevNam[nDblOut] 
+  parameter String dblOutNodNam[nDblOut] 
     "Output variables nodes names to be sent to CYMDIST";
   {%- else %}
   {% set comma = joiner(",") -%}
-  parameter String dblOutDevNam[nDblOut]={
+  parameter String dblOutNodNam[nDblOut]={
   {%- for row in output_node_names -%}
   {{comma()}}
   "{{row}}"
@@ -172,7 +172,7 @@ equation
       dblInpVal=dblInpVal,
       nDblOut=nDblOut,
       dblOutNam=dblOutNam,
-      dblOutDevNam=dblOutDevNam,
+      dblOutNodNam=dblOutNodNam,
       nDblPar=nDblPar,
       dblParNam=dblParNam,
       dblParVal=dblParVal,
