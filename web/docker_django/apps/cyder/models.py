@@ -64,7 +64,7 @@ class ElectricVehicleScenario(models.Model):
 
 class NodeResult(models.Model):
     """docstring for NodeResult."""
-    usermodel = models.OneToOneField(UserModel, null=True, blank=True)
+    usermodel = models.ForeignKey(UserModel, null=True, blank=True)
     node_id = models.CharField(max_length=50, null=True, blank=True)
     distance = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)

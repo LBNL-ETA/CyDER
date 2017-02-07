@@ -35,15 +35,13 @@ phase_dict = {'A': cympy.enums.Phase.A,
 vehicle_count = 0
 while vehicle_count <= nb_vehicles:
     # Pick a random spot load
-    index = randint(0, len(ids))
-    
+    index = randint(0, len(ids) - 1)
+
     config = cympy.study.QueryInfoDevice("LoadConfig", ids[index], 14)
     phase_type = cympy.study.QueryInfoDevice("PhaseType", ids[index], 14)
     if config in 'Yg' and phase_type in 'ByPhase':
         phases = list(cympy.study.QueryInfoDevice("Phase", ids[index], 14))
         power = power_demand / len(phases)
-        print(ids[index])
-        print(phases)
         for phase in range(0, len(phases)):
             cympy.study.SetValueDevice(
                 power,

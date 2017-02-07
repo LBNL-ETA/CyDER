@@ -20,7 +20,7 @@ def simulate(pk):
     # Select the type of simulation
     vehicle_simulation = False
     try:
-        scenario = m.ElectricVehicleScenario.objects.get(usermodel=usermodel)
+        scenario = m.ElectricVehicleScenario.objects.get(usermodel=user_model)
         if scenario.is_active:
             vehicle_simulation = True
             nb_vehicles = scenario.nb_vehicles
