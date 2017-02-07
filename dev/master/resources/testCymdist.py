@@ -39,7 +39,7 @@ def r2p2_r2(iS, uR, uS, yS, dyS, parR, parS, iwR):
     f.write("The input file name is: " + iS + "." +
             " The input names are: " + uS[0] + ", " + uS[1] + "." +
             " The output names are: " + yS[0] + ", " + yS[1] + "." + 
-            " The device output names are: " + dyS[0] + ", " + dyS[1] + "." + 
+            " The node output names are: " + dyS[0] + ", " + dyS[1] + "." + 
             " The parameter names are: " + parS[0] + ", " + parS[1])
     f.close()
     return [uR[0] *parR[0],  uR[1]*parR[1]]

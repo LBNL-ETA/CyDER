@@ -173,13 +173,13 @@ This is done by adding <code class="docutils literal"><span class="pre">ScalarVa
 <li>give the causality of the variable (<code class="docutils literal"><span class="pre">input</span></code> for inputs, <code class="docutils literal"><span class="pre">output</span></code> for outputs) (Line 20)</li>
 <li>define the type of variable (Currently only <code class="docutils literal"><span class="pre">Real</span></code> variables are supported) (Line 21)</li>
 <li>give the unit of the variable (Currently only valid Modelica units are supported) (Line 22)</li>
-<li>give the name of the output device (Line 24)</li>
+<li>give the name of the output node (Line 24)</li>
 </ul>
 </div></blockquote>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">To avoid name-clash, CYMDISTToFMU concatenates the name of the output with the name of
-the device to make it unique. The new output name will have the form <code class="docutils literal"><span class="pre">outputName_DeviceName</span></code>.</p>
+the node to make it unique. The new output name will have the form <code class="docutils literal"><span class="pre">outputName_DeviceName</span></code>.</p>
 </div>
 </div>
 

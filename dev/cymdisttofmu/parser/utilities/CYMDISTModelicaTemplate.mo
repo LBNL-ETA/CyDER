@@ -85,11 +85,11 @@ protected
   {%- endif %}
   {% if (output_variable_names|length==0) -%} 
   parameter String dblOutDevNam[nDblOut] 
-    "Output variables devices names to be sent to CYMDIST";
+    "Output variables nodes names to be sent to CYMDIST";
   {%- else %}
   {% set comma = joiner(",") -%}
   parameter String dblOutDevNam[nDblOut]={
-  {%- for row in output_device_names -%}
+  {%- for row in output_node_names -%}
   {{comma()}}
   "{{row}}"
   {%- endfor %}

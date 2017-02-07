@@ -449,7 +449,7 @@ The error message is \"%s\"",
 	  /* Increase the number of argument to 2*/
 	  /* One is for the vector of output names,*/
       /* the second one is for the vector of */
-	  /* output device names of the outputs*/
+	  /* output node names of the outputs*/
 	  /* to be retrieved from CYMDISTToFMU*/
 	  nStrRea = nDblRea;
 	  nStrDevRea = nDblRea;

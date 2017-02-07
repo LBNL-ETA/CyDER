@@ -11,7 +11,7 @@ def simulate_single_fmu():
     input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'P_A', 'P_B', 'P_C', 'Q_A', 'Q_B', 'Q_C']
     input_values = [7287, 7299, 7318, 7272, 2118, 6719, -284, -7184, 3564]
     output_names = ['voltage_A', 'voltage_B', 'voltage_C']
-    output_device_names = ['HOLLISTER_2104', 'HOLLISTER_2104', 'HOLLISTER_2104']
+    output_node_names = ['HOLLISTER_2104', 'HOLLISTER_2104', 'HOLLISTER_2104']
     k=0
     for i in input_names:
         cymdist.set (i, input_values[k])

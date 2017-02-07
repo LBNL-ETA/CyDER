@@ -8,7 +8,7 @@ function cymdist "Function that communicates with the CYMDISTToFMU Python API"
   input Real    dblInpVal[max(1, nDblInp)] "Input variables values to be sent to CYMDISTToFMU";
   input String  dblParNam[nDblPar] "Parameter variables names to send to CYMDISTToFMU";
   input String  dblOutNam[max(1, nDblOut)] "Output variables names to be read from CYMDISTToFMU";
-  input String  dblOutDevNam[max(1, nDblOut)] "Output variables devices names to be read from CYMDISTToFMU";
+  input String  dblOutDevNam[max(1, nDblOut)] "Output variables nodes names to be read from CYMDISTToFMU";
   input String  dblInpNam[max(1, nDblInp)] "Input variables names to be sent to CYMDISTToFMU";
   input Integer nDblInp(min=0) "Number of double inputs to send to CYMDISTToFMU";
   input Integer nDblOut(min=0) "Number of double outputs to read from CYMDISTToFMU";

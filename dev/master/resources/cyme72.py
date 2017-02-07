@@ -14,20 +14,20 @@ def main():
                    'P_A', 'P_B', 'P_C', 'Q_A', 'Q_B', 'Q_C']
     input_values = [7287, 7299, 7318, 7272, 2118, 6719, -284, -7184, 3564]
     output_names = ['voltage_A', 'voltage_B', 'voltage_C']
-    output_device_names = ['HOLLISTER_2104',
+    output_node_names = ['HOLLISTER_2104',
                            'HOLLISTER_2104', 'HOLLISTER_2104']
     exchange("HL0004.sxst", input_values, input_names,
-             output_names, output_device_names, 0)
+             output_names, output_node_names, 0)
 
 def exchange(input_file_name, input_values, input_names,
-             output_names, output_device_names, write_results):
+             output_names, output_node_names, write_results):
     """
      Args:
         input_file_name (str): Name of the CYMDIST grid model.
         input_values(dbl): Input values.
         input_names(str): Input names.
         output_names(str):  Output names.
-        output_device_names(str): Outputs devices names.
+        output_node_names(str): Outputs nodes names.
         write_results(int): Flag for writing results.
 
 
@@ -37,7 +37,7 @@ def exchange(input_file_name, input_values, input_names,
     n_exp_res = len(output_names)
     start = datetime.now()
     outputs = functions.fmu_wrapper(input_file_name, input_values, input_names,
-                                   output_names, output_device_names, write_results)
+                                   output_names, output_node_names, write_results)
     end = datetime.now()
     print('Ran a CYMDIST simulation in ' +
           str((end - start).total_seconds()) + ' seconds.')

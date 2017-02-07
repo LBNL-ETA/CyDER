@@ -89,7 +89,7 @@ LBNLPYTHONINTERPRETER_EXPORT void pythonExchangeValuesNoModelica(const char * mo
 /*  dblValWri             - Double inputs values to write.*/
 /*  nDblRea               - Number of outputs values to read.*/
 /*  strRea                - Name of outputs to read.*/
-/*  strDevRea             - Name of output devices to read.*/
+/*  strDevRea             - Name of output nodes to read.*/
 /*  dblValRea             - Double outputs values to read.*/
 /*  nDblParWri            - Number of parameters to write.*/
 /*  strParWri             - Name of parameters to write.*/

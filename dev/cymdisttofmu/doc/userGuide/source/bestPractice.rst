@@ -41,9 +41,9 @@ To parametrize the ``ScalarVariable`` as an output variable, the user needs to
   - give the causality of the variable (``input`` for inputs, ``output`` for outputs) (Line 20)
   - define the type of variable (Currently only ``Real`` variables are supported) (Line 21)
   - give the unit of the variable (Currently only valid Modelica units are supported) (Line 22)
-  - give the name of the output device (Line 24)
+  - give the name of the output node (Line 24)
    
 .. note:: 
    
      To avoid name-clash, CYMDISTToFMU concatenates the name of the output with the name of 
-     the device to make it unique. The new output name will have the form ``outputName_DeviceName``.
+     the node to make it unique. The new output name will have the form ``outputName_DeviceName``.

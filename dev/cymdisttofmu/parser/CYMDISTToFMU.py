@@ -421,7 +421,7 @@ class CYMDISTToFMU(object):
         # modelicaInputVariableNames = []
         output_variable_names = []
         modelica_concat_output_variable_names = []
-        output_device_names = []
+        output_node_names = []
         concat_output_variable_names = []
         parameter_variable_values = []
         parameter_variable_names = []
@@ -458,15 +458,15 @@ class CYMDISTToFMU(object):
                         vartype = 'Real'
                         unit = subelement.attrib.get('unit')
                         start = subelement.attrib.get('start')
-                    # Get the device name of an output variable
-                    if (vartype_low == 'device' and causality == 'output'):
+                    # Get the node name of an output variable
+                    if (vartype_low == 'node' and causality == 'output'):
                         devName = subelement.attrib.get('name')
                         # Create list of output variables
                         output_variable_names.append(name)
-                        # Create list with device name of output variable
-                        output_device_names.append(devName)
+                        # Create list with node name of output variable
+                        output_node_names.append(devName)
                         log.info('The output name ' + name + ' will be concatenated '
-                                 'with the device name ' + devName + ' to be unique.')
+                                 'with the node name ' + devName + ' to be unique.')
                         new_name = name + '_' + devName
                         log.info('The new output name is ' + new_name + '.')
                         
@@ -556,7 +556,7 @@ class CYMDISTToFMU(object):
             log.info('Parsing of ' + self.xml_path + ' was successfull.')
             return scalar_variables, input_variable_names, \
                 output_variable_names, concat_output_variable_names, \
-                output_device_names, parameter_variable_names, \
+                output_node_names, parameter_variable_names, \
                 parameter_variable_values, modelica_input_variable_names, \
                 modelica_concat_output_variable_names, \
                 modelica_parameter_variable_names
@@ -577,7 +577,7 @@ class CYMDISTToFMU(object):
         scalar_variables, input_variable_names, \
             output_variable_names, \
             concat_output_variable_names, \
-            output_device_names, \
+            output_node_names, \
             parameter_variable_names, \
             parameter_variable_values, \
             modelica_input_variable_names, \
@@ -596,7 +596,7 @@ class CYMDISTToFMU(object):
                                      input_variable_names=input_variable_names,
                                      output_variable_names=output_variable_names,
                                      concat_output_variable_names=concat_output_variable_names,
-                                     output_device_names=output_device_names,
+                                     output_node_names=output_node_names,
                                      parameter_variable_names=parameter_variable_names,
                                      parameter_variable_values=parameter_variable_values,
                                      modelica_input_variable_names=modelica_input_variable_names,
