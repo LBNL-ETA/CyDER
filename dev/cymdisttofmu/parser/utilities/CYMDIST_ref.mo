@@ -10,11 +10,11 @@ model CYMDIST
     "Second parameter";
   Modelica.Blocks.Interfaces.RealInput u(start=1.0, unit="A")
     "First input" annotation(Placement(transformation(extent={{-122,68},{-100,90}})));
-  Modelica.Blocks.Interfaces.RealOutput y_dev1 (unit="V")
+  Modelica.Blocks.Interfaces.RealOutput y_nod1 (unit="V")
     "First output" annotation(Placement(transformation(extent={{100,52},{120,72}})));
   Modelica.Blocks.Interfaces.RealInput u1(start=2.0, unit="A")
     "Second input" annotation(Placement(transformation(extent={{-122,48},{-100,70}})));
-  Modelica.Blocks.Interfaces.RealOutput y1_dev1 (unit="V")
+  Modelica.Blocks.Interfaces.RealOutput y1_nod1 (unit="V")
     "Second output" annotation(Placement(transformation(extent={{100,16},{120,36}})));
  
 protected   
@@ -42,8 +42,8 @@ protected
   }"Variables used to collect values to be sent to CYMDIST";
    
   Real yR[nDblOut]={
-  y_dev1,
-  y1_dev1 
+  y_nod1,
+  y1_nod1 
   }"Variables used to collect values received from CYMDIST";
   
   parameter String dblInpNam[nDblInp]={
