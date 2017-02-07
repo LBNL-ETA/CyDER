@@ -460,14 +460,14 @@ class CYMDISTToFMU(object):
                         start = subelement.attrib.get('start')
                     # Get the node name of an output variable
                     if (vartype_low == 'node' and causality == 'output'):
-                        devName = subelement.attrib.get('name')
+                        nodName = subelement.attrib.get('name')
                         # Create list of output variables
                         output_variable_names.append(name)
                         # Create list with node name of output variable
-                        output_node_names.append(devName)
+                        output_node_names.append(nodName)
                         log.info('The output name ' + name + ' will be concatenated '
-                                 'with the node name ' + devName + ' to be unique.')
-                        new_name = name + '_' + devName
+                                 'with the node name ' + nodName + ' to be unique.')
+                        new_name = name + '_' + nodName
                         log.info('The new output name is ' + new_name + '.')
                         
                         log.info('Invalid characters will be removed from the '
