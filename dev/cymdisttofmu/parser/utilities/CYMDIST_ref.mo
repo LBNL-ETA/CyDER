@@ -57,8 +57,8 @@ protected
   }"Output variables names to be received from CYMDIST";
   
   parameter String dblOutDevNam[nDblOut]={
-  "dev1",
-  "dev1"
+  "nod1",
+  "nod1"
   }"Node variables names to be sent to CYMDIST";
   
   parameter String dblParNam[nDblPar]={

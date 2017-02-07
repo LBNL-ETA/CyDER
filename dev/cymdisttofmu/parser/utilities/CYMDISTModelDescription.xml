@@ -37,7 +37,7 @@
       <Real
         unit="V"/>
       <Node
-        name="dev1"/>
+        name="nod1"/>
     </ScalarVariable>
     <ScalarVariable
       name="u1"
@@ -54,7 +54,7 @@
       <Real
         unit="V"/>
       <Node
-        name="dev1"/>
+        name="nod1"/>
     </ScalarVariable>
   </ModelVariables>
 </CYMDISTModelDescription>

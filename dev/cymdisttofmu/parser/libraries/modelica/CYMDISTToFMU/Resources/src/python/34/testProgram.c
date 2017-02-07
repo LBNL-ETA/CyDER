@@ -38,7 +38,7 @@ int main(int nArgs, char ** args){
   size_t nDblRea2 = 1;
   double dblValRea2[1];
   const char *strRea2[] = {"y"};
-  const char *strDevRea[] = {"dev"};
+  const char *strDevRea[] = {"nod"};
   
   size_t nDblParWri = 0;
   const char * strParWri[] = {""};
