@@ -19,6 +19,7 @@ import simulation as sim
 import sys
 import traceback
 from .filter import NodeResultFilter, CalibrationHistoryFilter
+from .form import ElectricVehicleScenarioForm
 
 
 @login_required
@@ -49,6 +50,20 @@ def my_models(request):
 @login_required
 def my_models_settings(request, id):
     return render(request, 'my_models_settings.html', {'usermodel_id': id})
+
+@login_required
+def my_models_scenarios(request, id):
+    usermodel = get_object_or_404(m.UserModel, pk=id)
+    scenario, created = m.ElectricVehicleScenario.objects.get_or_create(usermodel=usermodel)
+    if request.method == "POST":
+        form = ElectricVehicleScenarioForm(request.POST, instance=scenario)
+        if form.is_valid():
+            scenario = form.save(commit=False)
+            scenario.save()
+            return redirect('my_models_settings', id=id)
+    else:
+        form = ElectricVehicleScenarioForm(instance=scenario)
+    return render(request, 'my_models_scenarios.html', {'usermodel_id': id, 'form': form})
 
 
 @login_required
