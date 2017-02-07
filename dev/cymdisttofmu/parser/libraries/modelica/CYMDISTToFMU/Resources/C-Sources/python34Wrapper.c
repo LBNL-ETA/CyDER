@@ -44,7 +44,7 @@ void pythonExchangeValuesCymdist(const char * moduleName,
 								const char * inputFileName,
 								const size_t nDblWri, const char ** strWri,
 								double * dblValWri, size_t nDblRea, const char ** strRea,
-								const char ** strDevRea, double * dblValRea, size_t nDblParWri,
+								const char ** strNodRea, double * dblValRea, size_t nDblParWri,
 								const char ** strParWri, double * dblValParWri,
 								const int * resWri)
 {
@@ -54,7 +54,7 @@ void pythonExchangeValuesCymdist(const char * moduleName,
    inputFileName,
    nDblWri, strWri,
    dblValWri, nDblRea,
-   strRea, strDevRea, dblValRea,
+   strRea, strNodRea, dblValRea,
    nDblParWri, strParWri,
    dblValParWri, resWri,
    ModelicaFormatError

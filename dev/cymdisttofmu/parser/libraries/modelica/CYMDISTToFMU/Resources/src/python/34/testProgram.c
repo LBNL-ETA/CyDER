@@ -38,7 +38,7 @@ int main(int nArgs, char ** args){
   size_t nDblRea2 = 1;
   double dblValRea2[1];
   const char *strRea2[] = {"y"};
-  const char *strDevRea[] = {"nod"};
+  const char *strNodRea[] = {"nod"};
   
   size_t nDblParWri = 0;
   const char * strParWri[] = {""};
@@ -64,7 +64,7 @@ int main(int nArgs, char ** args){
     pythonExchangeValuesCymdistNoModelica(moduleName2,
                           functionName2, inputFileName,
 						  nDblWri2, strWri2, dblValWri2, 
-						  nDblRea2, strRea2, strDevRea, 
+						  nDblRea2, strRea2, strNodRea, 
 						  dblValRea2, nDblParWri, strParWri, 
 						  dblValParWri, resWri,
 	                 ModelicaFormatError);

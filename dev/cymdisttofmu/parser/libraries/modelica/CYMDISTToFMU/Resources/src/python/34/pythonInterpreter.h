@@ -89,7 +89,7 @@ LBNLPYTHONINTERPRETER_EXPORT void pythonExchangeValuesNoModelica(const char * mo
 /*  dblValWri             - Double inputs values to write.*/
 /*  nDblRea               - Number of outputs values to read.*/
 /*  strRea                - Name of outputs to read.*/
-/*  strDevRea             - Name of output nodes to read.*/
+/*  strNodRea             - Name of output nodes to read.*/
 /*  dblValRea             - Double outputs values to read.*/
 /*  nDblParWri            - Number of parameters to write.*/
 /*  strParWri             - Name of parameters to write.*/
@@ -100,7 +100,7 @@ LBNLPYTHONINTERPRETER_EXPORT void pythonExchangeValuesCymdistNoModelica(const ch
 							const char * functionName, const char * inputFileName,
 							const size_t nDblWri, const char ** strWri,
 							double * dblValWri, size_t nDblRea, const char ** strRea,
-							const char ** strDevRea, double * dblValRea, size_t nDblParWri,
+							const char ** strNodRea, double * dblValRea, size_t nDblParWri,
 							const char ** strParWri, double * dblValParWri, const int * resWri,
 							void(*inModelicaFormatError)(const char *string, ...));
 

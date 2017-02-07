@@ -357,7 +357,7 @@ void pythonExchangeValuesCymdistNoModelica(const char * moduleName,
 						  const char * inputFileName,
 						  const size_t nDblWri, const char ** strWri, 
 						  double * dblValWri, size_t nDblRea, const char ** strRea,
-						  const char ** strDevRea, double * dblValRea, size_t nDblParWri, 
+						  const char ** strNodRea, double * dblValRea, size_t nDblParWri, 
 						  const char ** strParWri, double * dblValParWri, const int *resWri,
 			              void (*ModelicaFormatError)(const char *string,...))
 {
@@ -369,7 +369,7 @@ void pythonExchangeValuesCymdistNoModelica(const char * moduleName,
   char* arg="";
   Py_ssize_t nStrWri = 0;
   Py_ssize_t nStrRea = 0;
-  Py_ssize_t nStrDevRea = 0;
+  Py_ssize_t nStrNodRea = 0;
   Py_ssize_t nStrParWri = 0;
   Py_ssize_t i;
   Py_ssize_t iArg = 0;
@@ -452,7 +452,7 @@ The error message is \"%s\"",
 	  /* output node names of the outputs*/
 	  /* to be retrieved from CYMDISTToFMU*/
 	  nStrRea = nDblRea;
-	  nStrDevRea = nDblRea;
+	  nStrNodRea = nDblRea;
 	  nArg=nArg+2;
   }
   if (nDblParWri > 0){
@@ -586,10 +586,10 @@ The error message is \"%s\"",
   }
 
   /* e) Convert char **, an array of character arrays*/
-  if ( nStrDevRea > 0 ){
-    pArgsStr = PyList_New(nStrDevRea);
+  if ( nStrNodRea > 0 ){
+    pArgsStr = PyList_New(nStrNodRea);
     
-    for (i = 0; i < nStrDevRea; ++i) {
+    for (i = 0; i < nStrNodRea; ++i) {
       /* Convert argument to a python float*/
       /*      Py_ssize_t len = 0;*/
       /* According to the Modelica Specification, strings are terminated by '\0'*/
@@ -598,7 +598,7 @@ The error message is \"%s\"",
       /*	len++;*/
       
       /*      pValue = PyUnicode_FromStringAndSize(strRea[i], len);*/
-      pValue =  PyUnicode_FromString(strDevRea[i]);
+      pValue =  PyUnicode_FromString(strNodRea[i]);
       if (!pValue) {
 	/* Failed to convert argument.*/
 	Py_DECREF(pArgsStr);
@@ -612,7 +612,7 @@ The error message is \"%s\"",
     }
     /* If there is only a scalar string, then don't build a list.*/
     /* Just put the scalar value into the list of arguments.*/
-    if ( nStrDevRea == 1)
+    if ( nStrNodRea == 1)
 	PyTuple_SetItem(pArgs, iArg, PyList_GetItem(pArgsStr, (Py_ssize_t)0));
       else
 	PyTuple_SetItem(pArgs, iArg, pArgsStr);
