@@ -46,4 +46,4 @@ To parametrize the ``ScalarVariable`` as an output variable, the user needs to
 .. note:: 
    
      To avoid name-clash, CYMDISTToFMU concatenates the name of the output with the name of 
-     the node to make it unique. The new output name will have the form ``outputName_DeviceName``.
+     the node to make it unique. The new output name will have the form ``outputName_NodeName``.

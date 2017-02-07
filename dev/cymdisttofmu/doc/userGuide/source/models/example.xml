@@ -20,7 +20,7 @@
       causality="output">
       <Real
         unit="V"/>
-      <Device
+      <Node
         name="HOLLISTER_2104"/>
     </ScalarVariable>
   </ModelVariables>

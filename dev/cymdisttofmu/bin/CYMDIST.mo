@@ -59,7 +59,7 @@ protected
   parameter String dblOutDevNam[nDblOut]={
   "dev1",
   "dev1"
-  }"Device variables names to be sent to CYMDIST";
+  }"Node variables names to be sent to CYMDIST";
   
   parameter String dblParNam[nDblPar]={
   "par1",

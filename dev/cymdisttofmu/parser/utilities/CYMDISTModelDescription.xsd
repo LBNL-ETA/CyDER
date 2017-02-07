@@ -12,13 +12,13 @@
   <xs:complexType name="ScalarVariableType">
     <xs:sequence>
       <xs:element type="RealType" name="Real" />
-      <xs:element type="DeviceType" name="Device" minOccurs="0" />
+      <xs:element type="NodeType" name="Node" minOccurs="0" />
     </xs:sequence>
     <xs:attribute type="xs:string" name="name" use="optional" />
     <xs:attribute type="xs:string" name="description" use="optional" />
     <xs:attribute type="xs:string" name="causality" use="required" />
   </xs:complexType>
-  <xs:complexType name="DeviceType">
+  <xs:complexType name="NodeType">
     <xs:simpleContent>
       <xs:extension base="xs:string">
         <xs:attribute type="xs:string" name="name" use="required" />

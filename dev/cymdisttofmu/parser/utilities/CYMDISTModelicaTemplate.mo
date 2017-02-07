@@ -93,7 +93,7 @@ protected
   {{comma()}}
   "{{row}}"
   {%- endfor %}
-  }"Device variables names to be sent to CYMDIST";
+  }"Node variables names to be sent to CYMDIST";
   {%- endif %}
   {% if (parameter_variable_names|length==0) -%} 
   parameter String dblParNam[nDblPar](each start="") 

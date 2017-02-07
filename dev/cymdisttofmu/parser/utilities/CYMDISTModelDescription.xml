@@ -36,7 +36,7 @@
       causality="output">
       <Real
         unit="V"/>
-      <Device
+      <Node
         name="dev1"/>
     </ScalarVariable>
     <ScalarVariable
@@ -53,7 +53,7 @@
       causality="output">
       <Real
         unit="V"/>
-      <Device
+      <Node
         name="dev1"/>
     </ScalarVariable>
   </ModelVariables>
