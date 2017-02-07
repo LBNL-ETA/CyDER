@@ -4,7 +4,7 @@ import tool as t
 import pdb
 
 
-def simulate(pk, nb_vehicles=False):
+def simulate(pk):
     """
     Launch a simulation from a model_user id
     """
@@ -17,16 +17,27 @@ def simulate(pk, nb_vehicles=False):
     # Get the model corresponding to it
     model = user_model.model
 
+    # Select the type of simulation
+    vehicle_simulation = False
+    try:
+        scenario = m.ElectricVehicleScenario.objects.get(usermodel=usermodel)
+        if scenario.is_active:
+            vehicle_simulation = True
+            nb_vehicles = scenario.nb_vehicles
+    except:
+        # No scenario in the database
+        pass
+
     # Launch simulation
-    if not nb_vehicles:
-        timeout = False
-        arg = [str(model.filename)]
-        cmd = ('project_cyder/web/docker_django/worker/simulation.py')
-        output, status = t.run_ssh_command(cmd, timeout=timeout, arg=arg)
-    else:
+    if vehicle_simulation:
         timeout = False
         arg = [str(model.filename), str(int(nb_vehicles))]
         cmd = ('project_cyder/web/docker_django/worker/simulation_vehicle.py')
+        output, status = t.run_ssh_command(cmd, timeout=timeout, arg=arg)
+    else:
+        timeout = False
+        arg = [str(model.filename)]
+        cmd = ('project_cyder/web/docker_django/worker/simulation.py')
         output, status = t.run_ssh_command(cmd, timeout=timeout, arg=arg)
 
     # Parse the results
