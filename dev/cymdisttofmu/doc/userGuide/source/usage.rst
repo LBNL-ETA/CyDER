@@ -5,14 +5,18 @@
 Usage of CYMDIST as an FMU
 =============================
 
-The following requirements must be met to import an run FMU that contains CYMDIST:
+The following requirements must be met to import and run a CYMDIST FMU:
 
-1. Python 3.4 must be installed.
+1. Python 3.4 must be installed and added to the ``PYTHONPATH``. This is needed by the master algorithm :term:`PyFMI`.
+
+  .. note::
+     Check if I really need to add Python3.4 on the Python path for runtime coupling using PyFMI.
 
 2. CYME version 7.2 must be installed. CYME can be downloaded from `www.cyme.com <https://www.cyme.com>`_.
 
-3. The ``cymdist`` functions folder must be added to the ``PYTHONPATH``. 
-   The ``cymdist`` functions folder can be found in the distribution of CYMDISTToFMU. It is in ``dev\cymdist``. 
+3. The ``cymdist`` functions directory must be added to the ``PYTHONPATH``.  
+   This directory contains functions needed at runtime by the CYMDIST FMU.
+   The ``cymdist`` functions folder can be found in the distribution folder of CYMDISTToFMU. It is in ``dev\cymdist``. 
 
    To add the ``cymdist`` functions folder to the ``PYTHONPATH``:
 
@@ -28,19 +32,18 @@ The following requirements must be met to import an run FMU that contains CYMDIS
      specify the value of the PYTHONPATH environment variable 
 	 which should be in our case be ``dev\cymdisttofmu\cymdist``. 
 
-4. The CYMDIST Python API scripts directory must be added to the ``PYTHONPATH``.
+4. The CYMDIST Python API directory must be added to the ``PYTHONPATH``. 
+   This directory contains scripts needed at runtime by the CYMDIST FMU. 
 
-   The CYMDIST Python API scripts are in the installation folder of CYME. 
+   The CYMDIST Python API directory is in the installation folder of CYME. 
    It can typically be found in ``path_to_CYME\CYME\cympy``, where ``path_to_CYME`` 
    is the path to the installation folder of CYME 7.2.
 
  To add the CYMDIST Python API scripts folder to the ``PYTHONPATH``, 
  add ``path_to_CYME\CYME`` to the ``PYTHONPATH``.
  Note that ``cympy`` is not included in the name of the variable.   
-     
-5. The Python 3.4 installation folder (e.g. ``C:\Python34`` ) must be added to the ``PYTHONPATH``.
 
-6. Upon request, the simulation results are saved in a result file which 
+5. Upon request, the simulation results are saved in a result file which 
    is created in the current working directory. 
    The name of the result file is ``xxx_result_.pickle``, where xxx 
    is the FMU model name as defined in the XML input file.
