@@ -24,15 +24,19 @@ def fmu_wrapper(model_filename, input_values, input_names,
         write_result (Boolean): [Optional] if True the entire results are saved to the file system (add ~30secs)
 
     Example:
-        >>> model_filename = 'AT0001.sxst'
+        >>> model_filename = 'BU0001.sxst'
         >>> input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
-        >>> input_values = [7270, 7270, 7270, 0, -120, 120]
+        >>> input_values = [2520, 2520, 2520, 0, -120, 120]
         >>> output_names = ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC']
-        >>> output_nodes = ['1100108926', '1100108926', '1100108926', '1100108926', '1100108926', '1100108926']
+        >>> output_nodes = ['800032440', '800032440', '800032440', '800032440', '800032440', '800032440']
         >>> write_results = 0  # (or False)
 
         >>> fmu_wrapper(model_filename, input_values, input_names,
                         output_names, output_nodes, write_result)
+    Note:
+        output_names can be: 'KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC',
+        'IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC', 'PFA', 'PFB', 'PFC'
+        for a greater list see CymDIST > customize > keywords > powerflow
     """
 
     # Open the model
