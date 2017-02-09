@@ -108,7 +108,7 @@
     data = json
 
     // Create google coodinate objects
-    data.nodes.forEach(function(d) {
+    data.forEach(function(d) {
       d.LatLng = new google.maps.LatLng(parseFloat(d.latitude), parseFloat(d.longitude));
     });
 
@@ -119,7 +119,7 @@
     function initMap() {
         // create bounds, which will extend to cover all location markers
         var bound = new google.maps.LatLngBounds();
-        data.nodes.forEach(function(d) {
+        data.forEach(function(d) {
             bound.extend(d['LatLng']);
         });
         var map = new google.maps.Map(document.getElementById('locations-map'), {
@@ -144,7 +144,7 @@
         });
         map.fitBounds(bound);
 
-        data.nodes.forEach(function(d) {
+        data.forEach(function(d) {
           var marker = new google.maps.Marker({
             position: d.LatLng,
             map: map,

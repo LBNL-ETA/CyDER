@@ -171,15 +171,3 @@ import datetime
 #     if status:
 #         return_dict['status'] = "True"
 #     return JsonResponse(return_dict)
-
-
-@login_required
-def nodes_info(request, id):
-    # Get the model
-    return_dict = {}
-    model = Model.objects.get(id=id)
-
-    # Get all information about the nodes
-    return_dict['nodes'] = list(Node.objects.filter(model=model).values())
-
-    return JsonResponse(return_dict)
