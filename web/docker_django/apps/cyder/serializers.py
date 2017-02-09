@@ -32,7 +32,7 @@ class UserModelSerializer(serializers.ModelSerializer):
 
     def get_model_region(self, obj):
         try:
-            temp = models.Model.objects.filter(id=self.instance.model.id)
+            temp = models.Model.objects.filter(id=obj.model.id)
             regions = [value.region for value in temp]
         except:
             return str(traceback.format_exc())
