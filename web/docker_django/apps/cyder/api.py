@@ -143,8 +143,6 @@ class ElectricVehicleScenarioViewSet(mixins.RetrieveModelMixin,
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-            # usermodel = get_object_or_404(m.UserModel, id=serializer.data['usermodel'])
-            # m.ElectricVehicleScenario.objects.create(usermodel=usermodel, **serializer.data)
         return Response({'status': 'success'})
 
 
