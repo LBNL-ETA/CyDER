@@ -7,10 +7,7 @@ Usage of CYMDIST as an FMU
 
 The following requirements must be met to import and run a CYMDIST FMU:
 
-1. Python 3.4 must be installed and added to the ``PYTHONPATH``. This is needed by the master algorithm :term:`PyFMI`.
-
-  .. note::
-     Check if I really need to add Python3.4 on the Python path for runtime coupling using PyFMI.
+1. Python 3.4 must be installed. This is needed by the master algorithm :term:`PyFMI`.
 
 2. CYME version 7.2 must be installed. CYME can be downloaded from `www.cyme.com <https://www.cyme.com>`_.
 
