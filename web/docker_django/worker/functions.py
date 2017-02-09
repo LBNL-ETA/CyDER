@@ -34,8 +34,8 @@ def fmu_wrapper(model_filename, input_values, input_names,
         >>> fmu_wrapper(model_filename, input_values, input_names,
                         output_names, output_nodes, write_result)
     Note:
-        output_names can be: 'KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC',
-        'IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC', 'PFA', 'PFB', 'PFC'
+        output_names can be: ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC',
+        'IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC', 'PFA', 'PFB', 'PFC']
         for a greater list see CymDIST > customize > keywords > powerflow
     """
 
