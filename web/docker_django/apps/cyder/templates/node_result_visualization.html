@@ -40,7 +40,7 @@
   var target = document.getElementById("graph");
   var spinner = new Spinner(opts).spin(target);
 
-  d3.json("/api2/simulation_node_result/?simulation_id={{ simulation_id }}", function(error, json) {
+  d3.json("/api/simulation_node_result/?simulation_id={{ simulation_id }}", function(error, json) {
     if (error) return console.warn(error);
 
     // stop spin.js loader

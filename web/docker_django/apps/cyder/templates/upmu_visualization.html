@@ -45,7 +45,7 @@
    // Get today's date
    var first_date = moment().subtract(1, 'hours').format("YYYY-MM-DD_HH:mm:ss");
    var second_date = moment().subtract(10, 'minutes').format("YYYY-MM-DD_HH:mm:ss");
-   var api_url = String('/api2/upmu/' + String(first_date) + '/' + String(second_date) + '/grizzly_bus1/');
+   var api_url = String('/api/upmu/' + String(first_date) + '/' + String(second_date) + '/grizzly_bus1/');
    console.log(api_url);
 
   d3.json(api_url, function(error, json) {
