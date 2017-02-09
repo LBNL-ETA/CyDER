@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 import models as m
+import form as f
 import api
 import ast
 from rest_framework import viewsets, mixins, status
@@ -18,8 +19,7 @@ import calibration as c
 import simulation as sim
 import sys
 import traceback
-from .filter import NodeResultFilter, CalibrationHistoryFilter
-from .form import ElectricVehicleScenarioForm
+import filter as filt
 
 
 @login_required
@@ -56,7 +56,7 @@ def my_models_scenarios(request, id):
     usermodel = get_object_or_404(m.UserModel, pk=id)
     scenario, created = m.ElectricVehicleScenario.objects.get_or_create(usermodel=usermodel)
     if request.method == "POST":
-        form = ElectricVehicleScenarioForm(request.POST, instance=scenario)
+        form = f.ElectricVehicleScenarioForm(request.POST, instance=scenario)
         if form.is_valid():
             scenario = form.save(commit=False)
             scenario.save()
@@ -78,8 +78,10 @@ def my_models_review(request, id):
 
 @login_required
 def my_models_general_settings(request, id):
-    status, form = api._my_model_update_description(request, id)
-    if status:
+    instance = get_object_or_404(UserModel, id=id)
+    form = f.UserModelDescriptionForm(request.POST or None, instance=instance)
+    if form.is_valid():
+        form.save()
         messages.add_message(request, messages.SUCCESS, 'The description was updated!')
 
     return render(request, 'my_models_general_settings.html', {'form': form, 'usermodel_id': id, 'model_id': form.instance.model.id})
@@ -106,7 +108,7 @@ class ModelViewSet(viewsets.ReadOnlyModelViewSet):
 class CalibrationViewSet(mixins.RetrieveModelMixin,
                          mixins.ListModelMixin,
                          viewsets.GenericViewSet):
-    filter_backends = (CalibrationHistoryFilter,)
+    filter_backends = (filt.CalibrationHistoryFilter,)
     queryset = m.CalibrationHistory.objects.all()
     pagination_class = None
 
@@ -169,7 +171,7 @@ class UserModelViewSet(mixins.RetrieveModelMixin,
 
 class NodeResultViewSet(mixins.ListModelMixin,
                         viewsets.GenericViewSet):
-    filter_backends = (NodeResultFilter,)
+    filter_backends = (filt.NodeResultFilter,)
     queryset = m.NodeResult.objects.all()
     pagination_class = None
 
@@ -181,6 +183,23 @@ class NodeResultViewSet(mixins.ListModelMixin,
         else:
             queryset = m.NodeResult.objects.filter(usermodel=sim_id)
         serializer = s.NodeResultSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class NodeViewSet(mixins.ListModelMixin,
+                        viewsets.GenericViewSet):
+    filter_backends = (filt.NodeFilter,)
+    queryset = m.Node.objects.all()
+    pagination_class = None
+
+    def list(self, request):
+        model_id = request.GET.get("model_id", None)
+        if model_id:
+            queryset = m.Node.objects.filter(model_id=model_id)
+        else:
+            return Response({'status': 'Require a model_id parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = s.NodeSerializer(queryset, many=True)
         return Response(serializer.data)
 
 

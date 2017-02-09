@@ -36,14 +36,14 @@
 <br>
 
 <script type="text/javascript">
-var url = "{% url 'home_info' %}";
+var url = "/api/model/";
 var data
 d3.json(url, function (json) {
   // Save data in global scope
   data = json
 
   // Create google coodinate objects
-  data.models.forEach(function(d) {
+  data.forEach(function(d) {
     d.LatLng = new google.maps.LatLng(parseFloat(d.lat), parseFloat(d.lon));
   });
 
@@ -54,9 +54,8 @@ d3.json(url, function (json) {
   function initMap() {
       // create bounds, which will extend to cover all location markers
       var bound = new google.maps.LatLngBounds();
-      data.models.forEach(function(d) {
+      data.forEach(function(d) {
           bound.extend(d['LatLng']);
-          d.last_calibrated = new Date(Date.parse(d.last_calibrated));
       });
       var map = new google.maps.Map(document.getElementById('locations-map'), {
           // center the map at the center of all the markers
@@ -80,12 +79,11 @@ d3.json(url, function (json) {
       });
       map.fitBounds(bound);
 
-      data.models.forEach(function(d) {
+      data.forEach(function(d) {
         var marker = new google.maps.Marker({
           position: d.LatLng,
           map: map,
-          description: "<p>Region: " + d.region + "</p>" + "<p>Last calibrated: " +
-                       d.last_calibrated.toDateString() + "</p>" +
+          description: "<p>Region: " + d.region + "</p>" +
                        "<div class='text-center'>" +
                        "<a class='button1' href=" + "/model/" + String(d.id) + " >Select</a>" +
                        "</div>",

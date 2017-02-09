@@ -26,8 +26,8 @@ def fmu_wrapper(model_filename, input_values, input_names,
     Example:
         >>> model_filename = 'BU0001.sxst'
         >>> input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
-        >>> input_values = [2520, 2520, 2520, 0, -120, 120]
-        >>> output_names = ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC']
+        >>> input_values = [2520, 2520, 2520, 0, -120, 120]  # VMAG are in [V] and VANG in [deg]
+        >>> output_names = ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC']  # KW are in [KW] and KVAR are in [KVAR]
         >>> output_nodes = ['800032440', '800032440', '800032440', '800032440', '800032440', '800032440']
         >>> write_results = 0  # (or False)
 
