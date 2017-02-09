@@ -8,15 +8,16 @@
 
 from datetime import datetime
 import functions
+import os
 
 def main():
-    input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C',
-                   'P_A', 'P_B', 'P_C', 'Q_A', 'Q_B', 'Q_C']
-    input_values = [7287, 7299, 7318, 7272, 2118, 6719, -284, -7184, 3564]
-    output_names = ['voltage_A', 'voltage_B', 'voltage_C']
-    output_node_names = ['HOLLISTER_2104',
-                           'HOLLISTER_2104', 'HOLLISTER_2104']
-    exchange("HL0004.sxst", input_values, input_names,
+    print (os.getcwd())
+    input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
+    input_values = [2520, 2520, 2520, 0.0, -120.0, 120.0]
+    output_names = ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC']
+    output_node_names = ['800032440', '800032440', '800032440', 
+                         '800032440', '800032440', '800032440']
+    exchange("BU0001.sxst", input_values, input_names,
              output_names, output_node_names, 0)
 
 def exchange(input_file_name, input_values, input_names,
