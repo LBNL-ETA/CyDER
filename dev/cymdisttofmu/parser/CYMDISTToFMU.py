@@ -49,8 +49,8 @@ BUILDINGS_LIB_PATH=os.path.join(script_path, 'libraries', 'modelica')
 
 #########################################
 # # TEST FILES TO BE PROVIDED BY THE USER
-XML_INPUT_PATH = 'HL0004.xml'
-INPUT_FILE_PATH = 'HL0004.sxst'
+XML_INPUT_PATH = 'BU0001.xml'
+INPUT_FILE_PATH = 'BU0001.sxst'
 #########################################
 
 

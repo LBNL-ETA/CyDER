@@ -13,17 +13,12 @@ def simulate_single_fmu():
     output_names = ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC']
     output_node_names = ['800032440', '800032440', '800032440', 
                          '800032440', '800032440', '800032440']
-    k=0
-    for i in input_names:
-        cymdist.set (i, input_values[k])
-        k+=1
-    opts=cymdist.simulate_options()
-    res=cymdist.simulate(options=opts, 
-                            start_time=0.0, 
-                            final_time=1.0)
-    print (cymdist.get_log())
-    print ("This is the single simulation results " + str(res))
-    
+
+    # Set the inputs
+    for cnt, elem in enumerate(input_names):
+        cymdist.set (elem, input_values[cnt])
+    # Run simulation    
+    res=cymdist.simulate(start_time=0.0, final_time=1.0)    
 
 def simulate_multiple_fmus():
     """Simulate one CYMDIST FMU coupled to a dummy GridDyn FMU.
@@ -47,11 +42,13 @@ def simulate_multiple_fmus():
                    (cymdist, "KVARC_800032440", gridyn, "KVARC_800032440"),]
     
     coupled_simulation = Master (models, connections)
+    
     opts=coupled_simulation.simulate_options()
     opts['step_size']=1.0
     opts['logging']=True
-    print(str(opts))
+
     start = datetime.now()
+    # Run simulation
     res=coupled_simulation.simulate(options=opts, 
                             start_time=0.0, 
                             final_time=1.0)
