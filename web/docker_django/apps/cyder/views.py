@@ -39,56 +39,62 @@ def calibration(request, id):
 
 @login_required
 def my_projects(request):
-    queryset = get_list_or_404(m.UserModel, user=request.user)
-    serializer = s.UserModelSerializer(queryset, many=True)
+    queryset = get_list_or_404(m.Project, user=request.user)
+    serializer = s.ProjectSerializer(queryset, many=True)
     return render(request, 'my_projects.html', {'my_projects': serializer.data})
 
 
 @login_required
 def my_project_settings(request, id):
-    return render(request, 'my_project_settings.html', {'usermodel_id': id})
+    instance = get_object_or_404(m.Project, id=id)
+    form = f.ProjectDescriptionForm(request.POST or None, instance=instance)
+    if form.is_valid():
+        form.save()
+        messages.add_message(request, messages.SUCCESS, 'The description was updated!')
+
+    return render(request, 'my_project/settings.html', {'form': form, 'project_id': id, 'model_id': form.instance.model.id})
 
 
 @login_required
 def my_project_scenarios(request, id):
-    usermodel = get_object_or_404(m.UserModel, pk=id)
-    scenario, created = m.ElectricVehicleScenario.objects.get_or_create(usermodel=usermodel)
+    project_model = get_object_or_404(m.ProjectModel, pk=id)
+    scenario, created = m.ElectricVehicleScenario.objects.get_or_create(project_model=project_model)
     if request.method == "POST":
         form = f.ElectricVehicleScenarioForm(request.POST, instance=scenario)
         if form.is_valid():
             scenario = form.save(commit=False)
             scenario.save()
-            return redirect('my_project_settings', id=id)
+            return redirect('my_project/settings', id=id)
     else:
         form = f.ElectricVehicleScenarioForm(instance=scenario)
-    return render(request, 'my_project_scenarios.html', {'usermodel_id': id, 'form': form})
+    return render(request, 'my_project/my_model/scenarios.html', {'project_id': project_model.project_id, 'form': form})
 
 
 @login_required
 def my_project_review(request, id):
     result_dict = {}
-    result_dict['usermodel_id'] = id
-    usermodel = get_object_or_404(m.UserModel, id=id)
-    model = get_object_or_404(m.Model, id=usermodel.model_id)
-    result_dict['model'] = s.DetailModelSerializer(model).data
-    return render(request, 'my_project_review.html', result_dict)
+    result_dict['project_id'] = id
+    project = get_object_or_404(m.Project, id=id)
+    project_models = get_list_or_404(m.ProjectModels, id=project_id)
+    result_dict['model'] = s.DetailModelSerializer(project_models[0].model).data
+    return render(request, 'my_project/review.html', result_dict)
 
 
-@login_required
-def my_project_general_settings(request, id):
-    instance = get_object_or_404(m.UserModel, id=id)
-    form = f.UserModelDescriptionForm(request.POST or None, instance=instance)
-    if form.is_valid():
-        form.save()
-        messages.add_message(request, messages.SUCCESS, 'The description was updated!')
-
-    return render(request, 'my_project_general_settings.html', {'form': form, 'usermodel_id': id, 'model_id': form.instance.model.id})
+# @login_required
+# def my_project_general_settings(request, id):
+#     instance = get_object_or_404(m.UserModel, id=id)
+#     form = f.UserModelDescriptionForm(request.POST or None, instance=instance)
+#     if form.is_valid():
+#         form.save()
+#         messages.add_message(request, messages.SUCCESS, 'The description was updated!')
+#
+#     return render(request, 'my_project_general_settings.html', {'form': form, 'usermodel_id': id, 'model_id': form.instance.model.id})
 
 
 @login_required
 def my_project_add_devices(request, id):
-    user_model = get_object_or_404(m.UserModel, id=id)
-    return render(request, 'my_project_add_devices.html', {'usermodel_id': id, 'model_id': user_model.model.id})
+    project_model = get_object_or_404(m.ProjectModels, id=id)
+    return render(request, 'my_project/my_model/add_devices.html', {'project_model_id': id, 'model_id': project_model.model.id})
 
 
 @login_required
@@ -98,4 +104,4 @@ def show_upmu_data(request):
 
 @login_required
 def show_node_result(request, id):
-    return render(request, 'node_result_visualization.html', {'simulation_id': id})
+    return render(request, 'my_project/node_result_visualization.html', {'simulation_id': id})

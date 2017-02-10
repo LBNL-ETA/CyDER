@@ -87,7 +87,7 @@ $(document).ready(function(){
       var spinner = new Spinner(opts).spin(target);
 
       // Send post request
-      $.post("/api/simulation/{{ usermodel_id }}/simulate/?format=json",
+      $.post("/api/simulation/{{ project_id }}/simulate/?format=json",
       {
         "options": "string",
         "description": "string"

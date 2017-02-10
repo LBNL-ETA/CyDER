@@ -10,17 +10,24 @@ def simulate(pk):
     """
     # Get the model id from the model user id
     try:
-        user_model = m.UserModel.objects.get(id=pk)
+        project = m.Project.objects.get(id=pk)
     except:
-        raise Exception("Model User " + str(pk) + " does not exist")
+        raise Exception("Project " + str(pk) + " does not exist")
+    project_models = m.ProjectModels.filter(project_id=project.id)
+
+
+    if project_models:
+        project_model = project_models[0]
+    else:
+        raise Exception("Project does not have any model")
 
     # Get the model corresponding to it
-    model = user_model.model
+    model = project_model.model
 
     # Select the type of simulation
     vehicle_simulation = False
     try:
-        scenario = m.ElectricVehicleScenario.objects.get(usermodel=user_model)
+        scenario = m.ElectricVehicleScenario.objects.get(project_model=project_model)
         if scenario.is_active:
             vehicle_simulation = True
             nb_vehicles = scenario.nb_vehicles
@@ -44,7 +51,7 @@ def simulate(pk):
     result = t.parse_ssh_list(output, status)
 
     # Wipe out previous results if any
-    m.NodeResult.objects.filter(usermodel=user_model).delete()
+    m.NodeResult.objects.filter(project_model=project_model).delete()
 
     # Change "None" to None
     for index, node in enumerate(result):
@@ -53,6 +60,6 @@ def simulate(pk):
                 result[index][key] = None
 
     # Save results back to the database
-    [m.NodeResult(usermodel=user_model, **node).save() for node in result]
+    [m.NodeResult(project_model=project_model, **node).save() for node in result]
 
     return result

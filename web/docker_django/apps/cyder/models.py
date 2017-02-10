@@ -40,10 +40,9 @@ class Devices(models.Model):
     longitude = models.FloatField(null=True, blank=True)
 
 
-class UserModel(models.Model):
-    """docstring for UserModel."""
+class Project(models.Model):
+    """docstring for Project."""
     user = models.ForeignKey(User, null=True, blank=True)
-    model = models.ForeignKey(Model, null=True, blank=True)
     name = models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     last_modified = models.DateTimeField(null=True, blank=True)
@@ -52,19 +51,28 @@ class UserModel(models.Model):
     status = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return u"%s %s" % (self.user, self.model)
+        return u"%s avail. result: %s" % (self.user, self.result_available)
+
+
+class ProjectModels(models.Model):
+    """docstring for Project."""
+    project = models.ForeignKey(Project, null=True, blank=True)
+    model = models.ForeignKey(Model, null=True, blank=True)
+
+    def __str__(self):
+        return u"%s %s" % (self.project, self.model)
 
 
 class ElectricVehicleScenario(models.Model):
-    """docstring for UserModel."""
-    usermodel = models.OneToOneField(UserModel, null=True, blank=True)
+    """docstring for ElectricVehicleScenario."""
+    project_model = models.OneToOneField(ProjectModels, null=True, blank=True)
     nb_vehicles = models.IntegerField(null=True, blank=True)
     is_active = models.BooleanField(default=False)
 
 
 class NodeResult(models.Model):
     """docstring for NodeResult."""
-    usermodel = models.ForeignKey(UserModel, null=True, blank=True)
+    project_model = models.ForeignKey(ProjectModels, null=True, blank=True)
     node_id = models.CharField(max_length=50, null=True, blank=True)
     distance = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
@@ -77,9 +85,8 @@ class NodeResult(models.Model):
 class CurrentCalibration(models.Model):
     """docstring for CalibrationData."""
     model = models.OneToOneField(Model, null=True, blank=True)
-    impedance_a = models.FloatField(null=True, blank=True)
-    impedance_b = models.FloatField(null=True, blank=True)
-    impedance_c = models.FloatField(null=True, blank=True)
+    impedance_real = models.FloatField(null=True, blank=True)
+    impedance_imag = models.FloatField(null=True, blank=True)
 
 
 class CalibrationHistory(models.Model):

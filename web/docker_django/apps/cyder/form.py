@@ -1,27 +1,27 @@
 from __future__ import division
 from django.forms import ModelForm, Textarea
-from .models import UserModel, ElectricVehicleScenario
+import models as m
 from bootstrap3_datetime.widgets import DateTimePicker
 from crispy_forms.bootstrap import Field, InlineRadios, TabHolder, Tab, Div
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Fieldset
 
 
-class UserModelDescriptionForm(ModelForm):
+class ProjectDescriptionForm(ModelForm):
 
     class Meta:
-        model = UserModel
+        model = m.Project
         fields = ('name', 'description')
         widgets = {
           'description': Textarea(attrs={'rows':2, 'cols':20}),
         }
 
     def __init__(self, *args, **kwargs):
-        super(UserModelDescriptionForm, self).__init__(*args, **kwargs)
+        super(ProjectDescriptionForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_id = 'description-id'
         self.helper.form_method = 'post'
-        self.helper.form_action = "/my_models_settings/" + str(self.instance.id) + '/'
+        self.helper.form_action = "/my_project_settings/" + str(self.instance.id) + '/'
         self.helper.add_input(Submit('submit', 'Save', css_class="pull-right"))
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-lg-2'
@@ -44,7 +44,7 @@ class ElectricVehicleScenarioForm(ModelForm):
         self.helper = FormHelper()
         self.helper.form_id = 'description-id'
         self.helper.form_method = 'post'
-        self.helper.form_action = "/my_models_scenarios/" + str(self.instance.usermodel.id) + '/'
+        self.helper.form_action = "/my_models_scenarios/" + str(self.instance.project_model.id) + '/'
         self.helper.add_input(Submit('submit', 'Save', css_class="pull-right"))
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-lg-4'

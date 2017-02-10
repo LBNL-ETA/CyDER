@@ -57,40 +57,40 @@ class CalibrationViewSet(mixins.RetrieveModelMixin,
         return Response(data)
 
 
-class UserModelViewSet(mixins.RetrieveModelMixin,
+class ProjectViewSet(mixins.RetrieveModelMixin,
                        mixins.ListModelMixin,
                        viewsets.GenericViewSet):
-    queryset = m.UserModel.objects.all()
+    queryset = m.Project.objects.all()
 
     def retrieve(self, request, pk):
-        serializer = s.UserModelSerializer(get_object_or_404(m.UserModel, id=pk))
+        serializer = s.ProjectSerializer(get_object_or_404(m.Project, id=pk))
         return Response(serializer.data)
 
     def list(sefl, request):
-        queryset = get_list_or_404(m.UserModel, user=request.user)
-        serializer = s.UserModelSerializer(queryset, many=True)
+        queryset = get_list_or_404(m.Project, user=request.user)
+        serializer = s.ProjectSerializer(queryset, many=True)
         return Response(serializer.data)
 
     @detail_route(methods=['POST'], serializer_class=s.ActionSerializer)
     def simulate(self, request, pk):
         try:
             # Change simulation status
-            usermodel = m.UserModel.objects.get(id=pk)
-            usermodel.in_progress = True
-            usermodel.save()
+            project = m.Project.objects.get(id=pk)
+            project.in_progress = True
+            project.save()
 
             # Launch simulation
             sim.simulate(pk)
         except:
-            usermodel.status = str(traceback.format_exc())
-            usermodel.save()
+            project.status = str(traceback.format_exc())
+            project.save()
             return Response({'error': str(traceback.format_exc())})
 
         # Change status to done
-        usermodel.in_progress = False
-        usermodel.status = "Success"
-        usermodel.result_available = True
-        usermodel.save()
+        project.in_progress = False
+        project.status = "Success"
+        project.result_available = True
+        project.save()
         return Response({'status': 'success'})
 
 
@@ -104,9 +104,9 @@ class NodeResultViewSet(mixins.ListModelMixin,
         sim_id = request.GET.get("simulation_id", None)
         node_id = request.GET.get("node_id", None)
         if node_id:
-            queryset = m.NodeResult.objects.filter(usermodel=sim_id, node_id=node_id)
+            queryset = m.NodeResult.objects.filter(project_model=sim_id, node_id=node_id)
         else:
-            queryset = m.NodeResult.objects.filter(usermodel=sim_id)
+            queryset = m.NodeResult.objects.filter(project_model=sim_id)
         serializer = s.NodeResultSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -135,7 +135,7 @@ class ElectricVehicleScenarioViewSet(mixins.RetrieveModelMixin,
     serializer_class = s.ElectricVehicleScenarioSerializer
 
     def retrieve(self, request, pk=None):
-        serializer = s.ElectricVehicleScenarioSerializer(get_object_or_404(m.ElectricVehicleScenario, usermodel_id=pk))
+        serializer = s.ElectricVehicleScenarioSerializer(get_object_or_404(m.ElectricVehicleScenario, project_model=pk))
         return Response(serializer.data)
 
     def create(self, request):

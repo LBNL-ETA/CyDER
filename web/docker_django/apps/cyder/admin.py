@@ -16,17 +16,17 @@ class CalibrationHistoryAdmin(admin.ModelAdmin):
     list_per_page = 25
 
 
-class UserModelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'model', 'name', 'description', 'last_modified')
-    list_display_links = ('id', 'user', 'model')
-    search_fields = ('model__region', 'model__area', 'model__city', 'user_username')
+class ProjectAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'name', 'description', 'last_modified')
+    list_display_links = ('id', 'user')
+    search_fields = ('name', 'user_username')
     list_per_page = 25
 
 
 class ElectricVehicleScenarioAdmin(admin.ModelAdmin):
-    list_display = ('id', 'usermodel', 'nb_vehicles', 'is_active')
-    list_display_links = ('id', 'usermodel')
-    search_fields = ('usermodel', 'nb_vehicles')
+    list_display = ('id', 'project_model', 'nb_vehicles', 'is_active')
+    list_display_links = ('id', 'project_model')
+    search_fields = ('project_model', 'nb_vehicles')
     list_per_page = 25
 
 
@@ -59,9 +59,9 @@ class DevicesAdmin(admin.ModelAdmin):
 
 
 class NodeResultAdmin(admin.ModelAdmin):
-    list_display = ('id', 'usermodel', 'node_id', 'voltage_A', 'voltage_B', 'voltage_C')
-    list_display_links = ('id', 'usermodel')
-    search_fields = ('usermodel', 'node_id')
+    list_display = ('id', 'project_model', 'node_id', 'voltage_A', 'voltage_B', 'voltage_C')
+    list_display_links = ('id', 'project_model')
+    search_fields = ('project_model', 'node_id')
     list_per_page = 25
 
 
@@ -69,7 +69,7 @@ class NodeResultAdmin(admin.ModelAdmin):
 admin.site.register(models.Model, ModelAdmin)
 admin.site.register(models.Node)
 admin.site.register(models.NodeResult, NodeResultAdmin)
-admin.site.register(models.UserModel, UserModelAdmin)
+admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.ElectricVehicleScenario, ElectricVehicleScenarioAdmin)
 admin.site.register(models.CurrentCalibration, CurrentCalibrationAdmin)
 admin.site.register(models.CalibrationHistory, CalibrationHistoryAdmin)

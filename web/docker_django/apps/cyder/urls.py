@@ -8,7 +8,7 @@ schema_view = get_swagger_view(title='CyDER API')
 
 router = routers.DefaultRouter()
 router.register(r'model', api.ModelViewSet)
-router.register(r'simulation', api.UserModelViewSet)
+router.register(r'simulation', api.ProjectViewSet)
 router.register(r'simulation_node_result', api.NodeResultViewSet)
 router.register(r'calibration', api.CalibrationViewSet)
 router.register(r'ev_scenario', api.ElectricVehicleScenarioViewSet)

@@ -23,20 +23,20 @@ class ElectricVehicleScenarioSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class UserModelSerializer(serializers.ModelSerializer):
-    model_region = serializers.SerializerMethodField()
+class ProjectSerializer(serializers.ModelSerializer):
+    # model_region = serializers.SerializerMethodField()
 
     class Meta:
-        model = models.UserModel
+        model = models.Project
         fields = '__all__'
 
-    def get_model_region(self, obj):
-        try:
-            temp = models.Model.objects.filter(id=obj.model.id)
-            regions = [value.region for value in temp]
-        except:
-            return str(traceback.format_exc())
-        return regions
+    # def get_model_region(self, obj):
+    #     try:
+    #         temp = models.Model.objects.filter(id=obj.model.id)
+    #         regions = [value.region for value in temp]
+    #     except:
+    #         return str(traceback.format_exc())
+    #     return regions
 
 
 class NodeSerializer(serializers.ModelSerializer):
