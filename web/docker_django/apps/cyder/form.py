@@ -34,7 +34,7 @@ class ProjectDescriptionForm(ModelForm):
 class ElectricVehicleScenarioForm(ModelForm):
 
     class Meta:
-        model = ElectricVehicleScenario
+        model = m.ElectricVehicleScenario
         fields = ('nb_vehicles', 'is_active')
         labels = {'nb_vehicles': 'Number of electric vehicles',
                   'is_active': 'Toggle influence of electric vehicles'}
