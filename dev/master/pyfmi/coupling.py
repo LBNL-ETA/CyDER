@@ -3,6 +3,39 @@ from pyfmi.master import Master
 from datetime import datetime
 import os
 
+def simulate_algebraicloop_fmus():
+    """Simulate two dummy FMUs which form an algebraic loop.
+    The first FMU implements y = u (u is the input, y is the output)
+    The second FMU implements y = u*u (u is the input, y is the output)
+    The coupled system connects the output of the first model
+    with the input of the second model, and the output of the 
+    second model to the input of the first model.
+    This forms an algebraic loop which leads to the equation u = u*u
+        
+    """
+    cymdist=load_fmu("../fmus/Tests/FirstModel.fmu", log_level=7)
+    gridyn=load_fmu("../fmus/Tests/SecondModel.fmu", log_level=7)
+    
+    models = [cymdist, gridyn]
+    connections = [(cymdist, "y", gridyn, "u"), 
+                   (gridyn, "y", cymdist, "u")]
+    
+    coupled_simulation = Master (models, connections)
+    
+    opts=coupled_simulation.simulate_options()
+    opts['step_size']=0.1
+    opts['logging']=True
+
+    start = datetime.now()
+    # Run simulation
+    res=coupled_simulation.simulate(options=opts, 
+                            start_time=0.0, 
+                            final_time=1.0)
+    end = datetime.now()
+    print('Ran a coupled CYMDIST/GridDyn simulation in ' +
+          str((end - start).total_seconds()) + ' seconds.')
+
+
 def simulate_single_fmu():
     """Simulate one CYMDIST FMU.
         
@@ -58,4 +91,5 @@ def simulate_multiple_fmus():
         
 if __name__ == '__main__':
     #simulate_single_fmu()
-    simulate_multiple_fmus()
+    #simulate_multiple_fmus()
+    simulate_algebraicloop_fmus()
