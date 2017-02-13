@@ -2,7 +2,7 @@ from pyfmi import load_fmu
 from pyfmi.master import Master
 
 def simulate_multiple_fmus():
-    """Simulate one CYMDIST FMU coupled to a dummy GridDyn FMU.
+    """Simulate one CYMDIST FMU coupled to a GridDyn FMU.
         
     """
     cymdist=load_fmu("CYMDIST.fmu", log_level=7)
