@@ -31,6 +31,30 @@ class ProjectDescriptionForm(ModelForm):
             Field('description', placeholder="Model's description"))
 
 
+class ProjectCreationForm(ModelForm):
+
+    class Meta:
+        model = m.Project
+        fields = ('name', 'description')
+        widgets = {
+          'description': Textarea(attrs={'rows':2, 'cols':20}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectCreationForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'description-id'
+        self.helper.form_method = 'post'
+        self.helper.form_action = "/create_project/"
+        self.helper.add_input(Submit('submit', 'Create', css_class="pull-right"))
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-8'
+        self.helper.layout = Layout(
+            Field('name', placeholder="New model's name"),
+            Field('description', placeholder="Model's description"))
+
+
 class ElectricVehicleScenarioForm(ModelForm):
 
     class Meta:

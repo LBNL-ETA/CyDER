@@ -59,8 +59,10 @@ class CalibrationViewSet(mixins.RetrieveModelMixin,
 
 class ProjectViewSet(mixins.RetrieveModelMixin,
                        mixins.ListModelMixin,
+                       mixins.CreateModelMixin,
                        viewsets.GenericViewSet):
     queryset = m.Project.objects.all()
+    serializer_class = s.AddProjectSerializer
 
     def retrieve(self, request, pk):
         serializer = s.ProjectSerializer(get_object_or_404(m.Project, id=pk))
@@ -70,6 +72,23 @@ class ProjectViewSet(mixins.RetrieveModelMixin,
         queryset = get_list_or_404(m.Project, user=request.user)
         serializer = s.ProjectSerializer(queryset, many=True)
         return Response(serializer.data)
+
+    def create(self, request):
+        serializer_class = s.AddProjectSerializer
+        serializer = s.AddProjectSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(user=request.user, last_modified=datetime.datetime.now())
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @detail_route(methods=['POST'], serializer_class=s.AddModelSerializer)
+    def add_model(self, request, pk):
+        project = get_object_or_404(m.Project, id=pk)
+        serializer = s.AddModelSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            model = get_object_or_404(m.Model, id=serializer.data['model'])
+            project_model = m.ProjectModels(project=project, model=model)
+            project_model.save()
+            return Response({'status': 'success'}, status=status.HTTP_201_CREATED)
 
     @detail_route(methods=['POST'], serializer_class=s.ActionSerializer)
     def simulate(self, request, pk):
@@ -143,7 +162,6 @@ class ElectricVehicleScenarioViewSet(mixins.RetrieveModelMixin,
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response({'status': 'success'})
 
 
 @api_view(['GET'])

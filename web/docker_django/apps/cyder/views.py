@@ -44,7 +44,14 @@ def show_upmu_data(request):
 
 @login_required
 def create_project(request):
-    return redirect('my_projects')
+    form = f.ProjectCreationForm(request.POST or None)
+    if form.is_valid():
+        obj = form.save(commit=False)
+        obj.user = request.user
+        obj.last_modified = datetime.datetime.now()
+        obj.save()
+        return redirect('my_projects')
+    return render(request, 'create_project.html', {'form': form})
 
 
 @login_required

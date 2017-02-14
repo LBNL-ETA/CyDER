@@ -8,10 +8,10 @@ schema_view = get_swagger_view(title='CyDER API')
 
 router = routers.DefaultRouter()
 router.register(r'model', api.ModelViewSet)
-router.register(r'simulation', api.ProjectViewSet)
-router.register(r'simulation_node_result', api.NodeResultViewSet)
+router.register(r'project', api.ProjectViewSet)
+router.register(r'model_node_result', api.NodeResultViewSet)
 router.register(r'calibration', api.CalibrationViewSet)
-router.register(r'ev_scenario', api.ElectricVehicleScenarioViewSet)
+router.register(r'model_ev_scenario', api.ElectricVehicleScenarioViewSet)
 router.register(r'node', api.NodeViewSet)
 
 urlpatterns = [
@@ -22,6 +22,7 @@ urlpatterns = [
     # Normal view to navigate in the website
     url(r'^home/$', views.home, name='home'),
     url(r'^model/(?P<id>\d+)/$', views.model, name='model'),
+    url(r'^create_project/', views.create_project, name='create_project'),
     url(r'^my_projects/', views.my_projects, name='my_projects'),
     url(r'^my_project_settings/(?P<id>\d+)/$', views.my_project_settings, name='my_project_settings'),
     url(r'^my_project_model_add_devices/(?P<id>\d+)/$', views.my_model_add_devices, name='my_model_add_devices'),

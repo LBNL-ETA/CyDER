@@ -4,6 +4,7 @@ from django.db.models import Count
 from . import models
 import traceback
 import sys
+import datetime
 
 
 class ActionSerializer(serializers.Serializer):
@@ -21,6 +22,16 @@ class ElectricVehicleScenarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ElectricVehicleScenario
         fields = '__all__'
+
+
+class AddProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Project
+        fields = ['name', 'description']
+
+
+class AddModelSerializer(serializers.Serializer):
+    model = serializers.CharField(max_length=20)
 
 
 class ProjectSerializer(serializers.ModelSerializer):

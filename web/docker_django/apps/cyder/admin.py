@@ -23,6 +23,13 @@ class ProjectAdmin(admin.ModelAdmin):
     list_per_page = 25
 
 
+class ProjectModelAdmin(admin.ModelAdmin):
+    list_display = ('id', 'project', 'model')
+    list_display_links = ('id', 'project')
+    search_fields = ('project', 'model')
+    list_per_page = 25
+
+
 class ElectricVehicleScenarioAdmin(admin.ModelAdmin):
     list_display = ('id', 'project_model', 'nb_vehicles', 'is_active')
     list_display_links = ('id', 'project_model')
@@ -70,6 +77,7 @@ admin.site.register(models.Model, ModelAdmin)
 admin.site.register(models.Node)
 admin.site.register(models.NodeResult, NodeResultAdmin)
 admin.site.register(models.Project, ProjectAdmin)
+admin.site.register(models.ProjectModels, ProjectModelAdmin)
 admin.site.register(models.ElectricVehicleScenario, ElectricVehicleScenarioAdmin)
 admin.site.register(models.CurrentCalibration, CurrentCalibrationAdmin)
 admin.site.register(models.CalibrationHistory, CalibrationHistoryAdmin)
