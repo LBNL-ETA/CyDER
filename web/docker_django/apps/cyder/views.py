@@ -50,8 +50,14 @@ def create_project(request):
         obj.user = request.user
         obj.last_modified = datetime.datetime.now()
         obj.save()
-        return redirect('my_projects')
+        return redirect('add_model', id=obj.id)
     return render(request, 'create_project.html', {'form': form})
+
+
+@login_required
+def add_model(request, id):
+    serializer = s.ModelSerializer(m.Model.objects.all(), many=True)
+    return render(request, 'add_model.html', {'models': serializer.data, 'project_id': id})
 
 
 @login_required
