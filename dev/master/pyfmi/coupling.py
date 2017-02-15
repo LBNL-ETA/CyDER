@@ -25,6 +25,8 @@ def simulate_algebraicloop_fmus():
     opts=coupled_simulation.simulate_options()
     opts['step_size']=0.1
     opts['logging']=True
+    
+    print (opts['filter'])
 
     start = datetime.now()
     # Run simulation
@@ -48,10 +50,13 @@ def simulate_single_fmu():
                          '800032440', '800032440', '800032440']
 
     # Set the inputs
+    opts=cymdist.simulate_options()
+    opts['ncp']=1.0
+    #opts['step_size']=1.0
     for cnt, elem in enumerate(input_names):
         cymdist.set (elem, input_values[cnt])
     # Run simulation    
-    res=cymdist.simulate(start_time=0.0, final_time=1.0)    
+    res=cymdist.simulate(start_time=0.0, final_time=0.1)    
 
 def simulate_multiple_fmus():
     """Simulate one CYMDIST FMU coupled to a dummy GridDyn FMU.
@@ -77,19 +82,20 @@ def simulate_multiple_fmus():
     coupled_simulation = Master (models, connections)
     
     opts=coupled_simulation.simulate_options()
-    opts['step_size']=1.0
-    opts['logging']=True
+    opts['step_size']=0.1
+    opts['logging']=False
+    
 
     start = datetime.now()
     # Run simulation
     res=coupled_simulation.simulate(options=opts, 
                             start_time=0.0, 
-                            final_time=1.0)
+                            final_time=0.1)
     end = datetime.now()
     print('Ran a coupled CYMDIST/GridDyn simulation in ' +
           str((end - start).total_seconds()) + ' seconds.')
         
 if __name__ == '__main__':
     #simulate_single_fmu()
-    #simulate_multiple_fmus()
-    simulate_algebraicloop_fmus()
+    simulate_multiple_fmus()
+    #simulate_algebraicloop_fmus()
