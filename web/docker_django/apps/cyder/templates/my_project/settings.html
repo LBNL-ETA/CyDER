@@ -7,39 +7,51 @@
 <div style="max-width: 800px; margin: 0 auto;">
   <div class="text-center">
     <h1><b>CyDER</b></h1>
-    <br>
-    <p>General informations</p>
+    <p>Update project informations:</p>
   </div>
 
   {% csrf_token %}
   {% crispy form %}
 
   <br>
+  <br>
 
   <div class="text-center">
     <p>Models in this project:</p>
-  </div>
-
-  <div style="text-align:left;">
-    <div class="row">
-      {% for value in project_models %}
-        <div class="col-md-8">
-          <b>Id</b>: {{ value.model.id }} |
+    {% for value in project_models %}
+      <div class="row">
+        <div class="col-md-8" style="text-align:left;">
+          <p><b>Id</b>: {{ value.model.id }} |
           <b>Region</b>: {{ value.model.region }} |
-          <b>Breaker name</b>: {{ value.model.breaker_name }}
+          <b>Breaker name</b>: {{ value.model.breaker_name }}</p>
         </div>
         <div class="col-md-4">
           <a class="button2" style="padding: 5px 5px; font-size: 14px;" href="/my_project_model_settings/{{ value.id }}">Settings</a>
+          <a class="button3" style="padding: 5px 5px; font-size: 14px;" href="#">Remove</a>
         </div>
         <br>
         <br>
-      {% endfor %}
+      </div>
+    {% endfor %}
+    <div class="row">
+      <div class="col-md-8" style="text-align:left;">
+        <!-- <p>Add more models...</p> -->
+      </div>
+      <div class="col-md-4">
+        <a class="button1" style="padding: 5px 5px; font-size: 14px;" href="/add_model/{{ project_id }}">Add new model</a>
+      </div>
     </div>
   </div>
 
+  <br>
+  <br>
+
   <div class="text-center">
-    <p>Take me back to my other projects</p>
-    <a class="button3" href="/my_projects">Back</a>
+    <p>Take me back to my other projects or review my settings before running a simulation</p>
+    <div class="row">
+      <a class="button3" href="/my_projects">Back</a>
+      <a class="button1" href="/my_project_review/{{ project_id }}">Review</a>
+    </div>
   </div>
 
 </div>

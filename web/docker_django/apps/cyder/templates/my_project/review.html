@@ -6,40 +6,35 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.0.1/spin.min.js'></script>
 <script src="/static/js.cookie.js"></script>
+<link rel="stylesheet" href="/static/magnific-popup/magnific-popup.css">
+<script src="/static/magnific-popup/jquery.magnific-popup.js"></script>
 
-<div style="max-width: 500px; margin: 0 auto;">
-  <div class="text-center">
-    <h1><b>CyDER</b></h1>
-    <br>
-    <p>Click the "Simulate" button at the bottom to launch the simulation</p>
-  </div>
-
-<div id="review" style="max-width: 500px; margin: 0 auto;">
-  <div style="text-align:left;">
-    <ul style="list-style-position: inside;">
-      <li>Id: {{ model.id }}</li>
-      <li>Region: {{ model.region }}</li>
-      <li>Area: {{ model.area }}</li>
-      <li>City: {{ model.city }}</li>
-      <!-- <li>Latitude: {{ model.lat }}</li>
-      <li>Longitude: {{ model.lon }}</li>
-      <li>Filename: {{ model.filename }}</li> -->
-      <li>Breaker name: {{ model.breaker_name }}</li>
-    </ul>
-  </div>
-
-  <div class="text-center">
-    <p><b>List of devices:</b></p>
-  </div>
-
-  <div style="text-align:left;">
-    <ul style="list-style-position: inside;">
-      {% for value in model.devices %}
-      <li>{{ value.device_type }} | count: {{ value.count }}</li>
-      {% endfor %}
-    </ul>
+<div id="add-popup" class="white-popup mfp-with-anim mfp-hide">
+  <div id="spinner">
   </div>
 </div>
+
+<div style="max-width: 800px; margin: 0 auto;">
+  <div class="text-center">
+    <h1><b>CyDER</b></h1>
+    <p>Simulation models and parameters:</p>
+  </div>
+
+  <br>
+
+  <div class="text-center">
+    {% for value in project_models %}
+      <div class="row">
+        <div class="col-md-8" style="text-align:left;">
+          <p><b>Id</b>: {{ value.model.id }} |
+          <b>Region</b>: {{ value.model.region }} |
+          <b>Breaker name</b>: {{ value.model.breaker_name }}</p>
+        </div>
+        <br>
+        <br>
+      </div>
+    {% endfor %}
+  </div>
 
   <br>
   <br>
@@ -82,6 +77,15 @@ $.ajaxSetup({
 
 $(document).ready(function(){
   $("#simulate").click(function(){
+      // trigger popup
+      $.magnificPopup.open({
+          items: {
+            src: '#add-popup'
+          },
+          removalDelay: 500, //delay removal by X to allow out-animation
+          mainClass: 'mfp-fade'
+      });
+
       // trigger loader
       var target = document.getElementById("option");
       var spinner = new Spinner(opts).spin(target);
@@ -95,6 +99,9 @@ $(document).ready(function(){
       function(data, status){
           // stop spin.js loader
           spinner.stop();
+
+          // close the pop up
+          $.magnificPopup.close()
       });
   });
 });

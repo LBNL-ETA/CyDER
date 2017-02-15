@@ -27,8 +27,8 @@ class ProjectDescriptionForm(ModelForm):
         self.helper.label_class = 'col-lg-2'
         self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
-            Field('name', placeholder="New model's name"),
-            Field('description', placeholder="Model's description"))
+            Field('name', placeholder="Project name"),
+            Field('description', placeholder="Project description"))
 
 
 class ProjectCreationForm(ModelForm):
@@ -51,8 +51,8 @@ class ProjectCreationForm(ModelForm):
         self.helper.label_class = 'col-lg-2'
         self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
-            Field('name', placeholder="New model's name"),
-            Field('description', placeholder="Model's description"))
+            Field('name', placeholder="Project name"),
+            Field('description', placeholder="Project description"))
 
 
 class ElectricVehicleScenarioForm(ModelForm):

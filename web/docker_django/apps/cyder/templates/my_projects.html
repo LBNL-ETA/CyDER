@@ -3,9 +3,6 @@
 
 
 <div style="max-width: 500px; margin: 0 auto;">
-
-  <br>
-
   <div class="text-center">
     <h1><b>CyDER</b></h1>
     <p>Projects saved for this user:</p>
@@ -15,12 +12,12 @@
   <div style="text-align:left;">
     <ul style="list-style-position: inside;">
     {% for value in my_projects %}
-    <li><b>Name:</b> {{ value.name }} |
+    <li style="font-size: 16px;"><b>Name:</b> {{ value.name }} |
       <b>Description:</b> {{ value.description }}
     </li>
     <div class="text-center">
-      <a class="button3" style="padding: 5px 5px; font-size: 14px;" href="/api/my_project/remove/{{ value.id }}">Remove</a>
-      <a class="button2" style="padding: 5px 5px; font-size: 14px;" href="/api/my_project/copy/{{ value.id }}">Copy</a>
+      <a class="button3" style="padding: 5px 5px; font-size: 14px;" href="#">Remove</a>
+      <a class="button2" style="padding: 5px 5px; font-size: 14px;" href="#">Copy</a>
       <a class="button2" style="padding: 5px 5px; font-size: 14px;" href="/my_project_settings/{{ value.id }}">Settings</a>
       <a class="button1" style="padding: 5px 5px; font-size: 14px;" href="/my_project_review/{{ value.id }}">Simulate</a>
       <a class="button1" style="padding: 5px 5px; font-size: 14px;" href="/my_project_node_result/{{ value.id }}">View results</a>

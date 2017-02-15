@@ -89,8 +89,8 @@ def my_project_review(request, id):
     result_dict = {}
     result_dict['project_id'] = id
     project = get_object_or_404(m.Project, id=id)
-    project_models = get_list_or_404(m.ProjectModels, id=project_id)
-    result_dict['model'] = s.DetailModelSerializer(project_models[0].model).data
+    project_models = get_list_or_404(m.ProjectModels, project_id=id)
+    result_dict['project_models'] = s.ProjectModelSerializer(project_models, many=True).data
     return render(request, 'my_project/review.html', result_dict)
 
 
