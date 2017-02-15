@@ -22,7 +22,7 @@ class ProjectDescriptionForm(ModelForm):
         self.helper.form_id = 'description-id'
         self.helper.form_method = 'post'
         self.helper.form_action = "/my_project_settings/" + str(self.instance.id) + '/'
-        self.helper.add_input(Submit('submit', 'Save', css_class="pull-right"))
+        self.helper.add_input(Submit('submit', 'Update', css_class="pull-right"))
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-lg-2'
         self.helper.field_class = 'col-lg-8'
@@ -68,7 +68,7 @@ class ElectricVehicleScenarioForm(ModelForm):
         self.helper = FormHelper()
         self.helper.form_id = 'description-id'
         self.helper.form_method = 'post'
-        self.helper.form_action = "/my_models_scenarios/" + str(self.instance.project_model.id) + '/'
+        self.helper.form_action = "/my_project_model_scenarios/" + str(self.instance.project_model.id) + '/'
         self.helper.add_input(Submit('submit', 'Save', css_class="pull-right"))
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-lg-4'

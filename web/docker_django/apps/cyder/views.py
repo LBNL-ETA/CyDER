@@ -78,7 +78,10 @@ def my_project_settings(request, id):
         form.save()
         messages.add_message(request, messages.SUCCESS, 'The description was updated!')
 
-    return render(request, 'my_project/settings.html', {'form': form, 'project_id': id})
+    # Get all the project_models
+    queryset = get_list_or_404(m.ProjectModels, project_id=id)
+    serializer = s.ProjectModelSerializer(queryset, many=True)
+    return render(request, 'my_project/settings.html', {'form': form, 'project_id': id, 'project_models': serializer.data})
 
 
 @login_required
@@ -97,26 +100,31 @@ def my_project_node_result(request, id):
 
 
 @login_required
-def my_model_settings(request):
-    return redirect('my_projects')
+def my_model_settings(request, id):
+    project_model = get_object_or_404(m.ProjectModels, id=id)
+    return render(request, 'my_project/my_model/settings.html', {'project_model_id': id, 'project_id': project_model.project.id})
 
 
 @login_required
 def my_model_scenarios(request, id):
-    project_model = get_object_or_404(m.ProjectModel, pk=id)
+    project_model = get_object_or_404(m.ProjectModels, pk=id)
     scenario, created = m.ElectricVehicleScenario.objects.get_or_create(project_model=project_model)
     if request.method == "POST":
         form = f.ElectricVehicleScenarioForm(request.POST, instance=scenario)
         if form.is_valid():
             scenario = form.save(commit=False)
             scenario.save()
-            return redirect('my_project/settings', id=id)
+            messages.add_message(request, messages.SUCCESS, 'The scenario was updated!')
     else:
         form = f.ElectricVehicleScenarioForm(instance=scenario)
-    return render(request, 'my_project/my_model/scenarios.html', {'project_id': project_model.project_id, 'form': form})
+    return render(request, 'my_project/my_model/scenarios.html',
+                  {'project_id': project_model.project_id, 'form': form,
+                   'project_model_id': id})
 
 
 @login_required
 def my_model_add_devices(request, id):
     project_model = get_object_or_404(m.ProjectModels, id=id)
-    return render(request, 'my_project/my_model/add_devices.html', {'project_model_id': id, 'model_id': project_model.model.id})
+    return render(request, 'my_project/my_model/add_devices.html',
+                  {'project_model_id': id, 'model_id': project_model.model.id,
+                   'project_id': project_model.project.id})

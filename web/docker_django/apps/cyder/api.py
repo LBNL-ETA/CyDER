@@ -113,6 +113,19 @@ class ProjectViewSet(mixins.RetrieveModelMixin,
         return Response({'status': 'success'})
 
 
+class ProjectModelViewSet(mixins.ListModelMixin,
+                          viewsets.GenericViewSet):
+    filter_backends = (filt.ProjectFilter,)
+    queryset = m.ProjectModels.objects.all()
+    serializer_class = s.AddProjectSerializer
+
+    def list(self, request):
+        project_id = request.GET.get("project_id", None)
+        queryset = get_list_or_404(m.ProjectModels, project_id=project_id)
+        serializer = s.ProjectModelSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
 class NodeResultViewSet(mixins.ListModelMixin,
                         viewsets.GenericViewSet):
     filter_backends = (filt.NodeResultFilter,)

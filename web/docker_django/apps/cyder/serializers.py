@@ -50,6 +50,22 @@ class ProjectSerializer(serializers.ModelSerializer):
     #     return regions
 
 
+class ProjectModelSerializer(serializers.ModelSerializer):
+    model = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.ProjectModels
+        exclude = ['model']
+
+    def get_model(self, obj):
+        try:
+            query = models.Model.objects.get(id=obj.model.id)
+            serializer = ModelSerializer(query)
+        except:
+            return str(traceback.format_exc())
+        return serializer.data
+
+
 class NodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Node

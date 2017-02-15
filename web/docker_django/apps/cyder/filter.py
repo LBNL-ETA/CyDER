@@ -25,3 +25,11 @@ class NodeFilter(BaseFilterBackend):
       coreapi.Field(name="model_id", description="model id", required=True, location='query'),
     ]
     return fields
+
+
+class ProjectFilter(BaseFilterBackend):
+  def get_schema_fields(self, view):
+    fields = [
+      coreapi.Field(name="project_id", description="project id", required=True, location='query'),
+    ]
+    return fields
