@@ -97,5 +97,5 @@ def simulate_multiple_fmus():
         
 if __name__ == '__main__':
     #simulate_single_fmu()
-    simulate_multiple_fmus()
-    #simulate_algebraicloop_fmus()
+    #simulate_multiple_fmus()
+    simulate_algebraicloop_fmus()
