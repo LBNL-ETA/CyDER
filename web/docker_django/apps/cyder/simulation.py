@@ -13,7 +13,7 @@ def simulate(pk):
         project = m.Project.objects.get(id=pk)
     except:
         raise Exception("Project " + str(pk) + " does not exist")
-    project_models = m.ProjectModels.filter(project_id=project.id)
+    project_models = m.ProjectModels.objects.filter(project_id=project.id)
 
 
     if project_models:

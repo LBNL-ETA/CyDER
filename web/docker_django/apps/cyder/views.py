@@ -96,7 +96,10 @@ def my_project_review(request, id):
 
 @login_required
 def my_project_node_result(request, id):
-    return render(request, 'my_project/node_result_visualization.html', {'simulation_id': id})
+    project_models = get_list_or_404(m.ProjectModels, project_id=id)
+    project_model_id = project_models[0].id
+    return render(request, 'my_project/node_result_visualization.html',
+                  {'project_model_id': project_model_id})
 
 
 @login_required
