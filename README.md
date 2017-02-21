@@ -36,4 +36,4 @@ To use the git command on `Windows`
 
 3. From the Git Shell command prompt, 
 
-    create a folder which should contain the files on the Annex60 repository by typing
+    create a folder which should contain the files on the CyDER repository by typing
