@@ -37,3 +37,15 @@ To use the git command on `Windows`
 3. From the Git Shell command prompt, 
 
     create a folder which should contain the files on the CyDER repository by typing
+
+        mkdir cyder-repo
+
+4. change to the created folder by typing
+
+        cd cyder-repo
+
+From the Github Shell command prompt, you can execute any `git` command.
+
+To download, edit, and add new files see the commands listed in the section above.
+
+[^install]: In the installation process, you might be asked to log into your repository, just skip this section.
