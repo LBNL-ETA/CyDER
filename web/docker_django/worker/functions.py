@@ -19,11 +19,11 @@ def fmu_wrapper(model_filename, voltage_names, voltage_values,
     Args:
         model_filename (String): path to the cymdist grid model
         voltage_names (Strings): list of String to describe the list of values
+        voltage_values (Floats): list of float with the same order as input_names
         load_sections (Strings): [Optional]
         load_demands (Floats): [Optional]
         pv_sections (Strings): [Optional]
         pv_generations (Floats): [Optional]
-        voltage_values (Floats): list of float with the same order as input_names
         output_names (Strings): list of String output names (for a full list of option consult CymDIST docs)
         output_nodes (Strings): list of String corresponding to node ids for each output_names
         write_result (String): [Optional] if True the entire results are saved to the file system (add ~30secs)
@@ -32,12 +32,17 @@ def fmu_wrapper(model_filename, voltage_names, voltage_values,
         >>> model_filename = 'BU0001.sxst'
         >>> voltage_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
         >>> voltage_values = [2520, 2520, 2520, 0, -120, 120]  # VMAG are in [V] and VANG in [deg]
+        >>> load_sections = ['800033503']
+        >>> load_demands = [100]
+        >>> pv_sections = ['800033503']
+        >>> pv_generations = [100]
         >>> output_names = ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC']  # KW are in [KW] and KVAR are in [KVAR]
-        >>> output_nodes = ['800032440', '800032440', '800032440', '800032440', '800032440', '800032440']
-        >>> write_results = 0  # (or False)
+        >>> output_nodes = ['800036819', '800036819', '800036819', '800036819', '800036819', '800036819']
+        >>> write_results = 'False'
 
-        >>> fmu_wrapper(model_filename, voltage_values, voltage_names,
-                        output_names, output_nodes, write_result)
+        >>> fmu_wrapper(model_filename, voltage_names, voltage_values,
+                        load_sections, load_demands, pv_sections, pv_generations,
+                        output_names, output_nodes, write_results)
     Note:
         output_names can be: ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC',
         'IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC', 'PFA', 'PFB', 'PFC']
@@ -48,21 +53,21 @@ def fmu_wrapper(model_filename, voltage_names, voltage_values,
         """Create a dictionary from the input values and input names for voltages"""
         voltages = {}
         for name, value in zip(voltage_names, voltage_values):
-            input_data[name] = value
+            voltages[name] = value
         return voltages
 
     def _input_loads(load_sections, load_demands):
         """Create a dictionary from the input values and input names for voltages"""
         loads = []
         for section, demand in zip(load_sections, load_demands):
-            input_data.append({'section_id': section, 'active_power': demand})
+            loads.append({'section_id': section, 'active_power': demand})
         return loads
 
-    def _input_pv(pv_sections, pv_generations):
+    def _input_pvs(pv_sections, pv_generations):
         """Create a dictionary from the input values and input names for voltages"""
         pvs = []
         for section, generation in zip(pv_sections, pv_generations):
-            input_data.append({'section_id': section, 'generation': generation})
+            pvs.append({'section_id': section, 'generation': generation})
         return pvs
 
     def _set_voltages(voltages):
@@ -101,15 +106,15 @@ def fmu_wrapper(model_filename, voltage_names, voltage_values,
         """Add new pvs on the grid"""
         for index, pv in enumerate(pvs):
             # Add PVs
-            pv = cympy.study.AddDevice("my_pv_" + str(index), cympy.enums.DeviceType.Photovoltaic, pv['section_id'])
+            device = cympy.study.AddDevice("my_pv_" + str(index), cympy.enums.DeviceType.Photovoltaic, pv['section_id'])
 
             # Set PV size (add + 30 to make sure rated power is above generated power)
-            pv.SetValue(int((pv['generation'] + 30) / (23 * 0.08)), "Np")  # (ns=23 * np * 0.08 to find kW) --> kw / (23 * 0.08)
-            pv.SetValue(pv['generation'], 'GenerationModels[0].ActiveGeneration')
+            device.SetValue(int((pv['generation'] + 30) / (23 * 0.08)), "Np")  # (ns=23 * np * 0.08 to find kW) --> kw / (23 * 0.08)
+            device.SetValue(pv['generation'], 'GenerationModels[0].ActiveGeneration')
 
             # Set inverter size
-            pv.SetValue(pv['generation'], "Inverter.ActivePowerRating")
-            pv.SetValue(pv['generation'], "Inverter.ReactivePowerRating")
+            device.SetValue(pv['generation'], "Inverter.ActivePowerRating")
+            device.SetValue(pv['generation'], "Inverter.ReactivePowerRating")
         return True
 
     def _write_results(model_filename):
