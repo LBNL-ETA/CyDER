@@ -22,7 +22,7 @@ except:
     sys.exit('Error: could not retrieve argument')
 
 # Read vehicle beahvior
-df = pandas.read_csv('evs/vehicle_charging.csv', parse_dates=[0])
+df = pandas.read_csv('~/project_cyder/web/docker_django/worker/evs/vehicle_charging.csv', parse_dates=[0])
 df['time'] = df['datetime'].apply(lambda x: x.time())
 
 # Open the model
