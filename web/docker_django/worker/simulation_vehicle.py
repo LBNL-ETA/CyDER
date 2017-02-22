@@ -5,6 +5,7 @@ import datetime
 import cympy
 import functions
 from random import randint
+import pandas
 
 # Retrieve model name
 try:
