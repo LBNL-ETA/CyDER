@@ -27,7 +27,7 @@ parent_path = 'D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//
 cympy.study.Open(parent_path + model_filename)
 
 # Read vehicle beahvior
-df = pandas.read_csv('vehicle_charging.csv', parse_dates=[0])
+df = pandas.read_csv('evs/vehicle_charging.csv', parse_dates=[0])
 df['time'] = df['datetime'].apply(lambda x: x.time())
 
 # Get the corresponding value
