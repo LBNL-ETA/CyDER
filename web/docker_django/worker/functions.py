@@ -12,7 +12,8 @@ except:
 
 
 def fmu_wrapper(model_filename, voltage_names, voltage_values,
-                load_sections, load_demands, pv_sections, pv_generations,
+                load_sections, load_parameter_names, load_values,
+                pv_sections, pv_parameter_names, pv_values,
                 output_names, output_nodes, write_result='False'):
     """Communicate with the FMU to launch a Cymdist simulation
 
@@ -21,9 +22,11 @@ def fmu_wrapper(model_filename, voltage_names, voltage_values,
         voltage_names (Strings): list of String to describe the list of values
         voltage_values (Floats): list of float with the same order as input_names
         load_sections (Strings): [Optional]
-        load_demands (Floats): [Optional]
+        load_parameter_names (Strings): [Optional]
+        load_values (Floats): [Optional] unit depends on the parameter name
         pv_sections (Strings): [Optional]
-        pv_generations (Floats): [Optional]
+        pv_parameter_names (Strings): [Optional]
+        pv_values (Floats): [Optional] unit depends on the parameter name
         output_names (Strings): list of String output names (for a full list of option consult CymDIST docs)
         output_nodes (Strings): list of String corresponding to node ids for each output_names
         write_result (String): [Optional] if True the entire results are saved to the file system (add ~30secs)
@@ -33,20 +36,24 @@ def fmu_wrapper(model_filename, voltage_names, voltage_values,
         >>> voltage_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
         >>> voltage_values = [2520, 2520, 2520, 0, -120, 120]  # VMAG are in [V] and VANG in [deg]
         >>> load_sections = ['800033503']
-        >>> load_demands = [100]
+        >>> load_parameter_names = ['KW']
+        >>> load_values = [100]
         >>> pv_sections = ['800033503']
-        >>> pv_generations = [100]
-        >>> output_names = ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC']  # KW are in [KW] and KVAR are in [KVAR]
+        >>> pv_parameter_names = ['KW']
+        >>> pv_values = [100]
+        >>> output_names = ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC']
         >>> output_nodes = ['800036819', '800036819', '800036819', '800036819', '800036819', '800036819']
         >>> write_results = 'False'
 
         >>> fmu_wrapper(model_filename, voltage_names, voltage_values,
-                        load_sections, load_demands, pv_sections, pv_generations,
-                        output_names, output_nodes, write_results)
+                        load_sections, load_parameter_names, load_values,
+                        pv_sections, pv_parameter_names, pv_values,
+                        output_names, output_nodes, write_result='False')
     Note:
         output_names can be: ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC',
         'IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC', 'PFA', 'PFB', 'PFC']
         for a greater list see CymDIST > customize > keywords > powerflow
+        (output unit is directly given by output name)
     """
 
     def _input_voltages(voltage_names, voltage_values):
@@ -56,18 +63,18 @@ def fmu_wrapper(model_filename, voltage_names, voltage_values,
             voltages[name] = value
         return voltages
 
-    def _input_loads(load_sections, load_demands):
+    def _input_loads(load_sections, load_parameter_names, load_values):
         """Create a dictionary from the input values and input names for voltages"""
         loads = []
-        for section, demand in zip(load_sections, load_demands):
-            loads.append({'section_id': section, 'active_power': demand})
+        for section, parameter, value in zip(load_sections, load_parameter_names, load_values):
+            loads.append({'section_id': section, 'active_power': value, 'parameter_name': parameter})
         return loads
 
-    def _input_pvs(pv_sections, pv_generations):
+    def _input_pvs(pv_sections, pv_parameter_names, pv_values):
         """Create a dictionary from the input values and input names for voltages"""
         pvs = []
-        for section, generation in zip(pv_sections, pv_generations):
-            pvs.append({'section_id': section, 'generation': generation})
+        for section, parameter, value in zip(pv_sections, pv_parameter_names, pv_values):
+            pvs.append({'section_id': section, 'generation': value, 'parameter_name': parameter})
         return pvs
 
     def _set_voltages(voltages):
@@ -140,11 +147,11 @@ def fmu_wrapper(model_filename, voltage_names, voltage_values,
     # Process input and check for validity
     voltages = _input_voltages(voltage_names, voltage_values)
     if len(load_sections) > 0:
-        loads = _input_loads(load_sections, load_demands)
+        loads = _input_loads(load_sections, load_parameter_names, load_values)
     else:
         loads = False
     if len(pv_sections) > 0:
-        pvs = _input_pvs(pv_sections, pv_generations)
+        pvs = _input_pvs(pv_sections, pv_parameter_names, pv_values)
     else:
         pvs = False
     if write_result in ['True', 'true', '1']:
