@@ -21,14 +21,14 @@ try:
 except:
     sys.exit('Error: could not retrieve argument')
 
+# Read vehicle beahvior
+df = pandas.read_csv('evs/vehicle_charging.csv', parse_dates=[0])
+df['time'] = df['datetime'].apply(lambda x: x.time())
+
 # Open the model
 # model_filename = 'AT0001.sxst'
 parent_path = 'D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//'
 cympy.study.Open(parent_path + model_filename)
-
-# Read vehicle beahvior
-df = pandas.read_csv('evs/vehicle_charging.csv', parse_dates=[0])
-df['time'] = df['datetime'].apply(lambda x: x.time())
 
 # Get the corresponding value
 time_of_day = time_of_day.split(':')
