@@ -52,11 +52,10 @@ def simulate_single_fmu():
     # Set the inputs
     opts=cymdist.simulate_options()
     opts['ncp']=1.0
-    #opts['step_size']=1.0
     for cnt, elem in enumerate(input_names):
         cymdist.set (elem, input_values[cnt])
     # Run simulation    
-    res=cymdist.simulate(start_time=0.0, final_time=0.1)    
+    res=cymdist.simulate(start_time=0.0, final_time=1)    
 
 def simulate_multiple_fmus():
     """Simulate one CYMDIST FMU coupled to a dummy GridDyn FMU.
@@ -66,7 +65,7 @@ def simulate_multiple_fmus():
     gridyn=load_fmu("../../../../NO_SHARING/GridDyn/GridDyn.fmu", log_level=7)
     
     models = [cymdist, gridyn]
-    connections = [(gridyn, "VMAG_A", cymdist, "VMAG_A"),
+    connections = [#(gridyn, "VMAG_A", cymdist, "VMAG_A"),
                    (gridyn, "VMAG_B", cymdist, "VMAG_B"),
                    (gridyn, "VMAG_C", cymdist, "VMAG_C"),
                    (gridyn, "VANG_A", cymdist, "VANG_A"),
@@ -80,22 +79,24 @@ def simulate_multiple_fmus():
                    (cymdist, "KVARC_800032440", gridyn, "KVARC_800032440"),]
     
     coupled_simulation = Master (models, connections)
-    
     opts=coupled_simulation.simulate_options()
     opts['step_size']=0.1
-    opts['logging']=False
     
-
     start = datetime.now()
     # Run simulation
-    res=coupled_simulation.simulate(options=opts, 
-                            start_time=0.0, 
-                            final_time=0.1)
+    for i in range(2):
+        VMAG_A = 2520 + i*10
+        cymdist.set("VMAG_A", VMAG_A)
+        res=coupled_simulation.simulate(options=opts, 
+                                start_time=0.0, 
+                                final_time=0.1)
+        print('This is the voltage value' + str(res[cymdist]['VMAG_A']))
     end = datetime.now()
+    
     print('Ran a coupled CYMDIST/GridDyn simulation in ' +
           str((end - start).total_seconds()) + ' seconds.')
         
 if __name__ == '__main__':
     #simulate_single_fmu()
-    #simulate_multiple_fmus()
-    simulate_algebraicloop_fmus()
+    simulate_multiple_fmus()
+    #simulate_algebraicloop_fmus()
