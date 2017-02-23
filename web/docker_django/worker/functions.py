@@ -11,44 +11,32 @@ except:
     pass
 
 
-def fmu_wrapper(model_filename, voltage_names, voltage_values,
-                load_sections, load_parameter_names, load_values,
-                pv_sections, pv_parameter_names, pv_values,
-                output_names, output_nodes, write_result='False'):
+def fmu_wrapper(model_filename, input_types, input_names, input_locations,
+                input_values, output_names, output_locations, write_results='False'):
     """Communicate with the FMU to launch a Cymdist simulation
 
     Args:
         model_filename (String): path to the cymdist grid model
-        voltage_names (Strings): list of String to describe the list of values
-        voltage_values (Floats): list of float with the same order as input_names
-        load_sections (Strings): [Optional]
-        load_parameter_names (Strings): [Optional]
-        load_values (Floats): [Optional] unit depends on the parameter name
-        pv_sections (Strings): [Optional]
-        pv_parameter_names (Strings): [Optional]
-        pv_values (Floats): [Optional] unit depends on the parameter name
+        input_types (Strings):
+        input_names (Strings):
+        input_locations (Strings):
+        input_values (Floats):
         output_names (Strings): list of String output names (for a full list of option consult CymDIST docs)
-        output_nodes (Strings): list of String corresponding to node ids for each output_names
+        output_locations (Strings): list of String corresponding to node ids for each output_names
         write_result (String): [Optional] if True the entire results are saved to the file system (add ~30secs)
 
     Example:
         >>> model_filename = 'BU0001.sxst'
-        >>> voltage_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
-        >>> voltage_values = [2520, 2520, 2520, 0, -120, 120]  # VMAG are in [V] and VANG in [deg]
-        >>> load_sections = ['800033503']
-        >>> load_parameter_names = ['KW']
-        >>> load_values = [100]
-        >>> pv_sections = ['800033503']
-        >>> pv_parameter_names = ['KW']
-        >>> pv_values = [100]
+        >>> input_types = ['source_voltage', 'source_voltage', 'pv', 'load']
+        >>> input_names = ['VMAG_A', 'VANG_A', 'kW', 'kW']
+        >>> input_locations = ['source', 'source', '800033503', '800033503']
+        >>> input_values = [2520, 0, 100, 100]
         >>> output_names = ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC']
-        >>> output_nodes = ['800036819', '800036819', '800036819', '800036819', '800036819', '800036819']
+        >>> output_locations = ['800036819', '800036819', '800036819', '800036819', '800036819', '800036819']
         >>> write_results = 'False'
 
-        >>> fmu_wrapper(model_filename, voltage_names, voltage_values,
-                        load_sections, load_parameter_names, load_values,
-                        pv_sections, pv_parameter_names, pv_values,
-                        output_names, output_nodes, write_result='False')
+        >>> fmu_wrapper(model_filename, input_types, input_names, input_locations,
+                        input_values, output_names, output_locations, write_results)
     Note:
         output_names can be: ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC',
         'IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC', 'PFA', 'PFB', 'PFC']
@@ -56,39 +44,45 @@ def fmu_wrapper(model_filename, voltage_names, voltage_values,
         (output unit is directly given by output name)
     """
 
-    def _input_voltages(voltage_names, voltage_values):
+    def _input_voltages(input_types, input_names, input_values):
         """Create a dictionary from the input values and input names for voltages"""
         voltages = {}
-        for name, value in zip(voltage_names, voltage_values):
-            voltages[name] = value
+        for _type, name, value in zip(input_types, input_names, input_names):
+            if _type == 'source_voltage':
+                voltages[name] = value
         return voltages
 
-    def _input_loads(load_sections, load_parameter_names, load_values):
-        """Create a dictionary from the input values and input names for voltages"""
+    def _input_loads(input_types, input_names, input_locations, input_values):
+        """Create a list from the input values and input names for loads"""
         loads = []
-        for section, parameter, value in zip(load_sections, load_parameter_names, load_values):
-            loads.append({'section_id': section, 'active_power': value, 'parameter_name': parameter})
+        for _type, name, location, value in zip(input_types, input_names, input_locations, input_values):
+            if _type == 'load':
+                loads.append({'section_id': location, 'active_power': value})
         return loads
 
-    def _input_pvs(pv_sections, pv_parameter_names, pv_values):
-        """Create a dictionary from the input values and input names for voltages"""
+    def _input_pvs(input_types, input_names, input_locations, input_values):
+        """Create a list from the input values and input names for pvs"""
         pvs = []
-        for section, parameter, value in zip(pv_sections, pv_parameter_names, pv_values):
-            pvs.append({'section_id': section, 'generation': value, 'parameter_name': parameter})
+        for _type, name, location, value in zip(input_types, input_names, input_locations, input_values):
+            if _type == 'pv':
+                pvs.append({'section_id': location, 'generation': value})
         return pvs
 
     def _set_voltages(voltages):
         """Set the voltage at the source node"""
         # Get a list of networks
         networks = cympy.study.ListNetworks()
-
-        # Set up the right voltage in kV (input must be V)
-        cympy.study.SetValueTopo(voltages['VMAG_A'] / 1000,
-            "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage1", networks[0])
-        cympy.study.SetValueTopo(voltages['VMAG_B'] / 1000,
-            "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage2", networks[0])
-        cympy.study.SetValueTopo(voltages['VMAG_C'] / 1000,
-            "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage3", networks[0])
+        for key, value in voltages.iteritems():
+            # Set up the right voltage in kV (input must be V)
+            if key == 'VMAG_A':
+                cympy.study.SetValueTopo(value / 1000,
+                    "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage1", networks[0])
+            if key == 'VMAG_B':
+                cympy.study.SetValueTopo(value / 1000,
+                    "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage2", networks[0])
+            if key == 'VMAG_C':
+                cympy.study.SetValueTopo(value / 1000,
+                    "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage3", networks[0])
         return True
 
     def _add_loads(loads):
@@ -130,10 +124,10 @@ def fmu_wrapper(model_filename, voltage_names, voltage_values,
         #     pickle.dump(temp, output_file, protocol=2)
         return True
 
-    def _output_values(output_nodes, output_names, DEFAULT_VALUE=0):
+    def _output_values(output_locations, output_names, DEFAULT_VALUE=0):
         """DEFAULT_VALUE value to output in case of a NaN value or an error"""
         output = []
-        for node_id, category in zip(output_nodes, output_names):
+        for node_id, category in zip(output_locations, output_names):
             try:
                 temp = cympy.study.QueryInfoNode(category, node_id)
                 if temp:
@@ -145,13 +139,16 @@ def fmu_wrapper(model_filename, voltage_names, voltage_values,
         return output
 
     # Process input and check for validity
-    voltages = _input_voltages(voltage_names, voltage_values)
-    if len(load_sections) > 0:
-        loads = _input_loads(load_sections, load_parameter_names, load_values)
+    if 'source_voltage' in input_type:
+        voltages = _input_voltages(input_types, input_names, input_values)
+    else:
+        voltages = False
+    if 'load' in input_type:
+        loads = _input_loads(input_types, input_names, input_locations, input_values)
     else:
         loads = False
-    if len(pv_sections) > 0:
-        pvs = _input_pvs(pv_sections, pv_parameter_names, pv_values)
+    if 'pv' in input_type:
+        pvs = _input_pvs(input_types, input_names, input_locations, input_values)
     else:
         pvs = False
     if write_result in ['True', 'true', '1']:
@@ -162,8 +159,9 @@ def fmu_wrapper(model_filename, voltage_names, voltage_values,
     # Open the model
     cympy.study.Open(model_filename)
 
-    # Set voltage set point
-    _set_voltages(voltages)
+    # Set voltages
+    if voltages:
+        _set_voltages(voltages)
 
     # Set new loads
     if loads:
@@ -182,7 +180,7 @@ def fmu_wrapper(model_filename, voltage_names, voltage_values,
         _write_results(model_filename)
 
     # Return the right values
-    output = _output_values(output_nodes, output_names, DEFAULT_VALUE=0)
+    output = _output_values(output_locations, output_names, DEFAULT_VALUE=0)
     return output
 
 
