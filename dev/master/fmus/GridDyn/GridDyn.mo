@@ -14,15 +14,15 @@ model GridDyn "This model emulates a GridDyn model"
   Modelica.Blocks.Sources.RealExpression con5(y=120.0)
     annotation (Placement(transformation(extent={{60,-70},{80,-50}})));
   Modelica.Blocks.Interfaces.RealInput KWA_800032440( unit="kW") "KWA"
-          annotation(Placement(transformation(extent={{-120,58},{-100,78}})));
+          annotation(Placement(transformation(extent={{-120,82},{-100,102}})));
   Modelica.Blocks.Interfaces.RealInput KWB_800032440( unit="kW") "KWB"
-          annotation(Placement(transformation(extent={{-120,22},{-100,42}})));
+          annotation(Placement(transformation(extent={{-120,46},{-100,66}})));
   Modelica.Blocks.Interfaces.RealInput KWC_800032440( unit="kW") "KWC"
-          annotation(Placement(transformation(extent={{-120,-14},{-100,6}})));
+          annotation(Placement(transformation(extent={{-120,10},{-100,30}})));
   Modelica.Blocks.Interfaces.RealInput KVARA_800032440( unit="kvar") "KVARA"
-            annotation(Placement(transformation(extent={{-120,-50},{-100,-30}})));
+            annotation(Placement(transformation(extent={{-120,-26},{-100,-6}})));
   Modelica.Blocks.Interfaces.RealInput KVARB_800032440( unit="kvar") "KVARB"
-            annotation(Placement(transformation(extent={{-120,-86},{-100,-66}})));
+            annotation(Placement(transformation(extent={{-120,-62},{-100,-42}})));
   Modelica.Blocks.Interfaces.RealOutput VMAG_A(start=0.0, unit="V") "VMAG_A"
              annotation(Placement(transformation(extent={{100,30},{122,52}})));
   Modelica.Blocks.Interfaces.RealOutput VMAG_B(start=0.0, unit="V") "VMAG_B"
@@ -35,6 +35,8 @@ model GridDyn "This model emulates a GridDyn model"
              annotation(Placement(transformation(extent={{100,-50},{122,-28}})));
   Modelica.Blocks.Interfaces.RealOutput VANG_C(start=120.0, unit="deg") "VANG_C"
              annotation(Placement(transformation(extent={{100,-70},{122,-48}})));
+  Modelica.Blocks.Interfaces.RealInput KVARC_800032440(unit="kvar") "KVARC"
+    annotation (Placement(transformation(extent={{-122,-102},{-102,-82}})));
 equation
   connect(con5.y, VANG_C) annotation (Line(points={{81,-60},{90,-60},{90,-59},{
           111,-59}}, color={0,0,127}));
