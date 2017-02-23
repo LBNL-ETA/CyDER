@@ -47,7 +47,7 @@ def fmu_wrapper(model_filename, input_types, input_names, input_locations,
     def _input_voltages(input_types, input_names, input_values):
         """Create a dictionary from the input values and input names for voltages"""
         voltages = {}
-        for _type, name, value in zip(input_types, input_names, input_names):
+        for _type, name, value in zip(input_types, input_names, input_values):
             if _type == 'source_voltage':
                 voltages[name] = value
         return voltages
@@ -72,7 +72,7 @@ def fmu_wrapper(model_filename, input_types, input_names, input_locations,
         """Set the voltage at the source node"""
         # Get a list of networks
         networks = cympy.study.ListNetworks()
-        for key, value in voltages.iteritems():
+        for key, value in voltages.items():
             # Set up the right voltage in kV (input must be V)
             if key == 'VMAG_A':
                 cympy.study.SetValueTopo(value / 1000,
@@ -139,22 +139,22 @@ def fmu_wrapper(model_filename, input_types, input_names, input_locations,
         return output
 
     # Process input and check for validity
-    if 'source_voltage' in input_type:
+    if 'source_voltage' in input_types:
         voltages = _input_voltages(input_types, input_names, input_values)
     else:
         voltages = False
-    if 'load' in input_type:
+    if 'load' in input_types:
         loads = _input_loads(input_types, input_names, input_locations, input_values)
     else:
         loads = False
-    if 'pv' in input_type:
+    if 'pv' in input_types:
         pvs = _input_pvs(input_types, input_names, input_locations, input_values)
     else:
         pvs = False
-    if write_result in ['True', 'true', '1']:
-        write_result = True
+    if write_results in ['True', 'true', '1']:
+        write_results = True
     else:
-        write_result = False
+        write_results = False
 
     # Open the model
     cympy.study.Open(model_filename)
@@ -176,7 +176,7 @@ def fmu_wrapper(model_filename, input_types, input_names, input_locations,
     lf.Run()
 
     # Write full results?
-    if write_result:
+    if write_results:
         _write_results(model_filename)
 
     # Return the right values
