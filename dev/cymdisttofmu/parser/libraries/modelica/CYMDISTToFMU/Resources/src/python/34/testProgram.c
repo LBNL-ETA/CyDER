@@ -46,18 +46,6 @@ int main(int nArgs, char ** args){
   int resWri = 0;
 
   int i;
-
-  for(i=0; i < 10; i++){
-    printf("Calling with i for exchange = %d.\n", i);
-    pythonExchangeValuesNoModelica(moduleName,
-                         functionName,
-                         dblValWri, nDblWri,
-                         dblValRea, nDblRea,
-                         intValWri, nIntWri,
-                         intValRea, nIntRea,
-                         strValWri, nStrWri,
-	                 ModelicaFormatError);
-  }
   
     for(i=0; i < 10; i++){
     printf("Calling with i for cymdist = %d.\n", i);
