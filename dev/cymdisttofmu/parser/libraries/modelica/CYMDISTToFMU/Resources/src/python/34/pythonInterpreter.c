@@ -6,7 +6,7 @@ void pythonExchangeValuesCymdistNoModelica(const char * moduleName,
 						  const size_t nDblWri, const char ** strWri, 
 						  double * dblValWri, size_t nDblRea, const char ** strRea,
 						  const char ** strNodRea, double * dblValRea, size_t nDblParWri, 
-						  const char ** strParWri, double * dblValParWri, const int *resWri,
+						  const char ** strParWri, double * dblValParWri, double *resWri,
 			              void (*ModelicaFormatError)(const char *string,...))
 {
   PyObject *pName, *pModule, *pFunc;
@@ -328,27 +328,25 @@ The error message is \"%s\"",
 	  iArg++;
   }
 
-  /* h) Convert flag for writing results*/
-  pArgsInt = PyList_New(1);
-
-  /* Convert argument to a python integer*/
-  pValue = PyLong_FromLong((long)resWri);
+  /* Convert the arguments*/
+  /* h) Convert double[]*/
+  pArgsDbl = PyList_New(1);
+  /* Convert argument to a python float*/
+  pValue = PyFloat_FromDouble(resWri[0]);
   if (!pValue) {
 	  /* Failed to convert argument.*/
-	  Py_DECREF(pArgsInt);
+	  Py_DECREF(pArgsDbl);
 	  Py_DECREF(pModule);
 	  /* According to the Modelica specification,*/
 	  /* the function ModelicaError never returns to the calling function.*/
-	  (*ModelicaFormatError)("Cannot convert integer argument %i to Python format.", resWri);
+	  (*ModelicaFormatError)("Cannot convert double argument %f for result writing to Python format.", resWri[0]);
   }
   /* pValue reference stolen here*/
-  PyList_SetItem(pArgsInt, 0, pValue);
-
-  /* If there is only a scalar integer, then don't build a list.*/
+  PyList_SetItem(pArgsDbl, 0, pValue);
+  /* If there is only a scalar double, then don't build a list.*/
   /* Just put the scalar value into the list of arguments*/
-  PyTuple_SetItem(pArgs, iArg, PyList_GetItem(pArgsInt, (Py_ssize_t)0));
+  PyTuple_SetItem(pArgs, iArg, PyList_GetItem(pArgsDbl, (Py_ssize_t)0));
   iArg++;
-
   
   /*//////////////////////////////////////////////////////////////////////////*/
   /*//////////////////////////////////////////////////////////////////////////*/

@@ -72,7 +72,7 @@ LBNLPYTHONINTERPRETER_EXPORT void pythonExchangeValuesCymdistNoModelica(const ch
 							const size_t nDblWri, const char ** strWri,
 							double * dblValWri, size_t nDblRea, const char ** strRea,
 							const char ** strNodRea, double * dblValRea, size_t nDblParWri,
-							const char ** strParWri, double * dblValParWri, const int * resWri,
+							const char ** strParWri, double * dblValParWri, double * resWri,
 							void(*inModelicaFormatError)(const char *string, ...));
 
 #ifdef __cplusplus

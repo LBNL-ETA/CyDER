@@ -43,7 +43,7 @@ int main(int nArgs, char ** args){
   size_t nDblParWri = 0;
   const char * strParWri[] = {""};
   int dblValParWri[] = {0};
-  int resWri = 0;
+  double resWri[] = {0};
 
   int i;
   
