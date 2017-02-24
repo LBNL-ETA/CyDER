@@ -11,32 +11,26 @@ except:
     pass
 
 
-def fmu_wrapper(model_filename, input_types, input_names, input_locations,
-                input_values, output_names, output_locations, write_results='False'):
+def fmu_wrapper(input_model_filename, input_save_to_file,
+                input_voltage_names, input_voltage_values, output_names):
     """Communicate with the FMU to launch a Cymdist simulation
 
     Args:
-        model_filename (String): path to the cymdist grid model
-        input_types (Strings):
-        input_names (Strings):
-        input_locations (Strings):
-        input_values (Floats):
-        output_names (Strings): list of String output names (for a full list of option consult CymDIST docs)
-        output_locations (Strings): list of String corresponding to node ids for each output_names
-        write_result (String): [Optional] if True the entire results are saved to the file system (add ~30secs)
+        input_model_filename (String): path to the cymdist grid model
+        input_save_to_file (1 or 0): save all nodes results to a file
+        input_voltage_names (Strings): voltage vector names
+        input_voltage_values (Floats): voltage vector values (same lenght as voltage_names)
+        output_names (Strings): vector of name matching CymDIST nomenclature
 
     Example:
-        >>> model_filename = 'BU0001.sxst'
-        >>> input_types = ['source_voltage', 'source_voltage', 'pv', 'load']
-        >>> input_names = ['VMAG_A', 'VANG_A', 'kW', 'kW']
-        >>> input_locations = ['source', 'source', '800033503', '800033503']
-        >>> input_values = [2520, 0, 100, 100]
-        >>> output_names = ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC']
-        >>> output_locations = ['800036819', '800036819', '800036819', '800036819', '800036819', '800036819']
-        >>> write_results = 'False'
+        >>> input_model_filename = 'BU0001.sxst'
+        >>> input_save_to_file = 1
+        >>> input_voltage_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
+        >>> input_voltage_values = [2520, 2520, 2520, 0, -120, 120]
+        >>> output_names = ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']
 
-        >>> fmu_wrapper(model_filename, input_types, input_names, input_locations,
-                        input_values, output_names, output_locations, write_results)
+        >>> fmu_wrapper(input_model_filename, input_save_to_file,
+                input_voltage_names, input_voltage_values, output_names)
     Note:
         output_names can be: ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC',
         'IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC', 'PFA', 'PFB', 'PFC']
@@ -44,92 +38,37 @@ def fmu_wrapper(model_filename, input_types, input_names, input_locations,
         (output unit is directly given by output name)
     """
 
-    def _input_voltages(input_types, input_names, input_values):
+    def _input_voltages(input_voltage_names, input_voltage_values):
         """Create a dictionary from the input values and input names for voltages"""
         voltages = {}
-        for _type, name, value in zip(input_types, input_names, input_values):
-            if _type == 'source_voltage':
-                voltages[name] = value
+        for name, value in zip(input_voltage_names, input_voltage_values):
+            voltages[name] = value
         return voltages
 
-    def _input_loads(input_types, input_names, input_locations, input_values):
-        """Create a list from the input values and input names for loads"""
-        loads = []
-        for _type, name, location, value in zip(input_types, input_names, input_locations, input_values):
-            if _type == 'load':
-                loads.append({'section_id': location, 'active_power': value})
-        return loads
-
-    def _input_pvs(input_types, input_names, input_locations, input_values):
-        """Create a list from the input values and input names for pvs"""
-        pvs = []
-        for _type, name, location, value in zip(input_types, input_names, input_locations, input_values):
-            if _type == 'pv':
-                pvs.append({'section_id': location, 'generation': value})
-        return pvs
-
-    def _set_voltages(voltages):
+    def _set_voltages(voltages, networks):
         """Set the voltage at the source node"""
-        # Get a list of networks
-        networks = cympy.study.ListNetworks()
-        for key, value in voltages.items():
-            # Set up the right voltage in kV (input must be V)
-            if key == 'VMAG_A':
-                cympy.study.SetValueTopo(value / 1000,
-                    "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage1", networks[0])
-            if key == 'VMAG_B':
-                cympy.study.SetValueTopo(value / 1000,
-                    "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage2", networks[0])
-            if key == 'VMAG_C':
-                cympy.study.SetValueTopo(value / 1000,
-                    "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage3", networks[0])
+        # Set up the right voltage in kV (input must be V)
+        cympy.study.SetValueTopo(voltages['VMAG_A'] / 1000,
+            "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage1", networks[0])
+        cympy.study.SetValueTopo(voltages['VMAG_B'] / 1000,
+            "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage2", networks[0])
+        cympy.study.SetValueTopo(voltages['VMAG_C'] / 1000,
+            "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage3", networks[0])
         return True
 
-    def _add_loads(loads):
-        for index, load in enumerate(loads):
-            # Add load and overwrite (load demand need to be sum of previous load and new)
-            temp_load_model = cympy.study.AddDevice(
-                "MY_LOAD_" + str(index), 14, load['section_id'], 'DEFAULT',
-                cympy.enums.Location.FirstAvailable , True)
-
-            # Set power demand
-            phases = list(cympy.study.QueryInfoDevice("Phase", "MY_LOAD_" + str(index), 14))
-            power = load['active_power'] / len(phases)
-            for phase in range(0, len(phases)):
-                cympy.study.SetValueDevice(
-                    power,
-                    'CustomerLoads[0].CustomerLoadModels[0].CustomerLoadValues[' + str(phase) + '].LoadValue.KW',
-                    "MY_LOAD_" + str(index), 14)
-            # Note: customer is still 0 as well as energy values, does it matters?
-        return True
-
-    def _add_pvs(pvs):
-        """Add new pvs on the grid"""
-        for index, pv in enumerate(pvs):
-            # Add PVs
-            device = cympy.study.AddDevice("my_pv_" + str(index), cympy.enums.DeviceType.Photovoltaic, pv['section_id'])
-
-            # Set PV size (add + 30 to make sure rated power is above generated power)
-            device.SetValue(int((pv['generation'] + 30) / (23 * 0.08)), "Np")  # (ns=23 * np * 0.08 to find kW) --> kw / (23 * 0.08)
-            device.SetValue(pv['generation'], 'GenerationModels[0].ActiveGeneration')
-
-            # Set inverter size
-            device.SetValue(pv['generation'], "Inverter.ActivePowerRating")
-            device.SetValue(pv['generation'], "Inverter.ReactivePowerRating")
-        return True
-
-    def _write_results(model_filename):
+    def _write_results(input_model_filename):
         """Write result to the file system"""
-        # with open(model_filename + '_result_.pickle', 'wb') as output_file:
-        #     pickle.dump(temp, output_file, protocol=2)
+        # nodes = functions.list_nodes()
+        # nodes = functions.get_voltage(nodes, is_node=True)
+        # nodes.to_csv(input_model_filename + '_result.csv')
         return True
 
-    def _output_values(output_locations, output_names, DEFAULT_VALUE=0):
+    def _output_values(source_node_id, output_names, DEFAULT_VALUE=0):
         """DEFAULT_VALUE value to output in case of a NaN value or an error"""
         output = []
-        for node_id, category in zip(output_locations, output_names):
+        for category in output_names:
             try:
-                temp = cympy.study.QueryInfoNode(category, node_id)
+                temp = cympy.study.QueryInfoNode(category, source_node_id)
                 if temp:
                     output.append(temp)
                 else:
@@ -139,48 +78,30 @@ def fmu_wrapper(model_filename, input_types, input_names, input_locations,
         return output
 
     # Process input and check for validity
-    if 'source_voltage' in input_types:
-        voltages = _input_voltages(input_types, input_names, input_values)
+    voltages = _input_voltages(input_voltage_names, input_voltage_values)
+    if input_save_to_file in [1, '1']:
+        input_save_to_file = True
     else:
-        voltages = False
-    if 'load' in input_types:
-        loads = _input_loads(input_types, input_names, input_locations, input_values)
-    else:
-        loads = False
-    if 'pv' in input_types:
-        pvs = _input_pvs(input_types, input_names, input_locations, input_values)
-    else:
-        pvs = False
-    if write_results in ['True', 'true', '1']:
-        write_results = True
-    else:
-        write_results = False
+        input_save_to_file = False
 
     # Open the model
-    cympy.study.Open(model_filename)
+    cympy.study.Open(input_model_filename)
 
     # Set voltages
-    if voltages:
-        _set_voltages(voltages)
-
-    # Set new loads
-    if loads:
-        _add_loads(loads)
-
-    # Set new pvs
-    if pvs:
-        _add_pvs(pvs)
+    networks = cympy.study.ListNetworks()
+    _set_voltages(voltages, networks)
 
     # Run the power flow
     lf = cympy.sim.LoadFlow()
     lf.Run()
 
     # Write full results?
-    if write_results:
-        _write_results(model_filename)
+    if input_save_to_file:
+        _write_results(input_model_filename)
 
     # Return the right values
-    output = _output_values(output_locations, output_names, DEFAULT_VALUE=0)
+    source_node_id = cympy.study.GetValueTopo("Sources[0].SourceNodeID", networks[0])
+    output = _output_values(source_node_id, output_names, DEFAULT_VALUE=0)
     return output
 
 
