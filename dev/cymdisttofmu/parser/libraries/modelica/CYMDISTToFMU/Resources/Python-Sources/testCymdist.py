@@ -6,10 +6,10 @@
 # Make sure that the python path is set, such as by running
 # export PYTHONPATH=`pwd`
 
-def r1_r1(iS, uR, uS, yS, dyS, iwR):
+def r1_r1(iR, uR, uS, yS, iwR):
     f = open("r1_r1.txt", 'w')
     f.write(str(iS) + " " + str(uR) + " " + str(uS) + 
-    " " + str(yS) + " " + str(dyS) + " " + str(iwR))
+    " " + str(yS) + " " + str(iwR))
     f.close()
     return uR
     
