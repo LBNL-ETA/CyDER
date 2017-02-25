@@ -54,13 +54,12 @@ to not export all symbols but only the needed ones */
 /* The arguments are as follows:*/
 /*  moduleName            - Name of the Python module.*/
 /*  functionName          - Name of the Python function.*/
-/*  inputFileName         - Name of the input file.*/
+/*  modNamRef             - Double value to reference a CYMDIST model.*/
 /*  nDblWri               - Number of inputs values to write.*/
 /*  strWri                - Name of inputs to write.*/
 /*  dblValWri             - Double inputs values to write.*/
 /*  nDblRea               - Number of outputs values to read.*/
 /*  strRea                - Name of outputs to read.*/
-/*  strLocRea             - Name of output locations to read.*/
 /*  dblValRea             - Double outputs values to read.*/
 /*  nDblParWri            - Number of parameters to write.*/
 /*  strParWri             - Name of parameters to write.*/
@@ -69,13 +68,12 @@ to not export all symbols but only the needed ones */
 /*  inModelicaFormatError - Pointer to ModelicaFormatError*/
 LBNLPYTHONINTERPRETER_EXPORT void pythonExchangeValuesCymdistNoModelica(const char * moduleName,
 							const char * functionName, 
-							double * inputFileName,
+							double * modNamRef,
 							const size_t nDblWri, 
 							const char ** strWri,
 							double * dblValWri, 
 							size_t nDblRea, 
 							const char ** strRea,
-							//const char ** strLocRea, 
 							double * dblValRea, size_t nDblParWri,
 							const char ** strParWri, 
 							double * dblValParWri, 

@@ -8,7 +8,6 @@ void pythonExchangeValuesCymdistNoModelica(const char * moduleName,
 						  double * dblValWri, 
 						  size_t nDblRea, 
 						  const char ** strRea,
-						  //const char ** strLocRea, 
 						  double * dblValRea, 
 						  size_t nDblParWri, 
 						  const char ** strParWri, 
@@ -102,13 +101,9 @@ The error message is \"%s\"",
 	  nArg = nArg + 2;
   }
   if (nDblRea > 0){
-	  /* Increase the number of argument to 2*/
-	  /* One is for the vector of output names,*/
-      /* the second one is for the vector of */
-	  /* output node names of the outputs*/
-	  /* to be retrieved from CYMDISTToFMU*/
+	  /* Increase the number of argument to 1*/
+	  /* This is for the vector of output names.*/
 	  nStrRea = nDblRea;
-	  //nStrLocRea = nDblRea;
 	  nArg=nArg+1;
   }
   if (nDblParWri > 0){
@@ -240,42 +235,8 @@ The error message is \"%s\"",
     iArg++;
   }
 
- // /* e) Convert char **, an array of character arrays*/
- // if ( nStrLocRea > 0 ){
- //   pArgsStr = PyList_New(nStrLocRea);
- //   
- //   for (i = 0; i < nStrLocRea; ++i) {
- //     /* Convert argument to a python float*/
- //     /*      Py_ssize_t len = 0;*/
- //     /* According to the Modelica Specification, strings are terminated by '\0'*/
- //     /* Seek the string length*/
- //     /*      while (strRea[i][len] != '\0')*/
- //     /*	len++;*/
- //     
- //     /*      pValue = PyUnicode_FromStringAndSize(strRea[i], len);*/
- //     pValue =  PyUnicode_FromString(strLocRea[i]);
- //     if (!pValue) {
-	///* Failed to convert argument.*/
-	//Py_DECREF(pArgsStr);
-	//Py_DECREF(pModule);
-	///* According to the Modelica specification, */
-	///* the function ModelicaError never returns to the calling function.*/
-	//(*ModelicaFormatError)("Cannot convert string argument number %i to Python format.", i);
- //     }
- //     /* pValue reference stolen here*/
- //     PyList_SetItem(pArgsStr, i, pValue);
- //   }
- //   /* If there is only a scalar string, then don't build a list.*/
- //   /* Just put the scalar value into the list of arguments.*/
- //   if ( nStrLocRea == 1)
-	//PyTuple_SetItem(pArgs, iArg, PyList_GetItem(pArgsStr, (Py_ssize_t)0));
- //     else
-	//PyTuple_SetItem(pArgs, iArg, pArgsStr);
- //   iArg++;
- // }
-
   /* Convert the arguments*/
-  /* f) Convert double[]*/
+  /* e) Convert double[]*/
   if (nDblParWri > 0){
 	  pArgsDbl = PyList_New(nDblParWri);
 	  for (i = 0; i < nDblParWri; ++i) {
@@ -301,7 +262,7 @@ The error message is \"%s\"",
 	  iArg++;
   }
 
-  /* g) Convert char **, an array of character arrays*/
+  /* f) Convert char **, an array of character arrays*/
   if (nStrParWri > 0){
 	  pArgsStr = PyList_New(nStrParWri);
 
@@ -336,7 +297,7 @@ The error message is \"%s\"",
   }
 
   /* Convert the arguments*/
-  /* h) Convert double[]*/
+  /* g) Convert double[]*/
   pArgsDbl = PyList_New(1);
   /* Convert argument to a python float*/
   pValue = PyFloat_FromDouble(resWri[0]);

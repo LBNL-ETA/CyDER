@@ -13,7 +13,6 @@
 /*  dblValWri             - Double inputs values to write.*/
 /*  nDblRea               - Number of outputs values to read.*/
 /*  strRea                - Name of outputs to read.*/
-/*  strLocRea             - Name of outputs locations to read.*/
 /*  dblValRea             - Double outputs values to read.*/
 /*  nDblParWri            - Number of parameters to write.*/
 /*  strParWri             - Name of parameters to write.*/
@@ -29,7 +28,6 @@ void pythonExchangeValuesCymdist(const char * moduleName,
 							double * dblValWri, 
 							size_t nDblRea, 
 							const char ** strRea,
-							const char ** strLocRea, 
 							double * dblValRea, 
 							size_t nDblParWri,
 							const char ** strParWri, 
@@ -45,7 +43,6 @@ void pythonExchangeValuesCymdist(const char * moduleName,
    dblValWri, 
    nDblRea,
    strRea, 
-   strLocRea
    dblValRea,
    nDblParWri, 
    strParWri,

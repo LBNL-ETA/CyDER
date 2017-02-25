@@ -20,7 +20,6 @@ int main(int nArgs, char ** args){
   size_t nDblRea=1;
   double dblValRea[1];
   const char *strRea[]={"y"};
-  const char *strLocRea[]={"nod"};
   
   size_t nDblParWri=0;
   const char * strParWri[]={""};
@@ -39,7 +38,6 @@ int main(int nArgs, char ** args){
 						  dblValWri, 
 						  nDblRea, 
 						  strRea,
-						  //strLocRea,
 						  dblValRea, 
 						  nDblParWri, 
 						  strParWri, 
