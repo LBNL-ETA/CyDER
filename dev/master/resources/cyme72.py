@@ -12,33 +12,48 @@ import os
 
 def main():
     print (os.getcwd())
-    input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
-    input_values = [2520, 2520, 2520, 0.0, -120.0, 120.0]
-    output_names = ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC']
+    input_model_filename = 'BU0001.sxst'
+    input_save_to_file = 1
+    input_voltage_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
+    input_voltage_values = [2520, 2520, 2520, 0, -120, 120]
+    output_names = ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']
     output_node_names = ['800032440', '800032440', '800032440', 
                          '800032440', '800032440', '800032440']
-    exchange("BU0001.sxst", input_values, input_names,
-             output_names, output_node_names, 0)
+    exchange(input_model_filename, input_voltage_values, 
+             input_voltage_names, output_names, input_save_to_file)
 
-def exchange(input_file_name, input_values, input_names,
-             output_names, output_node_names, write_results):
+def exchange(input_model_filename, input_voltage_values, 
+             input_voltage_names, output_names, input_save_to_file):
     """
-     Args:
-        input_file_name (str): Name of the CYMDIST grid model.
-        input_values(dbl): Input values.
-        input_names(str): Input names.
-        output_names(str):  Output names.
-        output_node_names(str): Outputs nodes names.
-        write_results(int): Flag for writing results.
-
-
+    Args:
+        input_model_filename (String): path to the cymdist grid model
+        input_save_to_file (1 or 0): save all nodes results to a file
+        input_voltage_names (Strings): voltage vector names
+        input_voltage_values (Floats): voltage vector values (same lenght as voltage_names)
+        output_names (Strings): vector of name matching CymDIST nomenclature
+    Example:
+        >>> input_model_filename = 'BU0001.sxst'
+        >>> input_save_to_file = 1
+        >>> input_voltage_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
+        >>> input_voltage_values = [2520, 2520, 2520, 0, -120, 120]
+        >>> output_names = ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']
+        >>> fmu_wrapper(input_model_filename, input_save_to_file,
+                input_voltage_names, input_voltage_values, output_names)
+    Note:
+        output_names can be: ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC',
+        'IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC', 'PFA', 'PFB', 'PFC']
+        for a greater list see CymDIST > customize > keywords > powerflow
+        (output unit is directly given by output name)
     """
     # Call the CYMDIST wrapper
     results = []
     n_exp_res = len(output_names)
     start = datetime.now()
-    outputs = functions.fmu_wrapper(input_file_name, input_values, input_names,
-                                   output_names, output_node_names, write_results)
+    outputs = functions.fmu_wrapper(input_model_filename, 
+                                    input_save_to_file, 
+                                    input_voltage_names,
+                                    input_voltage_values, 
+                                    output_names)
     end = datetime.now()
     print('Ran a CYMDIST simulation in ' +
           str((end - start).total_seconds()) + ' seconds.')
