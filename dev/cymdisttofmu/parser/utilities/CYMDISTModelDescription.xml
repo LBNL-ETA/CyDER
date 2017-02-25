@@ -36,8 +36,6 @@
       causality="output">
       <Real
         unit="V"/>
-      <Node
-        name="nod1"/>
     </ScalarVariable>
     <ScalarVariable
       name="u1"
@@ -53,8 +51,6 @@
       causality="output">
       <Real
         unit="V"/>
-      <Node
-        name="nod1"/>
     </ScalarVariable>
   </ModelVariables>
 </CYMDISTModelDescription>

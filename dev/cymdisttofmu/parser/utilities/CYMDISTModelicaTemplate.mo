@@ -16,12 +16,11 @@ model {{model_name}}
     "{{dict_item["description"]}}"{{dict_item["annotation"]}};
   {%- endif -%}
   {% endfor %}
+  
+  Modelica.Blocks.Interfaces.RealInput {{model_name_reference}} "Grid model reference value";
+  Modelica.Blocks.Interfaces.RealInput {{write_results}} "Flag for writing results"; 
  
 protected   
-  parameter String inputFileName=Modelica.Utilities.Files.loadResource("{{input_file_path}}") 
-    "Name of the CYMDIST input file";
-  parameter Integer resWri={{write_results}} 
-    "Flag for enabling results writing. 1: write results, 0: else";
   parameter Integer nDblPar={{parameter_variable_names|length}} 
     "Number of double parameter values to sent to CYMDIST";
   parameter Integer nDblInp(min=1)={{input_variable_names|length}} 
@@ -31,6 +30,9 @@ protected
   parameter Integer flaDblInp[nDblInp]=zeros(nDblInp)
     "Flag for double values (0: use current value, 
     1: use average over interval, 2: use integral over interval)";
+  
+  Real modNamRef[1]={% raw -%}{{% endraw -%}{{model_name_reference}}{% raw -%}}{% endraw -%} "Grid model reference value";
+  Real resWri[1]={% raw -%}{{% endraw -%}{{write_results}}{% raw -%}}{% endraw -%} "Flag for writing results";
   
   Real uRInt[nDblInp] "Value of integral";
   Real uRIntPre[nDblInp] "Value of integral at previous sampling instance";
@@ -53,7 +55,7 @@ protected
   {%- else %} 
   {% set comma = joiner(",") -%} 
   Real yR[nDblOut]={
-  {%- for row in modelica_concat_output_variable_names -%}
+  {%- for row in modelica_output_variable_names -%}
   {{comma()}}
   {{row}}
   {%- endfor %} 
@@ -82,18 +84,6 @@ protected
   "{{row}}"
   {%- endfor %} 
   }"Output variables names to be received from CYMDIST";
-  {%- endif %}
-  {% if (output_variable_names|length==0) -%} 
-  parameter String dblOutNodNam[nDblOut] 
-    "Output variables nodes names to be sent to CYMDIST";
-  {%- else %}
-  {% set comma = joiner(",") -%}
-  parameter String dblOutNodNam[nDblOut]={
-  {%- for row in output_node_names -%}
-  {{comma()}}
-  "{{row}}"
-  {%- endfor %}
-  }"Node variables names to be sent to CYMDIST";
   {%- endif %}
   {% if (parameter_variable_names|length==0) -%} 
   parameter String dblParNam[nDblPar](each start="") 
@@ -166,13 +156,12 @@ equation
     yR = CYMDISTToFMU.Python34.Functions.cymdist(
       moduleName=moduleName,
       functionName=functionName,
-      inputFileName=inputFileName,
+      modNamRef=modNamRef,
       nDblInp=nDblInp,
       dblInpNam=dblInpNam,
       dblInpVal=dblInpVal,
       nDblOut=nDblOut,
       dblOutNam=dblOutNam,
-      dblOutNodNam=dblOutNodNam,
       nDblPar=nDblPar,
       dblParNam=dblParNam,
       dblParVal=dblParVal,

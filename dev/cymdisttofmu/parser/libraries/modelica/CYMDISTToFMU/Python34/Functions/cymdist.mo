@@ -4,17 +4,16 @@ function cymdist "Function that communicates with the CYMDISTToFMU Python API"
   input String moduleName
   "Name of the python module that contains the function";
   input String functionName=moduleName "Name of the python function";
-  input String inputFileName=moduleName "Name of the input file";
+  input Real    modNamRef[1]  "Model name reference value";
   input Real    dblParVal[nDblPar] "Parameter variables values to send to CYMDISTToFMU";
   input Real    dblInpVal[max(1, nDblInp)] "Input variables values to be sent to CYMDISTToFMU";
   input String  dblParNam[nDblPar] "Parameter variables names to send to CYMDISTToFMU";
   input String  dblOutNam[max(1, nDblOut)] "Output variables names to be read from CYMDISTToFMU";
-  input String  dblOutNodNam[max(1, nDblOut)] "Output variables nodes names to be read from CYMDISTToFMU";
   input String  dblInpNam[max(1, nDblInp)] "Input variables names to be sent to CYMDISTToFMU";
   input Integer nDblInp(min=0) "Number of double inputs to send to CYMDISTToFMU";
   input Integer nDblOut(min=0) "Number of double outputs to read from CYMDISTToFMU";
   input Integer nDblPar(min=0) "Number of double parameters to send to CYMDISTToFMU";
-  input Integer resWri  "Flag for enabling results writing. 1: write results, 0: else";
+  input Real    resWri[1]  "Flag for enabling results writing. 1: write results, 0: else";
   //   input Integer strLenRea(min=0)
   //     "Maximum length of each string that is read. If exceeded, the simulation stops with an error";
   output Real dblOutVal[max(1, nDblOut)] "Double output values read from CYMDISTToFMU";
@@ -49,13 +48,12 @@ pytPat,havePytPat) := Modelica.Utilities.System.getEnvironmentVariable("PYTHONPA
 dblOutVal := BaseClasses.cymdist(
       moduleName=moduleName,
       functionName=functionName,
-      inputFileName=inputFileName,
+      modNamRef=modNamRef,
       nDblInp=nDblInp,
       dblInpNam=dblInpNam,
       dblInpVal=dblInpVal,
       nDblOut=nDblOut,
       dblOutNam=dblOutNam,
-      dblOutNodNam=dblOutNodNam,
       nDblPar=nDblPar,
       dblParNam=dblParNam,
       dblParVal=dblParVal,

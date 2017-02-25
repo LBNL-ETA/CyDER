@@ -71,9 +71,6 @@ def main():
                         help="Path to the input file")
     #cymdist_group.add_argument("-b", "--buildings-lib-path",
     #                    help='Path to the Buildings library, e.g. c:\\test\\xxx\\modelica-buildings')
-    cymdist_group.add_argument("-r", "--write-results",
-                        type=int,
-                        help='Flag for writing results. 1 for writing, 0 else. Default is 0')
 
     # Parse the arguments
     args = parser.parse_args()
@@ -90,7 +87,7 @@ def main():
 #         if (BUILDINGS_LIB_PATH is None):
 #             log.error('The path to the Buildings library was neither'
 #                       +' provided nor found on the MODELICAPATH.')
-    write_results = 0
+    #write_results = 0
     
     # Check if any errors
     if(grid_model_path is None):
@@ -110,8 +107,7 @@ def main():
                              BUILDINGS_LIB_PATH,
                              MO_TEMPLATE_PATH,
                              MOS_TEMPLATE_PATH, 
-                             XSD_FILE_PATH,
-                             write_results)
+                             XSD_FILE_PATH)
     start = datetime.now()
     retVal = -1
     ret_val = CYMDIST.print_mo()
@@ -141,7 +137,7 @@ def main():
         parser.print_help()
         sys.exit(1)
     end = datetime.now()
-    
+     
     log.info('Export CYMDIST as an FMU in ' +
           str((end - start).total_seconds()) + ' seconds.')
 
@@ -311,7 +307,7 @@ class CYMDISTToFMU(object):
     """
 
     def __init__(self, input_file_path, xml_path, buildings_path,
-                 moT_path, mosT_path, xsd_path, write_results):
+                 moT_path, mosT_path, xsd_path):
         """Initialize the class.
 
         Args:
@@ -323,7 +319,6 @@ class CYMDISTToFMU(object):
             moT_path (str): Modelica model template.
             mosT_path (str): Modelica script template.
             xsd_path (str): The path to the XML schema.
-            write_results (int): Flag for results writing.
 
         """
 
@@ -333,7 +328,6 @@ class CYMDISTToFMU(object):
         self.moT_path = moT_path
         self.mosT_path = mosT_path
         self.xsd_path = xsd_path
-        self.write_results = write_results
 
     def xml_validator(self):
         """Validate the XML file.
@@ -420,9 +414,7 @@ class CYMDISTToFMU(object):
         modelica_input_variable_names = []
         # modelicaInputVariableNames = []
         output_variable_names = []
-        modelica_concat_output_variable_names = []
-        output_node_names = []
-        concat_output_variable_names = []
+        modelica_output_variable_names = []
         parameter_variable_values = []
         parameter_variable_names = []
         modelica_parameter_variable_names = []
@@ -446,6 +438,63 @@ class CYMDISTToFMU(object):
                 # Iterate through children of ScalarVariables and get
                 # attributes
                 #scalar_variable['name'] = name
+                if (causality == 'input'):
+                    input_variable_names.append(name)
+                    log.info('Invalid characters will be removed from the '
+                     'input variable name ' + name + '.')
+                    new_name = sanitize_name(name)
+                    log.info('The new input variable name is ' \
+                             + new_name + '.')
+                    modelica_input_variable_names.append(new_name)
+                    scalar_variable['name'] = new_name
+                    
+                    inpY1 = inpY1 - indel
+                    inpY2 = inpY2 - indel
+                    scalar_variable['annotation'] = (' annotation'
+                                                     '(Placement'
+                                                     '(transformation'
+                                                     '(extent={{-122,'
+                                                     + str(inpY1) + '},'
+                                                     '{-100,' + str(inpY2)
+                                                     + '}})))')
+                
+                                    # Get the node name of an output variable
+                                    
+                if (causality == 'model'):
+                    model_name_reference = name
+                if (causality == 'save'):
+                    write_results = name
+                if (causality == 'output'):
+                    output_variable_names.append(name)
+                    log.info('Invalid characters will be removed from the '
+                     'output variable name ' + name + '.')
+                    new_name = sanitize_name(name)
+                    log.info('The new output variable name is ' \
+                             + new_name + '.')
+                    modelica_output_variable_names.append(new_name)
+                    scalar_variable['name'] = new_name
+                    
+                    outY1 = outY1 - outdel
+                    outY2 = outY2 - outdel
+                    scalar_variable['annotation'] = (' annotation'
+                                                     '(Placement'
+                                                     '(transformation'
+                                                     '(extent={{100,'
+                                                     + str(outY1) + '},'
+                                                     '{120,' + str(outY2)
+                                                     + '}})))')
+                
+                if (causality == 'parameter'):
+                    parameter_variable_names.append(name)
+                    log.info('Invalid characters will be removed from the '
+                     'parameter variable name ' + name + '.')
+                    new_name = sanitize_name(name)
+                    log.info('The new parameter variable name is ' \
+                             + new_name + '.')
+                    modelica_parameter_variable_names.append(new_name)
+                    scalar_variable['name'] = new_name
+                    parameter_variable_values.append(start)
+                
                 for subelement in element:
                     vartype = subelement.tag
                     vartype_low = vartype.lower()
@@ -458,27 +507,7 @@ class CYMDISTToFMU(object):
                         vartype = 'Real'
                         unit = subelement.attrib.get('unit')
                         start = subelement.attrib.get('start')
-                    # Get the node name of an output variable
-                    if (vartype_low == 'node' and causality == 'output'):
-                        nodName = subelement.attrib.get('name')
-                        # Create list of output variables
-                        output_variable_names.append(name)
-                        # Create list with node name of output variable
-                        output_node_names.append(nodName)
-                        log.info('The output name ' + name + ' will be concatenated '
-                                 'with the node name ' + nodName + ' to be unique.')
-                        new_name = name + '_' + nodName
-                        log.info('The new output name is ' + new_name + '.')
-                        
-                        log.info('Invalid characters will be removed from the '
-                         'concatenated output variable name ' + new_name + '.')
-                        new_name = sanitize_name(new_name)
-                        log.info('The new concatenated output variable name is ' \
-                                 + new_name + '.')
-                        modelica_concat_output_variable_names.append(new_name)
-                        scalar_variable['name'] = new_name
-                        #concat_output_variable_names.append(scalar_variable['name'])
-                        
+
                     if ((start is None) and ((causality == 'input')
                                              or causality == 'parameter')):
                         # Set the start value of input and parameter to zero.
@@ -500,66 +529,28 @@ class CYMDISTToFMU(object):
                     else:
                         scalar_variable['description'] = ''
                     scalar_variable['causality'] = causality
-                    if (causality == 'input'):
-                        input_variable_names.append(name)
-                        log.info('Invalid characters will be removed from the '
-                         'input variable name ' + name + '.')
-                        new_name = sanitize_name(name)
-                        log.info('The new input variable name is ' \
-                                 + new_name + '.')
-                        modelica_input_variable_names.append(new_name)
-                        scalar_variable['name'] = new_name
-                        
-                        inpY1 = inpY1 - indel
-                        inpY2 = inpY2 - indel
-                        scalar_variable['annotation'] = (' annotation'
-                                                         '(Placement'
-                                                         '(transformation'
-                                                         '(extent={{-122,'
-                                                         + str(inpY1) + '},'
-                                                         '{-100,' + str(inpY2)
-                                                         + '}})))')
-                    if (causality == 'output'):
-                        outY1 = outY1 - outdel
-                        outY2 = outY2 - outdel
-                        scalar_variable['annotation'] = (' annotation'
-                                                         '(Placement'
-                                                         '(transformation'
-                                                         '(extent={{100,'
-                                                         + str(outY1) + '},'
-                                                         '{120,' + str(outY2)
-                                                         + '}})))')
-                    if (causality == 'parameter'):
-                        parameter_variable_names.append(name)
-                        log.info('Invalid characters will be removed from the '
-                         'parameter variable name ' + name + '.')
-                        new_name = sanitize_name(name)
-                        log.info('The new parameter variable name is ' \
-                                 + new_name + '.')
-                        modelica_parameter_variable_names.append(new_name)
-                        scalar_variable['name'] = new_name
-                        parameter_variable_values.append(start)
-                    scalar_variable['vartype'] = vartype
-                    scalar_variable['unit'] = unit
-                    if not (start is None):
-                        scalar_variable['start'] = start
+
+                scalar_variable['vartype'] = vartype
+                scalar_variable['unit'] = unit
+                if not (start is None):
+                    scalar_variable['start'] = start
                 scalar_variables.append(scalar_variable)
             # perform some checks on variables to avoid name clashes
             # before returning the variables to Modelica            
             log.info('Check for duplicates in input, output and parameter variable names')
             for i in [modelica_input_variable_names,
-                      modelica_concat_output_variable_names,
+                      modelica_output_variable_names,
                       modelica_parameter_variable_names]:
                 check_duplicates(i)
 
             # Write success.
             log.info('Parsing of ' + self.xml_path + ' was successfull.')
             return scalar_variables, input_variable_names, \
-                output_variable_names, concat_output_variable_names, \
-                output_node_names, parameter_variable_names, \
+                output_variable_names,  parameter_variable_names, \
                 parameter_variable_values, modelica_input_variable_names, \
-                modelica_concat_output_variable_names, \
-                modelica_parameter_variable_names
+                modelica_output_variable_names, \
+                modelica_parameter_variable_names, \
+                model_name_reference, write_results
 
     def print_mo(self):
         """Print the Modelica model of a CYMDIST XML file.
@@ -576,13 +567,12 @@ class CYMDISTToFMU(object):
         self.xml_validator()
         scalar_variables, input_variable_names, \
             output_variable_names, \
-            concat_output_variable_names, \
-            output_node_names, \
             parameter_variable_names, \
             parameter_variable_values, \
             modelica_input_variable_names, \
-            modelica_concat_output_variable_names, \
-            modelica_parameter_variable_names = self.xml_parser()
+            modelica_output_variable_names, \
+            modelica_parameter_variable_names,\
+            model_name_reference, write_results = self.xml_parser()
 
         loader = jja2.FileSystemLoader(self.moT_path)
         env = jja2.Environment(loader=loader)
@@ -591,17 +581,16 @@ class CYMDISTToFMU(object):
         # Call template with parameters
         output_res = template.render(model_name=self.model_name,
                                      input_file_path=self.input_file_path,
-                                     write_results=self.write_results,
                                      scalar_variables=scalar_variables,
                                      input_variable_names=input_variable_names,
                                      output_variable_names=output_variable_names,
-                                     concat_output_variable_names=concat_output_variable_names,
-                                     output_node_names=output_node_names,
                                      parameter_variable_names=parameter_variable_names,
                                      parameter_variable_values=parameter_variable_values,
                                      modelica_input_variable_names=modelica_input_variable_names,
-                                     modelica_concat_output_variable_names=modelica_concat_output_variable_names,
-                                     modelica_parameter_variable_names=modelica_parameter_variable_names)
+                                     modelica_output_variable_names=modelica_output_variable_names,
+                                     modelica_parameter_variable_names=modelica_parameter_variable_names,
+                                     model_name_reference=model_name_reference, 
+                                     write_results=write_results)
         # Write results in mo file which has the same name as the class name
         output_file = self.model_name + '.mo'
         if os.path.isfile(output_file):

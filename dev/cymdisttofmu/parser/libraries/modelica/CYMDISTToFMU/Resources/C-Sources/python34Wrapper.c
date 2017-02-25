@@ -17,7 +17,7 @@
 /*  nDblParWri            - Number of parameters to write.*/
 /*  strParWri             - Name of parameters to write.*/
 /*  dblValParWri          - Double values of parameters to write.*/
-/*  resWri                - Double value to indicate if results should be written.*//
+/*  resWri                - Double value to indicate if results should be written.*/
 #include <ModelicaUtilities.h>
 
 void pythonExchangeValuesCymdist(const char * moduleName,
@@ -32,10 +32,9 @@ void pythonExchangeValuesCymdist(const char * moduleName,
 							size_t nDblParWri,
 							const char ** strParWri, 
 							double * dblValParWri, 
-							double * resWri,)
+							double * resWri)
 {
-  pythonExchangeValuesCymdistNoModelica(
-   moduleName,
+  pythonExchangeValuesCymdistNoModelica(moduleName,
    functionName,
    modNamRef,
    nDblWri, 

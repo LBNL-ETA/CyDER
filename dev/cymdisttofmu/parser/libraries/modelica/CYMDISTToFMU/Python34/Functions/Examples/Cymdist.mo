@@ -3,10 +3,6 @@ model Cymdist "Test model for cymdist functions"
   extends Modelica.Icons.Example;
   Real yR1[1] "Real function value";
   Real yR2[2] "Real function value";
-  parameter Integer resWri=0 "Flag for results writing";
-  // The inputFileName should be provided
-  // using Modelica.Utilitites.loadResource().
-  parameter String inputFileName="cymdist.inp";
   // Parameters names can be empty.
   // Inputs and outputs cannot be empty.
   parameter String emptyDblParNam[0](each start="") "Empty list of parameters names";
@@ -15,77 +11,72 @@ algorithm
   yR1 := CYMDISTToFMU.Python34.Functions.cymdist(
     moduleName="testCymdist",
     functionName="r1_r1",
-    inputFileName=inputFileName,
+    modNamRef={1},
     nDblInp=1,
     dblInpNam={"u"},
     dblInpVal={15.0},
     nDblOut=1,
     dblOutNam={"y"},
-    dblOutNodNam={"nod"},
     nDblPar=0,
     dblParNam=emptyDblParNam,
     dblParVal=emptyDblParVal,
-    resWri=resWri);
+    resWri={0});
   assert(abs(15 - yR1[1]) < 1e-5, "Error in function r1_r1");
   yR1 := CYMDISTToFMU.Python34.Functions.cymdist(
     moduleName="testCymdist",
     functionName="r2_r1",
-    inputFileName=inputFileName,
+    modNamRef={1},
     nDblInp=2,
     dblInpNam={"u","u1"},
     dblInpVal={15.0,30.0},
     nDblOut=1,
     dblOutNam={"y"},
-    dblOutNodNam={"nod"},
     nDblPar=0,
     dblParNam=emptyDblParNam,
     dblParVal=emptyDblParVal,
-    resWri=resWri);
+    resWri={0});
   assert(abs(45 - yR1[1]) < 1e-5, "Error in function r2_r1");
   yR1 := CYMDISTToFMU.Python34.Functions.cymdist(
     moduleName="testCymdist",
     functionName="par3_r1",
-    inputFileName=inputFileName,
+    modNamRef={2},
     nDblInp=0,
     dblInpNam={""},
     dblInpVal={0},
     nDblOut=1,
     dblOutNam={"y"},
-    dblOutNodNam={"nod"},
     nDblPar=3,
     dblParNam={"par1","par2","par3"},
     dblParVal={1.0,2.0,3.0},
-    resWri=resWri);
+    resWri={1});
   assert(abs(6 - yR1[1]) < 1e-5, "Error in function par3_r1");
   yR2 := CYMDISTToFMU.Python34.Functions.cymdist(
     moduleName="testCymdist",
     functionName="r1_r2",
-    inputFileName=inputFileName,
+    modNamRef={3},
     nDblInp=1,
     dblInpNam={"u"},
     dblInpVal={30.0},
     nDblOut=2,
     dblOutNam={"y","y1"},
-    dblOutNodNam={"nod","nod1"},
     nDblPar=0,
     dblParNam=emptyDblParNam,
     dblParVal=emptyDblParVal,
-    resWri=resWri);
+    resWri={0});
   assert(abs(yR2[1] - 30) + abs(yR2[2] - 60) < 1E-5, "Error in function r1_r2");
   yR2 := CYMDISTToFMU.Python34.Functions.cymdist(
     moduleName="testCymdist",
     functionName="r2p2_r2",
-    inputFileName=inputFileName,
+    modNamRef={4},
     nDblInp=2,
     dblInpNam={"u","u1"},
     dblInpVal={1.0,2.0},
     nDblOut=2,
     dblOutNam={"y","y1"},
-    dblOutNodNam={"nod","nod1"},
     nDblPar=2,
     dblParNam={"par1","par2"},
     dblParVal={1.0,10.0},
-    resWri=resWri);
+    resWri={1});
   assert(abs(yR2[1] - 1) + abs(yR2[2] - 20) < 1E-5, "Error in function r2p2_r2");
   annotation (
     experiment(StopTime=1.0),
