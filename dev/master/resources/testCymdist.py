@@ -36,7 +36,7 @@ def r1_r2(iS, uR, uS, yS, iwR):
     
 def r2p2_r2(iS, uR, uS, yS, parR, parS, iwR):
     f = open("r2_r2.txt", 'w')
-    f.write("The input file name is: " + iS + "." +
+    f.write("The file reference value is: " + str(iS) + "." +
             " The input names are: " + uS[0] + ", " + uS[1] + "." +
             " The output names are: " + yS[0] + ", " + yS[1] + "." + 
             " The parameter names are: " + parS[0] + ", " + parS[1])
