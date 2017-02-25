@@ -3,10 +3,17 @@
 void pythonExchangeValuesCymdistNoModelica(const char * moduleName,
                           const char * functionName,
 						  double * modNamRef,
-						  const size_t nDblWri, const char ** strWri, 
-						  double * dblValWri, size_t nDblRea, const char ** strRea,
-						  const char ** strNodRea, double * dblValRea, size_t nDblParWri, 
-						  const char ** strParWri, double * dblValParWri, double *resWri,
+						  const size_t nDblWri, 
+						  const char ** strWri, 
+						  double * dblValWri, 
+						  size_t nDblRea, 
+						  const char ** strRea,
+						  //const char ** strLocRea, 
+						  double * dblValRea, 
+						  size_t nDblParWri, 
+						  const char ** strParWri, 
+						  double * dblValParWri, 
+						  double *resWri,
 			              void (*ModelicaFormatError)(const char *string,...))
 {
   PyObject *pName, *pModule, *pFunc;
@@ -17,15 +24,16 @@ void pythonExchangeValuesCymdistNoModelica(const char * moduleName,
   char* arg="";
   Py_ssize_t nStrWri = 0;
   Py_ssize_t nStrRea = 0;
-  Py_ssize_t nStrNodRea = 0;
+  Py_ssize_t nStrLocRea = 0;
   Py_ssize_t nStrParWri = 0;
   Py_ssize_t i;
   Py_ssize_t iArg = 0;
   /* The number of arguments starts*/
   /* at 2 since we always have the */
-  /* input file name of CYMDISTToFMU and */
-  /* a flag to indicate if results */
-  /* should be written as arguments.*/
+  /* reference value to a CYMDIST  */
+  /* model and a flag to indicate */
+  /* if results should be writtens.*/
+  /* as argument*/
   Py_ssize_t nArg = 2;
   Py_ssize_t iRet = 0;
   Py_ssize_t nRet = 0;
@@ -100,8 +108,8 @@ The error message is \"%s\"",
 	  /* output node names of the outputs*/
 	  /* to be retrieved from CYMDISTToFMU*/
 	  nStrRea = nDblRea;
-	  nStrNodRea = nDblRea;
-	  nArg=nArg+2;
+	  //nStrLocRea = nDblRea;
+	  nArg=nArg+1;
   }
   if (nDblParWri > 0){
 	  /* Increase the number of arguments to 2*/
@@ -164,7 +172,6 @@ The error message is \"%s\"",
     iArg++;
   }
   
-
     /* c) Convert char **, an array of character arrays*/
   if ( nStrWri > 0 ){
     pArgsStr = PyList_New(nStrWri);
@@ -233,39 +240,39 @@ The error message is \"%s\"",
     iArg++;
   }
 
-  /* e) Convert char **, an array of character arrays*/
-  if ( nStrNodRea > 0 ){
-    pArgsStr = PyList_New(nStrNodRea);
-    
-    for (i = 0; i < nStrNodRea; ++i) {
-      /* Convert argument to a python float*/
-      /*      Py_ssize_t len = 0;*/
-      /* According to the Modelica Specification, strings are terminated by '\0'*/
-      /* Seek the string length*/
-      /*      while (strRea[i][len] != '\0')*/
-      /*	len++;*/
-      
-      /*      pValue = PyUnicode_FromStringAndSize(strRea[i], len);*/
-      pValue =  PyUnicode_FromString(strNodRea[i]);
-      if (!pValue) {
-	/* Failed to convert argument.*/
-	Py_DECREF(pArgsStr);
-	Py_DECREF(pModule);
-	/* According to the Modelica specification, */
-	/* the function ModelicaError never returns to the calling function.*/
-	(*ModelicaFormatError)("Cannot convert string argument number %i to Python format.", i);
-      }
-      /* pValue reference stolen here*/
-      PyList_SetItem(pArgsStr, i, pValue);
-    }
-    /* If there is only a scalar string, then don't build a list.*/
-    /* Just put the scalar value into the list of arguments.*/
-    if ( nStrNodRea == 1)
-	PyTuple_SetItem(pArgs, iArg, PyList_GetItem(pArgsStr, (Py_ssize_t)0));
-      else
-	PyTuple_SetItem(pArgs, iArg, pArgsStr);
-    iArg++;
-  }
+ // /* e) Convert char **, an array of character arrays*/
+ // if ( nStrLocRea > 0 ){
+ //   pArgsStr = PyList_New(nStrLocRea);
+ //   
+ //   for (i = 0; i < nStrLocRea; ++i) {
+ //     /* Convert argument to a python float*/
+ //     /*      Py_ssize_t len = 0;*/
+ //     /* According to the Modelica Specification, strings are terminated by '\0'*/
+ //     /* Seek the string length*/
+ //     /*      while (strRea[i][len] != '\0')*/
+ //     /*	len++;*/
+ //     
+ //     /*      pValue = PyUnicode_FromStringAndSize(strRea[i], len);*/
+ //     pValue =  PyUnicode_FromString(strLocRea[i]);
+ //     if (!pValue) {
+	///* Failed to convert argument.*/
+	//Py_DECREF(pArgsStr);
+	//Py_DECREF(pModule);
+	///* According to the Modelica specification, */
+	///* the function ModelicaError never returns to the calling function.*/
+	//(*ModelicaFormatError)("Cannot convert string argument number %i to Python format.", i);
+ //     }
+ //     /* pValue reference stolen here*/
+ //     PyList_SetItem(pArgsStr, i, pValue);
+ //   }
+ //   /* If there is only a scalar string, then don't build a list.*/
+ //   /* Just put the scalar value into the list of arguments.*/
+ //   if ( nStrLocRea == 1)
+	//PyTuple_SetItem(pArgs, iArg, PyList_GetItem(pArgsStr, (Py_ssize_t)0));
+ //     else
+	//PyTuple_SetItem(pArgs, iArg, pArgsStr);
+ //   iArg++;
+ // }
 
   /* Convert the arguments*/
   /* f) Convert double[]*/
