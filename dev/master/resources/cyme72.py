@@ -11,17 +11,15 @@ import functions
 import os
 
 def main():
-    print (os.getcwd())
-    input_model_filename = 'BU0001.sxst'
-    input_save_to_file = 1
+    input_model_filename = 0
+    input_save_to_file = 0
     input_voltage_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
     input_voltage_values = [2520, 2520, 2520, 0, -120, 120]
     output_names = ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']
-    output_node_names = ['800032440', '800032440', '800032440', 
-                         '800032440', '800032440', '800032440']
-    exchange(input_model_filename, input_voltage_values, 
+    outputs = exchange(input_model_filename, input_voltage_values, 
              input_voltage_names, output_names, input_save_to_file)
-
+    print ("These are the output values " + str(outputs))
+    
 def exchange(input_model_filename, input_voltage_values, 
              input_voltage_names, output_names, input_save_to_file):
     """
@@ -29,7 +27,7 @@ def exchange(input_model_filename, input_voltage_values,
         input_model_filename (String): path to the cymdist grid model
         input_save_to_file (1 or 0): save all nodes results to a file
         input_voltage_names (Strings): voltage vector names
-        input_voltage_values (Floats): voltage vector values (same lenght as voltage_names)
+        input_voltage_values (Floats): voltage vector values (same length as voltage_names)
         output_names (Strings): vector of name matching CymDIST nomenclature
     Example:
         >>> input_model_filename = 'BU0001.sxst'
@@ -47,40 +45,23 @@ def exchange(input_model_filename, input_voltage_values,
     """
     # Call the CYMDIST wrapper
     results = []
-    n_exp_res = len(output_names)
-    start = datetime.now()
-    outputs = functions.fmu_wrapper(input_model_filename, 
-                                    input_save_to_file, 
-                                    input_voltage_names,
-                                    input_voltage_values, 
-                                    output_names)
-    end = datetime.now()
-    print('Ran a CYMDIST simulation in ' +
-          str((end - start).total_seconds()) + ' seconds.')
-    # Get the outputs.
-    n_ret_res = len(outputs)
-    # Check if the number of outputs is expected.
-    # Do not assert but rather provide some debugging information.
-    if (n_exp_res != n_ret_res):
-        print('WARNING: The number of returned outputs ' + str(n_ret_res)
-              + ' is different from the number of expected outputs '
-              + str(n_exp_res) + '.')
-        # If the number of returned outputs is bigger than the expected ones
-        # we get the first returned values and inform the user with a message.
-        if (n_ret_res > n_exp_res):
-            print('WARNING: The first ' + str(n_exp_res) + ' will be retrieved.')
-        else:
-            print('WARNING: Incorrect number of outputs ' +
-                  str(n_ret_res) + ' is returned.')
-    # Get the outputs and convert to floats.
-    # If the number of returned results is incorrect, then rely on 
-    # the C-wrapper which will throw an exception with a meaningful message.
-    for i in range(n_exp_res):
+    output_values=functions.fmu_wrapper(int(input_model_filename), int(input_save_to_file),
+                input_voltage_names, input_voltage_values, output_names)
+    n_out_nam = len(output_names)
+    n_out_val = len(output_values)
+    if (n_out_nam!=n_out_val):
+        print("The length of the output_names " + str(n_out_nam) + 
+              "does not match the length of the output results " + 
+              str(n_out_val) + ". This is not allowed. " +
+              "Simulation will be terminated.")
+        sys.exit(1)
+    for cnt, elem in enumerate(output_names):
         try:
-            results.append(float(outputs[i]))
+            # Forced the output to be a float
+            results.append(1.0*float(output_values[cnt]))
         except ValueError:
-            print('Cannot convert output ' + outputs[i] + ' to a float.')
-    return results
+            print('Cannot convert output ' + elem + ' to a float.')
+    return (results)
 
 if __name__ == '__main__':
     # Try running this module!

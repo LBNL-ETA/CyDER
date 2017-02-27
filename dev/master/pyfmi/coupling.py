@@ -38,26 +38,53 @@ def simulate_algebraicloop_fmus():
           str((end - start).total_seconds()) + ' seconds.')
 
 
-def simulate_single_fmu():
+def simulate_single_gridyn_fmu():
+    """Simulate one GridDyn FMU.
+        
+    """
+    gridyn=load_fmu("../../../../NO_SHARING/GridDyn/Test/griddyn.fmu", log_level=7)
+    # Set the inputs
+    opts=gridyn.simulate_options()
+    opts['ncp']=1.0
+    # Set the model name reference to be completed in Python API
+    gridyn.set("power", 10)
+    # Run simulation    
+    start = datetime.now()
+    res=gridyn.simulate(start_time=0.0, final_time=0.1)    
+    end = datetime.now()
+    
+    print('This is the time value' + str(res['time']))
+    print('This is the load value' + str(res['load']))
+    print('Ran a single GridDyn simulation in ' +
+          str((end - start).total_seconds()) + ' seconds.')
+
+def simulate_single_cymdist_fmu():
     """Simulate one CYMDIST FMU.
         
     """
     cymdist=load_fmu("../../../../NO_SHARING/CYMDIST/BU0001.fmu", log_level=7)
-    input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
-    input_values = [2520, 2520, 2520, 0.0, -120.0, 120.0]
-    output_names = ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC']
-    output_node_names = ['800032440', '800032440', '800032440', 
-                         '800032440', '800032440', '800032440']
+    input_voltage_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
+    input_voltage_values = [2520, 2520, 2520, 0, -120, 120]
+    output_names = ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']
 
     # Set the inputs
     opts=cymdist.simulate_options()
     opts['ncp']=1.0
-    for cnt, elem in enumerate(input_names):
-        cymdist.set (elem, input_values[cnt])
+    # Set the model name reference to be completed in Python API
+    cymdist.set("model_name_ref", 0)
+    # Set the flag to save the results
+    cymdist.set("save_to_file", 0)
+    for cnt, elem in enumerate(input_voltage_names):
+        cymdist.set (elem, input_voltage_values[cnt])
     # Run simulation    
-    res=cymdist.simulate(start_time=0.0, final_time=1)    
-
-def simulate_multiple_fmus():
+    start = datetime.now()
+    res=cymdist.simulate(start_time=0.0, final_time=0.1)    
+    end = datetime.now()
+    
+    print('Ran a coupled CYMDIST/GridDyn simulation in ' +
+          str((end - start).total_seconds()) + ' seconds.')
+    
+def simulate_cymdist_gridyn_fmus():
     """Simulate one CYMDIST FMU coupled to a dummy GridDyn FMU.
         
     """
@@ -97,6 +124,7 @@ def simulate_multiple_fmus():
           str((end - start).total_seconds()) + ' seconds.')
         
 if __name__ == '__main__':
-    #simulate_single_fmu()
-    simulate_multiple_fmus()
+    #simulate_single_cymdist_fmu()
+    simulate_single_gridyn_fmu()
+    #simulate_cymdist_gridyn_fmus()
     #simulate_algebraicloop_fmus()
