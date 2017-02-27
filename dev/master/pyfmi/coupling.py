@@ -46,15 +46,18 @@ def simulate_single_gridyn_fmu():
     # Set the inputs
     opts=gridyn.simulate_options()
     opts['ncp']=1.0
+    print(str(opts))
     # Set the model name reference to be completed in Python API
     gridyn.set("power", 10)
     # Run simulation    
     start = datetime.now()
-    res=gridyn.simulate(start_time=0.0, final_time=0.1)    
+    res=gridyn.simulate(start_time=0.0, 
+                        final_time=1, 
+                        options=opts)    
     end = datetime.now()
     
-    print('This is the time value' + str(res['time']))
-    print('This is the load value' + str(res['load']))
+    print('This is the time value ' + str(res['time']))
+    print('This is the load value ' + str(res['load']))
     print('Ran a single GridDyn simulation in ' +
           str((end - start).total_seconds()) + ' seconds.')
 
@@ -78,10 +81,12 @@ def simulate_single_cymdist_fmu():
         cymdist.set (elem, input_voltage_values[cnt])
     # Run simulation    
     start = datetime.now()
-    res=cymdist.simulate(start_time=0.0, final_time=0.1)    
+    res=cymdist.simulate(start_time=0.0, 
+                         final_time=0.1, 
+                         options=opts)    
     end = datetime.now()
     
-    print('Ran a coupled CYMDIST/GridDyn simulation in ' +
+    print('Ran a single CYMDIST simulation in ' +
           str((end - start).total_seconds()) + ' seconds.')
     
 def simulate_cymdist_gridyn_fmus():
