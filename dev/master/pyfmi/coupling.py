@@ -129,7 +129,7 @@ def simulate_cymdist_gridyn_fmus():
           str((end - start).total_seconds()) + ' seconds.')
         
 if __name__ == '__main__':
-    #simulate_single_cymdist_fmu()
-    simulate_single_gridyn_fmu()
+    simulate_single_cymdist_fmu()
+    #simulate_single_gridyn_fmu()
     #simulate_cymdist_gridyn_fmus()
     #simulate_algebraicloop_fmus()
