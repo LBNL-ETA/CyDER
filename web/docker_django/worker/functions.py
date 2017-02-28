@@ -37,7 +37,7 @@ def fmu_wrapper(time, input_save_to_file, input_voltage_names,
     Note:
         config.json file format:
         {times: [0]
-         interpolation_method: 'hold_previous',
+         interpolation_method: 'closest_time',
          models: [{
             filename: 'my_model.sxst',
             new_loads: [{
@@ -165,12 +165,12 @@ def fmu_wrapper(time, input_save_to_file, input_voltage_names,
     _set_voltages(voltages, networks)
 
     # Add loads
-    if model['loads']:
-        _add_loads(model['loads'])
+    if model['new_loads']:
+        _add_loads(model['new_loads'])
 
     # Add PV
-    if model['pvs']:
-        _add_pvs(model['pvs'])
+    if model['new_pvs']:
+        _add_pvs(model['new_pvs'])
 
     # Run the power flow
     lf = cympy.sim.LoadFlow()
