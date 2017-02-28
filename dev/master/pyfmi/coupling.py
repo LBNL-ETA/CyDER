@@ -146,5 +146,5 @@ def simulate_cymdist_gridyn_fmus():
 if __name__ == '__main__':
     #simulate_single_cymdist_fmu()
     #simulate_single_gridyn_fmu()
-    #simulate_cymdist_gridyn_fmus()
-    simulate_algebraicloop_fmus()
+    simulate_cymdist_gridyn_fmus()
+    #simulate_algebraicloop_fmus()
