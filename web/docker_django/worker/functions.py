@@ -4,6 +4,7 @@ import pandas
 import lookup
 import pickle
 import numpy as np
+import json
 try:
     import cympy
 except:
@@ -11,27 +12,46 @@ except:
     pass
 
 
-def fmu_wrapper(input_model_filename, input_save_to_file,
-                input_voltage_names, input_voltage_values, output_names):
+def fmu_wrapper(time, input_save_to_file, input_voltage_names,
+                input_voltage_values, configuration_filename, output_names):
     """Communicate with the FMU to launch a Cymdist simulation
 
     Args:
-        input_model_filename (String): path to the cymdist grid model
+        time (Float): Simulation time
         input_save_to_file (1 or 0): save all nodes results to a file
         input_voltage_names (Strings): voltage vector names
         input_voltage_values (Floats): voltage vector values (same lenght as voltage_names)
+        configuration_file (String): filename for the model configurations
         output_names (Strings): vector of name matching CymDIST nomenclature
 
     Example:
-        >>> input_model_filename = 'BU0001.sxst'
-        >>> input_save_to_file = 1
+        >>> time = 0
+        >>> input_save_to_file = 0
         >>> input_voltage_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
         >>> input_voltage_values = [2520, 2520, 2520, 0, -120, 120]
+        >>> configuration_file = 'config.json'
         >>> output_names = ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']
 
         >>> fmu_wrapper(input_model_filename, input_save_to_file,
                 input_voltage_names, input_voltage_values, output_names)
     Note:
+        config.json file format:
+        {times: [0]
+         interpolation_method: 'hold_previous',
+         models: [{
+            filename: 'my_model.sxst',
+            new_loads: [{
+                section_id: '',
+                active_power: '',
+            }],
+            new_pvs: [{
+                section_id: '',
+                generation: '',
+            }],
+         }]
+        }
+        (time vector must have a 1:1 realtionship with the model vector)
+
         output_names can be: ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC',
         'IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC', 'PFA', 'PFB', 'PFC']
         for a greater list see CymDIST > customize > keywords > powerflow
@@ -45,6 +65,24 @@ def fmu_wrapper(input_model_filename, input_save_to_file,
             voltages[name] = value
         return voltages
 
+    def _read_configuration_file(configuration_filename, current_time):
+        """This function open the configuration file and pick the right model given
+        a simulation time.
+        """
+        def _closest_time(current_time, times):
+            """Find the closest time, return model index"""
+            distances = [abs(value - current_time) for value in times]
+            min_value, min_index = min((value, index) for index, value in enumerate(distances))
+            return min_index
+
+        # Open the configuration file and read the configurations
+        with open(configuration_filename, 'r') as configuration_file:
+            configuration = json.load(configuration_file)
+
+        # Select the appropriate model
+        model = configuration['models'][_closest_time(current_time, configuration['times'])]
+        return model
+
     def _set_voltages(voltages, networks):
         """Set the voltage at the source node"""
         # Set up the right voltage in kV (input must be V)
@@ -54,6 +92,40 @@ def fmu_wrapper(input_model_filename, input_save_to_file,
             "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage2", networks[0])
         cympy.study.SetValueTopo(voltages['VMAG_C'] / 1000,
             "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage3", networks[0])
+        return True
+
+    def _add_loads(loads):
+        for index, load in enumerate(loads):
+            # Add load and overwrite (load demand need to be sum of previous load and new)
+            temp_load_model = cympy.study.AddDevice(
+                "MY_LOAD_" + str(index), 14, load['section_id'], 'DEFAULT',
+                cympy.enums.Location.FirstAvailable , True)
+
+            # Set power demand
+            phases = list(cympy.study.QueryInfoDevice("Phase", "MY_LOAD_" + str(index), 14))
+            power = load['active_power'] / len(phases)
+            for phase in range(0, len(phases)):
+                cympy.study.SetValueDevice(
+                    power,
+                    'CustomerLoads[0].CustomerLoadModels[0].CustomerLoadValues[' + str(phase) + '].LoadValue.KW',
+                    "MY_LOAD_" + str(index), 14)
+            # Note: customer is still 0 as well as energy values, does it matters?
+        return True
+
+    def _add_pvs(pvs):
+        """Add new pvs on the grid"""
+        for index, pv in enumerate(pvs):
+            # Add PVs
+            device = cympy.study.AddDevice("my_pv_" + str(index), cympy.enums.DeviceType.Photovoltaic, pv['section_id'])
+
+            # Set PV size (add + 30 to make sure rated power is above generated power)
+            device.SetValue(int((pv['generation'] + 30) / (23 * 0.08)), "Np")  # (ns=23 * np * 0.08 to find kW) --> kw / (23 * 0.08)
+            device.SetValue(pv['generation'], 'GenerationModels[0].ActiveGeneration')
+
+            # Set inverter size
+            device.SetValue(pv['generation'], "Inverter.ConverterRating")
+            device.SetValue(pv['generation'], "Inverter.ActivePowerRating")
+            device.SetValue(pv['generation'], "Inverter.ReactivePowerRating")
         return True
 
     def _write_results(input_model_filename):
@@ -83,13 +155,22 @@ def fmu_wrapper(input_model_filename, input_save_to_file,
         input_save_to_file = True
     else:
         input_save_to_file = False
+    model = _read_configuration_file(configuration_filename, time)
 
     # Open the model
-    cympy.study.Open(input_model_filename)
+    cympy.study.Open(model['filename'])
 
     # Set voltages
     networks = cympy.study.ListNetworks()
     _set_voltages(voltages, networks)
+
+    # Add loads
+    if model['loads']:
+        _add_loads(model['loads'])
+
+    # Add PV
+    if model['pvs']:
+        _add_pvs(model['pvs'])
 
     # Run the power flow
     lf = cympy.sim.LoadFlow()
@@ -97,7 +178,7 @@ def fmu_wrapper(input_model_filename, input_save_to_file,
 
     # Write full results?
     if input_save_to_file:
-        _write_results(input_model_filename)
+        _write_results(model['filename'])
 
     # Return the right values
     source_node_id = cympy.study.GetValueTopo("Sources[0].SourceNodeID", networks[0])

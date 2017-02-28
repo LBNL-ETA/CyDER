@@ -35,6 +35,7 @@ pv.SetValue(int((pv_gen + 30) / (23 * 0.08)), "Np")  # (ns=23 * np * 0.08 to fin
 pv.SetValue(pv_gen, 'GenerationModels[0].ActiveGeneration')
 
 # Set inverter size
+pv.SetValue(pv_gen, "Inverter.ConverterRating")
 pv.SetValue(pv_gen, "Inverter.ActivePowerRating")
 pv.SetValue(pv_gen, "Inverter.ReactivePowerRating")
 
