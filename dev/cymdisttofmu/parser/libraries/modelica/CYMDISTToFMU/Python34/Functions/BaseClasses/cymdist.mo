@@ -31,7 +31,7 @@ function cymdist "Function that communicates with the CYMDISTToFMU Python API"
                                     dblParNam,
                                     dblParVal,
                                     resWri)
-    annotation (Library={"ModelicaCYMDISTToFMUPython3.4",  "python3.4"},
+    annotation (Library={"CYMDISTToFMU",  "python3.4"},
       LibraryDirectory={"modelica://CYMDISTToFMU.Resources/Library"},
       IncludeDirectory="modelica://CYMDISTToFMU.Resources/C-Sources",
       Include="#include \"python34Wrapper.c\"");
