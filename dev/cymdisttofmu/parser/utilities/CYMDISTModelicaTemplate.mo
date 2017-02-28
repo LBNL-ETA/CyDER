@@ -18,7 +18,7 @@ model {{model_name}}
   {% endfor %}
   
   Modelica.Blocks.Interfaces.RealInput {{write_results}} "Flag for writing results"; 
- 
+  parameter String conFilNam="config.json" "Configuration file name";
 protected   
   parameter Integer nDblPar={{parameter_variable_names|length}} 
     "Number of double parameter values to sent to CYMDIST";
@@ -30,9 +30,7 @@ protected
     "Flag for double values (0: use current value, 
     1: use average over interval, 2: use integral over interval)";
   
-  parameter String conFilNam="{{configuration_file_name}}" "Configuration file name";
   Real resWri[1]={% raw -%}{{% endraw -%}{{write_results}}{% raw -%}}{% endraw -%} "Flag for writing results";
-  
   Real uRInt[nDblInp] "Value of integral";
   Real uRIntPre[nDblInp] "Value of integral at previous sampling instance";
   Real dblInpVal[nDblInp] "Value to be sent to CYMDIST";

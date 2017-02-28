@@ -460,9 +460,9 @@ class CYMDISTToFMU(object):
                 
                                     # Get the node name of an output variable
                                     
-                if (causality == 'model'):
-                    configuration_file_name = name
-                if (causality == 'save'):
+#                 if (causality == 'model'):
+#                     configuration_file_name = name
+                if (causality == 'local'):
                     write_results = name
                 if (causality == 'output'):
                     output_variable_names.append(name)
@@ -550,7 +550,7 @@ class CYMDISTToFMU(object):
                 parameter_variable_values, modelica_input_variable_names, \
                 modelica_output_variable_names, \
                 modelica_parameter_variable_names, \
-                configuration_file_name, write_results
+                write_results
 
     def print_mo(self):
         """Print the Modelica model of a CYMDIST XML file.
@@ -572,7 +572,7 @@ class CYMDISTToFMU(object):
             modelica_input_variable_names, \
             modelica_output_variable_names, \
             modelica_parameter_variable_names,\
-            configuration_file_name, write_results = self.xml_parser()
+            write_results = self.xml_parser()
 
         loader = jja2.FileSystemLoader(self.moT_path)
         env = jja2.Environment(loader=loader)
@@ -589,7 +589,6 @@ class CYMDISTToFMU(object):
                                      modelica_input_variable_names=modelica_input_variable_names,
                                      modelica_output_variable_names=modelica_output_variable_names,
                                      modelica_parameter_variable_names=modelica_parameter_variable_names,
-                                     configuration_file_name=configuration_file_name, 
                                      write_results=write_results)
         # Write results in mo file which has the same name as the class name
         output_file = self.model_name + '.mo'
@@ -639,8 +638,8 @@ class CYMDISTToFMU(object):
         fh.close()
 
         # Call Dymola to generate the FMUs
-        #sp.call(['dymola', output_file, '/nowindow'])
-        sp.call(['dymola', output_file])
+        sp.call(['dymola', output_file, '/nowindow'])
+        #sp.call(['dymola', output_file])
 
         # Define name of the FMU
         fmu_name = self.model_name + '.fmu'

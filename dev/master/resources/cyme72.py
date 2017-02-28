@@ -11,33 +11,53 @@ import functions
 import os
 
 def main():
-    input_model_filename = 0
+    time=0
     input_save_to_file = 0
     input_voltage_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
     input_voltage_values = [2520, 2520, 2520, 0, -120, 120]
     output_names = ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']
-    outputs = exchange(input_model_filename, input_voltage_values, 
+    configuration_file_name = "config.json"
+    outputs = exchange(configuration_file_name, time, input_voltage_values, 
              input_voltage_names, output_names, input_save_to_file)
     print ("These are the output values " + str(outputs))
     
-def exchange(input_model_filename, input_voltage_values, 
+def exchange(configuration_file_name, time, input_voltage_values, 
              input_voltage_names, output_names, input_save_to_file):
-    """
+    
+    """Communicate with the FMU to launch a Cymdist simulation
     Args:
-        input_model_filename (String): path to the cymdist grid model
+        time (Float): Simulation time
         input_save_to_file (1 or 0): save all nodes results to a file
         input_voltage_names (Strings): voltage vector names
         input_voltage_values (Floats): voltage vector values (same length as voltage_names)
+        configuration_file (String): filename for the model configurations
         output_names (Strings): vector of name matching CymDIST nomenclature
     Example:
-        >>> input_model_filename = 'BU0001.sxst'
-        >>> input_save_to_file = 1
+        >>> time = 0
+        >>> input_save_to_file = 0
         >>> input_voltage_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
         >>> input_voltage_values = [2520, 2520, 2520, 0, -120, 120]
+        >>> configuration_file = 'config.json'
         >>> output_names = ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']
-        >>> fmu_wrapper(input_model_filename, input_save_to_file,
-                input_voltage_names, input_voltage_values, output_names)
+        >>> fmu_wrapper(time, int(input_save_to_file), input_voltage_names,
+                        input_voltage_values, configuration_filename, output_names)
     Note:
+        config.json file format:
+        {times: [0]
+         interpolation_method: 'hold_previous',
+         models: [{
+            filename: 'my_model.sxst',
+            new_loads: [{
+                section_id: '',
+                active_power: '',
+            }],
+            new_pvs: [{
+                section_id: '',
+                generation: '',
+            }],
+         }]
+        }
+        (time vector must have a 1:1 relationship with the model vector)
         output_names can be: ['KWA', 'KWB', 'KWC', 'KVARA', 'KVARB', 'KVARC',
         'IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC', 'PFA', 'PFB', 'PFC']
         for a greater list see CymDIST > customize > keywords > powerflow
@@ -45,8 +65,8 @@ def exchange(input_model_filename, input_voltage_values,
     """
     # Call the CYMDIST wrapper
     results = []
-    output_values=functions.fmu_wrapper(int(input_model_filename), int(input_save_to_file),
-                input_voltage_names, input_voltage_values, output_names)
+    output_values=functions.fmu_wrapper(time, int(input_save_to_file), input_voltage_names,
+                                        input_voltage_values, configuration_file_name, output_names)
     n_out_nam = len(output_names)
     n_out_val = len(output_values)
     if (n_out_nam!=n_out_val):

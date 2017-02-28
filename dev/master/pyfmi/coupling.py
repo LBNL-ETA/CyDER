@@ -25,8 +25,6 @@ def simulate_algebraicloop_fmus():
     opts=coupled_simulation.simulate_options()
     opts['step_size']=0.1
     opts['logging']=True
-    
-    print (opts['filter'])
 
     start = datetime.now()
     # Run simulation
@@ -73,8 +71,12 @@ def simulate_single_cymdist_fmu():
     # Set the inputs
     opts=cymdist.simulate_options()
     opts['ncp']=1.0
-    # Set the model name reference to be completed in Python API
-    cymdist.set("model_name_ref", 0)
+    # Set the configuration file 
+    con_val_ref = cymdist.get_variable_valueref("conFilNam")
+    print("This is the value reference " + str(con_val_ref))
+    con_val_str = bytes("config.json", 'utf-8')
+    cymdist.set_string([con_val_ref], [con_val_str])
+    
     # Set the flag to save the results
     cymdist.set("save_to_file", 0)
     for cnt, elem in enumerate(input_voltage_names):
