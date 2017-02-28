@@ -13,27 +13,28 @@ def simulate_algebraicloop_fmus():
     This forms an algebraic loop which leads to the equation u = u*u
         
     """
-    cymdist=load_fmu("../fmus/Tests/FirstModel.fmu", log_level=7)
-    gridyn=load_fmu("../fmus/Tests/SecondModel.fmu", log_level=7)
+    for i in [0.0, 0.1]:
+        cymdist=load_fmu("../fmus/Tests/FirstModel.fmu", log_level=7)
+        gridyn=load_fmu("../fmus/Tests/SecondModel.fmu", log_level=7)
+        
+        models = [cymdist, gridyn]
+        connections = [(cymdist, "y", gridyn, "u"), 
+                       (gridyn, "y", cymdist, "u")]
+        
+        coupled_simulation = Master (models, connections)
+        
+        opts=coupled_simulation.simulate_options()
+        opts['step_size']=0.1
+        opts['logging']=True
     
-    models = [cymdist, gridyn]
-    connections = [(cymdist, "y", gridyn, "u"), 
-                   (gridyn, "y", cymdist, "u")]
-    
-    coupled_simulation = Master (models, connections)
-    
-    opts=coupled_simulation.simulate_options()
-    opts['step_size']=0.1
-    opts['logging']=True
-
-    start = datetime.now()
-    # Run simulation
-    res=coupled_simulation.simulate(options=opts, 
-                            start_time=0.0, 
-                            final_time=1.0)
-    end = datetime.now()
-    print('Ran a coupled CYMDIST/GridDyn simulation in ' +
-          str((end - start).total_seconds()) + ' seconds.')
+        start = datetime.now()
+        # Run simulation
+        res=coupled_simulation.simulate(options=opts, 
+                                start_time=0.0, 
+                                final_time=1.0)
+        end = datetime.now()
+        print('Ran a coupled CYMDIST/GridDyn simulation in ' +
+              str((end - start).total_seconds()) + ' seconds.')
 
 
 def simulate_single_gridyn_fmu():
@@ -100,43 +101,50 @@ def simulate_cymdist_gridyn_fmus():
     """Simulate one CYMDIST FMU coupled to a dummy GridDyn FMU.
         
     """
-    cymdist=load_fmu("../../../../NO_SHARING/CYMDIST/BU0001.fmu", log_level=7)
-    gridyn=load_fmu("../../../../NO_SHARING/GridDyn/GridDyn.fmu", log_level=7)
-    
-    models = [cymdist, gridyn]
-    connections = [#(gridyn, "VMAG_A", cymdist, "VMAG_A"),
-                   (gridyn, "VMAG_B", cymdist, "VMAG_B"),
-                   (gridyn, "VMAG_C", cymdist, "VMAG_C"),
-                   (gridyn, "VANG_A", cymdist, "VANG_A"),
-                   (gridyn, "VANG_B", cymdist, "VANG_B"),
-                   (gridyn, "VANG_C", cymdist, "VANG_C"),
-                   (cymdist, "KWA_800032440", gridyn, "KWA_800032440"),
-                   (cymdist, "KWB_800032440", gridyn, "KWB_800032440"),
-                   (cymdist, "KWC_800032440", gridyn, "KWC_800032440"),
-                   (cymdist, "KVARA_800032440", gridyn, "KVARA_800032440"),
-                   (cymdist, "KVARB_800032440", gridyn, "KVARB_800032440"),
-                   (cymdist, "KVARC_800032440", gridyn, "KVARC_800032440"),]
-    
-    coupled_simulation = Master (models, connections)
-    opts=coupled_simulation.simulate_options()
-    opts['step_size']=0.1
-    
-    start = datetime.now()
-    # Run simulation
-    for i in range(2):
-        VMAG_A = 2520 + i*10
-        cymdist.set("VMAG_A", VMAG_A)
+    for i in [0.0, 0.1]:
+        cymdist=load_fmu("../../../../NO_SHARING/CYMDIST/BU0001.fmu", log_level=7)
+        gridyn=load_fmu("../../../../NO_SHARING/GridDyn/GridDyn.fmu", log_level=7)
+        
+        models = [cymdist, gridyn]
+        connections = [(gridyn, "VMAG_A", cymdist, "VMAG_A"),
+                       (gridyn, "VMAG_B", cymdist, "VMAG_B"),
+                       (gridyn, "VMAG_C", cymdist, "VMAG_C"),
+                       (gridyn, "VANG_A", cymdist, "VANG_A"),
+                       (gridyn, "VANG_B", cymdist, "VANG_B"),
+                       (gridyn, "VANG_C", cymdist, "VANG_C"),
+                       (cymdist, "IA", gridyn, "IA"),
+                       (cymdist, "IB", gridyn, "IB"),
+                       (cymdist, "IC", gridyn, "IC"),
+                       (cymdist, "IAngleA", gridyn, "IAngleA"),
+                       (cymdist, "IAngleB", gridyn, "IAngleB"),
+                       (cymdist, "IAngleC", gridyn, "IAngleC"),]
+        
+        coupled_simulation = Master (models, connections)
+        opts=coupled_simulation.simulate_options()
+        opts['step_size']=0.1
+        
+        # Set the configuration file 
+        con_val_ref = cymdist.get_variable_valueref("conFilNam")
+
+        # Run simulation
+        start = datetime.now()
+        cymdist.set("save_to_file", 0)
+        #Build path to configuration file
+        path_config="Z:\\thierry\\proj\\cyder_repo\\cyder\\dev\\master\\pyfmi\\config" \
+                    + str(int(0))+".json"
+        con_val_str = bytes(path_config, 'utf-8')
+        cymdist.set_string([con_val_ref], [con_val_str])
         res=coupled_simulation.simulate(options=opts, 
-                                start_time=0.0, 
-                                final_time=0.1)
+                                start_time=0.0+i, 
+                                final_time=0.1+i)
         print('This is the voltage value' + str(res[cymdist]['VMAG_A']))
-    end = datetime.now()
-    
-    print('Ran a coupled CYMDIST/GridDyn simulation in ' +
-          str((end - start).total_seconds()) + ' seconds.')
+        end = datetime.now()
+        
+        print('Ran a coupled CYMDIST/GridDyn simulation in ' +
+              str((end - start).total_seconds()) + ' seconds.')
         
 if __name__ == '__main__':
-    simulate_single_cymdist_fmu()
+    #simulate_single_cymdist_fmu()
     #simulate_single_gridyn_fmu()
     #simulate_cymdist_gridyn_fmus()
-    #simulate_algebraicloop_fmus()
+    simulate_algebraicloop_fmus()
