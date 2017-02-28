@@ -11,7 +11,8 @@ algorithm
   yR1 := CYMDISTToFMU.Python34.Functions.cymdist(
     moduleName="testCymdist",
     functionName="r1_r1",
-    modNamRef={1},
+    conFilNam="config.csv",
+    modTim={time},
     nDblInp=1,
     dblInpNam={"u"},
     dblInpVal={15.0},
@@ -25,7 +26,8 @@ algorithm
   yR1 := CYMDISTToFMU.Python34.Functions.cymdist(
     moduleName="testCymdist",
     functionName="r2_r1",
-    modNamRef={1},
+    conFilNam="config.csv",
+    modTim={time},
     nDblInp=2,
     dblInpNam={"u","u1"},
     dblInpVal={15.0,30.0},
@@ -39,7 +41,8 @@ algorithm
   yR1 := CYMDISTToFMU.Python34.Functions.cymdist(
     moduleName="testCymdist",
     functionName="par3_r1",
-    modNamRef={2},
+    conFilNam="config.csv",
+    modTim={time},
     nDblInp=0,
     dblInpNam={""},
     dblInpVal={0},
@@ -53,7 +56,8 @@ algorithm
   yR2 := CYMDISTToFMU.Python34.Functions.cymdist(
     moduleName="testCymdist",
     functionName="r1_r2",
-    modNamRef={3},
+    conFilNam="config.csv",
+    modTim={time},
     nDblInp=1,
     dblInpNam={"u"},
     dblInpVal={30.0},
@@ -67,7 +71,8 @@ algorithm
   yR2 := CYMDISTToFMU.Python34.Functions.cymdist(
     moduleName="testCymdist",
     functionName="r2p2_r2",
-    modNamRef={4},
+    conFilNam="config.csv",
+    modTim={time},
     nDblInp=2,
     dblInpNam={"u","u1"},
     dblInpVal={1.0,2.0},

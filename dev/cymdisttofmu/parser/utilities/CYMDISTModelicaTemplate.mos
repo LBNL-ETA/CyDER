@@ -9,7 +9,7 @@ translateModelFMU(
   fmiType="cs",
   includeSource=false);
 Advanced.FMI.xmlIgnoreProtected=false;
-exit();
+//exit();
 
 
 

@@ -4,7 +4,8 @@ function cymdist "Function that communicates with the CYMDISTToFMU Python API"
   input String moduleName
   "Name of the python module that contains the function";
   input String functionName=moduleName "Name of the python function";
-  input Real    modNamRef[1]  "Model name reference value";
+  input String  conFilNam "Name of the python function";
+  input Real    modTim[1] "Model time";
   input Real    dblParVal[nDblPar] "Parameter variables values to send to CYMDISTToFMU";
   input Real    dblInpVal[max(1, nDblInp)] "Input variables values to be sent to CYMDISTToFMU";
   input String  dblParNam[nDblPar] "Parameter variables names to send to CYMDISTToFMU";
@@ -48,7 +49,8 @@ pytPat,havePytPat) := Modelica.Utilities.System.getEnvironmentVariable("PYTHONPA
 dblOutVal := BaseClasses.cymdist(
       moduleName=moduleName,
       functionName=functionName,
-      modNamRef=modNamRef,
+      conFilNam=conFilNam,
+      modTim=modTim,
       nDblInp=nDblInp,
       dblInpNam=dblInpNam,
       dblInpVal=dblInpVal,

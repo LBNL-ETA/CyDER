@@ -7,7 +7,7 @@
 /* The arguments are as follows:*/
 /*  moduleName            - Name of the Python module.*/
 /*  functionName          - Name of the Python function.*/
-/*  modNamRef             - Double value which references a CYMDIST model.*/
+/*  time                  - Model time.*/
 /*  nDblWri               - Number of inputs values to write.*/
 /*  strWri                - Name of inputs to write.*/
 /*  dblValWri             - Double inputs values to write.*/
@@ -22,7 +22,8 @@
 
 void pythonExchangeValuesCymdist(const char * moduleName,
 							const char * functionName, 
-							double * modNamRef,
+							const char * configFileName, 
+							double * time,
 							const size_t nDblWri, 
 							const char ** strWri,
 							double * dblValWri, 
@@ -36,7 +37,8 @@ void pythonExchangeValuesCymdist(const char * moduleName,
 {
   pythonExchangeValuesCymdistNoModelica(moduleName,
    functionName,
-   modNamRef,
+   configFileName,
+   time,
    nDblWri, 
    strWri,
    dblValWri, 

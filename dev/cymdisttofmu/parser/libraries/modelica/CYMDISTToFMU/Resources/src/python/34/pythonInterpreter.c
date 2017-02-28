@@ -2,7 +2,8 @@
 
 void pythonExchangeValuesCymdistNoModelica(const char * moduleName,
                           const char * functionName,
-						  double * modNamRef,
+						  const char * configFileName,
+						  double * modTim,
 						  const size_t nDblWri, 
 						  const char ** strWri, 
 						  double * dblValWri, 
@@ -28,12 +29,10 @@ void pythonExchangeValuesCymdistNoModelica(const char * moduleName,
   Py_ssize_t i;
   Py_ssize_t iArg = 0;
   /* The number of arguments starts*/
-  /* at 2 since we always have the */
-  /* reference value to a CYMDIST  */
-  /* model and a flag to indicate */
-  /* if results should be writtens.*/
-  /* as argument*/
-  Py_ssize_t nArg = 2;
+  /* at 3 since we always have the */
+  /* configuration file, the model time, */
+  /* a flag to write results.*/
+  Py_ssize_t nArg = 3;
   Py_ssize_t iRet = 0;
   Py_ssize_t nRet = 0;
   /*//////////////////////////////////////////////////////////////////////////*/
@@ -90,6 +89,9 @@ The error message is \"%s\"",
   /*//////////////////////////////////////////////////////////////////////////*/
   /* The function is loaded.*/
   /*//////////////////////////////////////////////////////////////////////////*/
+
+  /* Convert the arguments*/
+  /* a) Convert the input file name*/
   /* Create arguments for the python function*/
   if (nDblWri > 0){
 	  /* Increase the number of arguments to 2*/
@@ -122,17 +124,36 @@ The error message is \"%s\"",
     pArgs = NULL;
 
   /* Convert the arguments*/
-  /* a) Convert double[]*/
+  /* a) Convert the configuration file name*/
+  pArgsStr = PyList_New(1);
+  pValue = PyUnicode_FromString(configFileName);
+  if (!pValue) {
+	  /* Failed to convert argument.*/
+	  Py_DECREF(pArgsStr);
+	  Py_DECREF(pModule);
+	  /* According to the Modelica specification,*/
+	  /* the function ModelicaError never returns to the calling function.*/
+	  (*ModelicaFormatError)("Cannot convert string argument number '%s' to Python format.\n", configFileName);
+  }
+  /* pValue reference stolen here*/
+  PyList_SetItem(pArgsStr, 0, pValue);
+
+  /* If there is only a scalar string, then don't build a list.*/
+  /* Just put the scalar value into the list of arguments.*/
+  PyTuple_SetItem(pArgs, iArg, PyList_GetItem(pArgsStr, (Py_ssize_t)0));
+  iArg++;
+
+  /* b) Convert double[]*/
   pArgsDbl = PyList_New(1);
   /* Convert argument to a python float*/
-  pValue = PyFloat_FromDouble(modNamRef[0]);
+  pValue = PyFloat_FromDouble(modTim[0]);
   if (!pValue) {
 	  /* Failed to convert argument.*/
 	  Py_DECREF(pArgsDbl);
 	  Py_DECREF(pModule);
 	  /* According to the Modelica specification,*/
 	  /* the function ModelicaError never returns to the calling function.*/
-	  (*ModelicaFormatError)("Cannot convert double argument %f for model name to Python format.", modNamRef[0]);
+	  (*ModelicaFormatError)("Cannot convert double argument %f for model name to Python format.", modTim[0]);
   }
   /* pValue reference stolen here*/
   PyList_SetItem(pArgsDbl, 0, pValue);
@@ -141,7 +162,7 @@ The error message is \"%s\"",
   PyTuple_SetItem(pArgs, iArg, PyList_GetItem(pArgsDbl, (Py_ssize_t)0));
   iArg++;
 
-  /* b) Convert double[]*/
+  /* c) Convert double[]*/
   if ( nDblWri > 0 ){
     pArgsDbl = PyList_New(nDblWri);
     for (i = 0; i < nDblWri; ++i) {
@@ -167,7 +188,7 @@ The error message is \"%s\"",
     iArg++;
   }
   
-    /* c) Convert char **, an array of character arrays*/
+    /* d) Convert char **, an array of character arrays*/
   if ( nStrWri > 0 ){
     pArgsStr = PyList_New(nStrWri);
 
@@ -201,7 +222,7 @@ The error message is \"%s\"",
     iArg++;
   }
 
-   /* d) Convert char **, an array of character arrays*/
+   /* e) Convert char **, an array of character arrays*/
   if ( nStrRea > 0 ){
     pArgsStr = PyList_New(nStrRea);
     
@@ -236,7 +257,7 @@ The error message is \"%s\"",
   }
 
   /* Convert the arguments*/
-  /* e) Convert double[]*/
+  /* f) Convert double[]*/
   if (nDblParWri > 0){
 	  pArgsDbl = PyList_New(nDblParWri);
 	  for (i = 0; i < nDblParWri; ++i) {
@@ -262,7 +283,7 @@ The error message is \"%s\"",
 	  iArg++;
   }
 
-  /* f) Convert char **, an array of character arrays*/
+  /* g) Convert char **, an array of character arrays*/
   if (nStrParWri > 0){
 	  pArgsStr = PyList_New(nStrParWri);
 
@@ -297,7 +318,7 @@ The error message is \"%s\"",
   }
 
   /* Convert the arguments*/
-  /* g) Convert double[]*/
+  /* h) Convert double[]*/
   pArgsDbl = PyList_New(1);
   /* Convert argument to a python float*/
   pValue = PyFloat_FromDouble(resWri[0]);

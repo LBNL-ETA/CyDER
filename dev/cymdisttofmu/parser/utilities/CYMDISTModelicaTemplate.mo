@@ -17,7 +17,6 @@ model {{model_name}}
   {%- endif -%}
   {% endfor %}
   
-  Modelica.Blocks.Interfaces.RealInput {{model_name_reference}} "Grid model reference value";
   Modelica.Blocks.Interfaces.RealInput {{write_results}} "Flag for writing results"; 
  
 protected   
@@ -31,7 +30,7 @@ protected
     "Flag for double values (0: use current value, 
     1: use average over interval, 2: use integral over interval)";
   
-  Real modNamRef[1]={% raw -%}{{% endraw -%}{{model_name_reference}}{% raw -%}}{% endraw -%} "Grid model reference value";
+  parameter String conFilNam="{{configuration_file_name}}" "Configuration file name";
   Real resWri[1]={% raw -%}{{% endraw -%}{{write_results}}{% raw -%}}{% endraw -%} "Flag for writing results";
   
   Real uRInt[nDblInp] "Value of integral";
@@ -156,7 +155,8 @@ equation
     yR = CYMDISTToFMU.Python34.Functions.cymdist(
       moduleName=moduleName,
       functionName=functionName,
-      modNamRef=modNamRef,
+      conFilNam=conFilNam,
+      modTim={time},
       nDblInp=nDblInp,
       dblInpNam=dblInpNam,
       dblInpVal=dblInpVal,

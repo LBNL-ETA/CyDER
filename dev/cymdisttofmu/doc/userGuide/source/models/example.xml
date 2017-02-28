@@ -2,26 +2,38 @@
 <CYMDISTModelDescription
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   fmiVersion="2.0"
-  modelName="HL0004"
+  modelName="BU0001"
   description="Input data for a CYMDIST FMU"
   generationTool="CYMDISTToFMU">
   <ModelVariables>
+      <ScalarVariable
+      name="model_name_ref"
+      description="Grid model reference value"
+      causality="model">
+      <Real
+        start="0.0"/>
+    </ScalarVariable>
+    <ScalarVariable
+      name="save_to_file"
+      description="Flag for writing results"
+      causality="save">
+      <Real
+        start="0.0"/>
+    </ScalarVariable>
     <ScalarVariable
       name="VMAG_A"
       description="VMAG_A"
       causality="input">
       <Real
-        unit="kV"
+        unit="V"
         start="0.0"/>
     </ScalarVariable>
     <ScalarVariable
-      name="voltage_A"
-      description="voltage_A"
+      name="IA"
+      description="IA"
       causality="output">
       <Real
-        unit="V"/>
-      <Node
-        name="HOLLISTER_2104"/>
+        unit="A"/>
     </ScalarVariable>
   </ModelVariables>
 </CYMDISTModelDescription>

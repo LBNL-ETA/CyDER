@@ -27,7 +27,7 @@ SET DUMMY_DLL=python3.4.dll
 Set RegQry=HKLM\Hardware\Description\System\CentralProcessor\0
 REG.exe Query %RegQry% > checkOS.txt
 Find /i "x86" < CheckOS.txt > StringCheck.txt
-IF %ERRORLEVEL% == 0 (
+IF %ERRORLEVEL% == 1 (
   REM Set path to the directory on 32 bit machine
   SET PYTHONInc="C:\Python34\include"
   SET PYTHONLibs="C:\Python34\libs\python34.lib"

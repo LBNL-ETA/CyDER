@@ -461,7 +461,7 @@ class CYMDISTToFMU(object):
                                     # Get the node name of an output variable
                                     
                 if (causality == 'model'):
-                    model_name_reference = name
+                    configuration_file_name = name
                 if (causality == 'save'):
                     write_results = name
                 if (causality == 'output'):
@@ -550,7 +550,7 @@ class CYMDISTToFMU(object):
                 parameter_variable_values, modelica_input_variable_names, \
                 modelica_output_variable_names, \
                 modelica_parameter_variable_names, \
-                model_name_reference, write_results
+                configuration_file_name, write_results
 
     def print_mo(self):
         """Print the Modelica model of a CYMDIST XML file.
@@ -572,7 +572,7 @@ class CYMDISTToFMU(object):
             modelica_input_variable_names, \
             modelica_output_variable_names, \
             modelica_parameter_variable_names,\
-            model_name_reference, write_results = self.xml_parser()
+            configuration_file_name, write_results = self.xml_parser()
 
         loader = jja2.FileSystemLoader(self.moT_path)
         env = jja2.Environment(loader=loader)
@@ -589,7 +589,7 @@ class CYMDISTToFMU(object):
                                      modelica_input_variable_names=modelica_input_variable_names,
                                      modelica_output_variable_names=modelica_output_variable_names,
                                      modelica_parameter_variable_names=modelica_parameter_variable_names,
-                                     model_name_reference=model_name_reference, 
+                                     configuration_file_name=configuration_file_name, 
                                      write_results=write_results)
         # Write results in mo file which has the same name as the class name
         output_file = self.model_name + '.mo'

@@ -11,7 +11,8 @@ int main(int nArgs, char ** args){
   /* Parameters for testing cymdist interface*/
   const char * moduleName="testCymdist";
   const char * functionName="r1_r1";
-  double modNamRef[]={0.0};
+  const char * configFileName="config.csv";
+  double time[]={0.0};
   
   size_t nDblWri=1;
   double dblValWri[]={15.0};
@@ -32,7 +33,8 @@ int main(int nArgs, char ** args){
     printf("Calling with i for cymdist = %d.\n", i);
     pythonExchangeValuesCymdistNoModelica(moduleName,
                           functionName, 
-						  modNamRef,
+						  configFileName, 
+						  time,
 						  nDblWri, 
 						  strWri, 
 						  dblValWri, 
