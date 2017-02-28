@@ -11,12 +11,12 @@ import functions
 import os
 
 def main():
-    time=0
-    input_save_to_file = 0
+    time=0.0
+    input_save_to_file = 0.0
     input_voltage_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
     input_voltage_values = [2520, 2520, 2520, 0, -120, 120]
     output_names = ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']
-    configuration_file_name = "config.json"
+    configuration_file_name = "config0.json"
     outputs = exchange(configuration_file_name, time, input_voltage_values, 
              input_voltage_names, output_names, input_save_to_file)
     print ("These are the output values " + str(outputs))
@@ -65,7 +65,7 @@ def exchange(configuration_file_name, time, input_voltage_values,
     """
     # Call the CYMDIST wrapper
     results = []
-    output_values=functions.fmu_wrapper(time, int(input_save_to_file), input_voltage_names,
+    output_values=functions.fmu_wrapper(time, input_save_to_file, input_voltage_names,
                                         input_voltage_values, configuration_file_name, output_names)
     n_out_nam = len(output_names)
     n_out_val = len(output_values)

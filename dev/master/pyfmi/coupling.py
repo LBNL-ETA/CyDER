@@ -62,35 +62,40 @@ def simulate_single_gridyn_fmu():
 def simulate_single_cymdist_fmu():
     """Simulate one CYMDIST FMU.
         
-    """
-    cymdist=load_fmu("../../../../NO_SHARING/CYMDIST/BU0001.fmu", log_level=7)
-    input_voltage_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
-    input_voltage_values = [2520, 2520, 2520, 0, -120, 120]
-    output_names = ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']
+    """   
+    for i in [0.0]:
+        cymdist=load_fmu("../../../../NO_SHARING/CYMDIST/BU0001.fmu", log_level=7)
+        input_voltage_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
+        input_voltage_values = [2520, 2520, 2520, 0, -120, 120]
+        output_names = ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']
+    
+        # Set the inputs
+        opts=cymdist.simulate_options()
+        opts['ncp']=1.0
+        # Set the configuration file 
+        con_val_ref = cymdist.get_variable_valueref("conFilNam")
+    
+        # Set the flag to save the results
+        cymdist.set("save_to_file", 0)
+        for cnt, elem in enumerate(input_voltage_names):
+            cymdist.set (elem, input_voltage_values[cnt])
+            # Run simulation    
+            
+        start = datetime.now()
+        #Build path to configuration file
+        path_config="Z:\\thierry\\proj\\cyder_repo\\cyder\\dev\\master\\pyfmi\\config" \
+                    + str(int(i))+".json"
+        con_val_str = bytes(path_config, 'utf-8')
+        cymdist.set_string([con_val_ref], [con_val_str])
+        res=cymdist.simulate(start_time=0.0 + i, 
+                             final_time=0.1 + i, 
+                             options=opts)    
+        end = datetime.now()
+        print('Ran a single CYMDIST simulation in ' +
+              str((end - start).total_seconds()) + ' seconds.')
+        print("This is the value of the output IA " 
+              + str(res["IA"] + ". IA is expected to be 277.6 A"))
 
-    # Set the inputs
-    opts=cymdist.simulate_options()
-    opts['ncp']=1.0
-    # Set the configuration file 
-    con_val_ref = cymdist.get_variable_valueref("conFilNam")
-    print("This is the value reference " + str(con_val_ref))
-    con_val_str = bytes("config.json", 'utf-8')
-    cymdist.set_string([con_val_ref], [con_val_str])
-    
-    # Set the flag to save the results
-    cymdist.set("save_to_file", 0)
-    for cnt, elem in enumerate(input_voltage_names):
-        cymdist.set (elem, input_voltage_values[cnt])
-    # Run simulation    
-    start = datetime.now()
-    res=cymdist.simulate(start_time=0.0, 
-                         final_time=0.1, 
-                         options=opts)    
-    end = datetime.now()
-    
-    print('Ran a single CYMDIST simulation in ' +
-          str((end - start).total_seconds()) + ' seconds.')
-    
 def simulate_cymdist_gridyn_fmus():
     """Simulate one CYMDIST FMU coupled to a dummy GridDyn FMU.
         

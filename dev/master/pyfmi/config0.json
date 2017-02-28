@@ -1,0 +1,1 @@
+{"interpolation_method": "closest_time", "times": [0], "models": [{"new_loads": [{"active_power": 100, "section_id": "800033503"}], "new_pvs": [{"generation": 100, "section_id": "800033503"}], "filename": "Z://thierry//proj//cyder_repo//NO_SHARING//CYMDIST//BU0001.sxst"}]}
