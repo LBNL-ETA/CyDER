@@ -3,7 +3,7 @@ import argparse
 import sys
 import datetime
 import cympy
-import functions
+from ... import cymdist
 
 
 # Retrieve model name
@@ -42,7 +42,7 @@ parent_path = 'D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//
 cympy.study.Open(parent_path + model_filename)
 
 # Run load allocation function to set input values
-functions.load_allocation(udata)
+cymdist.load_allocation(udata)
 
 # Run the power flow
 lf = cympy.sim.LoadFlow()

@@ -3,7 +3,7 @@ import argparse
 import sys
 import datetime
 import cympy
-import functions
+from ... import cymdist
 
 
 # Retrieve model name
@@ -20,9 +20,13 @@ filename = "C:\\Users\\Jonathan\\Documents\\GitHub\\PGE_Models_DO_NOT_SHARE\\" +
 cympy.study.Open(filename)
 
 # Get all the node informations
-nodes = functions.list_nodes()
+devices = cymdist.list_devices()
+devices = cymdist.get_distance(devices)
+devices = cymdist.get_coordinates(devices)
 
 # Output to the console each line is a node
-lenght = len(nodes)
+lenght = len(devices)
 for index in range(0, lenght):
-    print(nodes.ix[index][['node_id', 'section_id', 'latitude', 'longitude']].to_dict())
+    print(devices.ix[index][['device_number', 'device_type', 'device_type_id',
+                             'distance', 'section_id',
+                             'latitude', 'longitude']].to_dict())

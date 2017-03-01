@@ -5,6 +5,57 @@ from pyfmi import load_fmu
 from pyfmi.master import Master
 from datetime import datetime
 import pdb
+import json
+
+
+def shift_load_demand(data):
+    pass
+
+
+def shift_pv_generation(data):
+    pass
+
+
+def add_evs(data):
+    pass
+
+
+def add_houses_with_pv(data):
+    pass
+
+
+def create_configuration_file(model_name, times, functions, datas):
+    """configuration = {
+                     'times': [0],
+                     'interpolation_method': 'closest_time',
+                     'models': [{
+                        'filename': 'D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//BU0001.sxst',
+                        'new_loads': [{
+                                'section_id': '800033503',
+                                'active_power': 100
+                            }],
+                        'new_pvs': [{
+                                'section_id': '800033503',
+                                'generation': 100
+                            }],
+                        }
+                    ]}
+    """
+    # Create config file
+    configuration = {'times': times,
+                     'interpolation_method': 'closest_time',
+                     'models': []
+                     }
+    for time in times:
+        configuration['models'].append({
+           'filename': 'D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//' + model_name,
+           'new_loads': [],
+           'new_pvs': [],
+           })
+
+    with open('config.json', 'w') as outfile:
+        json.dump(configuration, outfile)
+
 
 def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, save_to_file=0):
     """Simulate one CYMDIST FMU coupled to a dummy GridDyn FMU.
