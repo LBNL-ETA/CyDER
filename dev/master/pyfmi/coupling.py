@@ -100,47 +100,46 @@ def simulate_cymdist_gridyn14bus_fmus():
     """Simulate one CYMDIST FMU coupled to a dummy GridDyn FMU.
         
     """
-    for i in [0.0, 0.1, 0.2, 0.3, 0.4, 0.4, 0.6, 0.7]:
-        cymdist=load_fmu("../fmus/CYMDIST/CYMDIST.fmu", log_level=7)
-        gridyn=load_fmu("../fmus/GridDyn/griddyn14bus.fmu", log_level=7)
-        
-        models = [cymdist, gridyn]
-        connections = [(gridyn, "Bus11_VA", cymdist, "VMAG_A"),
-                       (gridyn, "Bus11_VB", cymdist, "VMAG_B"),
-                       (gridyn, "Bus11_VC", cymdist, "VMAG_C"),
-                       (gridyn, "Bus11_VAngleA", cymdist, "VANG_A"),
-                       (gridyn, "Bus11_VAngleB", cymdist, "VANG_B"),
-                       (gridyn, "Bus11_VAngleC", cymdist, "VANG_C"),
-                       (cymdist, "IA", gridyn, "Bus11_IA"),
-                       (cymdist, "IB", gridyn, "Bus11_IB"),
-                       (cymdist, "IC", gridyn, "Bus11_IC"),
-                       (cymdist, "IAngleA", gridyn, "Bus11_IAngleA"),
-                       (cymdist, "IAngleB", gridyn, "Bus11_IAngleB"),
-                       (cymdist, "IAngleC", gridyn, "Bus11_IAngleC"),]
-        
-        coupled_simulation = Master (models, connections)
-        opts=coupled_simulation.simulate_options()
-        print(opts)
-        opts['step_size']=0.1
-        
-        # Set the configuration file 
-        con_val_ref = cymdist.get_variable_valueref("conFilNam")
+    cymdist=load_fmu("../fmus/CYMDIST/CYMDIST.fmu", log_level=7)
+    gridyn=load_fmu("../fmus/GridDyn/griddyn14bus.fmu", log_level=7)
+    
+    models = [cymdist, gridyn]
+    connections = [(gridyn, "Bus11_VA", cymdist, "VMAG_A"),
+                   (gridyn, "Bus11_VB", cymdist, "VMAG_B"),
+                   (gridyn, "Bus11_VC", cymdist, "VMAG_C"),
+                   (gridyn, "Bus11_VAngleA", cymdist, "VANG_A"),
+                   (gridyn, "Bus11_VAngleB", cymdist, "VANG_B"),
+                   (gridyn, "Bus11_VAngleC", cymdist, "VANG_C"),
+                   (cymdist, "IA", gridyn, "Bus11_IA"),
+                   (cymdist, "IB", gridyn, "Bus11_IB"),
+                   (cymdist, "IC", gridyn, "Bus11_IC"),
+                   (cymdist, "IAngleA", gridyn, "Bus11_IAngleA"),
+                   (cymdist, "IAngleB", gridyn, "Bus11_IAngleB"),
+                   (cymdist, "IAngleC", gridyn, "Bus11_IAngleC"),]
+    
+    coupled_simulation = Master (models, connections)
+    opts=coupled_simulation.simulate_options()
+    print(opts)
+    opts['step_size']=0.1
+    
+    # Set the configuration file 
+    con_val_ref = cymdist.get_variable_valueref("conFilNam")
 
-        # Run simulation
-        start = datetime.now()
-#         cymdist.set("save_to_file", 0)
-#         #Build path to configuration file
-#         path_config="Z:\\thierry\\proj\\cyder_repo\\jonathan\\CyDER\\web\\docker_django\\worker\\config.json"
-#         con_val_str = bytes(path_config, 'utf-8')
-#         cymdist.set_string([con_val_ref], [con_val_str])
-#         res=coupled_simulation.simulate(options=opts, 
-#                                 start_time=0.0, 
-#                                 final_time=0.1)
-#       print('This is the voltage value' + str(res[cymdist]['VMAG_A']))
-        end = datetime.now()
-        
-        print('Ran a coupled CYMDIST/GridDyn simulation in ' +
-              str((end - start).total_seconds()) + ' seconds.')
+    # Run simulation
+    start = datetime.now()
+    cymdist.set("save_to_file", 0)
+    #Build path to configuration file
+    path_config="Z:\\thierry\\proj\\cyder_repo\\jonathan\\CyDER\\web\\docker_django\\worker\\config.json"
+    con_val_str = bytes(path_config, 'utf-8')
+    cymdist.set_string([con_val_ref], [con_val_str])
+    res=coupled_simulation.simulate(options=opts, 
+                            start_time=0.0, 
+                            final_time=0.1)
+    print('This is the voltage value' + str(res[cymdist]['IA']))
+    end = datetime.now()
+    
+    print('Ran a coupled CYMDIST/GridDyn simulation in ' +
+          str((end - start).total_seconds()) + ' seconds.')
 
 def simulate_cymdist_gridyn_fmus():
     """Simulate one CYMDIST FMU coupled to a dummy GridDyn FMU.

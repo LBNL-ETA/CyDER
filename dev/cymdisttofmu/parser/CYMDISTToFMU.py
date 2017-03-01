@@ -598,7 +598,7 @@ class CYMDISTToFMU(object):
 
         # Call Dymola to generate the FMUs
         sp.call(['dymola', output_file, '/nowindow'])
-        # sp.call(['dymola', output_file])
+        #sp.call(['dymola', output_file])
 
         # Define name of the FMU
         fmu_name = self.model_name + '.fmu'
