@@ -16,18 +16,18 @@ REM ############################################################################
 SET SRCS=pythonInterpreter.c
 SET LIBS=pythonInterpreter.lib
 
-SET MOD_DLL=ModelicaCYMDISTToFMUPython3.4.dll
-SET MOD_LIB=ModelicaCYMDISTToFMUPython3.4.lib
+SET MOD_DLL=CYMDISTToFMU.dll
+SET MOD_LIB=CYMDISTToFMU.lib
 
-SET DUMMY_SRC=dummy.c
-SET DUMMY_DLL=python3.4.dll
+::SET DUMMY_SRC=dummy.c
+::SET DUMMY_DLL=python3.4.dll
 
 :: Check if we are on a 32 or 64 bit machine
 ::IF "%DevEnvDir%"=="" (
 Set RegQry=HKLM\Hardware\Description\System\CentralProcessor\0
 REG.exe Query %RegQry% > checkOS.txt
 Find /i "x86" < CheckOS.txt > StringCheck.txt
-IF %ERRORLEVEL% == 0 (
+IF %ERRORLEVEL% == 1 (
   REM Set path to the directory on 32 bit machine
   SET PYTHONInc="C:\Python34\include"
   SET PYTHONLibs="C:\Python34\libs\python34.lib"
@@ -52,10 +52,16 @@ IF %ERRORLEVEL% == 0 (
 )
 
 :: Compiling the dummy Python dlls.
-CL /LD %DUMMY_SRC% /link /out:%DUMMY_DLL%
+::CL /LD %DUMMY_SRC% /link /out:%DUMMY_DLL%
  
 :: Compiling the Python interpreter libraries 
 CL /LD /MT /I%PYTHONInc% %SRCS% %PYTHONLibs% /link /out:%MOD_DLL%
+
+
+      cl /nologo /c f1.c /Fof1.obj
+      cl /nologo /c f2.c /Fof2.obj
+      cl /nologo /c f3.c /Fof3.obj
+      lib /nologo /OUT:foo.lib f1.obj f2.obj f3.obj
 
 :: Creating the import library
 :: lib /def:%MOD_DEF%
@@ -73,7 +79,7 @@ ren %LIBS% %MOD_LIB%
 ECHO Copy files to the Library
 move %MOD_DLL% %BINDIR%
 move %MOD_LIB% %BINDIR%
-move %DUMMY_DLL% %BINDIR%
+::move %DUMMY_DLL% %BINDIR%
 
 ECHO Delete temporary files
 :: Delete object files

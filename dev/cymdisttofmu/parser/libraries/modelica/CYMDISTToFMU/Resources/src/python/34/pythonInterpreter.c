@@ -466,7 +466,7 @@ The returned object is \"%s\"",
   /* See also the discussion at*/
   /* http://stackoverflow.com/questions/7676314/py-initialize-py-finalize-not-working-twice-with-numpy*/
   /**/
-  /*  Py_Finalize();*/
+  /*Py_Finalize();*/
 
   return;
 }
