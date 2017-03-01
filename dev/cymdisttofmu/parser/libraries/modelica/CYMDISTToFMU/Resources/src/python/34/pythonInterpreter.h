@@ -19,6 +19,7 @@
 /**/
 /* First Implementation: Michael Wetter, LBNL, 1/31/2013*/
 /* Modified: Thierry S. Nouidui, LBNL, 3/26/2013 to suport cross compilation*/
+/* Modified: Thierry S. Nouidui, LBNL, 3/2/2017 for CYMDIST to FMU*/
 /* svn-id=$Id: exchangeValues.c 2877 2011-09-11 00:46:02Z mwetter $*/
 /*////////////////////////////////////////////////////////////////////////////*/
 #include <stddef.h>  /* stddef defines size_t */

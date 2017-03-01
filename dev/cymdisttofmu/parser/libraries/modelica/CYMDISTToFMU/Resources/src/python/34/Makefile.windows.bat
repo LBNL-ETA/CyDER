@@ -19,9 +19,6 @@ SET LIBS=pythonInterpreter.lib
 SET MOD_DLL=CYMDISTToFMU.dll
 SET MOD_LIB=CYMDISTToFMU.lib
 
-::SET DUMMY_SRC=dummy.c
-::SET DUMMY_DLL=python3.4.dll
-
 :: Check if we are on a 32 or 64 bit machine
 ::IF "%DevEnvDir%"=="" (
 Set RegQry=HKLM\Hardware\Description\System\CentralProcessor\0
@@ -50,18 +47,9 @@ IF %ERRORLEVEL% == 1 (
     ECHO Windows 64 bit compilation activated.
     SET BINDIR=..\..\..\Library\win64
 )
-
-:: Compiling the dummy Python dlls.
-::CL /LD %DUMMY_SRC% /link /out:%DUMMY_DLL%
  
 :: Compiling the Python interpreter libraries 
 CL /LD /MT /I%PYTHONInc% %SRCS% %PYTHONLibs% /link /out:%MOD_DLL%
-
-
-      cl /nologo /c f1.c /Fof1.obj
-      cl /nologo /c f2.c /Fof2.obj
-      cl /nologo /c f3.c /Fof3.obj
-      lib /nologo /OUT:foo.lib f1.obj f2.obj f3.obj
 
 :: Creating the import library
 :: lib /def:%MOD_DEF%

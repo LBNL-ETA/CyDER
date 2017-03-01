@@ -41,18 +41,11 @@ CYMDISTModelicaTemplate_MOS = 'CYMDISTModelicaTemplate.mos'
 
 # Get the path to the templates files
 script_path = os.path.dirname(os.path.realpath(__file__))
-utilities_path=os.path.join(script_path, 'utilities')
+utilities_path = os.path.join(script_path, 'utilities')
 MO_TEMPLATE_PATH = os.path.join(utilities_path, CYMDISTModelicaTemplate_MO)
 MOS_TEMPLATE_PATH = os.path.join(utilities_path, CYMDISTModelicaTemplate_MOS)
 XSD_FILE_PATH = os.path.join(utilities_path, XSD_SCHEMA)
-BUILDINGS_LIB_PATH=os.path.join(script_path, 'libraries', 'modelica')
-
-#########################################
-# # TEST FILES TO BE PROVIDED BY THE USER
-XML_INPUT_PATH = 'BU0001.xml'
-INPUT_FILE_PATH = 'BU0001.sxst'
-#########################################
-
+CYMDISTToFMU_LIB_PATH = os.path.join(script_path, 'libraries', 'modelica')
 
 def main():
     """Illustrate how to export CYMDIST as an FMU.
@@ -65,53 +58,28 @@ def main():
                                       ' (FMU) for co-simulation 2.0.')
     cymdist_group = parser.add_argument_group("Required arguments to export CYMDIST as an FMU")
 
-    cymdist_group.add_argument("-g", "--grid-model-path", required=True,
-                        help="Path to the Grid model")
-    cymdist_group.add_argument('-i', "--input-file-path", required=True,
+    cymdist_group.add_argument('-i', "--xml-file-path", required=True,
                         help="Path to the input file")
-    #cymdist_group.add_argument("-b", "--buildings-lib-path",
-    #                    help='Path to the Buildings library, e.g. c:\\test\\xxx\\modelica-buildings')
 
     # Parse the arguments
     args = parser.parse_args()
         
     # Set defaults for command-line options.
-    grid_model_path = args.grid_model_path
-    input_file_path = args.input_file_path
+    xml_file_path = args.xml_file_path
 
-#     BUILDINGS_LIB_PATH = args.buildings_lib_path
-#     if (BUILDINGS_LIB_PATH is None):
-#         log.info('The path to the Buildings library was not provided.')
-#         log.info('Start searching the MODELICAPATH to see if it is defined.')
-#         BUILDINGS_LIB_PATH = os.environ.get('MODELICAPATH')
-#         if (BUILDINGS_LIB_PATH is None):
-#             log.error('The path to the Buildings library was neither'
-#                       +' provided nor found on the MODELICAPATH.')
-    #write_results = 0
-    
-    # Check if any errors
-    if(grid_model_path is None):
-        log.error('Missing required input, <path-to-grid-model>')
-        parser.print_help()
-        sys.exit(1)
-#     if(BUILDINGS_LIB_PATH is None):
-#         log.error('Missing required input, <path-to-buildings-lib>')
-#         parser.print_help()
-#         sys.exit(1)
-    if(input_file_path is None):
+    if(xml_file_path is None):
         log.error('Missing required input, <path-to-input-file>')
         parser.print_help()
         sys.exit(1)
-    CYMDIST = CYMDISTToFMU(grid_model_path,
-                             input_file_path,
-                             BUILDINGS_LIB_PATH,
-                             MO_TEMPLATE_PATH,
-                             MOS_TEMPLATE_PATH, 
-                             XSD_FILE_PATH)
+    CYMDIST = CYMDISTToFMU(xml_file_path,
+                            CYMDISTToFMU_LIB_PATH,
+                            MO_TEMPLATE_PATH,
+                            MOS_TEMPLATE_PATH,
+                            XSD_FILE_PATH)
     start = datetime.now()
     retVal = -1
     ret_val = CYMDIST.print_mo()
-    if(ret_val!= 0):
+    if(ret_val != 0):
         log.error(
             'Could not print the CYMDIST Modelica model. Error in print_mo()')
         parser.print_help()
@@ -138,7 +106,7 @@ def main():
         sys.exit(1)
     end = datetime.now()
      
-    log.info('Export CYMDIST as an FMU in ' +
+    log.info('Export CYMDIST as an FMU in ' + 
           str((end - start).total_seconds()) + ' seconds.')
 
 def print_cmd_line_usage():
@@ -151,12 +119,7 @@ def print_cmd_line_usage():
           ' [-b] <path-to-Buildings-file> [-x] <path-to-xsd-file>')
     print('-- Export a CYMDIST model as a Functional Mockup Unit' + \
           ' (FMU) for co-simulation 2.0')
-    print('-- Input -g, Path to the grid model (required)')
     print('-- Input -i, Path to the input file (required)')
-    print('-- Input -b, Path to the Buildings library')
-    print('-- Option -r, Flag for writing results. 0 if results'+ \
-          ' should not be written, 1 else. Default is 0')
-
 
 def quit_with_error(messageStr, showCmdLine):
     """ Terminate with an error.
@@ -306,14 +269,13 @@ class CYMDISTToFMU(object):
 
     """
 
-    def __init__(self, input_file_path, xml_path, buildings_path,
+    def __init__(self, xml_path, cymdisttofmu_path,
                  moT_path, mosT_path, xsd_path):
         """Initialize the class.
 
         Args:
-            input_file_path (str): The path to the CYMDIST grid model file.
             xml_path (str): The path to the XML file.
-            buildings_path (str): The path to the folder
+            cymdisttofmu_path (str): The path to the folder
             which contains the Buildings library excluding
             the ending FILE SEPARATOR.
             moT_path (str): Modelica model template.
@@ -321,10 +283,9 @@ class CYMDISTToFMU(object):
             xsd_path (str): The path to the XML schema.
 
         """
-
-        self.input_file_path = input_file_path
+        
         self.xml_path = xml_path
-        self.buildings_path = buildings_path + os.sep
+        self.cymdisttofmu_path = cymdisttofmu_path + os.sep
         self.moT_path = moT_path
         self.mosT_path = mosT_path
         self.xsd_path = xsd_path
@@ -437,7 +398,7 @@ class CYMDISTToFMU(object):
                     element.attrib.get('causality').lower()
                 # Iterate through children of ScalarVariables and get
                 # attributes
-                #scalar_variable['name'] = name
+                # scalar_variable['name'] = name
                 if (causality == 'input'):
                     input_variable_names.append(name)
                     log.info('Invalid characters will be removed from the '
@@ -546,7 +507,7 @@ class CYMDISTToFMU(object):
             # Write success.
             log.info('Parsing of ' + self.xml_path + ' was successfull.')
             return scalar_variables, input_variable_names, \
-                output_variable_names,  parameter_variable_names, \
+                output_variable_names, parameter_variable_names, \
                 parameter_variable_values, modelica_input_variable_names, \
                 modelica_output_variable_names, \
                 modelica_parameter_variable_names, \
@@ -571,7 +532,7 @@ class CYMDISTToFMU(object):
             parameter_variable_values, \
             modelica_input_variable_names, \
             modelica_output_variable_names, \
-            modelica_parameter_variable_names,\
+            modelica_parameter_variable_names, \
             write_results = self.xml_parser()
 
         loader = jja2.FileSystemLoader(self.moT_path)
@@ -580,7 +541,6 @@ class CYMDISTToFMU(object):
 
         # Call template with parameters
         output_res = template.render(model_name=self.model_name,
-                                     input_file_path=self.input_file_path,
                                      scalar_variables=scalar_variables,
                                      input_variable_names=input_variable_names,
                                      output_variable_names=output_variable_names,
@@ -600,9 +560,9 @@ class CYMDISTToFMU(object):
         fh.close()
 
         # Write success.
-        log.info('The Modelica model ' + output_file +
+        log.info('The Modelica model ' + output_file + 
                  ' of ' + self.model_name + ' is successfully created.')
-        log.info('The Modelica model ' + output_file +
+        log.info('The Modelica model ' + output_file + 
                  ' of ' + self.model_name + ' is in ' + os.getcwd() + '.')
         return 0
 
@@ -620,14 +580,13 @@ class CYMDISTToFMU(object):
         """
 
         # Set the Modelica path to point to the Buildings Library
-        os.environ['MODELICAPATH'] = self.buildings_path
+        os.environ['MODELICAPATH'] = self.cymdisttofmu_path
 
         loader = jja2.FileSystemLoader(self.mosT_path)
         env = jja2.Environment(loader=loader)
         template = env.get_template('')
 
-        output_res = template.render(model_name=self.model_name,
-                                     buildings_path=self.buildings_path)
+        output_res = template.render(model_name=self.model_name)
         # Write results in mo file which has the same name as the class name
         output_file = self.model_name + '.mos'
         if os.path.isfile(output_file):
@@ -639,7 +598,7 @@ class CYMDISTToFMU(object):
 
         # Call Dymola to generate the FMUs
         sp.call(['dymola', output_file, '/nowindow'])
-        #sp.call(['dymola', output_file])
+        # sp.call(['dymola', output_file])
 
         # Define name of the FMU
         fmu_name = self.model_name + '.fmu'
@@ -703,8 +662,8 @@ class CYMDISTToFMU(object):
         zip_ref.extractall('.')
         zip_ref.close()
 
-        log.info('The model description file will be rewritten' +
-                 ' to include the attribute ' + NEEDSEXECUTIONTOOL +
+        log.info('The model description file will be rewritten' + 
+                 ' to include the attribute ' + NEEDSEXECUTIONTOOL + 
                  ' set to true.')
         tree = ET.parse(MODELDESCRIPTION)
         # Get the root of the tree
@@ -726,7 +685,7 @@ class CYMDISTToFMU(object):
         # If that is the case, delete it or rename to tmp?
         fmu_name_original = fmu_name + '.original'
         if os.path.isfile(fmu_name):
-            log.info('The original CYMDIST FMU ' + fmu_name +
+            log.info('The original CYMDIST FMU ' + fmu_name + 
                      ' will be renamed to ' + fmu_name + '.original.')
             log.info('A modified version of the original will be created.')
             log.info('The difference between the original and the new FMU lies'

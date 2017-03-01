@@ -1,3 +1,7 @@
+/* ENABLE FOR DEBUGGING (VISUAL STUDIO)*/
+/* #define _CRTDBG_MAP_ALLOC*/
+/* #include <stdlib.h>*/
+/* #include <crtdbg.h>*/
 #include "pythonInterpreter.h"
 
 void pythonExchangeValuesCymdistNoModelica(const char * moduleName,
@@ -17,7 +21,7 @@ void pythonExchangeValuesCymdistNoModelica(const char * moduleName,
 			              void (*ModelicaFormatError)(const char *string,...))
 {
   PyObject *pName, *pModule, *pFunc;
-  PyObject *pArgsDbl,  *pArgsInt, *pArgsStr;
+  PyObject *pArgsDbl, *pArgsStr;
   PyObject *pArgs, *pValue;
   Py_ssize_t pIndVal;
   PyObject *pItemDbl;
@@ -37,6 +41,7 @@ void pythonExchangeValuesCymdistNoModelica(const char * moduleName,
   Py_ssize_t nRet = 0;
   /*//////////////////////////////////////////////////////////////////////////*/
   /* Initialize Python interpreter*/
+  /*_CrtDumpMemoryLeaks(); //DEBUGGING*/
   Py_Initialize();
   /* Set the entries for sys.argv.*/
   /* This is required if a script uses sys.argv, such as bacpypes.*/
@@ -52,7 +57,10 @@ void pythonExchangeValuesCymdistNoModelica(const char * moduleName,
   }
 
   pModule = PyImport_Import(pName);
-  Py_DECREF(pName);
+  /* Decrement the reference counter */
+  /* causes sometimes a segmentation fault Py_DECREF(pName);*/
+  /* when exported as an FMU and run with PyFMI*/
+  /*Py_DECREF(pName);*/
   if (!pModule) {
     /*    PyErr_Print();*/
     PyObject *pValue, *pType, *pTraceBack;
@@ -75,7 +83,7 @@ The error message is \"%s\"",
   /* Load function*/
   pFunc = PyObject_GetAttrString(pModule, functionName);
   /* pFunc is a new reference */
-
+  
   if (!(pFunc && PyCallable_Check(pFunc))){
     if (PyErr_Occurred())
       PyErr_Print();
@@ -341,8 +349,13 @@ The error message is \"%s\"",
   /*//////////////////////////////////////////////////////////////////////////*/
   /* Call the Python function*/
   pValue = PyObject_CallObject(pFunc, pArgs);
-  if (pArgs != NULL)
-    Py_DECREF(pArgs);
+  /*//////////////////////////////////////////////////////////////////////////*/
+  /* Decrement the reference counter when pArgs != NULL*/
+  /* causes sometimes a segmentation fault Py_DECREF(pArgs);*/
+  /* when exported as an FMU and run with PyFMI*/
+
+  /*if (pArgs != NULL)*/
+  /*  Py_DECREF(pArgs);*/
 
   /*//////////////////////////////////////////////////////////////////////////*/
   /* Check whether the call to the Python function failed.*/
@@ -457,7 +470,6 @@ The returned object is \"%s\"",
   /* causes sometimes a segmentation fault    Py_DECREF(pValue);*/
   /* causes sometimes a segmentation fault    Py_DECREF(pFunc);*/
   /* causes sometimes a segmentation fault    Py_DECREF(pModule);*/
-  /* causes sometimes a segmentation fault    Py_DECREF(pModule);*/
   /* Undo all initializations*/
   /* We uncommented Py_Finalize() because it caused a segmentation fault on Ubuntu 12.04 32 bit.*/
   /* The segmentation fault was randomly produced by the statement, and often observed when running*/
@@ -466,8 +478,6 @@ The returned object is \"%s\"",
   /* See also the discussion at*/
   /* http://stackoverflow.com/questions/7676314/py-initialize-py-finalize-not-working-twice-with-numpy*/
   /**/
-  /*Py_Finalize();*/
-
   return;
 }
 
