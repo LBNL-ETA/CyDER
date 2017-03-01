@@ -44,10 +44,15 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
     print('Ran a coupled CYMDIST/GridDyn simulation in ' +
           str((end - start).total_seconds()) + ' seconds.')
 
-    return res
+    # Create a normal result object (need to use Assimulo object?)
+    result = {}
+    for key in ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']:
+        result[key] = res[end_time][key]
+    return result
 
 configuration_filename = "D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//config.json"
 start_time = 0.0
 end_time = 0.1
-results = simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time)
+result = simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time)
+print(result)
 pdb.set_trace()
