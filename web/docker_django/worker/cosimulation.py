@@ -46,7 +46,7 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
 
     # Create a normal result object (need to use Assimulo object?)
     result = {'cymdist': {}, 'griddyn': {}}
-    for model_key, model in zip(['cymdist', 'griddyn'], [cymdist, griddyn])
+    for model_key, model in zip(['cymdist', 'griddyn'], [cymdist, griddyn]):
         for key in ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC',
                     'VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']:
             result[model_key][key] = res[model][key]
