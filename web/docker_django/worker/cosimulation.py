@@ -45,9 +45,11 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
           str((end - start).total_seconds()) + ' seconds.')
 
     # Create a normal result object (need to use Assimulo object?)
-    result = {}
-    for key in ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']:
-        result[key] = res[1][key]
+    result = {'cymdist': {}, 'griddyn': {}}
+    for model_key, model in zip(['cymdist', 'griddyn'], [cymdist, griddyn])
+        for key in ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC',
+                    'VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']:
+            result[model_key][key] = res[model][key]
     return result
 
 configuration_filename = "D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//config.json"
