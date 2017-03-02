@@ -295,12 +295,12 @@ def do_step_cymdist_griddyn14bus_fmus():
     
     # Define the inputs
     cymdist_input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
-    cymdist_input_values = [2520, 2520, 2520, 0, -120, 120]
+    #cymdist_input_values = [2520, 2520, 2520, 0, -120, 120]
     cymdist_output_names = ['IA', 'IB', 'IC', 'IAngleA', 'IAngleB', 'IAngleC']
     
     griddyn_input_names = ['Bus11_IA', 'Bus11_IB', 'Bus11_IC', 
                        'Bus11_IAngleA', 'Bus11_IAngleB', 'Bus11_IAngleC']
-    griddyn_input_values = [277.6, 200.1, 173.1, -13.7, -130.51, 111.93]
+    #griddyn_input_values = [277.6, 200.1, 173.1, -13.7, -130.51, 111.93]
     griddyn_output_names = ['Bus11_VA', 'Bus11_VB', 'Bus11_VC', 
                 'Bus11_VAngleA', 'Bus11_VAngleB', 'Bus11_VAngleC']
     
@@ -322,8 +322,10 @@ def do_step_cymdist_griddyn14bus_fmus():
 
     # Set the flag to save the results
     cymdist.set("save_to_file", 0)
-    # Set initial input values if needs be
-    cymdist.set_real (cymdist_input_valref, cymdist_input_values) 
+    # Get the initial outputs from griddyn
+   # griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
+    # Set the initial outputs of GridDyn in cymdist
+    #cymdist.set_real (cymdist_input_valref, griddyn_output_values) 
     # Get value reference of the configuration file 
     con_val_ref = cymdist.get_variable_valueref("conFilNam")
     
@@ -354,6 +356,7 @@ def do_step_cymdist_griddyn14bus_fmus():
     ax2.set_title('Current(Distribution)')
     ax2.set_xlabel('time') 
     ax2.set_ylabel('IA[A]') 
+    # Co-simulation loop
     for tim in np.arange(start_time, stop_time, step_size):
         # Get the outputs from griddyn
         griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
