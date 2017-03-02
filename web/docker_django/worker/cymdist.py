@@ -12,12 +12,78 @@ except:
     pass
 
 
-def get_all_loads():
-    pass
+def list_loads():
+    # Get a list of all the loads
+    devices = list_devices(device_type=14)
+
+    # # Get their active power on each phase
+    # devices['active_power_A'] = [0] * len(devices)
+    # devices['active_power_B'] = [0] * len(devices)
+    # devices['active_power_C'] = [0] * len(devices)
+    # devices['load_configuration'] = [0] * len(devices)
+    # devices['phase'] = [0] * len(devices)
+    # devices['phase_type'] = [0] * len(devices)
+    # devices['phase_count'] = [0] * len(devices)
+    devices['phase_0'] = [0] * len(devices)
+    devices['phase_1'] = [0] * len(devices)
+    devices['phase_2'] = [0] * len(devices)
+    devices['activepower_0'] = [0] * len(devices)
+    devices['activepower_1'] = [0] * len(devices)
+    devices['activepower_2'] = [0] * len(devices)
+
+    for value in devices.itertuples():
+        # # Get the according voltage per phase in a pandas dataframe
+        # devices.loc[value.Index, 'active_power_A'] = cympy.study.QueryInfoDevice(
+        #     'SpotKWA', value.device_number, int(value.device_type_id))
+        # devices.loc[value.Index, 'active_power_B'] = cympy.study.QueryInfoDevice(
+        #     'SpotKWB', value.device_number, int(value.device_type_id))
+        # devices.loc[value.Index, 'active_power_C'] = cympy.study.QueryInfoDevice(
+        #     'SpotKWC', value.device_number, int(value.device_type_id))
+        # devices.loc[value.Index, 'load_configuration'] = cympy.study.QueryInfoDevice(
+        #     'LoadConfig', value.device_number, int(value.device_type_id))
+        # devices.loc[value.Index, 'phase'] = cympy.study.QueryInfoDevice(
+        #     'Phase', value.device_number, int(value.device_type_id))
+        # devices.loc[value.Index, 'phase_type'] = cympy.study.QueryInfoDevice(
+        #     'PhaseType', value.device_number, int(value.device_type_id))
+        # devices.loc[value.Index, 'phase_count'] = cympy.study.QueryInfoDevice(
+        #     'PhaseCount', value.device_number, int(value.device_type_id))
+        for index in [0, 1, 2]:
+            try:
+                devices.loc[value.Index, 'activepower_' + str(index)] = cympy.study.QueryInfoDevice(
+                    'CustomerLoads[0].CustomerLoadModels[0].CustomerLoadValues[' + str(index) + '].LoadValue.KW',
+                    value.device_number, int(value.device_type_id))
+            except:
+                devices.loc[value.Index, 'activepower_' + str(index)] = False
+
+            try:
+                devices.loc[value.Index, 'phase_' + str(index)] = cympy.study.QueryInfoDevice(
+                    'CustomerLoads[0].CustomerLoadModels[0].CustomerLoadValues[' + str(index) + '].Phase',
+                    value.device_number, int(value.device_type_id))
+            except:
+                devices.loc[value.Index, 'phase_' + str(index)] = False
+
+    # # Cast the right type
+    # for column in ['active_power_A', 'active_power_B', 'active_power_C']:
+    #     devices[column] = devices[column].apply(lambda x: False if x is '' else float(x))
+    return devices
 
 
-def get_all_pvs():
-    pass
+def list_pvs():
+    # Get a list of all the loads
+    devices = list_devices(device_type=39)
+
+    # Get their generation on each phase
+    devices['generation'] = [0] * len(devices)
+
+    for value in devices.itertuples():
+        # Get the according voltage per phase in a pandas dataframe
+        devices.loc[value.Index, 'generation'] = cympy.study.QueryInfoDevice(
+            'PVActiveGeneration', value.device_number, int(value.device_type_id))
+
+    # Cast the right type
+    for column in ['generation']:
+        devices[column] = devices[column].apply(lambda x: 0 if x is '' else float(x))
+    return devices
 
 
 def list_devices(device_type=False, verbose=False):

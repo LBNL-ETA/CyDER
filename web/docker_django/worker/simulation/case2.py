@@ -19,15 +19,21 @@ try:
 except:
     sys.exit('Error: could not retrieve argument')
 
-# Generate the ev profile
-ev_profile = []
+# Create time and model name vectors
+times = [0.0, 0.2]
+model_names = [model_filename] * len(times)
+
+# Generate the load profile
+ev_profile = [nb_evs] * len(times)
+
+# Initiate the configuration file
+configuration = func.initialize_configuration(times, model_names)
+
+# Shift load for ev consumers
+configuration = ev_consumption(ev_profile, configuration)
 
 # Create the configuration file
-configuration_filename = ''
-model_names = []
-times = []
-configurations = []
-create_configuration_file(configuration_filename, model_names, times, configurations)
+configuration_filename = func.create_configuration_file(configuration)
 
 # start_time = times[0]
 # end_time = times[-1]

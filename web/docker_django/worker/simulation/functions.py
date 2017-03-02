@@ -2,6 +2,8 @@ from __future__ import division
 from pyfmi import load_fmu
 from pyfmi.master import Master
 from datetime import datetime
+import string
+import random
 import pdb
 import json
 from ... import cymdist
@@ -11,55 +13,78 @@ except:
     # Only installed on the Cymdist server
     pass
 
+def initialize_configuration(times, model_names):
+    configuration = {'times': times,
+                     'interpolation_method': 'closest_time',
+                     'models': []
+                     }
 
-# def set_pv(data):
-#     """
-#     Input: [{'device_name': ..., 'generation': ...}]
-#     Return {'set_pvs': [{'device_name': , 'generation': }]}
-#     """
-#     # Create dictionnary
-#     return_dict = {'set_pvs': []}
-#     for value in data:
-#         return_dict['set_pvs'].append({'device_name': value['device_name'],
-#                                        'generation': value['generation']})
-#     return return_dict
-#
-#
-# def set_load(data):
-#     """
-#     Input: [{'device_name': ..., 'active_power': ...}]
-#     Return {'set_loads': [{'device_name': , 'active_power': }]}
-#     """
-#     # Create dictionnary
-#     return_dict = {'set_loads': []}
-#     for value in data:
-#         return_dict['set_loads'].append({'device_name': value['device_name'],
-#                                          'active_power': value['active_power']})
-#     return return_dict
-#
-#
-# def add_pv(data):
-#     """
-#     Input: [{'section_id': , 'generation': }, ...]
-#     Return: {'new_pvs': [{'section_id': , 'generation': }, ...]}
-#     """
-#     return_dict = {'new_pvs': []}
-#     for value in data:
-#         return_dict['new_pvs'].append({'section_id': value['section_id'],
-#                                        'generation': value['generation']})
-#     return return_dict
-#
-#
-# def add_load(data):
-#     """
-#     Input: [{'section_id': , 'active_power': }, ...]
-#     Return: {'new_loads': [{'section_id': , 'active_power': }, ...]}
-#     """
-#     return_dict = {'new_loads': []}
-#     for value in data:
-#         return_dict['new_loads'].append({'section_id': value['section_id'],
-#                                          'active_power': value['active_power']})
-#     return return_dict
+    for time, model_name in zip(times, model_names):
+        model = {
+           'filename': 'D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//' + model_name,
+           'new_loads': [],
+           'set_loads': [],
+           'new_pvs': [],
+           'set_pvs': [],
+           }
+        configuration['models'].append(model)
+    return configuration
+
+
+def shift_load_and_pv(load_profile, pv_profile, configuration):
+    """Extend the configuration file with load and pv shift"""
+    # Open model and get the devices from the first model
+    cympy.study.Open(configuration['models'][0]['filename'])
+    loads = cymdist.list_loads()
+    pvs = cymdist.list_pvs()
+
+    for index, time in enumerate(configuration['times']):
+        # Set new pv generation
+        for pv in pvs.itertuples():
+            configuration['models'][index]['set_pvs'].append({'device_number': pv['device_number'],
+                                                              'generation': pv['generation'] * pv_profile[index]})
+        # Set new load demand
+        for load in loads.itertuples():
+            configuration['models'][index]['set_loads'].append({'device_number': load['device_number'],
+                                                                'active_power': []})
+            for phase_index in ['0', '1', '2']:
+                if load['activepower_' + phase_index]:
+                    configuration['models'][index]['set_loads'][-1]['active_power'].append({'active_power': load['activepower_' + phase_index] * load_profile[index],
+                                                                                            'phase_index': phase_index,
+                                                                                            'phase': str(load['phase_' + phase_index])})
+    return configuration
+
+
+def ev_consumption(ev_profile, configuration):
+    """Extend the configuration file with load and pv shift"""
+    # Open model and get the devices from the first model
+    cympy.study.Open(configuration['models'][0]['filename'])
+    loads = cymdist.list_loads()
+
+    # randomnly pick ev_profile max(ev_profile) loads
+    loads = loads.sample(n=max(ev_profile))
+
+    for index, time in enumerate(configuration['times']):
+        # randomnly pick a subset of loads that correspond to ev_profile(index)
+        loads_2 = loads_2.sample(n=ev_profile[index])
+
+        # Set new load demand
+        for load in loads_2.itertuples():
+            configuration['models'][index]['set_loads'].append({'device_number': load['device_number'],
+                                                                'active_power': []})
+            # Dummy way to count the phases
+            phase_count = 0
+            for phase_index in ['0', '1', '2']:
+                if load['activepower_' + phase_index]:
+                    phase_count += 1
+
+            power = 6.6 / phase_count
+            for phase_index in ['0', '1', '2']:
+                if load['activepower_' + phase_index]:
+                    configuration['models'][index]['set_loads'][-1]['active_power'].append({'active_power': load['activepower_' + phase_index] + power,
+                                                                                            'phase_index': phase_index,
+                                                                                            'phase': str(load['phase_' + phase_index])})
+    return configuration
 
 
 def create_configuration_file(configurations):
@@ -90,27 +115,11 @@ def create_configuration_file(configurations):
                     ]}
     Return configuration filename
     """
-    # # Create config file
-    # configuration_file = {'times': times,
-    #                       'interpolation_method': 'closest_time',
-    #                       'models': []
-    #                      }
-    #
-    # for time, model_name in zip(times, model_names):
-    #     model = {
-    #        'filename': 'D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//' + model_name,
-    #        'new_loads': [],
-    #        'set_loads': [],
-    #        'new_pvs': [],
-    #        'set_pvs': [],
-    #        }
-    #     for configuration in configurations[time]:
-    #         temp = configuration['function'](configuration['input'])
-    #         model[temp['type']].extend(temp['data'])
-    #     configuration_file['models'].append(model)
-
     # Generate random filename
-    filename = ''
+    parent_path = 'D://Users//Jonathan//Documents//GitHub//configuration_files//'
+    random_string = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+    random_string += '_config.json'
+    filename = parent_path + random_string
 
     with open(filename, 'w') as outfile:
         json.dump(configuration_file, outfile)
@@ -164,9 +173,9 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
             result[model_key][key] = res[model][key]
     return result
 
-configuration_filename = "D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//config.json"
-start_time = 0.0
-end_time = 0.1
-result = simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time)
-print(result)
-pdb.set_trace()
+# configuration_filename = "D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//config.json"
+# start_time = 0.0
+# end_time = 0.1
+# result = simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time)
+# print(result)
+# pdb.set_trace()
