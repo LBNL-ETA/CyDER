@@ -1,5 +1,7 @@
 from pyfmi import load_fmu
 from pyfmi.master import Master
+from matplotlib.pyplot import plot, draw, show
+import time as t
 from datetime import datetime
 import numpy as np
 import os
@@ -14,44 +16,53 @@ def simulate_algebraicloop_fmus():
     This forms an algebraic loop which leads to the equation u = u*u
         
     """
-    for i in [0.0, 0.1]:
-        cymdist=load_fmu("../fmus/Tests/FirstModel.fmu", log_level=7)
-        griddyn=load_fmu("../fmus/Tests/SecondModel.fmu", log_level=7)
-        
-        models = [cymdist, griddyn]
-        connections = [(cymdist, "y", griddyn, "u"), 
-                       (griddyn, "y", cymdist, "u")]
-        
-        coupled_simulation = Master (models, connections)
-        
-        opts=coupled_simulation.simulate_options()
-        opts['step_size']=0.1
-        opts['logging']=True
+    # Parameters which will be arguments of the function
+    start_time = 0.0
+    stop_time  = 0.1
+    step_size = 0.1
     
-        start = datetime.now()
-        # Run simulation
-        res=coupled_simulation.simulate(options=opts, 
-                                start_time=0.0, 
-                                final_time=1.0)
-        end = datetime.now()
-        print('Ran a coupled CYMDIST/griddyn simulation in ' +
-              str((end - start).total_seconds()) + ' seconds.')
+    cymdist=load_fmu("../fmus/Tests/FirstModel.fmu", log_level=7)
+    griddyn=load_fmu("../fmus/Tests/SecondModel.fmu", log_level=7)
+    
+    models = [cymdist, griddyn]
+    connections = [(cymdist, "y", griddyn, "u"), 
+                   (griddyn, "y", cymdist, "u")]
+    
+    coupled_simulation = Master (models, connections)
+    
+    opts=coupled_simulation.simulate_options()
+    opts['step_size']=step_size
+    opts['logging']=True
+
+    start = datetime.now()
+    # Run simulation
+    res=coupled_simulation.simulate(options=opts, 
+                            start_time=start_time, 
+                            final_time=stop_time)
+    end = datetime.now()
+    print('Ran a coupled CYMDIST/griddyn simulation in ' +
+          str((end - start).total_seconds()) + ' seconds.')
 
 def simulate_single_griddyn_fmu():
     """Simulate one griddyn FMU.
         
     """
+    
+    # Parameters which will be arguments of the function
+    start_time = 0.0
+    stop_time  = 0.1
+    
     griddyn=load_fmu("../../../../NO_SHARING/griddyn/Test/griddyn.fmu", log_level=7)
     # Set the inputs
     opts=griddyn.simulate_options()
     opts['ncp']=1.0
-    print(str(opts))
+
     # Set the model name reference to be completed in Python API
     griddyn.set("power", 10)
     # Run simulation    
     start = datetime.now()
-    res=griddyn.simulate(start_time=0.0, 
-                        final_time=1, 
+    res=griddyn.simulate(start_time=start_time, 
+                        final_time=stop_time, 
                         options=opts)    
     end = datetime.now()
     
@@ -64,25 +75,33 @@ def simulate_single_griddyn14bus_fmu():
     """Simulate one griddyn FMU.
         
     """   
+    # Parameters which will be arguments of the function
+    start_time = 0.0
+    stop_time  = 0.1
+    
     griddyn=load_fmu("../fmus/griddyn/griddyn14bus.fmu", log_level=7)
-    input_current_names = ['Bus11_IA', 'Bus11_IB', 'Bus11_IC', 
+    griddyn_input_names = ['Bus11_IA', 'Bus11_IB', 'Bus11_IC', 
                            'Bus11_IAngleA', 'Bus11_IAngleB', 'Bus11_IAngleC']
-    input_current_values = [277.6, 200.1, 173.1, -13.7, -130.51, 111.93]
-    output_names = ['Bus11_VA', 'Bus11_VB', 'Bus11_VC', 
+    griddyn_input_values = [277.6, 200.1, 173.1, -13.7, -130.51, 111.93]
+    griddyn_output_names = ['Bus11_VA', 'Bus11_VB', 'Bus11_VC', 
                     'Bus11_VAngleA', 'Bus11_VAngleB', 'Bus11_VAngleC']
 
+    griddyn_input_valref = []
+    # Get the value references of griddyn inputs
+    for elem in griddyn_input_names:
+        griddyn_input_valref.append(griddyn.get_variable_valueref(elem))
+    
     # Set the inputs
     opts=griddyn.simulate_options()
     opts['ncp']=1.0
 
-    # Set the flag to save the results
-    for cnt, elem in enumerate(input_current_names):
-        griddyn.set (elem, input_current_values[cnt])
-        # Run simulation    
-        
+    # Set the inputs of GridDyn
+    griddyn.set_real (griddyn_input_valref, griddyn_input_values)
+    
+    # Run simulation        
     start = datetime.now()
-    res=griddyn.simulate(start_time=0.0, 
-                         final_time=0.1, 
+    res=griddyn.simulate(start_time=start_time, 
+                         final_time=stop_time, 
                          options=opts)    
     end = datetime.now()
     print('Ran a single CYMDIST simulation in ' +
@@ -93,44 +112,64 @@ def simulate_single_griddyn14bus_fmu():
 def simulate_single_cymdist_fmu():
     """Simulate one CYMDIST FMU.
         
-    """   
-    for i in [0.0]:
-        cymdist=load_fmu("../../../../NO_SHARING/CYMDIST/BU0001.fmu", log_level=7)
-        input_voltage_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
-        input_voltage_values = [2520, 2520, 2520, 0, -120, 120]
-        output_names = ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']
+    """ 
+    # Parameters which will be arguments of the function
+    start_time = 0.0
+    stop_time  = 0.1
     
-        # Set the inputs
-        opts=cymdist.simulate_options()
-        opts['ncp']=1.0
-        # Set the configuration file 
-        con_val_ref = cymdist.get_variable_valueref("conFilNam")
+    # Path to configuration file
+    path_config="Z:\\thierry\\proj\\cyder_repo\\jonathan\\CyDER\\web\\docker_django\\worker\\config.json"
+    con_val_str = bytes(path_config, 'utf-8')  
+
+    cymdist=load_fmu("../fmus/CYMDIST/CYMDIST.fmu", log_level=7)
+    cymdist_input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
+    cymdist_input_values = [2520, 2520, 2520, 0, -120, 120]
+    #cymdist_input_values = [ -1.45600000e+47,  -1.45600000e+47,  -1.45600000e+47,  -1.45600000e+47,
+    #                        -1.45600000e+47,  -1.45600000e+47]
+    cymdist_output_names = ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']
     
-        # Set the flag to save the results
-        cymdist.set("save_to_file", 0)
-        for cnt, elem in enumerate(input_voltage_names):
-            cymdist.set (elem, input_voltage_values[cnt])
-            # Run simulation    
-            
-        start = datetime.now()
-        #Build path to configuration file
-        path_config="Z:\\thierry\\proj\\cyder_repo\\cyder\\dev\\master\\pyfmi\\config" \
-                    + str(int(i))+".json"
-        con_val_str = bytes(path_config, 'utf-8')
-        cymdist.set_string([con_val_ref], [con_val_str])
-        res=cymdist.simulate(start_time=0.0 + i, 
-                             final_time=0.1 + i, 
-                             options=opts)    
-        end = datetime.now()
-        print('Ran a single CYMDIST simulation in ' +
-              str((end - start).total_seconds()) + ' seconds.')
-        print("This is the value of the output IA " 
-              + str(res["IA"] + ". IA is expected to be 277.6 A"))
+    cymdist_input_valref = []
+        # Get the value references of cymdist inputs
+    for elem in cymdist_input_names:
+        cymdist_input_valref.append(cymdist.get_variable_valueref(elem))
+    
+    # Set the inputs
+    opts=cymdist.simulate_options()
+    opts['ncp']=1.0
+    # Set the configuration file 
+    con_val_ref = cymdist.get_variable_valueref("conFilNam")
+
+    # Set the flag to save the results
+    cymdist.set("save_to_file", 0)
+
+    # Set the cymdist inputs
+    cymdist.set_real(cymdist_input_valref, cymdist_input_values)
+    cymdist.set_string([con_val_ref], [con_val_str])
+    
+    # Run simulation        
+    start = datetime.now()
+    res=cymdist.simulate(start_time=start_time, 
+                         final_time=stop_time, 
+                         options=opts)    
+    end = datetime.now()
+    print('Ran a single CYMDIST simulation in ' +
+          str((end - start).total_seconds()) + ' seconds.')
+    print("This is the value of the output IA " 
+          + str(res["IA"]) + ". IA is expected to be 277.6 A")
 
 def simulate_cymdist_griddyn14bus_fmus():
     """Simulate one CYMDIST FMU coupled to a griddyn FMU.
         
     """
+    # Parameters which will be arguments of the function
+    start_time = 0.0
+    stop_time  = 0.1
+    step_size = 0.1
+
+    # Path to configuration file
+    path_config="Z:\\thierry\\proj\\cyder_repo\\jonathan\\CyDER\\web\\docker_django\\worker\\config.json"
+    con_val_str = bytes(path_config, 'utf-8')
+    
     cymdist=load_fmu("../fmus/CYMDIST/CYMDIST.fmu", log_level=7)
     griddyn=load_fmu("../fmus/griddyn/griddyn14bus.fmu", log_level=7)
     
@@ -148,29 +187,27 @@ def simulate_cymdist_griddyn14bus_fmus():
                    (cymdist, "IAngleB", griddyn, "Bus11_IAngleB"),
                    (cymdist, "IAngleC", griddyn, "Bus11_IAngleC"),]
     
+    # Create coupled simulation
     coupled_simulation = Master (models, connections)
-    opts=coupled_simulation.simulate_options()
-    print(opts)
-    opts['step_size']=0.1
     
-    # Set the configuration file 
+    # Set the options
+    opts=coupled_simulation.simulate_options()
+    opts['step_size']=step_size
+    
+    # Get the configuration file 
     con_val_ref = cymdist.get_variable_valueref("conFilNam")
 
+    cymdist.set("save_to_file", 0)
+    cymdist.set_string([con_val_ref], [con_val_str])
+    
     # Run simulation
     start = datetime.now()
-    cymdist.set("save_to_file", 0)
-    #Build path to configuration file
-    path_config="Z:\\thierry\\proj\\cyder_repo\\jonathan\\CyDER\\web\\docker_django\\worker\\config.json"
-    con_val_str = bytes(path_config, 'utf-8')
-    cymdist.set_string([con_val_ref], [con_val_str])
     res=coupled_simulation.simulate(options=opts, 
-                            start_time=0.0, 
-                            final_time=0.1)
-    print('This is the voltage value' + str(res[cymdist]['VMAG_A']))
-    print('This is the voltage value' + str(res[cymdist]['VMAG_B']))
-    print('This is the voltage value' + str(res[cymdist]['VMAG_C']))
+                            start_time=start_time, 
+                            final_time=stop_time)
     end = datetime.now()
-    
+    print('This is the voltage value (VMAG_A) in Cymdist' + str(res[cymdist]['VMAG_A']))
+    print('This is the current value (IA) in Cymdist' + str(res[cymdist]['IA']))
     print('Ran a coupled CYMDIST/griddyn simulation in ' +
           str((end - start).total_seconds()) + ' seconds.')
 
@@ -178,51 +215,69 @@ def simulate_cymdist_griddyn_fmus():
     """Simulate one CYMDIST FMU coupled to a dummy griddyn FMU.
         
     """
-    for i in [0.0, 0.1, 0.2, 0.3, 0.4, 0.4, 0.6, 0.7]:
-        cymdist=load_fmu("../../../../NO_SHARING/CYMDIST/CYMDIST.fmu", log_level=7)
-        griddyn=load_fmu("../../../../NO_SHARING/griddyn/griddyn.fmu", log_level=7)
-        
-        models = [cymdist, griddyn]
-        connections = [(griddyn, "VMAG_A", cymdist, "VMAG_A"),
-                       (griddyn, "VMAG_B", cymdist, "VMAG_B"),
-                       (griddyn, "VMAG_C", cymdist, "VMAG_C"),
-                       (griddyn, "VANG_A", cymdist, "VANG_A"),
-                       (griddyn, "VANG_B", cymdist, "VANG_B"),
-                       (griddyn, "VANG_C", cymdist, "VANG_C"),
-                       (cymdist, "IA", griddyn, "IA"),
-                       (cymdist, "IB", griddyn, "IB"),
-                       (cymdist, "IC", griddyn, "IC"),
-                       (cymdist, "IAngleA", griddyn, "IAngleA"),
-                       (cymdist, "IAngleB", griddyn, "IAngleB"),
-                       (cymdist, "IAngleC", griddyn, "IAngleC"),]
-        
-        coupled_simulation = Master (models, connections)
-        opts=coupled_simulation.simulate_options()
-        opts['step_size']=0.1
-        
-        # Set the configuration file 
-        con_val_ref = cymdist.get_variable_valueref("conFilNam")
-
-        # Run simulation
-        start = datetime.now()
-        cymdist.set("save_to_file", 0)
-        #Build path to configuration file
-        path_config="Z:\\thierry\\proj\\cyder_repo\\jonathan\\CyDER\\web\\docker_django\\worker\\config.json"
-        con_val_str = bytes(path_config, 'utf-8')
-        cymdist.set_string([con_val_ref], [con_val_str])
-        res=coupled_simulation.simulate(options=opts, 
-                                start_time=0.0, 
-                                final_time=0.1)
-#         print('This is the voltage value' + str(res[cymdist]['VMAG_A']))
-        end = datetime.now()
-        
-        print('Ran a coupled CYMDIST/griddyn simulation in ' +
-              str((end - start).total_seconds()) + ' seconds.')
     
-def simulate_single_cymdist_fmu2():
+    # Parameters which will be arguments of the function
+    start_time = 0.0
+    stop_time  = 0.1
+    step_size = 0.1
+
+    # Path to configuration file
+    path_config="Z:\\thierry\\proj\\cyder_repo\\jonathan\\CyDER\\web\\docker_django\\worker\\config.json"
+    con_val_str = bytes(path_config, 'utf-8')
+
+    cymdist=load_fmu("../../../../NO_SHARING/CYMDIST/CYMDIST.fmu", log_level=7)
+    griddyn=load_fmu("../../../../NO_SHARING/griddyn/griddyn.fmu", log_level=7)
+    
+    models = [cymdist, griddyn]
+    connections = [(griddyn, "VMAG_A", cymdist, "VMAG_A"),
+                   (griddyn, "VMAG_B", cymdist, "VMAG_B"),
+                   (griddyn, "VMAG_C", cymdist, "VMAG_C"),
+                   (griddyn, "VANG_A", cymdist, "VANG_A"),
+                   (griddyn, "VANG_B", cymdist, "VANG_B"),
+                   (griddyn, "VANG_C", cymdist, "VANG_C"),
+                   (cymdist, "IA", griddyn, "IA"),
+                   (cymdist, "IB", griddyn, "IB"),
+                   (cymdist, "IC", griddyn, "IC"),
+                   (cymdist, "IAngleA", griddyn, "IAngleA"),
+                   (cymdist, "IAngleB", griddyn, "IAngleB"),
+                   (cymdist, "IAngleC", griddyn, "IAngleC"),]
+    
+    coupled_simulation = Master (models, connections)
+    
+    opts=coupled_simulation.simulate_options()
+    opts['step_size']=step_size
+    
+    # Get the configuration file 
+    con_val_ref = cymdist.get_variable_valueref("conFilNam")
+
+    cymdist.set("save_to_file", 0)
+    cymdist.set_string([con_val_ref], [con_val_str])
+    
+    # Run simulation
+    start = datetime.now()
+    res=coupled_simulation.simulate(options=opts, 
+                            start_time=start_time, 
+                            final_time=stop_time)
+    end = datetime.now()
+    
+    print('This is the voltage value (VMAG_A) in Cymdist' + str(res[cymdist]['VMAG_A']))
+    print('This is the current value (IA) in Cymdist' + str(res[cymdist]['IA']))
+    print('Ran a coupled CYMDIST/griddyn simulation in ' +
+          str((end - start).total_seconds()) + ' seconds.')
+    
+def do_step_cymdist_griddyn14bus_fmus():
     """Simulate one CYMDIST FMU.
         
     """  
+    # Parameters which will be arguments of the function
+    start_time = 0.0
+    stop_time  = 0.1
+    step_size = 0.8
+    sleep_time = 2
+    # Path to configuration file
+    path_config="Z:\\thierry\\proj\\cyder_repo\\jonathan\\CyDER\\web\\docker_django\\worker\\config.json"
+    con_val_str = bytes(path_config, 'utf-8')
+    
     griddyn_input_valref=[]
     griddyn_output_valref=[] 
     griddyn_output_values=[]
@@ -231,77 +286,95 @@ def simulate_single_cymdist_fmu2():
     cymdist_output_valref=[]
     cymdist_output_values=[]  
     
-    #for i in [0.0]:
     cymdist=load_fmu("../fmus/CYMDIST/CYMDIST.fmu", log_level=7)
     griddyn=load_fmu("../fmus/griddyn/griddyn14bus.fmu", log_level=7)
-    step_size = 0.1
-    cymdist.setup_experiment(start_time=0.0, stop_time=0.0)
-    griddyn.setup_experiment(start_time=0.0, stop_time=0.8)
+
+    cymdist.setup_experiment(start_time=start_time, stop_time=stop_time)
+    griddyn.setup_experiment(start_time=start_time, stop_time=stop_time)
     
     # Define the inputs
-    cymdist_input_voltage_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
-    cymdist_input_voltage_values = [2520, 2520, 2520, 0, -120, 120]
-    cymdist_output_current_names = ['IA', 'IB', 'IC', 'IAngleA', 'IAngleB', 'IAngleC']
+    cymdist_input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
+    cymdist_input_values = [2520, 2520, 2520, 0, -120, 120]
+    cymdist_output_names = ['IA', 'IB', 'IC', 'IAngleA', 'IAngleB', 'IAngleC']
     
-    griddyn_input_current_names = ['Bus11_IA', 'Bus11_IB', 'Bus11_IC', 
+    griddyn_input_names = ['Bus11_IA', 'Bus11_IB', 'Bus11_IC', 
                        'Bus11_IAngleA', 'Bus11_IAngleB', 'Bus11_IAngleC']
-    griddyn_input_current_values = [277.6, 200.1, 173.1, -13.7, -130.51, 111.93]
-    griddyn_output_voltage_names = ['Bus11_VA', 'Bus11_VB', 'Bus11_VC', 
+    griddyn_input_values = [277.6, 200.1, 173.1, -13.7, -130.51, 111.93]
+    griddyn_output_names = ['Bus11_VA', 'Bus11_VB', 'Bus11_VC', 
                 'Bus11_VAngleA', 'Bus11_VAngleB', 'Bus11_VAngleC']
     
-    for cnt, elem in enumerate(griddyn_output_voltage_names):
-        griddyn_output_valref.append(griddyn.get_variable_valueref(elem))
-    for cnt, elem in enumerate(griddyn_input_current_names):
+    # Get the value references of griddyn inputs
+    for elem in griddyn_input_names:
         griddyn_input_valref.append(griddyn.get_variable_valueref(elem))
     
-    for cnt, elem in enumerate(cymdist_input_voltage_names):
-        cymdist_input_valref.append(cymdist.get_variable_valueref(elem))    
-    for cnt, elem in enumerate(cymdist_output_current_names):
+    # Get the value references of griddyn outputs
+    for elem in griddyn_output_names:
+        griddyn_output_valref.append(griddyn.get_variable_valueref(elem))
+    
+    # Get the value references of cymdist inputs
+    for elem in cymdist_input_names:
+        cymdist_input_valref.append(cymdist.get_variable_valueref(elem))   
+        
+    # Get the value references of cymdist outputs 
+    for elem in cymdist_output_names:
         cymdist_output_valref.append(cymdist.get_variable_valueref(elem))  
-    # Set the inputs
-    # opts=cymdist.simulate_options()
-    # opts['ncp']=1.0
-    # Set the configuration file 
-    con_val_ref = cymdist.get_variable_valueref("conFilNam")
 
     # Set the flag to save the results
     cymdist.set("save_to_file", 0)
-    for cnt, elem in enumerate(cymdist_input_voltage_names):
-        cymdist.set (elem, cymdist_input_voltage_values[cnt])
-        # Run simulation    
-        
-    start = datetime.now()
-    # Build path to configuration file
-    path_config="Z:\\thierry\\proj\\cyder_repo\\jonathan\\CyDER\\web\\docker_django\\worker\\config.json"
-    con_val_str = bytes(path_config, 'utf-8')
+    # Set initial input values if needs be
+    cymdist.set_real (cymdist_input_valref, cymdist_input_values) 
+    # Get value reference of the configuration file 
+    con_val_ref = cymdist.get_variable_valueref("conFilNam")
+    
+    # Set the configuration file
     cymdist.set_string([con_val_ref], [con_val_str])
     
+    start = datetime.now()
     # Initialize the FMUs
     cymdist.initialize()
     griddyn.initialize()
     
-    for time in np.arange(0, 0.8, 0.1):
+    # Create vectot to store time
+    simTim=[]
+    
+    for tim in np.arange(start_time, stop_time, step_size):
         # Get the outputs from griddyn
         griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
-        print("griddyn_output_values" + str(griddyn_output_values))
+        #print("griddyn_output_values" + str(griddyn_output_values))
         
-        print("cymdist_input_valref" + str(cymdist_input_valref))
+        #print("cymdist_input_valref" + str(cymdist_input_valref))
         cymdist.set_real(cymdist_input_valref, griddyn_output_values)
-        cymdist.do_step(current_t=time, step_size=step_size, new_step=0)
+        cymdist.do_step(current_t=tim, step_size=step_size, new_step=0)
         cymdist_output_values = (cymdist.get_real(cymdist_output_valref))
-        print("cymdist_output_values" + str(cymdist_output_values))
+        #print("cymdist_output_values" + str(cymdist_output_values))
         
-        griddyn.set_real( griddyn_input_valref, cymdist_output_values)
-        griddyn.do_step(current_t=time, step_size=step_size, new_step=0)
+        griddyn.set_real(griddyn_input_valref, cymdist_output_values)
+        griddyn.do_step(current_t=tim, step_size=step_size, new_step=0)
+        
+        #plot(cymdist.get_real(cymdist.get_variable_valueref('VMAG_A')))
+        #print ("This is the simulation time " + str(simTim))
+        simTim.append(tim)
+        plot(simTim, simTim)
+        draw()
+        # Waiting time so plots can be seen in seconds
+        t.sleep(sleep_time)
+        show(block=False)
+    plot(simTim, simTim)
+    #draw()
+    show(block=False)
     
+    print('This is the voltage value (VMAG_A) in Cymdist' 
+          + str(cymdist.get_real(cymdist.get_variable_valueref('VMAG_A'))))
+    print('This is the current value (IA) in Cymdist' 
+          + str(cymdist.get_real(cymdist.get_variable_valueref('IA'))))
     # Terminate FMUs
     cymdist.terminate()
     griddyn.terminate()
-     
     end = datetime.now()
+    
     print('Ran a single CYMDIST simulation in ' + 
           str((end - start).total_seconds()) + ' seconds.')
-    print("This is the value of the output IA " + str(cymdist.get_real(cymdist.get_variable_valueref('IA'))) + ". IA is expected to be 277.6 A")
+
 if __name__ == '__main__':
     #simulate_single_cymdist_fmu()
     #simulate_single_griddyn_fmu()
@@ -309,4 +382,4 @@ if __name__ == '__main__':
     #simulate_algebraicloop_fmus()
     #simulate_cymdist_griddyn14bus_fmus()
     #simulate_single_griddyn14bus_fmu()
-    simulate_single_cymdist_fmu2()
+    do_step_cymdist_griddyn14bus_fmus()
