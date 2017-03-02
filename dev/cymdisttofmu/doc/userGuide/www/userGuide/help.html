@@ -116,6 +116,14 @@ we recommend to use pre-compiled Windows binaries whenever available.</p>
 <h3>8.1.1. Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h3>
 <p>The next table shows the list of Python modules and softwares used to compile version 2.3.1 of PyFMI from source
 so it can run with Python 3.4 on Windows 32 bit.</p>
+<p>Install PyFMI dependencies with</p>
+<blockquote>
+<div><div class="highlight-none"><div class="highlight"><pre><span></span>pip install -r dev/master/bin/pyfmi-dependencies.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>Below is a table with dependencies which fail to install using pip.
+For those, we recommend to use the MS Windows installer directly.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="13%" />
@@ -129,45 +137,21 @@ so it can run with Python 3.4 on Windows 32 bit.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>Python 3.4</td>
-<td>Windows 32 bit</td>
-<td><a class="reference external" href="https://www.python.org/ftp/python/3.4.3/python-3.4.3.msi">https://www.python.org/ftp/python/3.4.3/python-3.4.3.msi</a></td>
-</tr>
-<tr class="row-odd"><td>FMI Library</td>
-<td>2.0.2</td>
+<tr class="row-even"><td>FMI Library</td>
+<td>2.0.2 (source)</td>
 <td><a class="reference external" href="http://www.jmodelica.org/FMILibrary">http://www.jmodelica.org/FMILibrary</a></td>
 </tr>
-<tr class="row-even"><td>Cython</td>
-<td>0.25.1</td>
-<td><a class="reference external" href="https://pypi.python.org/pypi/Cython/0.25.1">https://pypi.python.org/pypi/Cython/0.25.1</a></td>
-</tr>
-<tr class="row-odd"><td>Numpy</td>
-<td>1.11.2</td>
-<td><a class="reference external" href="https://pypi.python.org/pypi/numpy/1.11.2">https://pypi.python.org/pypi/numpy/1.11.2</a></td>
-</tr>
-<tr class="row-even"><td>Scipy</td>
+<tr class="row-odd"><td>Scipy</td>
 <td>0.16.1</td>
 <td><a class="reference external" href="https://sourceforge.net/projects/scipy/files/scipy/0.16.1">https://sourceforge.net/projects/scipy/files/scipy/0.16.1</a></td>
 </tr>
-<tr class="row-odd"><td>lxml</td>
+<tr class="row-even"><td>lxml</td>
 <td>3.4.4</td>
 <td><a class="reference external" href="https://pypi.python.org/pypi/lxml/3.4.4">https://pypi.python.org/pypi/lxml/3.4.4</a></td>
 </tr>
-<tr class="row-even"><td>Assimulo</td>
+<tr class="row-odd"><td>Assimulo</td>
 <td>2.7b1</td>
 <td><a class="reference external" href="https://pypi.python.org/pypi/Assimulo/2.7b1">https://pypi.python.org/pypi/Assimulo/2.7b1</a></td>
-</tr>
-<tr class="row-odd"><td>pyparsing</td>
-<td>2.1.10</td>
-<td><a class="reference external" href="https://pypi.python.org/pypi/pyparsing/2.1.10">https://pypi.python.org/pypi/pyparsing/2.1.10</a></td>
-</tr>
-<tr class="row-even"><td>matplotlib</td>
-<td>1.4.3</td>
-<td><a class="reference external" href="https://pypi.python.org/pypi/matplotlib/1.4.3">https://pypi.python.org/pypi/matplotlib/1.4.3</a></td>
-</tr>
-<tr class="row-odd"><td>C-Compiler</td>
-<td>Microsoft Visual Studio 2010 Pro</td>
-<td>&nbsp;</td>
 </tr>
 <tr class="row-even"><td>PyFMI</td>
 <td>2.3.1 (source)</td>
@@ -175,11 +159,15 @@ so it can run with Python 3.4 on Windows 32 bit.</p>
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> needs a C-compiler to compile the source codes. We used the Microsoft Visual Studio 10 Professional.</p>
+</div>
 </div>
 <div class="section" id="compilation">
 <h3>8.1.2. Compilation<a class="headerlink" href="#compilation" title="Permalink to this headline">¶</a></h3>
 <p>To compile <a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> from source, run</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>python setup.py install –fmil-home=path_to_FMI_Library\
+<div class="highlight-none"><div class="highlight"><pre><span></span>python setup.py install --fmil-home=path_to_FMI_Library\
 </pre></div>
 </div>
 <p>where <code class="docutils literal"><span class="pre">path_to_FMI_Library\</span></code> is the path to the FMI library.</p>

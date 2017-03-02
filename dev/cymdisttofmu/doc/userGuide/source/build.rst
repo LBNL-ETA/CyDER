@@ -5,7 +5,7 @@
 Creating an FMU
 ===============
 
-This chapter describes how to create a Functional Mockup Unit, starting from a CYMDIST model description input file.
+This chapter describes how to create a Functional Mockup Unit, starting from a CYMDIST XML input file.
 It assumes you have followed the :doc:`installation` instructions, and that you have created the CYMDIST 
 model description file  following the :doc:`bestPractice` guidelines.
 
@@ -19,10 +19,7 @@ The standard invocation of the CYMDISTToFMU tool is:
 
 .. code-block:: none
 
-  > python  <scriptDir>CYMDISTToFMU.py  \
-    -g <grid-model-path>  \
-    -i <input-file-path> \
-    -r <write-results>
+  > python  <scriptDir>CYMDISTToFMU.py -i <input-file-path> 
 
 where ``scriptDir`` is the path to the scripts directory of CYMDISTToFMU.
 This is the ``parser`` subdirectory of the installation directory.
@@ -33,7 +30,7 @@ An example of invoking ``CYMDISTToFMU.py`` on Windows is
 .. code-block:: none
 
   # Windows:
-  > python parser\CYMDISTToFMU.py -g C:\test.sxst -i test.xml
+  > python parser\CYMDISTToFMU.py -i test.xml
 
 All file paths can be absolute or relative.
 For readability, the rest of these instructions omit the paths to the script and input files.
@@ -43,22 +40,23 @@ For readability, the rest of these instructions omit the paths to the script and
 Script ``CYMDISTToFMU.py`` supports the following command-line switches:
 
 +----------------------------------------------------+----------------------------------------------------------+
-| option <argument>                                  | Purpose                                                  |
+| option <arguments>                                  | Purpose                                                  |
 +====================================================+==========================================================+
-| -g <grid-model-path>                               | Path to the grid model (required)                        |
+| -i <input-file-path>                               | Path to the input file (if not provided, a default input |   
+|                                                    | file which is in 					|
+|                                                    | ``parser\utilities\CYMDISTModelDescription.xml``		|
+|						     | will be used.						|
 +----------------------------------------------------+----------------------------------------------------------+
-| -i <input-file-path>                               | Path to the input file (required)                        |
+| -h                             		     | Show help and explanation on how to use this function.   |   
 +----------------------------------------------------+----------------------------------------------------------+
-| -r <write-results>                                 | Flag for writing results.                                |
-|                                                    | 0 if results should not be written, 1 else. Default is 0 |
-+----------------------------------------------------+----------------------------------------------------------+
+
 
 The main functions of CYMDISTToFMU are
 
  - reading, validating, and parsing the CYMDIST XML input file. 
    This includes removing and replacing invalid characters in variable names such as ``*+-`` with ``_``,
  - writing Modelica code with valid inputs and outputs names,
- - invoking Dymola to compile the Modelica code as an FMU for co-simulation 2.0.
+ - invoking Dymola to compile the :term:`Modelica` code as an FMU for co-simulation 2.0.
 
 .. note:: 
 
@@ -69,7 +67,7 @@ The main functions of CYMDISTToFMU are
 Output
 ^^^^^^
 
-The main output from running ``CYMDISTToFMU.py`` consists of an FMU, named after the modelName specified in the input file.
+The main output from running ``CYMDISTToFMU.py`` consists of an FMU, named after the ``modelName`` specified in the input file.
 The FMU is written to the current working directory, that is, in the directory from which you entered the command.
 
 The FMU is complete and self-contained.

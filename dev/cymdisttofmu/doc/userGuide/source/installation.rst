@@ -98,7 +98,7 @@ The installation directory should contain the following subdirectories:
 
    .. code-block:: none
    
-      pip install -r bin/cymdisttofmu-dependencies.txt
+      pip install -r dev/cymdisttofmu/cymdisttofmu-dependencies.txt
 
 
    .. note:: 

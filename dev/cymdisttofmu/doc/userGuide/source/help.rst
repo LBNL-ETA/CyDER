@@ -20,31 +20,33 @@ Requirements
 The next table shows the list of Python modules and softwares used to compile version 2.3.1 of PyFMI from source
 so it can run with Python 3.4 on Windows 32 bit.
 
+Install PyFMI dependencies with
+
+   .. code-block:: none
+   
+      pip install -r dev/master/bin/pyfmi-dependencies.txt
+
+Below is a table with dependencies which fail to install using pip. 
+For those, we recommend to use the MS Windows installer directly.
+
 +---------------+---------------------------------------------+-----------------------------------------------------------+
 | Modules       | Version                                     | Link                                                      |
 +===============+=============================================+===========================================================+
-| Python 3.4    | Windows 32 bit                              | https://www.python.org/ftp/python/3.4.3/python-3.4.3.msi  |
+| FMI Library   | 2.0.2 (source)                              | http://www.jmodelica.org/FMILibrary                       |
 +---------------+---------------------------------------------+-----------------------------------------------------------+
-| FMI Library   | 2.0.2                                       | http://www.jmodelica.org/FMILibrary                       |
-+---------------+---------------------------------------------+-----------------------------------------------------------+
-| Cython        | 0.25.1                                      | https://pypi.python.org/pypi/Cython/0.25.1                |
-+---------------+---------------------------------------------+-----------------------------------------------------------+
-| Numpy         | 1.11.2                                      | https://pypi.python.org/pypi/numpy/1.11.2                 |
-+---------------+---------------------------------------------+-----------------------------------------------------------+
-| Scipy         |  0.16.1                                     | https://sourceforge.net/projects/scipy/files/scipy/0.16.1 |
+| Scipy         | 0.16.1                                      | https://sourceforge.net/projects/scipy/files/scipy/0.16.1 |
 +---------------+---------------------------------------------+-----------------------------------------------------------+
 | lxml          | 3.4.4                                       | https://pypi.python.org/pypi/lxml/3.4.4                   |
 +---------------+---------------------------------------------+-----------------------------------------------------------+
 | Assimulo      | 2.7b1                                       | https://pypi.python.org/pypi/Assimulo/2.7b1               |
 +---------------+---------------------------------------------+-----------------------------------------------------------+
-| pyparsing     | 2.1.10                                      | https://pypi.python.org/pypi/pyparsing/2.1.10             |
-+---------------+---------------------------------------------+-----------------------------------------------------------+
-| matplotlib    | 1.4.3                                       | https://pypi.python.org/pypi/matplotlib/1.4.3             |
-+---------------+---------------------------------------------+-----------------------------------------------------------+
-| C-Compiler    | Microsoft Visual Studio 2010 Pro            |                                                           |
-+---------------+---------------------------------------------+-----------------------------------------------------------+
 | PyFMI         | 2.3.1 (source)                              | https://pypi.python.org/pypi/PyFMI                        |
 +---------------+---------------------------------------------+-----------------------------------------------------------+
+
+.. note::
+
+   :term:`PyFMI` needs a C-compiler to compile the source codes. We used the Microsoft Visual Studio 10 Professional.
+
 
 Compilation
 +++++++++++
@@ -53,7 +55,7 @@ To compile :term:`PyFMI` from source, run
 
 .. code-block:: none
 
-  python setup.py install –fmil-home=path_to_FMI_Library\
+  python setup.py install --fmil-home=path_to_FMI_Library\
 
 where ``path_to_FMI_Library\`` is the path to the FMI library.
 

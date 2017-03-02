@@ -12,11 +12,12 @@ for an FMU.
 To export CYMDIST as an FMU, the user needs to write an XML file which contains the list 
 of inputs, outputs and parameters of the FMU. The XML snippet below shows how a user has to write such an input file.
 A template named ``CYMDISTModeldescritpion.xml`` which shows such a file is provided in the ``parser\utilities`` installation folder of CYMDISTToFMU. 
-This template should be used and modify to create new XML input file.
+This template should be adapted to create new XML input file.
 
-The following snippet shows an input file where the user defines one input and one output variable.
+The following snippet shows an input file where the user defines 6 inputs and 6 output variables.
+The last variable ``save_to_file`` with the ``causality`` ``local`` is required and should not be removed from the XML file.
 
-.. literalinclude:: models/example.xml
+.. literalinclude:: ../../../parser/utilities/CYMDISTModelDescription.xml
    :language: xml
    :linenos:
 
@@ -36,14 +37,13 @@ To parametrize the ``ScalarVariable`` as an input variable, the user needs to
 
 To parametrize the ``ScalarVariable`` as an output variable, the user needs to
 
-  - define the name of the variable (Line 18), 
-  - give a brief description of the variable (Line 19)
-  - give the causality of the variable (``input`` for inputs, ``output`` for outputs) (Line 20)
-  - define the type of variable (Currently only ``Real`` variables are supported) (Line 21)
-  - give the unit of the variable (Currently only valid Modelica units are supported) (Line 22)
-  - give the name of the output node (Line 24)
+  - define the name of the variable (Line 58), 
+  - give a brief description of the variable (Line 59)
+  - give the causality of the variable (``input`` for inputs, ``output`` for outputs) (Line 60)
+  - define the type of variable (Currently only ``Real`` variables are supported) (Line 61)
+  - give the unit of the variable (Currently only valid Modelica units are supported) (Line 62)
    
 .. note:: 
    
-     To avoid name-clash, CYMDISTToFMU concatenates the name of the output with the name of 
-     the node to make it unique. The new output name will have the form ``outputName_NodeName``.
+     If the variable ``save_to_file`` is not present in the XML file, CYMDISTToFMU will exit with an error.
+ 
