@@ -1,31 +1,71 @@
 from __future__ import division
-import argparse
-import sys
 from pyfmi import load_fmu
 from pyfmi.master import Master
 from datetime import datetime
 import pdb
 import json
-
-
-def shift_load_demand(data):
+from ... import cymdist
+try:
+    import cympy
+except:
+    # Only installed on the Cymdist server
     pass
 
 
-def shift_pv_generation(data):
-    pass
+# def set_pv(data):
+#     """
+#     Input: [{'device_name': ..., 'generation': ...}]
+#     Return {'set_pvs': [{'device_name': , 'generation': }]}
+#     """
+#     # Create dictionnary
+#     return_dict = {'set_pvs': []}
+#     for value in data:
+#         return_dict['set_pvs'].append({'device_name': value['device_name'],
+#                                        'generation': value['generation']})
+#     return return_dict
+#
+#
+# def set_load(data):
+#     """
+#     Input: [{'device_name': ..., 'active_power': ...}]
+#     Return {'set_loads': [{'device_name': , 'active_power': }]}
+#     """
+#     # Create dictionnary
+#     return_dict = {'set_loads': []}
+#     for value in data:
+#         return_dict['set_loads'].append({'device_name': value['device_name'],
+#                                          'active_power': value['active_power']})
+#     return return_dict
+#
+#
+# def add_pv(data):
+#     """
+#     Input: [{'section_id': , 'generation': }, ...]
+#     Return: {'new_pvs': [{'section_id': , 'generation': }, ...]}
+#     """
+#     return_dict = {'new_pvs': []}
+#     for value in data:
+#         return_dict['new_pvs'].append({'section_id': value['section_id'],
+#                                        'generation': value['generation']})
+#     return return_dict
+#
+#
+# def add_load(data):
+#     """
+#     Input: [{'section_id': , 'active_power': }, ...]
+#     Return: {'new_loads': [{'section_id': , 'active_power': }, ...]}
+#     """
+#     return_dict = {'new_loads': []}
+#     for value in data:
+#         return_dict['new_loads'].append({'section_id': value['section_id'],
+#                                          'active_power': value['active_power']})
+#     return return_dict
 
 
-def add_evs(data):
-    pass
-
-
-def add_houses_with_pv(data):
-    pass
-
-
-def create_configuration_file(model_name, times, functions, datas):
-    """configuration = {
+def create_configuration_file(configurations):
+    """
+    Input:
+    configuration = {
                      'times': [0],
                      'interpolation_method': 'closest_time',
                      'models': [{
@@ -34,27 +74,48 @@ def create_configuration_file(model_name, times, functions, datas):
                                 'section_id': '800033503',
                                 'active_power': 100
                             }],
+                        'set_loads': [{
+                                'device_name': 'name',
+                                'active_power': 100
+                            }],
                         'new_pvs': [{
                                 'section_id': '800033503',
                                 'generation': 100
                             }],
+                        'set_pvs': [{
+                                'device_name': 'name',
+                                'generation': 100
+                            }]
                         }
                     ]}
+    Return configuration filename
     """
-    # Create config file
-    configuration = {'times': times,
-                     'interpolation_method': 'closest_time',
-                     'models': []
-                     }
-    for time in times:
-        configuration['models'].append({
-           'filename': 'D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//' + model_name,
-           'new_loads': [],
-           'new_pvs': [],
-           })
+    # # Create config file
+    # configuration_file = {'times': times,
+    #                       'interpolation_method': 'closest_time',
+    #                       'models': []
+    #                      }
+    #
+    # for time, model_name in zip(times, model_names):
+    #     model = {
+    #        'filename': 'D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//' + model_name,
+    #        'new_loads': [],
+    #        'set_loads': [],
+    #        'new_pvs': [],
+    #        'set_pvs': [],
+    #        }
+    #     for configuration in configurations[time]:
+    #         temp = configuration['function'](configuration['input'])
+    #         model[temp['type']].extend(temp['data'])
+    #     configuration_file['models'].append(model)
 
-    with open('config.json', 'w') as outfile:
-        json.dump(configuration, outfile)
+    # Generate random filename
+    filename = ''
+
+    with open(filename, 'w') as outfile:
+        json.dump(configuration_file, outfile)
+
+    return filename
 
 
 def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, save_to_file=0):
