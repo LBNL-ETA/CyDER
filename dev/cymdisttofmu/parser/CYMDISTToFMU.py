@@ -394,6 +394,8 @@ class CYMDISTToFMU(object):
         outY2 = 108
         indel = 20
         outdel = 18
+        
+        save_to_file_def = False
 
         scalar_variables = []
         for child in root.iter('ModelVariables'):
@@ -432,6 +434,7 @@ class CYMDISTToFMU(object):
 #                     configuration_file_name = name
                 if (causality == 'local'):
                     write_results = name
+                    save_to_file_def = True
                 if (causality == 'output'):
                     output_variable_names.append(name)
                     log.info('Invalid characters will be removed from the '
@@ -512,6 +515,10 @@ class CYMDISTToFMU(object):
                 check_duplicates(i)
 
             # Write success.
+            if ( not save_to_file_def or write_results is None):
+                log.info('Variable save_to_file not defined in ' + self.xml_path + 
+                         'This is not a valid XML input file.')
+                
             log.info('Parsing of ' + self.xml_path + ' was successfull.')
             return scalar_variables, input_variable_names, \
                 output_variable_names, parameter_variable_names, \
