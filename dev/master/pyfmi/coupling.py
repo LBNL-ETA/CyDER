@@ -1,6 +1,7 @@
 from pyfmi import load_fmu
 from pyfmi.master import Master
 from matplotlib.pyplot import plot, draw, show
+import matplotlib.pyplot as plt
 import time as t
 from datetime import datetime
 import numpy as np
@@ -107,7 +108,7 @@ def simulate_single_griddyn14bus_fmu():
     print('Ran a single CYMDIST simulation in ' +
           str((end - start).total_seconds()) + ' seconds.')
     print("This is the value of the output Bus11_VA " 
-          + str(res["Bus11_VAngleA"]))
+          + str(res["Bus11_VA"]))
 
 def simulate_single_cymdist_fmu():
     """Simulate one CYMDIST FMU.
@@ -271,8 +272,8 @@ def do_step_cymdist_griddyn14bus_fmus():
     """  
     # Parameters which will be arguments of the function
     start_time = 0.0
-    stop_time  = 0.1
-    step_size = 0.8
+    stop_time  = 0.8
+    step_size = 0.1
     sleep_time = 2
     # Path to configuration file
     path_config="Z:\\thierry\\proj\\cyder_repo\\jonathan\\CyDER\\web\\docker_django\\worker\\config.json"
@@ -337,6 +338,22 @@ def do_step_cymdist_griddyn14bus_fmus():
     # Create vectot to store time
     simTim=[]
     
+    CYMDIST_VA = []
+    CYMDIST_IA = []
+    
+    #Plots a couple of time since 
+    # matplotlib throws a bit image allocation 
+    # error if it runs out of memory
+    fig, (ax1,ax2) = plt.subplots(nrows=2,ncols=1)
+    fig.subplots_adjust(hspace=.5)
+    ax1.grid(True)
+    ax2.grid(True)
+    ax1.set_title('Voltage(Distribution)')
+    ax1.set_xlabel('time') 
+    ax1.set_ylabel('VMA_A[V]') 
+    ax2.set_title('Current(Distribution)')
+    ax2.set_xlabel('time') 
+    ax2.set_ylabel('IA[A]') 
     for tim in np.arange(start_time, stop_time, step_size):
         # Get the outputs from griddyn
         griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
@@ -351,22 +368,20 @@ def do_step_cymdist_griddyn14bus_fmus():
         griddyn.set_real(griddyn_input_valref, cymdist_output_values)
         griddyn.do_step(current_t=tim, step_size=step_size, new_step=0)
         
-        #plot(cymdist.get_real(cymdist.get_variable_valueref('VMAG_A')))
-        #print ("This is the simulation time " + str(simTim))
+        CYMDIST_VA.append(cymdist.get_real(cymdist.get_variable_valueref('VMAG_A')))
+        CYMDIST_IA.append(cymdist.get_real(cymdist.get_variable_valueref('IA')))
+        #print('This is the voltage value (VMAG_A) in Cymdist' 
+        #  + str(cymdist.get_real(cymdist.get_variable_valueref('VMAG_A'))))
+        #print('This is the current value (IA) in Cymdist' 
+        #  + str(cymdist.get_real(cymdist.get_variable_valueref('IA'))))
         simTim.append(tim)
-        plot(simTim, simTim)
-        draw()
-        # Waiting time so plots can be seen in seconds
-        t.sleep(sleep_time)
-        show(block=False)
-    plot(simTim, simTim)
-    #draw()
-    show(block=False)
-    
-    print('This is the voltage value (VMAG_A) in Cymdist' 
-          + str(cymdist.get_real(cymdist.get_variable_valueref('VMAG_A'))))
-    print('This is the current value (IA) in Cymdist' 
-          + str(cymdist.get_real(cymdist.get_variable_valueref('IA'))))
+        ax1.plot(simTim, CYMDIST_VA, 'g')
+        ax2.plot(simTim, CYMDIST_IA, 'b')
+        plt.show(block=False)
+        plt.pause(1) 
+        #new bit here
+        #fig.clf() #where f is the figure
+        #plt.close(fig) 
     # Terminate FMUs
     cymdist.terminate()
     griddyn.terminate()
