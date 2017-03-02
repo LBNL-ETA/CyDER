@@ -33,18 +33,20 @@ log.getLogger().addHandler(stderrLogger)
 # XSD_SCHEMA: Schema used to validate the XML input
 # CYMDISTModelicaTemplate_MO: Template used to write Modelica model
 # CYMDISTModelicaTemplate_MOS: Template used to write mos script
+# XML_MODELDESCRIPTION: Default XML input file if none is provided
 XSD_SCHEMA = 'CYMDISTModelDescription.xsd'
 NEEDSEXECUTIONTOOL = 'needsExecutionTool'
 MODELDESCRIPTION = 'modelDescription.xml'
 CYMDISTModelicaTemplate_MO = 'CYMDISTModelicaTemplate.mo'
 CYMDISTModelicaTemplate_MOS = 'CYMDISTModelicaTemplate.mos'
-
+XML_MODELDESCRIPTION = 'CYMDISTModelDescription.xml'
 # Get the path to the templates files
 script_path = os.path.dirname(os.path.realpath(__file__))
 utilities_path = os.path.join(script_path, 'utilities')
 MO_TEMPLATE_PATH = os.path.join(utilities_path, CYMDISTModelicaTemplate_MO)
 MOS_TEMPLATE_PATH = os.path.join(utilities_path, CYMDISTModelicaTemplate_MOS)
 XSD_FILE_PATH = os.path.join(utilities_path, XSD_SCHEMA)
+XML_INPUT_FILE=os.path.join(utilities_path, XML_MODELDESCRIPTION)
 CYMDISTToFMU_LIB_PATH = os.path.join(script_path, 'libraries', 'modelica')
 
 def main():
@@ -56,10 +58,14 @@ def main():
     # Configure the argument parser
     parser = argparse.ArgumentParser(description='Export CYMDIST as a Functional Mock-up Unit'\
                                       ' (FMU) for co-simulation 2.0.')
-    cymdist_group = parser.add_argument_group("Required arguments to export CYMDIST as an FMU")
+    cymdist_group = parser.add_argument_group('Argument to export CYMDIST as an FMU. If the path' \
+                                              ' to the XML input file which defined the inputs' \
+                                              ' and outputs of the FMU is not provided,'\
+                                              ' the default XML file ' \
+                                              ' located in ' + XML_INPUT_FILE + " will be used.")
 
-    cymdist_group.add_argument('-i', "--xml-file-path", required=True,
-                        help="Path to the input file")
+    cymdist_group.add_argument('-i', "--xml-file-path",
+                        help="Path to the XML input file")
 
     # Parse the arguments
     args = parser.parse_args()
@@ -68,9 +74,10 @@ def main():
     xml_file_path = args.xml_file_path
 
     if(xml_file_path is None):
-        log.error('Missing required input, <path-to-input-file>')
-        parser.print_help()
-        sys.exit(1)
+        xml_file_path
+        log.info('No XML input file was provided. The default XML file which is at ' 
+                 + XML_INPUT_FILE + " will be used.")
+        xml_file_path = XML_INPUT_FILE
     CYMDIST = CYMDISTToFMU(xml_file_path,
                             CYMDISTToFMU_LIB_PATH,
                             MO_TEMPLATE_PATH,
