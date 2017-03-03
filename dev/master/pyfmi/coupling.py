@@ -95,6 +95,12 @@ def simulate_single_griddyn14bus_fmu():
     # Set the inputs
     opts=griddyn.simulate_options()
     opts['ncp']=1.0
+    
+    # Get the value reference of the multiplier
+    griddyn_mult_val_ref = gridyn.get_variable_valueref('multiplier')
+    
+    # Set the value of the multiplier
+    gridyn.set_real([griddyn_mult_val_ref][3.0])
 
     # Set the inputs of GridDyn
     griddyn.set_real (griddyn_input_valref, griddyn_input_values)
@@ -120,7 +126,7 @@ def simulate_single_cymdist_fmu():
     
     # Path to configuration file
     path_config="Z:\\thierry\\proj\\cyder_repo\\jonathan\\CyDER\\web\\docker_django\\worker\\config.json"
-    con_val_str = bytes(path_config, 'utf-8')  
+    cymdist_con_val_str = bytes(path_config, 'utf-8')  
 
     cymdist=load_fmu("../fmus/CYMDIST/CYMDIST.fmu", log_level=7)
     cymdist_input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
@@ -138,14 +144,14 @@ def simulate_single_cymdist_fmu():
     opts=cymdist.simulate_options()
     opts['ncp']=1.0
     # Set the configuration file 
-    con_val_ref = cymdist.get_variable_valueref("conFilNam")
+    cymdist_con_val_ref = cymdist.get_variable_valueref("conFilNam")
 
     # Set the flag to save the results
     cymdist.set("save_to_file", 0)
 
     # Set the cymdist inputs
     cymdist.set_real(cymdist_input_valref, cymdist_input_values)
-    cymdist.set_string([con_val_ref], [con_val_str])
+    cymdist.set_string([cymdist_con_val_ref], [cymdist_con_val_str])
     
     # Run simulation        
     start = datetime.now()
@@ -169,7 +175,7 @@ def simulate_cymdist_griddyn14bus_fmus():
 
     # Path to configuration file
     path_config="Z:\\thierry\\proj\\cyder_repo\\jonathan\\CyDER\\web\\docker_django\\worker\\config.json"
-    con_val_str = bytes(path_config, 'utf-8')
+    cymdist_con_val_str = bytes(path_config, 'utf-8')
     
     cymdist=load_fmu("../fmus/CYMDIST/CYMDIST.fmu", log_level=7)
     griddyn=load_fmu("../fmus/griddyn/griddyn14bus.fmu", log_level=7)
@@ -186,7 +192,7 @@ def simulate_cymdist_griddyn14bus_fmus():
                    (cymdist, "IC", griddyn, "Bus11_IC"),
                    (cymdist, "IAngleA", griddyn, "Bus11_IAngleA"),
                    (cymdist, "IAngleB", griddyn, "Bus11_IAngleB"),
-                   (cymdist, "IAngleC", griddyn, "Bus11_IAngleC"),]
+                   (cymdist, "IAngleC", griddyn, "Bus11_IAngleC")]
     
     # Create coupled simulation
     coupled_simulation = Master (models, connections)
@@ -196,10 +202,16 @@ def simulate_cymdist_griddyn14bus_fmus():
     opts['step_size']=step_size
     
     # Get the configuration file 
-    con_val_ref = cymdist.get_variable_valueref("conFilNam")
+    cymdist_con_val_ref = cymdist.get_variable_valueref("conFilNam")
 
     cymdist.set("save_to_file", 0)
-    cymdist.set_string([con_val_ref], [con_val_str])
+    cymdist.set_string([cymdist_con_val_ref], [cymdist_con_val_str])
+    
+    # Get the value reference of the multiplier
+    griddyn_mult_val_ref = gridyn.get_variable_valueref('multiplier')
+    
+    # Set the value of the multiplier
+    gridyn.set_real([griddyn_mult_val_ref][3.0])
     
     # Run simulation
     start = datetime.now()
@@ -224,24 +236,24 @@ def simulate_cymdist_griddyn_fmus():
 
     # Path to configuration file
     path_config="Z:\\thierry\\proj\\cyder_repo\\jonathan\\CyDER\\web\\docker_django\\worker\\config.json"
-    con_val_str = bytes(path_config, 'utf-8')
+    cymdist_con_val_str = bytes(path_config, 'utf-8')
 
-    cymdist=load_fmu("../../../../NO_SHARING/CYMDIST/CYMDIST.fmu", log_level=7)
-    griddyn=load_fmu("../../../../NO_SHARING/griddyn/griddyn.fmu", log_level=7)
+    cymdist=load_fmu("../fmus/CYMDIST/CYMDIST.fmu", log_level=7)
+    griddyn=load_fmu("../fmus/griddyn/griddyn14bus.fmu", log_level=7)
     
     models = [cymdist, griddyn]
-    connections = [(griddyn, "VMAG_A", cymdist, "VMAG_A"),
-                   (griddyn, "VMAG_B", cymdist, "VMAG_B"),
-                   (griddyn, "VMAG_C", cymdist, "VMAG_C"),
-                   (griddyn, "VANG_A", cymdist, "VANG_A"),
-                   (griddyn, "VANG_B", cymdist, "VANG_B"),
-                   (griddyn, "VANG_C", cymdist, "VANG_C"),
-                   (cymdist, "IA", griddyn, "IA"),
-                   (cymdist, "IB", griddyn, "IB"),
-                   (cymdist, "IC", griddyn, "IC"),
-                   (cymdist, "IAngleA", griddyn, "IAngleA"),
-                   (cymdist, "IAngleB", griddyn, "IAngleB"),
-                   (cymdist, "IAngleC", griddyn, "IAngleC"),]
+    connections = [(griddyn, "Bus11_VA", cymdist, "VMAG_A"),
+                   (griddyn, "Bus11_VB", cymdist, "VMAG_B"),
+                   (griddyn, "Bus11_VC", cymdist, "VMAG_C"),
+                   (griddyn, "Bus11_VAngleA", cymdist, "VANG_A"),
+                   (griddyn, "Bus11_VAngleB", cymdist, "VANG_B"),
+                   (griddyn, "Bus11_VAngleC", cymdist, "VANG_C"),
+                   (cymdist, "IA", griddyn, "Bus11_IA"),
+                   (cymdist, "IB", griddyn, "Bus11_IB"),
+                   (cymdist, "IC", griddyn, "Bus11_IC"),
+                   (cymdist, "IAngleA", griddyn, "Bus11_IAngleA"),
+                   (cymdist, "IAngleB", griddyn, "Bus11_IAngleB"),
+                   (cymdist, "IAngleC", griddyn, "Bus11_IAngleC")]
     
     coupled_simulation = Master (models, connections)
     
@@ -249,10 +261,16 @@ def simulate_cymdist_griddyn_fmus():
     opts['step_size']=step_size
     
     # Get the configuration file 
-    con_val_ref = cymdist.get_variable_valueref("conFilNam")
+    cymdist_con_val_ref = cymdist.get_variable_valueref("conFilNam")
 
     cymdist.set("save_to_file", 0)
-    cymdist.set_string([con_val_ref], [con_val_str])
+    cymdist.set_string([cymdist_con_val_ref], [cymdist_con_val_str])
+    
+    # Get the value reference of the multiplier
+    griddyn_mult_val_ref = gridyn.get_variable_valueref('multiplier')
+    
+    # Set the value of the multiplier
+    gridyn.set_real([griddyn_mult_val_ref][3.0])
     
     # Run simulation
     start = datetime.now()
@@ -277,7 +295,7 @@ def do_step_cymdist_griddyn14bus_fmus():
     sleep_time = 2
     # Path to configuration file
     path_config="Z:\\thierry\\proj\\cyder_repo\\jonathan\\CyDER\\web\\docker_django\\worker\\config.json"
-    con_val_str = bytes(path_config, 'utf-8')
+    cymdist_con_val_str = bytes(path_config, 'utf-8')
     
     griddyn_input_valref=[]
     griddyn_output_valref=[] 
@@ -323,30 +341,36 @@ def do_step_cymdist_griddyn14bus_fmus():
     # Set the flag to save the results
     cymdist.set("save_to_file", 0)
     # Get the initial outputs from griddyn
-   # griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
+    # griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
     # Set the initial outputs of GridDyn in cymdist
-    #cymdist.set_real (cymdist_input_valref, griddyn_output_values) 
+    # cymdist.set_real (cymdist_input_valref, griddyn_output_values) 
     # Get value reference of the configuration file 
-    con_val_ref = cymdist.get_variable_valueref("conFilNam")
+    cymdist_con_val_ref = cymdist.get_variable_valueref("conFilNam")
     
     # Set the configuration file
-    cymdist.set_string([con_val_ref], [con_val_str])
+    cymdist.set_string([cymdist_con_val_ref], [cymdist_con_val_str])
+    
+    # Get the value reference of the multiplier
+    griddyn_mult_val_ref = gridyn.get_variable_valueref('multiplier')
+    
+    # Set the value of the multiplier
+    gridyn.set_real([griddyn_mult_val_ref][3.0])
     
     start = datetime.now()
     # Initialize the FMUs
     cymdist.initialize()
     griddyn.initialize()
     
-    # Create vectot to store time
+    # Create vector to store time
     simTim=[]
     
     CYMDIST_VA = []
     CYMDIST_IA = []
     
-    #Plots a couple of time since 
+    # Plots a couple of time since 
     # matplotlib throws a bit image allocation 
     # error if it runs out of memory
-    fig, (ax1,ax2) = plt.subplots(nrows=2,ncols=1)
+    fig, (ax1,ax2) = plt.subplots(nrows=2, ncols=1)
     fig.subplots_adjust(hspace=.5)
     ax1.grid(True)
     ax2.grid(True)
