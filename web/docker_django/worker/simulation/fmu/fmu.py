@@ -179,7 +179,7 @@ def cymdist(time, input_save_to_file, input_voltage_names,
 
     # Process input and check for validity
     voltages = _input_voltages(input_voltage_names, input_voltage_values)
-    if input_save_to_file in [1, '1']:
+    if input_save_to_file in [1, 1.0, '1']:
         input_save_to_file = True
     else:
         input_save_to_file = False
