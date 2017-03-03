@@ -96,11 +96,8 @@ def simulate_single_griddyn14bus_fmu():
     opts=griddyn.simulate_options()
     opts['ncp']=1.0
     
-    # Get the value reference of the multiplier
-    griddyn_mult_val_ref = gridyn.get_variable_valueref('multiplier')
-    
     # Set the value of the multiplier
-    gridyn.set_real([griddyn_mult_val_ref][3.0])
+    griddyn.set('multiplier', 3.0)
 
     # Set the inputs of GridDyn
     griddyn.set_real (griddyn_input_valref, griddyn_input_values)
@@ -207,11 +204,8 @@ def simulate_cymdist_griddyn14bus_fmus():
     cymdist.set("save_to_file", 0)
     cymdist.set_string([cymdist_con_val_ref], [cymdist_con_val_str])
     
-    # Get the value reference of the multiplier
-    griddyn_mult_val_ref = gridyn.get_variable_valueref('multiplier')
-    
     # Set the value of the multiplier
-    gridyn.set_real([griddyn_mult_val_ref][3.0])
+    griddyn.set('multiplier', 3.0)
     
     # Run simulation
     start = datetime.now()
@@ -265,12 +259,9 @@ def simulate_cymdist_griddyn_fmus():
 
     cymdist.set("save_to_file", 0)
     cymdist.set_string([cymdist_con_val_ref], [cymdist_con_val_str])
-    
-    # Get the value reference of the multiplier
-    griddyn_mult_val_ref = gridyn.get_variable_valueref('multiplier')
-    
+        
     # Set the value of the multiplier
-    gridyn.set_real([griddyn_mult_val_ref][3.0])
+    griddyn.set('multiplier', 3.0)
     
     # Run simulation
     start = datetime.now()
@@ -350,11 +341,14 @@ def do_step_cymdist_griddyn14bus_fmus():
     # Set the configuration file
     cymdist.set_string([cymdist_con_val_ref], [cymdist_con_val_str])
     
-    # Get the value reference of the multiplier
-    griddyn_mult_val_ref = gridyn.get_variable_valueref('multiplier')
+    # Verify that the multiplier is set
+    print ("This is the multiplier before it is set " + str(griddyn.get('multiplier')))
     
     # Set the value of the multiplier
-    gridyn.set_real([griddyn_mult_val_ref][3.0])
+    griddyn.set('multiplier', 3.0)
+    
+    # Verify that the multiplier is set
+    print ("This is the multiplier after it is set " + str(griddyn.get('multiplier')))
     
     start = datetime.now()
     # Initialize the FMUs
