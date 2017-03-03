@@ -2,7 +2,7 @@ from __future__ import division
 import argparse
 import sys
 import functions as func
-from ... import cymdist
+import cymdist
 import pdb
 
 # Retrieve model name

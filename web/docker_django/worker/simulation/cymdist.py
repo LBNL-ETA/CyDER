@@ -49,14 +49,14 @@ def list_loads():
         #     'PhaseCount', value.device_number, int(value.device_type_id))
         for index in [0, 1, 2]:
             try:
-                devices.loc[value.Index, 'activepower_' + str(index)] = cympy.study.QueryInfoDevice(
+                devices.loc[value.Index, 'activepower_' + str(index)] = cympy.study.GetValueDevice(
                     'CustomerLoads[0].CustomerLoadModels[0].CustomerLoadValues[' + str(index) + '].LoadValue.KW',
                     value.device_number, int(value.device_type_id))
             except:
                 devices.loc[value.Index, 'activepower_' + str(index)] = False
 
             try:
-                devices.loc[value.Index, 'phase_' + str(index)] = cympy.study.QueryInfoDevice(
+                devices.loc[value.Index, 'phase_' + str(index)] = cympy.study.GetValueDevice(
                     'CustomerLoads[0].CustomerLoadModels[0].CustomerLoadValues[' + str(index) + '].Phase',
                     value.device_number, int(value.device_type_id))
             except:

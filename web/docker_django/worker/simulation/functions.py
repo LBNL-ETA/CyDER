@@ -6,7 +6,7 @@ import string
 import random
 import pdb
 import json
-from ... import cymdist
+import cymdist
 try:
     import cympy
 except:
@@ -41,15 +41,16 @@ def shift_load_and_pv(load_profile, pv_profile, configuration):
     for index, time in enumerate(configuration['times']):
         # Set new pv generation
         for pv in pvs.itertuples():
-            configuration['models'][index]['set_pvs'].append({'device_number': pv['device_number'],
-                                                              'generation': pv['generation'] * pv_profile[index]})
+            configuration['models'][index]['set_pvs'].append({'device_number': pv.device_number,
+                                                              'generation': pv.generation * pv_profile[index]})
         # Set new load demand
-        for load in loads.itertuples():
+        for load in loads.iterrows():
+            _, load = load
             configuration['models'][index]['set_loads'].append({'device_number': load['device_number'],
                                                                 'active_power': []})
             for phase_index in ['0', '1', '2']:
                 if load['activepower_' + phase_index]:
-                    configuration['models'][index]['set_loads'][-1]['active_power'].append({'active_power': load['activepower_' + phase_index] * load_profile[index],
+                    configuration['models'][index]['set_loads'][-1]['active_power'].append({'active_power': float(load['activepower_' + phase_index]) * load_profile[index],
                                                                                             'phase_index': phase_index,
                                                                                             'phase': str(load['phase_' + phase_index])})
     return configuration
@@ -66,10 +67,11 @@ def ev_consumption(ev_profile, configuration):
 
     for index, time in enumerate(configuration['times']):
         # randomnly pick a subset of loads that correspond to ev_profile(index)
-        loads_2 = loads_2.sample(n=ev_profile[index])
+        loads_2 = loads.sample(n=ev_profile[index])
 
         # Set new load demand
-        for load in loads_2.itertuples():
+        for load in loads_2.iterrows():
+            _, load = load
             configuration['models'][index]['set_loads'].append({'device_number': load['device_number'],
                                                                 'active_power': []})
             # Dummy way to count the phases
@@ -81,7 +83,7 @@ def ev_consumption(ev_profile, configuration):
             power = 6.6 / phase_count
             for phase_index in ['0', '1', '2']:
                 if load['activepower_' + phase_index]:
-                    configuration['models'][index]['set_loads'][-1]['active_power'].append({'active_power': load['activepower_' + phase_index] + power,
+                    configuration['models'][index]['set_loads'][-1]['active_power'].append({'active_power': float(load['activepower_' + phase_index]) + power,
                                                                                             'phase_index': phase_index,
                                                                                             'phase': str(load['phase_' + phase_index])})
     return configuration
@@ -122,7 +124,7 @@ def create_configuration_file(configurations):
     filename = parent_path + random_string
 
     with open(filename, 'w') as outfile:
-        json.dump(configuration_file, outfile)
+        json.dump(configurations, outfile)
 
     return filename
 

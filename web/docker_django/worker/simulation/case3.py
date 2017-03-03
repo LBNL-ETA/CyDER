@@ -29,10 +29,10 @@ load_profile = [1.0, 0.5]
 pv_profile = [1.0, 0.5]
 
 # Initiate the configuration file
-configuration = func.initialize_configuration(times, model_names)
+configuration = initialize_configuration(times, model_names)
 
 # Shift load and pv in the configuration file
-configuration = func.shift_load_and_pv(load_profile, pv_profile, configuration)
+configuration = shift_load_and_pv(load_profile, pv_profile, configuration)
 
 # Add load and pv at the right section id
 power_demand = 3 * nb_houses
@@ -43,7 +43,7 @@ for index, time in enumerate(configuration['times']):
     configuration['models'][index]['add_loads'].append({'section_id': section_id,
                                                       'active_power': power_demand * load_profile[index]})
 # Create the configuration file
-configuration_filename = func.create_configuration_file(configuration)
+configuration_filename = create_configuration_file(configuration)
 
 # start_time = times[0]
 # end_time = times[-1]
