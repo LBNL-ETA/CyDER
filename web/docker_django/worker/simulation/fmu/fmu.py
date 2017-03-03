@@ -42,6 +42,18 @@ def cymdist(time, input_save_to_file, input_voltage_names,
                 section_id: '',
                 generation: '',
             }],
+            set_pvs: [{
+                device_number: '',
+                generation: '',
+            }],
+            set_loads: [{
+                device_number: '',
+                active_power: [{
+                    active_power: '',
+                    phase_index: '',
+                    phase: c,
+                }],
+            }],
          }]
         }
         (time vector must have a 1:1 realtionship with the model vector)
@@ -106,6 +118,14 @@ def cymdist(time, input_save_to_file, input_voltage_names,
             # Note: customer is still 0 as well as energy values, does it matters?
         return True
 
+    def _set_loads(loads):
+        for index, load in enumerate(loads):
+            for phase in load['active_power']:
+                cympy.study.SetValueDevice(phase['active_power'],
+                    'CustomerLoads[0].CustomerLoadModels[0].CustomerLoadValues[' + str(phase['phase_index']) + '].LoadValue.KW',
+                    load['device_number'], 14)
+        return True
+
     def _add_pvs(pvs):
         """Add new pvs on the grid"""
         for index, pv in enumerate(pvs):
@@ -120,6 +140,20 @@ def cymdist(time, input_save_to_file, input_voltage_names,
             device.SetValue(pv['generation'], "Inverter.ConverterRating")
             device.SetValue(pv['generation'], "Inverter.ActivePowerRating")
             device.SetValue(pv['generation'], "Inverter.ReactivePowerRating")
+        return True
+
+    def _set_pvs(pvs):
+        for index, pv in enumerate(pvs):
+            cympy.study.SetValueDevice(int((pv['generation'] + 30) / (23 * 0.08)), 'Np',
+                pv['device_number'], 39)
+            cympy.study.SetValueDevice(pv['generation'], 'GenerationModels[0].ActiveGeneration',
+                pv['device_number'], 39)
+            cympy.study.SetValueDevice(pv['generation'], 'Inverter.ConverterRating',
+                pv['device_number'], 39)
+            cympy.study.SetValueDevice(pv['generation'], 'Inverter.ActivePowerRating',
+                pv['device_number'], 39)
+            cympy.study.SetValueDevice(pv['generation'], 'Inverter.ReactivePowerRating',
+                pv['device_number'], 39)
         return True
 
     def _write_results(input_model_filename):
@@ -162,9 +196,17 @@ def cymdist(time, input_save_to_file, input_voltage_names,
     if model['new_loads']:
         _add_loads(model['new_loads'])
 
+    # Set loads
+    if model['set_loads']:
+        _set_loads(model['set_loads'])
+
     # Add PV
     if model['new_pvs']:
         _add_pvs(model['new_pvs'])
+
+    # Set loads
+    if model['set_pvs']:
+        _set_pvs(model['set_pvs'])
 
     # Run the power flow
     lf = cympy.sim.LoadFlow()
