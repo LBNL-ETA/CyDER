@@ -19,14 +19,22 @@ except:
     sys.exit('Error: could not retrieve argument')
 
 # Create time and model name vectors
-times = [0.0, 0.1]
+nb_simulation = 30
+sec_per_sim = 0.5
+rad = np.linspace(0, 2*np.pi, num=nb_simulation)
+times = np.linspace(0, len(rad) * sec_per_sim, len(rad)).tolist()
 model_names = [model_filename] * len(times)
 
 # Generate the load profile
-load_profile = [1.0, 0.5]
+load_profile = [value if value < 1.3 else 1.3 for value in np.sin(rad) / 2 + 1]
 
 # Generate the pv profile
-pv_profile = [1.0, 0.5]
+pv_profile = np.array([value for value in np.sin(np.flipud(rad)) + 1])
+pv_profile = np.array([value if value < 1 else 1 for value in pv_profile])
+noise = np.random.normal(0, 0.05, len(pv_profile))
+pv_profile += noise
+pv_profile = np.array([value if value > 0 else 0 for value in pv_profile])
+pv_profile = np.array([value if value < 1 else 1 for value in pv_profile])
 
 # Initiate the configuration file
 configuration = initialize_configuration(times, model_names)
@@ -41,13 +49,11 @@ for index, time in enumerate(configuration['times']):
     configuration['models'][index]['add_pvs'].append({'section_id': section_id,
                                                       'generation': pv_generation * pv_profile[index]})
     configuration['models'][index]['add_loads'].append({'section_id': section_id,
-                                                      'active_power': power_demand * load_profile[index]})
+                                                        'active_power': power_demand * load_profile[index]})
 # Create the configuration file
 configuration_filename = create_configuration_file(configuration)
 
-# start_time = times[0]
-# end_time = times[-1]
-# save_to_file = 0
-# result = simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, save_to_file)
-# print(result)
-# pdb.set_trace()
+start_time = times[0]
+end_time = times[-1]
+save_to_file = 0
+result = func.simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, sec_per_sim, save_to_file)
