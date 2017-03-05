@@ -5,6 +5,7 @@ from functions import *
 import pdb
 import pandas
 import numpy as np
+import datetime
 
 # Retrieve model name
 try:
@@ -22,7 +23,7 @@ except:
     sys.exit('Error: could not retrieve argument')
 
 # Read vehicle beahvior
-df = pandas.read_csv('evs/vehicle_charging.csv', parse_dates=[0])
+df = pandas.read_csv('~/project_cyder/web/docker_django/worker/simulation/evs/vehicle_charging.csv', parse_dates=[0])
 df['time'] = df['datetime'].apply(lambda x: x.time())
 
 # Get the corresponding value
@@ -33,7 +34,7 @@ end = end.split(':')
 end = now.replace(hour=int(end[0]), minute=int(end[1]), second=int(end[2]), microsecond=0)
 times = [start]
 while times[-1] < end:
-    times.append(times[-1] + datetime.timedelta(minutes=10))
+    times.append(times[-1] + datetime.timedelta(seconds=5))
 times = [value.time() for value in times]
 vehicle_charging_coefs = df[df.time.isin(times)].Home.tolist()
 
@@ -44,13 +45,7 @@ times = np.linspace(0, len(vehicle_charging_coefs) * sec_per_sim, len(vehicle_ch
 model_names = [model_filename] * len(times)
 
 # Generate the load profile
-ev_profile = [coef * nb_evs for coef in vehicle_charging_coefs]
-
-# Get the corresponding value
-time_of_day = time_of_day.split(':')
-now = datetime.datetime.now()
-time = now.replace(hour=int(time_of_day[0]), minute=int(time_of_day[1]), second=int(time_of_day[2]), microsecond=0).time()
-vehicle_charging_coef = df[df.time == time].Home.iloc[0]
+ev_profile = [int(coef * nb_evs) for coef in vehicle_charging_coefs]
 
 # Initiate the configuration file
 configuration = initialize_configuration(times, model_names)
@@ -64,4 +59,4 @@ configuration_filename = create_configuration_file(configuration)
 start_time = times[0]
 end_time = times[-1]
 save_to_file = 0
-result = func.simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, sec_per_sim, save_to_file)
+result = simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, sec_per_sim, save_to_file)

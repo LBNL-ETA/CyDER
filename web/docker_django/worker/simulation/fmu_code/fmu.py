@@ -192,21 +192,21 @@ def cymdist(time, input_save_to_file, input_voltage_names,
     networks = cympy.study.ListNetworks()
     _set_voltages(voltages, networks)
 
+    # Set loads
+    if model['set_loads']:
+        _set_loads(model['set_loads'])
+
     # Add loads
     if model['new_loads']:
         _add_loads(model['new_loads'])
 
     # Set loads
-    if model['set_loads']:
-        _set_loads(model['set_loads'])
+    if model['set_pvs']:
+        _set_pvs(model['set_pvs'])
 
     # Add PV
     if model['new_pvs']:
         _add_pvs(model['new_pvs'])
-
-    # Set loads
-    if model['set_pvs']:
-        _set_pvs(model['set_pvs'])
 
     # Run the power flow
     lf = cympy.sim.LoadFlow()

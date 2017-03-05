@@ -1,0 +1,8 @@
+# Case 3
+python case3.py BU0001.sxst 800045241 50
+
+# Case 2
+python case2.py BU0001.sxst 100 18:00:00 19:00:00
+
+# Case 1
+python case1.py BU0001.sxst

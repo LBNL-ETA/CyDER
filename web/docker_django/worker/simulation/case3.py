@@ -3,6 +3,7 @@ import argparse
 import sys
 from functions import *
 import pdb
+import numpy as np
 
 # Retrieve model name
 try:
@@ -46,9 +47,9 @@ configuration = shift_load_and_pv(load_profile, pv_profile, configuration)
 power_demand = 3 * nb_houses
 pv_generation = 4 * nb_houses
 for index, time in enumerate(configuration['times']):
-    configuration['models'][index]['add_pvs'].append({'section_id': section_id,
+    configuration['models'][index]['new_pvs'].append({'section_id': section_id,
                                                       'generation': pv_generation * pv_profile[index]})
-    configuration['models'][index]['add_loads'].append({'section_id': section_id,
+    configuration['models'][index]['new_loads'].append({'section_id': section_id,
                                                         'active_power': power_demand * load_profile[index]})
 # Create the configuration file
 configuration_filename = create_configuration_file(configuration)
@@ -56,4 +57,4 @@ configuration_filename = create_configuration_file(configuration)
 start_time = times[0]
 end_time = times[-1]
 save_to_file = 0
-result = func.simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, sec_per_sim, save_to_file)
+result = simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, sec_per_sim, save_to_file)
