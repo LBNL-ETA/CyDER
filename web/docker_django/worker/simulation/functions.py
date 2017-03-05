@@ -139,7 +139,7 @@ def create_configuration_file(configurations):
     return filename
 
 
-def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, save_to_file=0):
+def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, step_size, save_to_file=0):
     """Simulate one CYMDIST FMU.
 
     """
