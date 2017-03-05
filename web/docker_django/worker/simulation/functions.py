@@ -146,7 +146,7 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
     # Parameters which will be arguments of the function
     start_time = start_time
     stop_time  = end_time
-    step_size = 1
+    step_size = step_size
 
     # Path to configuration file
     path_config=configuration_filename
