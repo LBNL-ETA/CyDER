@@ -22,6 +22,28 @@ seaborn.set_style("whitegrid")
 seaborn.despine()
 plt.close()
 
+
+def printProgressBar(iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
+    # Print New Line on Complete
+    if iteration == total:
+        print()
+
+
 def initialize_configuration(times, model_names):
     configuration = {'times': times,
                      'interpolation_method': 'closest_time',
@@ -47,6 +69,8 @@ def shift_load_and_pv(load_profile, pv_profile, configuration):
     loads = cymdist.list_loads()
     pvs = cymdist.list_pvs()
 
+    # Progress bar
+    printProgressBar(0, len(configuration['times']), prefix = 'Progress:', suffix = 'Complete', length = 50)
     for index, time in enumerate(configuration['times']):
         # Set new pv generation
         for pv in pvs.itertuples():
@@ -62,6 +86,7 @@ def shift_load_and_pv(load_profile, pv_profile, configuration):
                     configuration['models'][index]['set_loads'][-1]['active_power'].append({'active_power': float(load['activepower_' + phase_index]) * load_profile[index],
                                                                                             'phase_index': phase_index,
                                                                                             'phase': str(load['phase_' + phase_index])})
+        printProgressBar(index, len(configuration['times']), prefix = 'Progress:', suffix = 'Complete', length = 50)
     return configuration
 
 
