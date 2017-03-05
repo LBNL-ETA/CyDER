@@ -230,9 +230,9 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
     fig = plt.figure()
     ax1 = fig.add_subplot(211)
     ax2 = fig.add_subplot(212)
-    ax1.set_ylabel('Currents [A]')
-    ax2.set_ylabel('Voltages [V]')
-    ax2.set_xlabel('Time (minutes)')
+    ax1.set_ylabel('IA (cymDist) [A]')
+    ax2.set_ylabel('Bus_11 VA (GridDyn) [V]')
+    ax2.set_xlabel('Time (seconds)')
     line1, = ax1.plot(simTim, CYMDIST_IA, 'b-')
     line2, = ax2.plot(simTim, GRIDDYN_VA, 'r-')
 
