@@ -19,7 +19,7 @@ except:
 
 # Create time and model name vectors
 nb_simulation = 30
-sec_per_sim = 5
+sec_per_sim = 0.5
 rad = np.linspace(0, 2*np.pi, num=nb_simulation)
 times = np.linspace(0, len(rad) * sec_per_sim, len(rad)).tolist()
 model_names = [model_filename] * len(times)
@@ -44,7 +44,6 @@ configuration = func.shift_load_and_pv(load_profile, pv_profile, configuration)
 
 # Create the configuration file
 configuration_filename = func.create_configuration_file(configuration)
-print('')
 print('Configuration file created: ' + configuration_filename.split('//')[-1])
 
 start_time = times[0]
