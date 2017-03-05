@@ -17,6 +17,10 @@ try:
 except:
     # Only installed on the Cymdist server
     pass
+import seaborn
+seaborn.set_style("whitegrid")
+seaborn.despine()
+plt.close()
 
 def initialize_configuration(times, model_names):
     configuration = {'times': times,
@@ -209,42 +213,41 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
     # Verify that the multiplier is set
     print ("This is the multiplier after it is set " + str(griddyn.get('multiplier')))
 
-    start = datetime.now()
     # Initialize the FMUs
     cymdist.initialize()
     griddyn.initialize()
 
     # Create vector to store time
     simTim=[]
-
-    CYMDIST_VA = []
-    GRIDDYN_VA = []
     CYMDIST_IA = []
+    GRIDDYN_VA = []
 
+    # Interactive mode on
     plt.ion()
 
+    # Create the plot
     fig = plt.figure()
     ax1 = fig.add_subplot(211)
     ax2 = fig.add_subplot(212)
-    line1, = ax1.plot(simTim, CYMDIST_IA, 'r-')
+    ax1.set_ylabel('Currents [A]')
+    ax2.set_ylabel('Voltages [V]')
+    ax2.set_xlabel('Time (minutes)')
+    line1, = ax1.plot(simTim, CYMDIST_IA, 'b-')
     line2, = ax2.plot(simTim, GRIDDYN_VA, 'r-')
 
     # Co-simulation loop
     for index, tim in enumerate(np.arange(start_time, stop_time, step_size)):
+
         # Get the outputs from griddyn
         griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
-        #print("griddyn_output_values" + str(griddyn_output_values))
 
-        #print("cymdist_input_valref" + str(cymdist_input_valref))
         cymdist.set_real(cymdist_input_valref, griddyn_output_values)
         cymdist.do_step(current_t=tim, step_size=step_size, new_step=0)
         cymdist_output_values = (cymdist.get_real(cymdist_output_valref))
-        #print("cymdist_output_values" + str(cymdist_output_values))
 
         griddyn.set_real(griddyn_input_valref, cymdist_output_values)
         griddyn.do_step(current_t=tim, step_size=step_size, new_step=0)
 
-        CYMDIST_VA.append(cymdist.get_real(cymdist.get_variable_valueref('VMAG_A')))
         CYMDIST_IA.append(cymdist.get_real(cymdist.get_variable_valueref('IA')))
         GRIDDYN_VA.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VA')))
         simTim.append(tim)
@@ -259,13 +262,6 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
         ax2.autoscale_view(True,True,True)
         fig.canvas.draw()
         plt.pause(0.01)
-        # plt.figure()
-        # plt.plot(simTim, CYMDIST_VA)
-        # plt.show()
-        # plt.clf()
-        # plt.pause(1)
-        #new bit here
-        #fig.clf() #where f is the figure
 
     pdb.set_trace()
     # close figure automatically
@@ -274,66 +270,4 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
     # Terminate FMUs
     cymdist.terminate()
     griddyn.terminate()
-    end = datetime.now()
-
-    print('This is the start time ' + str(start_time))
-    print('This is the stop time' + str(stop_time))
-    print('This is the step size ' + str(step_size))
-    print('This is the numer of steps ' + str((stop_time-start_time)/(step_size)))
-    print('Ran a coupled CYMDIST/GridDyn simulation in ' + \
-          str((end - start).total_seconds()) + ' seconds.')
     return {'result': 'some stuff'}
-
-
-def simulate_cymdist_gridyn2_fmus(configuration_filename, start_time, end_time, save_to_file=0):
-    """Simulate one CYMDIST FMU coupled to a dummy GridDyn FMU.
-    """
-    # Wire the Master
-    cymdist = load_fmu("D:/Users/Jonathan/Documents/GitHub/cyder_tsn/NO_SHARING/CYMDIST/CYMDIST.fmu", log_level=7)
-    gridyn = load_fmu("D:/Users/Jonathan/Documents/GitHub/cyder_tsn/NO_SHARING/GridDyn/GridDyn.fmu", log_level=7)
-    models = [cymdist, gridyn]
-    connections = [(gridyn, "VMAG_A", cymdist, "VMAG_A"),
-                   (gridyn, "VMAG_B", cymdist, "VMAG_B"),
-                   (gridyn, "VMAG_C", cymdist, "VMAG_C"),
-                   (gridyn, "VANG_A", cymdist, "VANG_A"),
-                   (gridyn, "VANG_B", cymdist, "VANG_B"),
-                   (gridyn, "VANG_C", cymdist, "VANG_C"),
-                   (cymdist, "IA", gridyn, "IA"),
-                   (cymdist, "IB", gridyn, "IB"),
-                   (cymdist, "IC", gridyn, "IC"),
-                   (cymdist, "IAngleA", gridyn, "IAngleA"),
-                   (cymdist, "IAngleB", gridyn, "IAngleB"),
-                   (cymdist, "IAngleC", gridyn, "IAngleC"),]
-    coupled_simulation = Master(models, connections)
-    opts = coupled_simulation.simulate_options()
-    opts['step_size'] = 0.1
-
-    # Set the configuration file
-    cymdist.set("save_to_file", save_to_file)
-    con_val_str = bytes(configuration_filename, 'utf-8')
-    con_val_ref = cymdist.get_variable_valueref("conFilNam")
-    cymdist.set_string([con_val_ref], [con_val_str])
-
-    # Launch simulation
-    start = datetime.now()
-    res = coupled_simulation.simulate(options=opts,
-                                      start_time=start_time,
-                                      final_time=end_time)
-    end = datetime.now()
-    print('Ran a coupled CYMDIST/GridDyn simulation in ' +
-          str((end - start).total_seconds()) + ' seconds.')
-
-    # Create a normal result object (need to use Assimulo object?)
-    result = {'cymdist': {}, 'griddyn': {}}
-    for model_key, model in zip(['cymdist', 'griddyn'], [cymdist, gridyn]):
-        for key in ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC',
-                    'VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']:
-            result[model_key][key] = res[model][key]
-    return result
-
-# configuration_filename = "D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//config.json"
-# start_time = 0.0
-# end_time = 0.1
-# result = simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time)
-# print(result)
-# pdb.set_trace()

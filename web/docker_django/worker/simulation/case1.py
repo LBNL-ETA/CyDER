@@ -3,6 +3,7 @@ import argparse
 import sys
 import functions as func
 import pdb
+import numpy as np
 
 # Retrieve model name
 try:
@@ -17,14 +18,22 @@ except:
     sys.exit('Error: could not retrieve argument')
 
 # Create time and model name vectors
-times = [0.0, 1, 2, 3, 4, 5]
+nb_simulation = 30
+sec_per_sim = 5
+rad = np.linspace(0, 2*np.pi, num=nb_simulation)
+times = np.linspace(0, len(rad) * sec_per_sim, len(rad))
 model_names = [model_filename] * len(times)
 
 # Generate the load profile
-load_profile = [1.0, 0.5, 0.7, 0.8, 0.5, 1.5]
+load_profile = [value if value < 1.3 else 1.3 for value in np.sin(rad) / 2 + 1]
 
 # Generate the pv profile
-pv_profile = [1.0, 0.5, 0.7, 0.8, 0.5, 1.5]
+pv_profile = np.array([value for value in np.sin(np.flipud(rad)) + 1])
+pv_profile = np.array([value if value < 1 else 1 for value in y2])
+noise = np.random.normal(0, 0.05, len(y2))
+pv_profile += noise
+pv_profile = np.array([value if value > 0 else 0 for value in y2])
+pv_profile = np.array([value if value < 1 else 1 for value in y2])
 
 # Initiate the configuration file
 configuration = func.initialize_configuration(times, model_names)
