@@ -29,11 +29,11 @@ load_profile = [value if value < 1.3 else 1.3 for value in np.sin(rad) / 2 + 1]
 
 # Generate the pv profile
 pv_profile = np.array([value for value in np.sin(np.flipud(rad)) + 1])
-pv_profile = np.array([value if value < 1 else 1 for value in y2])
-noise = np.random.normal(0, 0.05, len(y2))
+pv_profile = np.array([value if value < 1 else 1 for value in pv_profile])
+noise = np.random.normal(0, 0.05, len(pv_profile))
 pv_profile += noise
-pv_profile = np.array([value if value > 0 else 0 for value in y2])
-pv_profile = np.array([value if value < 1 else 1 for value in y2])
+pv_profile = np.array([value if value > 0 else 0 for value in pv_profile])
+pv_profile = np.array([value if value < 1 else 1 for value in pv_profile])
 
 # Initiate the configuration file
 print('Creating a configuration file...')
