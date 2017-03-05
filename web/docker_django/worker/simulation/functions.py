@@ -243,11 +243,11 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
         griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
 
         cymdist.set_real(cymdist_input_valref, griddyn_output_values)
-        cymdist.do_step(current_t=tim, step_size=step_size, new_step=0)
+        cymdist.do_step(current_t=tim, step_size=1, new_step=0)
         cymdist_output_values = (cymdist.get_real(cymdist_output_valref))
 
         griddyn.set_real(griddyn_input_valref, cymdist_output_values)
-        griddyn.do_step(current_t=tim, step_size=step_size, new_step=0)
+        griddyn.do_step(current_t=tim, step_size=1, new_step=0)
 
         CYMDIST_IA.append(cymdist.get_real(cymdist.get_variable_valueref('IA')))
         GRIDDYN_VA.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VA')))
