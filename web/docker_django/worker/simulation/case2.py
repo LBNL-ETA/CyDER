@@ -34,7 +34,7 @@ end = end.split(':')
 end = now.replace(hour=int(end[0]), minute=int(end[1]), second=int(end[2]), microsecond=0)
 times = [start]
 while times[-1] < end:
-    times.append(times[-1] + datetime.timedelta(seconds=5))
+    times.append(times[-1] + datetime.timedelta(minutes=5))
 times = [value.time() for value in times]
 vehicle_charging_coefs = df[df.time.isin(times)].Home.tolist()
 

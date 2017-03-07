@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 plt.switch_backend('Qt4Agg')
 import numpy as np
 import time
+import pandas
 try:
     import cympy
 except:
@@ -139,7 +140,7 @@ def create_configuration_file(configurations):
     return filename
 
 
-def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, step_size, save_to_file=0):
+def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, step_size, _saveToFile=0):
     """Simulate one CYMDIST FMU.
 
     """
@@ -194,13 +195,14 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
         cymdist_output_valref.append(cymdist.get_variable_valueref(elem))
 
     # Set the flag to save the results
-    cymdist.set("save_to_file", save_to_file)
+    cymdist.set("_saveToFile", _saveToFile)
+    cymdist.set("_communicationStepSize", step_size)
     # Get the initial outputs from griddyn
     # griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
     # Set the initial outputs of GridDyn in cymdist
     # cymdist.set_real (cymdist_input_valref, griddyn_output_values)
     # Get value reference of the configuration file
-    cymdist_con_val_ref = cymdist.get_variable_valueref("conFilNam")
+    cymdist_con_val_ref = cymdist.get_variable_valueref("_configurationFileName")
 
     # Set the configuration file
     cymdist.set_string([cymdist_con_val_ref], [cymdist_con_val_str])
@@ -236,6 +238,14 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
     line1, = ax1.plot(simTim, CYMDIST_IA, 'b-')
     line2, = ax2.plot(simTim, GRIDDYN_VA, 'r-')
 
+    # Save all the result to a pandas dataframe
+    cymdist_column_names = ['IA', 'IB', 'IC', 'IAngleA', 'IAngleB', 'IAngleC']
+    griddyn_column_names = ['Bus11_VA', 'Bus11_VB', 'Bus11_VC',
+                            'Bus11_VAngleA', 'Bus11_VAngleB', 'Bus11_VAngleC']
+    column_names = ['IA', 'IB', 'IC', 'IAngleA', 'IAngleB', 'IAngleC']
+    column_names.extend(griddyn_column_names)
+    df = pandas.DataFrame(index=np.arange(start_time, stop_time, step_size) * 10, columns=column_names)
+
     # Co-simulation loop
     for index, tim in enumerate(np.arange(start_time, stop_time, step_size)):
 
@@ -246,12 +256,22 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
         cymdist.do_step(current_t=tim, step_size=step_size, new_step=0)
         cymdist_output_values = (cymdist.get_real(cymdist_output_valref))
 
+        # print(cymdist_output_values)
+        # cymdist_output_values = [value * 10 if index < 3 else value for index, value in enumerate(cymdist_output_values)]
+        # print(cymdist_output_values)
+
         griddyn.set_real(griddyn_input_valref, cymdist_output_values)
         griddyn.do_step(current_t=tim, step_size=step_size, new_step=0)
 
         CYMDIST_IA.append(cymdist.get_real(cymdist.get_variable_valueref('IA')))
         GRIDDYN_VA.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VA')))
         simTim.append(tim * 10)
+
+        for name in cymdist_column_names:
+            df.loc[simTim[-1], name] = cymdist.get_real(cymdist.get_variable_valueref(name))[0]
+
+        for name in griddyn_column_names:
+            df.loc[simTim[-1], name] = griddyn.get_real(griddyn.get_variable_valueref(name))[0]
 
         line1.set_xdata(simTim)
         line1.set_ydata(CYMDIST_IA)
@@ -265,6 +285,7 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
         plt.pause(0.01)
 
     pdb.set_trace()
+    df.to_csv('~/project_cyder/web/docker_django/worker/simulation/cosimulation_result.csv')
     # close figure automatically
     plt.close()
 
