@@ -97,7 +97,7 @@
         unit="deg"/>
     </ScalarVariable>
     <ScalarVariable
-      name="save_to_file"
+      name="_saveToFile"
       description="Flag for writing results"
       causality="local">
       <Real
