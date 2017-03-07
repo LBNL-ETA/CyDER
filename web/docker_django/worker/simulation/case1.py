@@ -34,6 +34,8 @@ noise = np.random.normal(0, 0.05, len(pv_profile))
 pv_profile += noise
 pv_profile = np.array([value if value > 0 else 0 for value in pv_profile])
 pv_profile = np.array([value if value < 1 else 1 for value in pv_profile])
+input_profiles = [{'x': times, 'y': load_profile, 'label': 'load profile'},
+                  {'x': times, 'y': pv_profile, 'label': 'pv profile'}]
 
 # Initiate the configuration file
 print('Creating a configuration file...')
@@ -49,4 +51,5 @@ print('Configuration file created: ' + configuration_filename.split('//')[-1])
 start_time = times[0]
 end_time = times[-1]
 save_to_file = 0
-result = func.simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, sec_per_sim, save_to_file)
+result = func.simulate_cymdist_gridyn_fmus(
+    configuration_filename, start_time, end_time, sec_per_sim, save_to_file, input_profiles)

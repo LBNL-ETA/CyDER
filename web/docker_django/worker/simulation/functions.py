@@ -140,7 +140,7 @@ def create_configuration_file(configurations):
     return filename
 
 
-def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, step_size, _saveToFile=0):
+def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, step_size, _saveToFile=0, input_profiles=False):
     """Simulate one CYMDIST FMU.
 
     """
@@ -223,28 +223,42 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
     # Create vector to store time
     simTim=[]
     CYMDIST_IA = []
+    CYMDIST_IB = []
+    CYMDIST_IC = []
     GRIDDYN_VA = []
+    GRIDDYN_VB = []
+    GRIDDYN_VC = []
 
     # Interactive mode on
     plt.ion()
 
     # Create the plot
     fig = plt.figure()
-    ax1 = fig.add_subplot(211)
-    ax2 = fig.add_subplot(212)
+    ax = fig.add_subplot(311)
+    ax1 = fig.add_subplot(312)
+    ax2 = fig.add_subplot(313)
+    ax.set_ylabel('Inputs')
     ax1.set_ylabel('IA (cymDist) [A]')
     ax2.set_ylabel('Bus_11 VA (GridDyn) [V]')
     ax2.set_xlabel('Time (seconds)')
-    line1, = ax1.plot(simTim, CYMDIST_IA, 'b-')
-    line2, = ax2.plot(simTim, GRIDDYN_VA, 'r-')
+    if input_profiles:
+        for input_profile in input_profiles:
+            line, = ax.plot(input_profile['x'], input_profile['y'], label=input_profile['label'])
+    line1A, = ax1.plot(simTim, CYMDIST_IA)
+    line1B, = ax1.plot(simTim, CYMDIST_IB)
+    line1C, = ax1.plot(simTim, CYMDIST_IC)
+    line2A, = ax2.plot(simTim, GRIDDYN_VA)
+    line2B, = ax2.plot(simTim, GRIDDYN_VB)
+    line2C, = ax2.plot(simTim, GRIDDYN_VC)
+    ax.legend(loc=0)
 
-    # Save all the result to a pandas dataframe
-    cymdist_column_names = ['IA', 'IB', 'IC', 'IAngleA', 'IAngleB', 'IAngleC']
-    griddyn_column_names = ['Bus11_VA', 'Bus11_VB', 'Bus11_VC',
-                            'Bus11_VAngleA', 'Bus11_VAngleB', 'Bus11_VAngleC']
-    column_names = ['IA', 'IB', 'IC', 'IAngleA', 'IAngleB', 'IAngleC']
-    column_names.extend(griddyn_column_names)
-    df = pandas.DataFrame(index=np.arange(start_time, stop_time, step_size) * 10, columns=column_names)
+    # # Save all the result to a pandas dataframe
+    # cymdist_column_names = ['IA', 'IB', 'IC', 'IAngleA', 'IAngleB', 'IAngleC']
+    # griddyn_column_names = ['Bus11_VA', 'Bus11_VB', 'Bus11_VC',
+    #                         'Bus11_VAngleA', 'Bus11_VAngleB', 'Bus11_VAngleC']
+    # column_names = ['IA', 'IB', 'IC', 'IAngleA', 'IAngleB', 'IAngleC']
+    # column_names.extend(griddyn_column_names)
+    # df = pandas.DataFrame(index=np.arange(start_time, stop_time, step_size) * 10, columns=column_names)
 
     # Co-simulation loop
     for index, tim in enumerate(np.arange(start_time, stop_time, step_size)):
@@ -263,20 +277,34 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
         griddyn.set_real(griddyn_input_valref, cymdist_output_values)
         griddyn.do_step(current_t=tim, step_size=step_size, new_step=0)
 
-        CYMDIST_IA.append(cymdist.get_real(cymdist.get_variable_valueref('IA')))
-        GRIDDYN_VA.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VA')))
-        simTim.append(tim * 10)
+        CYMDIST_IA.append(cymdist.get_real(cymdist.get_variable_valueref('IA'))[0])
+        CYMDIST_IB.append(cymdist.get_real(cymdist.get_variable_valueref('IB'))[0])
+        CYMDIST_IC.append(cymdist.get_real(cymdist.get_variable_valueref('IC'))[0])
+        GRIDDYN_VA.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VA'))[0] / 2520)
+        GRIDDYN_VB.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VB'))[0] / 2520)
+        GRIDDYN_VC.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VC'))[0] / 2520)
+        simTim.append(tim)
 
-        for name in cymdist_column_names:
-            df.loc[simTim[-1], name] = cymdist.get_real(cymdist.get_variable_valueref(name))[0]
+        # for name in cymdist_column_names:
+        #     df.loc[simTim[-1], name] = cymdist.get_real(cymdist.get_variable_valueref(name))[0]
+        #
+        # for name in griddyn_column_names:
+        #     df.loc[simTim[-1], name] = griddyn.get_real(griddyn.get_variable_valueref(name))[0]
 
-        for name in griddyn_column_names:
-            df.loc[simTim[-1], name] = griddyn.get_real(griddyn.get_variable_valueref(name))[0]
+        line1A.set_xdata(simTim)
+        line1A.set_ydata(CYMDIST_IA)
+        line1B.set_xdata(simTim)
+        line1B.set_ydata(CYMDIST_IB)
+        line1C.set_xdata(simTim)
+        line1C.set_ydata(CYMDIST_IC)
 
-        line1.set_xdata(simTim)
-        line1.set_ydata(CYMDIST_IA)
-        line2.set_xdata(simTim)
-        line2.set_ydata(GRIDDYN_VA)
+        line2A.set_xdata(simTim)
+        line2A.set_ydata(GRIDDYN_VA)
+        line2B.set_xdata(simTim)
+        line2B.set_ydata(GRIDDYN_VB)
+        line2C.set_xdata(simTim)
+        line2C.set_ydata(GRIDDYN_VC)
+
         ax1.relim()
         ax1.autoscale_view(True,True,True)
         ax2.relim()
@@ -285,7 +313,7 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
         plt.pause(0.01)
 
     pdb.set_trace()
-    df.to_csv('~/project_cyder/web/docker_django/worker/simulation/cosimulation_result.csv')
+    # df.to_csv('~/project_cyder/web/docker_django/worker/simulation/cosimulation_result.csv')
     # close figure automatically
     plt.close()
 
