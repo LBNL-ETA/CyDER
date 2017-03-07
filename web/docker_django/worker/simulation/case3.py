@@ -43,8 +43,8 @@ noise = np.random.normal(0, 0.05, len(pv_profile))
 pv_profile += noise
 pv_profile = np.array([value if value > 0 else 0 for value in pv_profile])
 pv_profile = np.array([value if value < 1 else 1 for value in pv_profile])
-input_profiles = [{'x': times, 'y': load_profile, 'label': 'load profile'},
-                  {'x': times, 'y': pv_profile, 'label': 'pv profile'}]
+input_profiles = [{'x': time_labels, 'y': load_profile, 'label': 'load profile'},
+                  {'x': time_labels, 'y': pv_profile, 'label': 'pv profile'}]
 
 # Initiate the configuration file
 configuration = initialize_configuration(times, model_names)

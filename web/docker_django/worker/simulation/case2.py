@@ -38,7 +38,7 @@ while times[-1] < end:
 times = [value.time() for value in times]
 time_labels = times
 vehicle_charging_coefs = df[df.time.isin(times)].Home.tolist()
-input_profiles = [{'x': times, 'y': vehicle_charging_coefs, 'label': 'vehicle profile'}]
+input_profiles = [{'x': time_labels, 'y': vehicle_charging_coefs, 'label': 'vehicle profile'}]
 
 # Create time and model name vectors
 sec_per_sim = 0.5

@@ -240,7 +240,7 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
     ax.set_ylabel('Inputs')
     ax1.set_ylabel('Feeder currents\n(cymDist) [A]')
     ax2.set_ylabel('Feeder voltages\n(GridDyn) [pu]')
-    ax2.set_xlabel('Time (seconds)')
+    ax2.set_xlabel('Time (minutes)')
     if input_profiles:
         for input_profile in input_profiles:
             line, = ax.plot(input_profile['x'], input_profile['y'], label=input_profile['label'])
@@ -261,7 +261,7 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
     # df = pandas.DataFrame(index=np.arange(start_time, stop_time, step_size) * 10, columns=column_names)
 
     # Co-simulation loop
-    for tim, x_label in zip(np.arange(start_time, stop_time, step_size), x_axis_labels):
+    for tim in np.arange(start_time, stop_time, step_size):
 
         # Get the outputs from griddyn
         griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
@@ -283,7 +283,7 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
         GRIDDYN_VA.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VA'))[0] / 2520)
         GRIDDYN_VB.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VB'))[0] / 2520)
         GRIDDYN_VC.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VC'))[0] / 2520)
-        simTim.append(x_label)
+        simTim.append(tim / 60)
 
         # for name in cymdist_column_names:
         #     df.loc[simTim[-1], name] = cymdist.get_real(cymdist.get_variable_valueref(name))[0]
