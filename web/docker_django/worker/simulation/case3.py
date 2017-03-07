@@ -59,5 +59,5 @@ configuration_filename = create_configuration_file(configuration)
 start_time = times[0]
 end_time = times[-1]
 save_to_file = 0
-result = func.simulate_cymdist_gridyn_fmus(
+result = simulate_cymdist_gridyn_fmus(
     configuration_filename, start_time, end_time, sec_per_sim, save_to_file, input_profiles)

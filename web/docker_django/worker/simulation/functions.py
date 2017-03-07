@@ -238,8 +238,8 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
     ax1 = fig.add_subplot(312)
     ax2 = fig.add_subplot(313)
     ax.set_ylabel('Inputs')
-    ax1.set_ylabel('Feeder currents (cymDist) [A]')
-    ax2.set_ylabel('Feeder voltages (GridDyn) [pu]')
+    ax1.set_ylabel('Feeder currents\n(cymDist) [A]')
+    ax2.set_ylabel('Feeder voltages\n(GridDyn) [pu]')
     ax2.set_xlabel('Time (seconds)')
     if input_profiles:
         for input_profile in input_profiles:
