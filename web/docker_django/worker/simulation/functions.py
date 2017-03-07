@@ -261,7 +261,7 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
     # df = pandas.DataFrame(index=np.arange(start_time, stop_time, step_size) * 10, columns=column_names)
 
     # Co-simulation loop
-    for index, tim, x_label in enumerate(zip(np.arange(start_time, stop_time, step_size), x_axis_labels)):
+    for tim, x_label in zip(np.arange(start_time, stop_time, step_size), x_axis_labels):
 
         # Get the outputs from griddyn
         griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
