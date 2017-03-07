@@ -36,6 +36,7 @@ times = [start]
 while times[-1] < end:
     times.append(times[-1] + datetime.timedelta(minutes=5))
 times = [value.time() for value in times]
+time_labels = times
 vehicle_charging_coefs = df[df.time.isin(times)].Home.tolist()
 input_profiles = [{'x': times, 'y': vehicle_charging_coefs, 'label': 'vehicle profile'}]
 
@@ -60,4 +61,4 @@ start_time = times[0]
 end_time = times[-1]
 save_to_file = 0
 result = simulate_cymdist_gridyn_fmus(
-    configuration_filename, start_time, end_time, sec_per_sim, save_to_file, input_profiles)
+    configuration_filename, start_time, end_time, sec_per_sim, save_to_file, input_profiles, time_labels)

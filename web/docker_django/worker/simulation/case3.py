@@ -4,6 +4,7 @@ import sys
 from functions import *
 import pdb
 import numpy as np
+import datetime
 
 # Retrieve model name
 try:
@@ -25,6 +26,11 @@ sec_per_sim = 5
 rad = np.linspace(0, 2*np.pi, num=nb_simulation)
 times = np.linspace(0, len(rad) * sec_per_sim, len(rad)).tolist()
 model_names = [model_filename] * len(times)
+
+# Get time x label
+now = datetime.datetime.now()
+start = now.replace(hour=19, minute=00, second=00, microsecond=0)
+time_labels = [start + datetime.timedelta(seconds=5 * index) for index in range(0, len(times))]
 
 # Generate the load profile
 load_profile = [value if value < 1.3 else 1.3 for value in np.sin(rad) / 2 + 1]
@@ -60,4 +66,4 @@ start_time = times[0]
 end_time = times[-1]
 save_to_file = 0
 result = simulate_cymdist_gridyn_fmus(
-    configuration_filename, start_time, end_time, sec_per_sim, save_to_file, input_profiles)
+    configuration_filename, start_time, end_time, sec_per_sim, save_to_file, input_profiles, time_labels)

@@ -140,7 +140,7 @@ def create_configuration_file(configurations):
     return filename
 
 
-def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, step_size, _saveToFile=0, input_profiles=False):
+def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, step_size, _saveToFile=0, input_profiles=False, x_axis_labels=False):
     """Simulate one CYMDIST FMU.
 
     """
@@ -261,7 +261,7 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
     # df = pandas.DataFrame(index=np.arange(start_time, stop_time, step_size) * 10, columns=column_names)
 
     # Co-simulation loop
-    for index, tim in enumerate(np.arange(start_time, stop_time, step_size)):
+    for index, tim, x_label in enumerate(zip(np.arange(start_time, stop_time, step_size), x_axis_labels)):
 
         # Get the outputs from griddyn
         griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
@@ -283,7 +283,7 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
         GRIDDYN_VA.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VA'))[0] / 2520)
         GRIDDYN_VB.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VB'))[0] / 2520)
         GRIDDYN_VC.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VC'))[0] / 2520)
-        simTim.append(tim)
+        simTim.append(x_label)
 
         # for name in cymdist_column_names:
         #     df.loc[simTim[-1], name] = cymdist.get_real(cymdist.get_variable_valueref(name))[0]
