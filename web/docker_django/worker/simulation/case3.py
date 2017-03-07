@@ -31,6 +31,7 @@ model_names = [model_filename] * len(times)
 now = datetime.datetime.now()
 start = now.replace(hour=19, minute=00, second=00, microsecond=0)
 time_labels = [start + datetime.timedelta(seconds=5 * index) for index in range(0, len(times))]
+time_labels = [value.time() for value in time_labels]
 
 # Generate the load profile
 load_profile = [value if value < 1.3 else 1.3 for value in np.sin(rad) / 2 + 1]
