@@ -96,12 +96,5 @@
       <Real
         unit="deg"/>
     </ScalarVariable>
-    <ScalarVariable
-      name="_saveToFile"
-      description="Flag for writing results"
-      causality="local">
-      <Real
-        start="0.0"/>
-    </ScalarVariable>
   </ModelVariables>
 </CYMDISTModelDescription>

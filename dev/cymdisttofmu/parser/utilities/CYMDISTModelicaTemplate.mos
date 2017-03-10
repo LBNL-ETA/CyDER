@@ -7,11 +7,11 @@ translateModelFMU(
   storeResult=false,
   modelName="",
   fmiVersion="2",
-  fmiType="cs",
+  fmiType="me",
   includeSource=false);
 Advanced.FMI.xmlIgnoreProtected=false;
 Advanced.AllowStringParameters=false;
-//exit();
+exit();
 
 
 

@@ -7,7 +7,7 @@
 # export PYTHONPATH=`pwd`
 
 from datetime import datetime
-import functions
+import fmu
 import os
 
 def main():
@@ -65,8 +65,8 @@ def exchange(configuration_file_name, time, input_voltage_values,
     """
     # Call the CYMDIST wrapper
     results = []
-    output_values=functions.fmu_wrapper(time, input_save_to_file, input_voltage_names,
-                                        input_voltage_values, configuration_file_name, output_names)
+    output_values=fmu.cymdist(time, input_save_to_file, input_voltage_names,
+                              input_voltage_values, configuration_file_name, output_names)
     n_out_nam = len(output_names)
     n_out_val = len(output_values)
     if (n_out_nam!=n_out_val):
