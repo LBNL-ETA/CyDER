@@ -15,7 +15,6 @@ A template named ``CYMDISTModeldescritpion.xml`` which shows such a file is prov
 This template should be adapted to create new XML input file.
 
 The following snippet shows an input file where the user defines 6 inputs and 6 output variables.
-The last variable ``_saveToFile`` with the ``causality`` ``local`` is required and should not be removed from the XML file.
 
 .. literalinclude:: ../../../parser/utilities/CYMDISTModelDescription.xml
    :language: xml
@@ -43,7 +42,4 @@ To parametrize the ``ScalarVariable`` as an output variable, the user needs to
   - define the type of variable (Currently only ``Real`` variables are supported) (Line 61)
   - give the unit of the variable (Currently only valid Modelica units are supported) (Line 62)
    
-.. note:: 
-   
-     If the variable ``_saveToFile`` is not present in the XML file, CYMDISTToFMU will exit with an error.
  

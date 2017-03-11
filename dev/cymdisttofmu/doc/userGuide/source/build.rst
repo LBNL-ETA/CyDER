@@ -19,7 +19,7 @@ The standard invocation of the CYMDISTToFMU tool is:
 
 .. code-block:: none
 
-  > python  <scriptDir>CYMDISTToFMU.py -i <input-file-path> 
+  > python  <scriptDir>CYMDISTToFMU.py <input-file-path> 
 
 where ``scriptDir`` is the path to the scripts directory of CYMDISTToFMU.
 This is the ``parser`` subdirectory of the installation directory.
@@ -30,7 +30,7 @@ An example of invoking ``CYMDISTToFMU.py`` on Windows is
 .. code-block:: none
 
   # Windows:
-  > python parser\CYMDISTToFMU.py -i test.xml
+  > python parser\CYMDISTToFMU.py test.xml
 
 All file paths can be absolute or relative.
 For readability, the rest of these instructions omit the paths to the script and input files.
@@ -40,9 +40,9 @@ For readability, the rest of these instructions omit the paths to the script and
 Script ``CYMDISTToFMU.py`` supports the following command-line switches:
 
 +----------------------------------------------------+----------------------------------------------------------+
-| option <arguments>                                  | Purpose                                                  |
+| option <arguments>                                 | Purpose                                                 |
 +====================================================+==========================================================+
-| -i <input-file-path>                               | Path to the input file (if not provided, a default input |   
+| <input-file-path>                                  | Path to the input file (if not provided, a default input |   
 |                                                    | file which is in 					|
 |                                                    | ``parser\utilities\CYMDISTModelDescription.xml``		|
 |						     | will be used.						|
