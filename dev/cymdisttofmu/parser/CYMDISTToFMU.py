@@ -57,22 +57,16 @@ def main():
     
     # Configure the argument parser
     parser = argparse.ArgumentParser(description='Export CYMDIST as a Functional Mock-up Unit'\
-                                      ' (FMU) for co-simulation 2.0.')
-    cymdist_group = parser.add_argument_group('Argument to export CYMDIST as an FMU. If the path' \
-                                              ' to the XML input file which defined the inputs' \
-                                              ' and outputs of the FMU is not provided,'\
-                                              ' the default XML file ' \
-                                              ' located in ' + XML_INPUT_FILE + " will be used.")
-
-    cymdist_group.add_argument('-i', "--xml-file-path",
-                        help="Path to the XML input file")
-
-    # Parse the arguments
+                                    ' (FMU) for co-simulation 2.0.'\
+                                    ' If the path to the XML input file which defined' \
+                                    ' the inputs and outputs of the FMU is not provided,'\
+                                    ' the default XML file located in ' \
+                                    + XML_INPUT_FILE + ' will be used.')
+    # Create args and parse them
+    parser.add_argument('xml_input_file', help = 'Path to the XML input file')
     args = parser.parse_args()
-        
-    # Set defaults for command-line options.
-    xml_file_path = args.xml_file_path
-
+    xml_file_path = str(args.xml_input_file)
+   
     if(xml_file_path is None):
         xml_file_path
         log.info('No XML input file was provided. The default XML file which is at ' 
@@ -115,18 +109,6 @@ def main():
      
     log.info('Export CYMDIST as an FMU in ' + 
           str((end - start).total_seconds()) + ' seconds.')
-
-def print_cmd_line_usage():
-    """ Print command line usage.
-
-    """
-
-    print('USAGE:', os.path.basename(__file__),
-          '-g <path-to-grid-file>  [-i <path-to-input-file>]'
-          ' [-b] <path-to-Buildings-file> [-x] <path-to-xsd-file>')
-    print('-- Export a CYMDIST model as a Functional Mockup Unit' + \
-          ' (FMU) for co-simulation 2.0')
-    print('-- Input -i, Path to the input file (required)')
 
 def quit_with_error(messageStr, showCmdLine):
     """ Terminate with an error.
@@ -395,8 +377,6 @@ class CYMDISTToFMU(object):
         indel = 20
         outdel = 18
         
-        save_to_file_def = False
-
         scalar_variables = []
         for child in root.iter('ModelVariables'):
             for element in child:
@@ -407,7 +387,6 @@ class CYMDISTToFMU(object):
                     element.attrib.get('causality').lower()
                 # Iterate through children of ScalarVariables and get
                 # attributes
-                # scalar_variable['name'] = name
                 if (causality == 'input'):
                     input_variable_names.append(name)
                     log.info('Invalid characters will be removed from the '
@@ -427,14 +406,7 @@ class CYMDISTToFMU(object):
                                                      + str(inpY1) + '},'
                                                      '{-100,' + str(inpY2)
                                                      + '}})))')
-                
-                                    # Get the node name of an output variable
-                                    
-#                 if (causality == 'model'):
-#                     configuration_file_name = name
-#                 if (causality == 'local'):
-#                     write_results = name
-#                     save_to_file_def = True
+
                 if (causality == 'output'):
                     output_variable_names.append(name)
                     log.info('Invalid characters will be removed from the '
@@ -482,8 +454,6 @@ class CYMDISTToFMU(object):
                     if ((start is None) and ((causality == 'input')
                                              or causality == 'parameter')):
                         # Set the start value of input and parameter to zero.
-                        # This assumes that we are only dealing with Integers
-                        # This is because of the start value which is set to 0.0.
                         log.warning('Start value of variable '
                                     + name + ' with causality '
                                     + causality + ' is not defined.'

@@ -18,19 +18,20 @@ sys.path.append(parser_path)
 
 import CYMDISTToFMU as cymdist
 
-BUILDINGS_PATH = ''
+CYMDISTToFMU_LIB_PATH = ''
 utilities_path = os.path.abspath(os.path.join(script_path, '..', 'parser', 'utilities'))
-XSD_PATH = os.path.join(utilities_path, 'CYMDISTModelDescription.xsd')
+XSD_FILE_PATH = os.path.join(utilities_path, 'CYMDISTModelDescription.xsd')
 XML_INPUT_PATH = os.path.join(utilities_path, 'CYMDISTModelDescription.xml')
 INPUT_FILE_PATH = os.path.join(utilities_path, 'CYMDIST.inp')
-MOT_PATH = os.path.join(utilities_path, 'CYMDISTModelicaTemplate.mo')
-MOST_PATH = os.path.join(utilities_path, 'CYMDISTModelicaTemplate.mos')
+MO_TEMPLATE_PATH = os.path.join(utilities_path, 'CYMDISTModelicaTemplate.mo')
+MOS_TEMPLATE_PATH = os.path.join(utilities_path, 'CYMDISTModelicaTemplate.mos')
 
-CYMDIST_T = cymdist.CYMDISTToFMU(INPUT_FILE_PATH,
-                                      XML_INPUT_PATH,
-                                      BUILDINGS_PATH,
-                                      MOT_PATH, MOST_PATH,
-                                      XSD_PATH, 0)
+CYMDIST_T = cymdist.CYMDISTToFMU(XML_INPUT_PATH,
+                                CYMDISTToFMU_LIB_PATH,
+                                MO_TEMPLATE_PATH, 
+                                MOS_TEMPLATE_PATH,
+                                XSD_FILE_PATH)
+
 
 
 class Tester(unittest.TestCase):
