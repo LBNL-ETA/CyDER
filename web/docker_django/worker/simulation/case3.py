@@ -47,7 +47,9 @@ input_profiles = [{'x': time_labels, 'y': load_profile, 'label': 'load profile'}
                   {'x': time_labels, 'y': pv_profile, 'label': 'pv profile'}]
 
 # Initiate the configuration file
-configuration = initialize_configuration(times, model_names)
+print('Creating a configuration file...')
+parent_folder = 'D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//'
+configuration = initialize_configuration(times, parent_folder, model_names)
 
 # Shift load and pv in the configuration file
 configuration = shift_load_and_pv(load_profile, pv_profile, configuration)
@@ -61,7 +63,9 @@ for index, time in enumerate(configuration['times']):
     configuration['models'][index]['new_loads'].append({'section_id': section_id,
                                                         'active_power': power_demand * load_profile[index]})
 # Create the configuration file
-configuration_filename = create_configuration_file(configuration)
+output_folder = 'D://Users//Jonathan//Documents//GitHub//configuration_files//'
+configuration_filename = create_configuration_file(configuration, output_folder)
+print('Configuration file created: ' + configuration_filename.split('//')[-1])
 
 start_time = times[0]
 end_time = times[-1]

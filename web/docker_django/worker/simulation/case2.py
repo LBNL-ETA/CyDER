@@ -49,13 +49,17 @@ model_names = [model_filename] * len(times)
 ev_profile = [int(coef * nb_evs) for coef in vehicle_charging_coefs]
 
 # Initiate the configuration file
-configuration = initialize_configuration(times, model_names)
+print('Creating a configuration file...')
+parent_folder = 'D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//'
+configuration = initialize_configuration(times, parent_folder, model_names)
 
 # Shift load for ev consumers
 configuration = ev_consumption(ev_profile, configuration)
 
 # Create the configuration file
-configuration_filename = create_configuration_file(configuration)
+output_folder = 'D://Users//Jonathan//Documents//GitHub//configuration_files//'
+configuration_filename = create_configuration_file(configuration, output_folder)
+print('Configuration file created: ' + configuration_filename.split('//')[-1])
 
 start_time = times[0]
 end_time = times[-1]
