@@ -8,6 +8,7 @@ import pdb
 import json
 import cymdist
 import matplotlib
+from matplotlib.ticker import FormatStrFormatter
 import matplotlib.pyplot as plt
 plt.switch_backend('Qt4Agg')
 import numpy as np
@@ -239,18 +240,22 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
     ax2 = fig.add_subplot(313)
     ax.set_ylabel('Inputs')
     ax1.set_ylabel('Feeder currents\n(cymDist) [A]')
-    ax2.set_ylabel('Feeder voltages\n(GridDyn) [pu]')
+    ax2.set_ylabel('Feeder voltages\n(GridDyn) [V]')
+    ax2.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
     ax2.set_xlabel('Time (minutes)')
     if input_profiles:
         for input_profile in input_profiles:
             line, = ax.plot(input_profile['x'], input_profile['y'], label=input_profile['label'])
-    line1A, = ax1.plot(simTim, CYMDIST_IA)
-    line1B, = ax1.plot(simTim, CYMDIST_IB)
-    line1C, = ax1.plot(simTim, CYMDIST_IC)
-    line2A, = ax2.plot(simTim, GRIDDYN_VA)
-    line2B, = ax2.plot(simTim, GRIDDYN_VB)
-    line2C, = ax2.plot(simTim, GRIDDYN_VC)
+    line1A, = ax1.plot(simTim, CYMDIST_IA, label='Phase A')
+    line1B, = ax1.plot(simTim, CYMDIST_IB, label='Phase B')
+    line1C, = ax1.plot(simTim, CYMDIST_IC, label='Phase C')
+    line2A, = ax2.plot(simTim, GRIDDYN_VA, label='Phase A')
+    line2B, = ax2.plot(simTim, GRIDDYN_VB, label='Phase B')
+    line2C, = ax2.plot(simTim, GRIDDYN_VC, label='Phase C')
     ax.legend(loc=0)
+    ax1.legend(loc=1)
+    ax2.legend(loc=1)
+    fig.tight_layout()
 
     # # Save all the result to a pandas dataframe
     # cymdist_column_names = ['IA', 'IB', 'IC', 'IAngleA', 'IAngleB', 'IAngleC']
@@ -280,9 +285,9 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
         CYMDIST_IA.append(cymdist.get_real(cymdist.get_variable_valueref('IA'))[0])
         CYMDIST_IB.append(cymdist.get_real(cymdist.get_variable_valueref('IB'))[0])
         CYMDIST_IC.append(cymdist.get_real(cymdist.get_variable_valueref('IC'))[0])
-        GRIDDYN_VA.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VA'))[0] / 2520)
-        GRIDDYN_VB.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VB'))[0] / 2520)
-        GRIDDYN_VC.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VC'))[0] / 2520)
+        GRIDDYN_VA.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VA'))[0])
+        GRIDDYN_VB.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VB'))[0])
+        GRIDDYN_VC.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VC'))[0])
         simTim.append(tim / 60)
 
         # for name in cymdist_column_names:

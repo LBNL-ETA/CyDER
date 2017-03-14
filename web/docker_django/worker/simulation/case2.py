@@ -41,7 +41,7 @@ vehicle_charging_coefs = df[df.time.isin(times)].Home.tolist()
 input_profiles = [{'x': time_labels, 'y': vehicle_charging_coefs, 'label': 'vehicle profile'}]
 
 # Create time and model name vectors
-sec_per_sim = 0.5
+sec_per_sim = 5 * 60
 times = np.linspace(0, len(vehicle_charging_coefs) * sec_per_sim, len(vehicle_charging_coefs)).tolist()
 model_names = [model_filename] * len(times)
 
