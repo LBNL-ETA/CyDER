@@ -87,8 +87,6 @@ def simulate_two_griddyn14bus_fmu():
 
     # Initialize the FMUs
     griddyn.initialize()
-    # Verify that the multiplier is set
-    print ("This is the multiplier after it is set " + str(griddyn.get('multiplier11')))
     
     # Create vector to store time
     simTim=[]
@@ -164,7 +162,8 @@ def simulate_one_cymdist_fmu():
     start = datetime.now()
     cymdist.time = 0
     cymdist.set_real(cymdist_input_valref, cymdist_input_values)
-    print(cymdist.get_real(cymdist.get_variable_valueref('IAngleA')))
+    print("This is the result of the angle IAngleA: " 
+          + str(cymdist.get_real(cymdist.get_variable_valueref('IAngleA'))))
     # Terminate FMUs
     cymdist.terminate()
     end = datetime.now()
@@ -204,18 +203,12 @@ def simulate_one_griddyn14bus_fmus():
     # Get the value references of griddyn outputs
     for elem in griddyn_output_names:
         griddyn_output_valref.append(griddyn.get_variable_valueref(elem))
-    
-    # Verify that the multiplier is set
-    print ("This is the multiplier before it is set " + str(griddyn.get('multiplier')))
 
     # Initialize the FMUs
     griddyn.initialize()
     
     # Set the value of the multiplier
     griddyn.set('multiplier', 3.0)
-    
-    # Verify that the multiplier is set
-    print ("This is the multiplier after it is set " + str(griddyn.get('multiplier')))
     
     # Create vector to store time
     simTim=[]
@@ -241,8 +234,8 @@ def simulate_cymdist_griddyn14bus_fmus():
     # Parameters which will be arguments of the function
     start_time = 0.0
     stop_time  = 300
-    step_size  = 5.0
-    sleep_time = 2.0
+    step_size  = 300
+    
     # Path to configuration file
     path_config="config.json"
     cymdist_con_val_str = bytes(path_config, 'utf-8')
@@ -308,12 +301,6 @@ def simulate_cymdist_griddyn14bus_fmus():
     cymdist.event_update()
     cymdist.enter_continuous_time_mode()
     
-    # Verify that the multiplier is set
-    print ("This is the multiplier after it is set " + str(griddyn.get('multiplier')))
-    
-    # Get the output of _saveToFile
-    print ("This is the _saveToFile " + str(cymdist.get('_saveToFile')))
-    
     # Create vector to store time
     simTim=[]
     CYMDIST_IA = []
@@ -328,7 +315,7 @@ def simulate_cymdist_griddyn14bus_fmus():
 
     # Create the plot
     fig = plt.figure()
-    ax1 = fig.add_subplot(212)
+    ax1 = fig.add_subplot(211)
     ax2 = fig.add_subplot(212)
     ax1.set_ylabel('Feeder currents\n(cymDist) [A]')
     ax2.set_ylabel('Feeder voltages\n(GridDyn) [pu]')
@@ -340,11 +327,13 @@ def simulate_cymdist_griddyn14bus_fmus():
     line2A, = ax2.plot(simTim, GRIDDYN_VA)
     line2B, = ax2.plot(simTim, GRIDDYN_VB)
     line2C, = ax2.plot(simTim, GRIDDYN_VC)
-    ax.legend(loc=0)
+    ax1.legend(loc=0)
     
     # Co-simulation loop
     start = datetime.now()
+    cnt = 0
     for tim in np.arange(start_time, stop_time, step_size):
+        cnt+=1
         # Get the outputs from griddyn
         griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
         # set the time in cymdist
@@ -379,7 +368,7 @@ def simulate_cymdist_griddyn14bus_fmus():
         ax2.relim()
         ax2.autoscale_view(True,True,True)
         fig.canvas.draw()
-        plt.pause(0.01)
+        plt.pause(1)
         #new bit here
         #fig.clf() #where f is the figure
         #plt.close(fig)
@@ -389,8 +378,8 @@ def simulate_cymdist_griddyn14bus_fmus():
     griddyn.terminate()
     end = datetime.now()
     
-    print('Ran a single CYMDIST simulation in ' + 
-          str((end - start).total_seconds()) + ' seconds.')
+    print('Ran a coupled GridDyn/CYMDIST simulation in ' + 
+          str((end - start).total_seconds() - cnt) + ' seconds.')
 
 if __name__ == '__main__':
 
