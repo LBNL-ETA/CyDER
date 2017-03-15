@@ -1,5 +1,5 @@
 within ;
-model GridDyn "This model emulates a GridDyn model"
+model DummyGridDyn "This model emulates a GridDyn model"
 
   Modelica.Blocks.Sources.RealExpression con(y=2520)
     annotation (Placement(transformation(extent={{60,32},{80,52}})));
@@ -61,4 +61,4 @@ equation
 <p>The outputs values are</p>
 <p style=\"margin-left: 30px;\">[7287, 7299, 7318, 7272, 2118, 6719, -284, -7184, 3564]. </p>
 </html>"));
-end GridDyn;
+end DummyGridDyn;
