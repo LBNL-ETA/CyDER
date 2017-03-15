@@ -63,15 +63,15 @@ def main():
                                     ' the default XML file located in ' \
                                     + XML_INPUT_FILE + ' will be used.')
     # Create args and parse them
-    parser.add_argument('xml_input_file', help = 'Path to the XML input file')
+    parser.add_argument('xml_input_file', help = 'Path to the XML input file', nargs='?')
     args = parser.parse_args()
-    xml_file_path = str(args.xml_input_file)
+    xml_file_path = args.xml_input_file
    
-    if(xml_file_path is None):
-        xml_file_path
+    if xml_file_path is None :
         log.info('No XML input file was provided. The default XML file which is at ' 
                  + XML_INPUT_FILE + " will be used.")
         xml_file_path = XML_INPUT_FILE
+    print ("This is the xml_file " + xml_file_path)
     CYMDIST = CYMDISTToFMU(xml_file_path,
                             CYMDISTToFMU_LIB_PATH,
                             MO_TEMPLATE_PATH,
