@@ -40,7 +40,14 @@ The following requirements must be met to import and run a CYMDIST FMU:
  add ``path_to_CYME\CYME`` to the ``PYTHONPATH``.
  Note that ``cympy`` is not included in the name of the variable.   
 
-5. Upon request, the simulation results are saved in a result file which 
+5. The CYMDIST installation directory must be added to the system ``PATH``. 
+   This directory contains runtime DLLS (``mkl_core.dll``, ``mkl_def.dll``) 
+   that needed at runtime by the CYMDIST FMU. 
+
+   The CYMDIST installation directory is typically found in ``path_to_CYME\CYME\`, 
+   where ``path_to_CYME`` is the path to the installation folder of CYME 7.2.
+
+6. Upon request, the simulation results are saved in a result file which 
    is created in the current working directory. 
    The name of the result file is ``xxx_result_.pickle``, where xxx 
    is the FMU model name as defined in the XML input file.
