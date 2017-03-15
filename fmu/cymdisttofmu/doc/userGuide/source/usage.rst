@@ -27,7 +27,7 @@ The following requirements must be met to import and run a CYMDIST FMU:
      
    - In the Edit System Variable (or New System Variable) window, 
      specify the value of the PYTHONPATH environment variable 
-	 which should be in our case be ``dev\cymdisttofmu\cymdist``. 
+     which should be in our case be ``dev\cymdisttofmu\cymdist``. 
 
 4. The CYMDIST Python API directory must be added to the ``PYTHONPATH``. 
    This directory contains scripts needed at runtime by the CYMDIST FMU. 
