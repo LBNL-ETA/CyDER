@@ -59,5 +59,7 @@ To compile :term:`PyFMI` from source, run
 
 where ``path_to_FMI_Library\`` is the path to the FMI library.
 
+To use :term:`PyFMI` as a master algorithm to couple a CYMDIST FMU with GridDyn FMU,
+we refer to the documentation located in ``fmu/master/doc/userGuide``.
 
 

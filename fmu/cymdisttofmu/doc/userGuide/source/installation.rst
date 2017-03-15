@@ -50,13 +50,10 @@ To install CYMDISTToFMU, proceed as follows:
 
 The installation directory should contain the following subdirectories:
 
-- ``dev/cymdisttofmu/``
+- ``fmu/cymdisttofmu/``
 
   - ``bin/``
     (Python scripts for running unit tests)
-
-  - ``cymdist/``
-    (Python scripts for communicating with CYMDIST)
 
   - ``doc/``
     (Documentation)

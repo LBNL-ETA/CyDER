@@ -11,11 +11,12 @@ The following requirements must be met to import and run a CYMDIST FMU:
 
 2. CYME version 7.2 must be installed. CYME can be downloaded from `www.cyme.com <https://www.cyme.com>`_.
 
-3. The ``cymdist`` functions directory must be added to the ``PYTHONPATH``.  
+3. The ``fmu_code`` functions directory must be added to the ``PYTHONPATH``.  
    This directory contains functions needed at runtime by the CYMDIST FMU.
-   The ``cymdist`` functions folder can be found in the distribution folder of CYMDISTToFMU. It is in ``dev\cymdist``. 
+   The ``fmu_code`` functions folder can be found at the top level of
+   the distribution folder of CyDER. It is in ``web\docker_django\worker\simulation``. 
 
-   To add the ``cymdist`` functions folder to the ``PYTHONPATH``:
+   To add the ``fmu_code`` functions folder to the ``PYTHONPATH``:
 
    - In Search, search for and then select: System (Control Panel).
      
@@ -27,7 +28,8 @@ The following requirements must be met to import and run a CYMDIST FMU:
      
    - In the Edit System Variable (or New System Variable) window, 
      specify the value of the PYTHONPATH environment variable 
-     which should be in our case be ``dev\cymdisttofmu\cymdist``. 
+     which should be in our case the full path to
+     ``web\docker_django\worker\simulation\fmu_code``. 
 
 4. The CYMDIST Python API directory must be added to the ``PYTHONPATH``. 
    This directory contains scripts needed at runtime by the CYMDIST FMU. 
