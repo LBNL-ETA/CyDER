@@ -91,15 +91,15 @@ Line imports the :term:`PyFMI` modules which is needed for the coupling.
 
 Line 25 loads the CYMDIST FMU 
 
-Line 26 loads the GridDyn FMU. We used in this example a GridDyn FMu which models IEEE Bus 14.
+Line 26 loads the GridDyn FMU. We used in this example a GridDyn FMU which models the IEEE 14-Bus System.
 
 Line 28 and 29 set-up the parameters for the simulation.
 
 Line 32 - 37 create the vector of input and output names for both FMUs.
 
-Line 45 - 53 get the value references of the CYMDIST and GridDyn varaibles
+Line 45 - 53 get the value references of the CYMDIST and GridDyn variables
 
-Line 69 - 70  initialize the FMUs
+Line 69 and 70 initialize the FMUs.
 
 Line 73 calls event update for the CYMDIST FMU. This is required by CYMDIST which is 
 a model exchange FMU and hence needs to call this function prior to entering
@@ -107,15 +107,15 @@ the continous time mode.
 
 Line 74 CYMDIST enters in continuous time mode.
 
-Line 77 In the loop, CYMDIST and GridDyn are evaluated
+Line 77 In the loop, CYMDIST and GridDyn are evaluated.
 
 First, The outputs of GridDyn are retrieved. these outputs must be the coverged solution between
 CYMDIST and GridDyn at the time when GridDyn is invoked.
  
 Second, The outputs of GridDyn are set as inputs of CYMDIST at the same time instant.
-CYMDIST computes the outputs at that time instant and send the updated outputs 
+CYMDIST computes the outputs at that time instant and send the updated outputs. 
 
-Line 88-89 completes the simulation and terminate both FMUs.
+Line 88 and 89 complete the simulation and terminate both FMUs.
  
 .. literalinclude:: scripts/coupling.py
    :language: python

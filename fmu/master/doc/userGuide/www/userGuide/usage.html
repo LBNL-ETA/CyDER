@@ -114,11 +114,18 @@ is the path to the installation folder of CYME 7.2.</p>
 <div>To add the CYMDIST Python API scripts folder to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>,
 add <code class="docutils literal"><span class="pre">path_to_CYME\CYME</span></code> to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>.
 Note that <code class="docutils literal"><span class="pre">cympy</span></code> is not included in the name of the variable.</div></blockquote>
-<ol class="arabic simple" start="5">
-<li>Upon request, the simulation results are saved in a result file which
+<ol class="arabic" start="5">
+<li><p class="first">The CYMDIST installation directory must be added to the system <code class="docutils literal"><span class="pre">PATH</span></code>.
+This directory contains runtime DLLS (<code class="docutils literal"><span class="pre">mkl_core.dll</span></code>, <code class="docutils literal"><span class="pre">mkl_def.dll</span></code>)
+that needed at runtime by the CYMDIST FMU.</p>
+<p>The CYMDIST installation directory is typically found in <code class="docutils literal"><span class="pre">path_to_CYME\CYME\`,</span>
+<span class="pre">where</span> <span class="pre">``path_to_CYME</span></code> is the path to the installation folder of CYME 7.2.</p>
+</li>
+<li><p class="first">Upon request, the simulation results are saved in a result file which
 is created in the current working directory.
 The name of the result file is <code class="docutils literal"><span class="pre">xxx_result_.pickle</span></code>, where xxx
-is the FMU model name as defined in the XML input file.</li>
+is the FMU model name as defined in the XML input file.</p>
+</li>
 </ol>
 </div>
 

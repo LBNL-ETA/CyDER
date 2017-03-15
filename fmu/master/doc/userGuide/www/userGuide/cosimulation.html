@@ -88,8 +88,35 @@
             
   <div class="section" id="co-simulation">
 <span id="cosimulation"></span><h1>3. Co-simulation<a class="headerlink" href="#co-simulation" title="Permalink to this headline">¶</a></h1>
-<p>This section explains how to link a CYMDIST FMU with another FMU for co-simulation.
-In this section, we used the GridDyn FMU for the simulation coupling.</p>
+<p>This section explains how to link a CYMDIST FMU with another FMU for co-simulation.</p>
+<p>Coupling GridDyn to CYMDIST creates an algebraic loop that requires an iterative solution.
+Solving this nonlinear system of equations is not likely to be robust,
+because GridDyn and CYMDIST both contain iterative solvers.
+Therefore, the residual function of this algebraic loop will have
+numerical noise which is caused by the embedded iterative solvers.
+To avoid this problem, LLNL proposes to approximate CYMDIST by a polynomial
+and then solve the coupled system of equations that is formed by this polynomial and GridDyn.
+Details about approximating CYMDIST with a polynomial are discussed in the next sections.
+On occasion, this will require that CYMDIST, and its optional controller,
+to be called multiple times with varying input, but the same state variables,
+in order to compute its polynomial approximation.</p>
+<p>Next, we describe how the system model needs to be configured to allow GridDyn
+to approximate CYMDIST as a polynomial. We consider the case where CYMDIST is coupled to GridDyn.
+For the discussion, we use p for parameters (which do not change in time), u for inputs,
+which may change in time, y for outputs and t for time. We will denote with subscript g quantities of GridDyn,
+and with subscript c quantities of CYMDIST.  We will use f(·) to denote a function with unassigned variables.</p>
+<p>Hence, the GridDyn model is of the form</p>
+<p><span class="math">\(y_g = f_g(p_g , u_g , t)\)</span>,</p>
+<p>while the CYMDIST model is of the form</p>
+<p><span class="math">\(y_c = f_c(p_c , u_c , t)\)</span>.</p>
+<p>Note that we make the assumption that both models only take voltage or current as inputs,
+that is, we assume u_g  = y_c and u_c  = y_g, and the CYMDIST model has no state.
+These models are connected as shown in <a href="#id1"><span class="problematic" id="id2">:num:`Figure #fig-algebraicloop`</span></a> .</p>
+<div class="figure" id="id3">
+<span id="fig-algebraicloop"></span><a class="reference internal image-reference" href="_images/coupling_algebraic.png"><img alt="_images/coupling_algebraic.png" src="_images/coupling_algebraic.png" style="width: 414.0px; height: 437.4px;" /></a>
+<p class="caption"><span class="caption-text">Coupling of CYMDIST with GridDyn with algebraic loop to be broken.</span></p>
+</div>
+<p>In this section, we used the GridDyn FMU for the simulation coupling.</p>
 <p>The following code snippet shows how to import and link a CYMDIST FMU (<code class="docutils literal"><span class="pre">CYMDIST.FMU</span></code>) with a
 GridDyn FMU (<code class="docutils literal"><span class="pre">GridDyn.fmu</span></code>).</p>
 <p>Line 1 and 2 import the <a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> modules which are needed for the coupling.</p>
