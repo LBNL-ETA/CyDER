@@ -6,28 +6,28 @@ except:
     pass
 
 
-def cymdist(time, input_save_to_file, input_voltage_names,
-            input_voltage_values, configuration_filename, output_names):
+def cymdist(configuration_filename, time, input_voltage_values, 
+            input_voltage_names, output_names, input_save_to_file):
     """Communicate with the FMU to launch a Cymdist simulation
 
     Args:
+        configuration_filename (String): filename for the model configurations
         time (Float): Simulation time
-        input_save_to_file (1 or 0): save all nodes results to a file
+        input_voltage_values (Floats): voltage vector values (same length as voltage_names)
         input_voltage_names (Strings): voltage vector names
-        input_voltage_values (Floats): voltage vector values (same lenght as voltage_names)
-        configuration_file (String): filename for the model configurations
         output_names (Strings): vector of name matching CymDIST nomenclature
-
+        input_save_to_file (1 or 0): save all nodes results to a file
+        
     Example:
         >>> time = 0
         >>> input_save_to_file = 0
         >>> input_voltage_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
         >>> input_voltage_values = [2520, 2520, 2520, 0, -120, 120]
-        >>> configuration_file = 'config.json'
+        >>> configuration_filename = 'config.json'
         >>> output_names = ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']
 
-        >>> fmu_wrapper(input_model_filename, input_save_to_file,
-                input_voltage_names, input_voltage_values, output_names)
+        >>> cymdist(configuration_filename, time, input_voltage_values, 
+                input_voltage_names, output_names, input_save_to_file)
     Note:
         config.json file format:
         {times: [0]
