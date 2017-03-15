@@ -25,7 +25,7 @@ seaborn.despine()
 plt.close()
 
 
-def initialize_configuration(times, model_names):
+def initialize_configuration(times, parent_folder, model_names):
     configuration = {'times': times,
                      'interpolation_method': 'closest_time',
                      'models': []
@@ -33,7 +33,7 @@ def initialize_configuration(times, model_names):
 
     for time, model_name in zip(times, model_names):
         model = {
-           'filename': 'D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//' + model_name,
+           'filename': parent_folder + model_name,
            'new_loads': [],
            'set_loads': [],
            'new_pvs': [],
@@ -101,7 +101,7 @@ def ev_consumption(ev_profile, configuration):
     return configuration
 
 
-def create_configuration_file(configurations):
+def create_configuration_file(configurations, output_folder):
     """
     Input:
     configuration = {
@@ -130,10 +130,9 @@ def create_configuration_file(configurations):
     Return configuration filename
     """
     # Generate random filename
-    parent_path = 'D://Users//Jonathan//Documents//GitHub//configuration_files//'
     random_string = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
     random_string += '_config.json'
-    filename = parent_path + random_string
+    filename = output_folder + random_string
 
     with open(filename, 'w') as outfile:
         json.dump(configurations, outfile)

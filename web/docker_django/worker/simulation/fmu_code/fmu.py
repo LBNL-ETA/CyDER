@@ -163,18 +163,12 @@ def cymdist(time, input_save_to_file, input_voltage_names,
         # nodes.to_csv(input_model_filename + '_result.csv')
         return True
 
-    def _output_values(source_node_id, output_names, DEFAULT_VALUE=0):
-        """DEFAULT_VALUE value to output in case of a NaN value or an error"""
+    def _output_values(source_node_id, output_names):
+        """Query the right output name at the source node"""
         output = []
         for category in output_names:
-            try:
-                temp = cympy.study.QueryInfoNode(category, source_node_id)
-                if temp:
-                    output.append(temp)
-                else:
-                    output.append(DEFAULT_VALUE)
-            except:
-                output.append(DEFAULT_VALUE)
+            temp = cympy.study.QueryInfoNode(category, source_node_id)
+            output.append(float(temp) * 1.0)
         return output
 
     # Process input and check for validity
@@ -218,5 +212,5 @@ def cymdist(time, input_save_to_file, input_voltage_names,
 
     # Return the right values
     source_node_id = cympy.study.GetValueTopo("Sources[0].SourceNodeID", networks[0])
-    output = _output_values(source_node_id, output_names, DEFAULT_VALUE=0)
+    output = _output_values(source_node_id, output_names)
     return output
