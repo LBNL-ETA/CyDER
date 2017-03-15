@@ -40,7 +40,7 @@ For readability, the rest of these instructions omit the paths to the script and
 Script ``CYMDISTToFMU.py`` supports the following command-line switches:
 
 +----------------------------------------------------+----------------------------------------------------------+
-| option <arguments>                                 | Purpose                                                 |
+| option <arguments>                                 | Purpose                                                  |
 +====================================================+==========================================================+
 | <input-file-path>                                  | Path to the input file (if not provided, a default input |   
 |                                                    | file which is in 					|
