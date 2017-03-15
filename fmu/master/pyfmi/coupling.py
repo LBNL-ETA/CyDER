@@ -114,7 +114,7 @@ def simulate_one_cymdist_fmu():
     step_size  = 5.0
 
     # Path to configuration file
-    path_config="config.json"
+    path_config=os.path.abspath("config.json")
     cymdist_con_val_str = bytes(path_config, 'utf-8')
     
     cymdist_input_valref=[] 
@@ -160,7 +160,6 @@ def simulate_one_cymdist_fmu():
 
     print ("Starting the time integration" )    
     start = datetime.now()
-    cymdist.time = 0
     cymdist.set_real(cymdist_input_valref, cymdist_input_values)
     print("This is the result of the angle IAngleA: " 
           + str(cymdist.get_real(cymdist.get_variable_valueref('IAngleA'))))
@@ -228,7 +227,7 @@ def simulate_one_griddyn14bus_fmus():
           str((end - start).total_seconds()) + ' seconds.')
 
 def simulate_cymdist_griddyn14bus_fmus():
-    """Simulate one CYMDIST FMU.
+    """Simulate coupled GridDyn and CYMDIST FMUs.
         
     """  
     # Parameters which will be arguments of the function
@@ -237,7 +236,7 @@ def simulate_cymdist_griddyn14bus_fmus():
     step_size  = 300
     
     # Path to configuration file
-    path_config="config.json"
+    path_config=os.path.abspath("config.json")
     cymdist_con_val_str = bytes(path_config, 'utf-8')
     
     griddyn_input_valref=[]

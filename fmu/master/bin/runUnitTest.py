@@ -2,7 +2,7 @@
 #######################################################
 # Script with unit tests for the master algorithm CyDER
 #
-# TSNouidui@lbl.gov                            2016-09-06
+# TSNouidui@lbl.gov                          2016-09-06
 #######################################################
 import unittest
 import os
