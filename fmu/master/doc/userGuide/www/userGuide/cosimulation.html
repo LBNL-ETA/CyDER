@@ -88,8 +88,10 @@
             
   <div class="section" id="co-simulation">
 <span id="cosimulation"></span><h1>3. Co-simulation<a class="headerlink" href="#co-simulation" title="Permalink to this headline">¶</a></h1>
-<p>This section explains how to link a CYMDIST FMU with another FMU for co-simulation.</p>
-<p>Coupling GridDyn to CYMDIST creates an algebraic loop that requires an iterative solution.
+<p>This section explains how to link a CYMDIST FMU with another FMU for co-simulation.
+We used the GridDyn FMU for the simulation coupling and explain the problematic caused
+by coupling the two tools with the solution implemented in CyDER.</p>
+<p>Coupling GridDyn FMU to CYMDIST creates an algebraic loop that requires an iterative solution.
 Solving this nonlinear system of equations is not likely to be robust,
 because GridDyn and CYMDIST both contain iterative solvers.
 Therefore, the residual function of this algebraic loop will have
@@ -97,40 +99,71 @@ numerical noise which is caused by the embedded iterative solvers.
 To avoid this problem, LLNL proposes to approximate CYMDIST by a polynomial
 and then solve the coupled system of equations that is formed by this polynomial and GridDyn.
 Details about approximating CYMDIST with a polynomial are discussed in the next sections.
-On occasion, this will require that CYMDIST, and its optional controller,
-to be called multiple times with varying input, but the same state variables,
-in order to compute its polynomial approximation.</p>
+On occasion, this will require that CYMDIST to be called multiple times with varying input,
+but the same state variables, in order to compute its polynomial approximation.</p>
 <p>Next, we describe how the system model needs to be configured to allow GridDyn
 to approximate CYMDIST as a polynomial. We consider the case where CYMDIST is coupled to GridDyn.
-For the discussion, we use p for parameters (which do not change in time), u for inputs,
-which may change in time, y for outputs and t for time. We will denote with subscript g quantities of GridDyn,
-and with subscript c quantities of CYMDIST.  We will use f(·) to denote a function with unassigned variables.</p>
+For the discussion, we use <span class="math">\(p\)</span> for parameters (which do not change in time), <span class="math">\(u\)</span> for inputs,
+which may change in time, <span class="math">\(y\)</span> for outputs and <span class="math">\(t\)</span> for time. We will denote with subscript <span class="math">\(g\)</span> quantities of GridDyn,
+and with subscript <span class="math">\(c\)</span> quantities of CYMDIST.  We will use <span class="math">\(f(·)\)</span> to denote a function with unassigned variables.</p>
 <p>Hence, the GridDyn model is of the form</p>
 <p><span class="math">\(y_g = f_g(p_g , u_g , t)\)</span>,</p>
 <p>while the CYMDIST model is of the form</p>
 <p><span class="math">\(y_c = f_c(p_c , u_c , t)\)</span>.</p>
 <p>Note that we make the assumption that both models only take voltage or current as inputs,
-that is, we assume u_g  = y_c and u_c  = y_g, and the CYMDIST model has no state.
-These models are connected as shown in <a href="#id1"><span class="problematic" id="id2">:num:`Figure #fig-algebraicloop`</span></a> .</p>
-<div class="figure" id="id3">
-<span id="fig-algebraicloop"></span><a class="reference internal image-reference" href="_images/coupling_algebraic.png"><img alt="_images/coupling_algebraic.png" src="_images/coupling_algebraic.png" style="width: 414.0px; height: 437.4px;" /></a>
-<p class="caption"><span class="caption-text">Coupling of CYMDIST with GridDyn with algebraic loop to be broken.</span></p>
+that is, we assume <span class="math">\(u_g  = y_c\)</span> and <span class="math">\(u_c  = y_g\)</span>, and the CYMDIST model has no state.
+These models are connected as shown in
+<a href="#id1"><span class="problematic" id="id2">:num:`Figure #fig-couplingwloop`</span></a>.</p>
+<div class="figure" id="id5">
+<span id="fig-couplingwloop"></span><a class="reference internal image-reference" href="_images/coupling_w_loop.png"><img alt="_images/coupling_w_loop.png" src="_images/coupling_w_loop.png" style="width: 345.0px; height: 364.5px;" /></a>
+<p class="caption"><span class="caption-text">Coupling of CYMDIST with GridDyn with algebraic loop.</span></p>
 </div>
-<p>In this section, we used the GridDyn FMU for the simulation coupling.</p>
-<p>The following code snippet shows how to import and link a CYMDIST FMU (<code class="docutils literal"><span class="pre">CYMDIST.FMU</span></code>) with a
-GridDyn FMU (<code class="docutils literal"><span class="pre">GridDyn.fmu</span></code>).</p>
-<p>Line 1 and 2 import the <a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> modules which are needed for the coupling.</p>
-<p>Line 8 loads the CYMDIST FMU</p>
-<p>Line 9 loads the GridDyn FMU</p>
-<p>Line 11 defines a vector with the CYMDIST and the GridDyn FMUs models.</p>
-<p>Line 12 defines the connections between the CYMDIST and the GridDyn FMUs
-<code class="docutils literal"><span class="pre">(gridyn,</span> <span class="pre">&quot;VMAG_A&quot;,</span> <span class="pre">cymdist,</span> <span class="pre">&quot;VMAG_A&quot;)</span></code> means that the output <code class="docutils literal"><span class="pre">VMAG_A</span></code>
-of the GridDyn FMU is connected to the input <code class="docutils literal"><span class="pre">VMAG_A</span></code> of the CYMDIST FMU.</p>
-<p>Line 25 passes the FMUs models and their connection to the master algorithm.</p>
-<p>Line 27 gets the simulation option object.</p>
-<p>Line 28 sets the communication step size.</p>
-<p>Line 29 sets the logging to true.</p>
-<p>Line 31 invokes the function which is used to simulate the coupled models.</p>
+<p>To implement the computation, these models are encapsulated as FMUs.
+To  approximate CYMDIST as a polynomial, we will need to also propagate parameters <span class="math">\(p_g\)</span>
+and a connection list that declares the connection between <span class="math">\(y_g\)</span> and <span class="math">\(u_c\)</span> and
+between <span class="math">\(y_c\)</span> and <span class="math">\(u_g\)</span>. We will call this connection list <span class="math">\(p_l\)</span>.
+Hence, the CYMDIST FMU needs to be a function of the form</p>
+<p><span class="math">\(yc = f_c(p_c , u_c  , t)\)</span>,</p>
+<p>while the GridDyn FMU is of the form</p>
+<p><span class="math">\(yg = f_g(p_g , p_c , p_l , u_g , t)\)</span>.</p>
+<p>Hence, the GridDyn model needs to take additional parameters the parameters <span class="math">\(p_c\)</span>
+to parameterize the CYMDIST model, and <span class="math">\(p_l\)</span> to connect the outputs to the inputs.
+The CYMDIST FMU is an FMU-ME 2.0, because it needs to be evaluated by GridDyn
+without advancing time when approximating it as a polynomial, which is not allowed for FMI-CS 2.0.</p>
+<p>As CYMDIST obtains from GridDyn the input <span class="math">\(u_c\)</span> that corresponds to the solution of the closed loop,
+the FMUs are connected as in <a href="#id3"><span class="problematic" id="id4">:num:`Figure #fig-couplingwoloop`</span></a>.</p>
+<div class="figure" id="id6">
+<span id="fig-couplingwoloop"></span><a class="reference internal image-reference" href="_images/coupling_wo_loop.png"><img alt="_images/coupling_wo_loop.png" src="_images/coupling_wo_loop.png" style="width: 566.3px; height: 213.5px;" /></a>
+<p class="caption"><span class="caption-text">Coupling of CYMDIST with GridDyn without algebraic loop.</span></p>
+</div>
+<p>The sequence of evaluations will be as follows: During instantiation,
+both FMUs get their parameters assigned. The GridDyn parameters
+include the parameters for CYMDIST <span class="math">\(p_c\)</span>  and the output-input
+connection list <span class="math">\(p_l\)</span>. Then, GridDyn will instantiate a CYMDIST FMU,
+and connect <span class="math">\(u_c\)</span> to <span class="math">\(y_g\)</span>. This CYMDIST FMU, which we call <span class="math">\(f^*_c(·, ·, ·)\)</span>,
+will not be visible to the outside. When GridDyn is invoked, it will approximate <span class="math">\(f^*_c(·, ·, ·)\)</span>,
+compute a converged solution using this approximation, and compute the output <span class="math">\(y_g\)</span>.
+The master algorithm will then assign <span class="math">\(u_g  := y_c\)</span> and evaluate the FMU <span class="math">\(f_g(p_g , p_c , p_l , u_g , t)\)</span>,
+which completes the time step.</p>
+<p>Next, we showed a snippet of the master algorithm which is used to
+couple a CYMDIST FMU (<code class="docutils literal"><span class="pre">CYMDIST.FMU</span></code>) with a GridDyn FMU (<code class="docutils literal"><span class="pre">GridDyn.fmu</span></code>).</p>
+<p>Line imports the <a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> modules which is needed for the coupling.</p>
+<p>Line 25 loads the CYMDIST FMU</p>
+<p>Line 26 loads the GridDyn FMU. We used in this example a GridDyn FMU which models the IEEE 14-Bus System.</p>
+<p>Line 28 and 29 set-up the parameters for the simulation.</p>
+<p>Line 32 - 37 create the vector of input and output names for both FMUs.</p>
+<p>Line 45 - 53 get the value references of the CYMDIST and GridDyn variables</p>
+<p>Line 69 and 70 initialize the FMUs.</p>
+<p>Line 73 calls event update for the CYMDIST FMU. This is required by CYMDIST which is
+a model exchange FMU and hence needs to call this function prior to entering
+the continous time mode.</p>
+<p>Line 74 CYMDIST enters in continuous time mode.</p>
+<p>Line 77 In the loop, CYMDIST and GridDyn are evaluated.</p>
+<p>First, The outputs of GridDyn are retrieved. these outputs must be the coverged solution between
+CYMDIST and GridDyn at the time when GridDyn is invoked.</p>
+<p>Second, The outputs of GridDyn are set as inputs of CYMDIST at the same time instant.
+CYMDIST computes the outputs at that time instant and send the updated outputs.</p>
+<p>Line 88 and 89 complete the simulation and terminate both FMUs.</p>
 <div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -166,42 +199,154 @@ of the GridDyn FMU is connected to the input <code class="docutils literal"><spa
 33
 34
 35
-36</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyfmi</span> <span class="kn">import</span> <span class="n">load_fmu</span>
-<span class="kn">from</span> <span class="nn">pyfmi.master</span> <span class="kn">import</span> <span class="n">Master</span>
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyfmi</span> <span class="kn">import</span> <span class="n">load_fmu</span>
 
-<span class="k">def</span> <span class="nf">simulate_multiple_fmus</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Simulate one CYMDIST FMU coupled to a GridDyn FMU.</span>
+<span class="k">def</span> <span class="nf">simulate_cymdist_griddyn14bus_fmus</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Simulate coupled GridDyn and CYMDIST FMUs.</span>
 <span class="sd">        </span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">cymdist</span><span class="o">=</span><span class="n">load_fmu</span><span class="p">(</span><span class="s2">&quot;CYMDIST.fmu&quot;</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
-    <span class="n">gridyn</span><span class="o">=</span><span class="n">load_fmu</span><span class="p">(</span><span class="s2">&quot;GridDyn.fmu&quot;</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="sd">    &quot;&quot;&quot;</span>  
+    <span class="c1"># Simulation parameters</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">stop_time</span>  <span class="o">=</span> <span class="mi">300</span>
+    <span class="n">step_size</span>  <span class="o">=</span> <span class="mi">300</span>
     
-    <span class="n">models</span> <span class="o">=</span> <span class="p">[</span><span class="n">cymdist</span><span class="p">,</span> <span class="n">gridyn</span><span class="p">]</span>
-    <span class="n">connections</span> <span class="o">=</span> <span class="p">[(</span><span class="n">gridyn</span><span class="p">,</span> <span class="s2">&quot;VMAG_A&quot;</span><span class="p">,</span> <span class="n">cymdist</span><span class="p">,</span> <span class="s2">&quot;VMAG_A&quot;</span><span class="p">),</span>
-                   <span class="p">(</span><span class="n">gridyn</span><span class="p">,</span> <span class="s2">&quot;VMAG_B&quot;</span><span class="p">,</span> <span class="n">cymdist</span><span class="p">,</span> <span class="s2">&quot;VMAG_B&quot;</span><span class="p">),</span>
-                   <span class="p">(</span><span class="n">gridyn</span><span class="p">,</span> <span class="s2">&quot;VMAG_C&quot;</span><span class="p">,</span> <span class="n">cymdist</span><span class="p">,</span> <span class="s2">&quot;VMAG_C&quot;</span><span class="p">),</span>
-                   <span class="p">(</span><span class="n">gridyn</span><span class="p">,</span> <span class="s2">&quot;VANG_A&quot;</span><span class="p">,</span> <span class="n">cymdist</span><span class="p">,</span> <span class="s2">&quot;VANG_A&quot;</span><span class="p">),</span>
-                   <span class="p">(</span><span class="n">gridyn</span><span class="p">,</span> <span class="s2">&quot;VANG_B&quot;</span><span class="p">,</span> <span class="n">cymdist</span><span class="p">,</span> <span class="s2">&quot;VANG_B&quot;</span><span class="p">),</span>
-                   <span class="p">(</span><span class="n">gridyn</span><span class="p">,</span> <span class="s2">&quot;VANG_C&quot;</span><span class="p">,</span> <span class="n">cymdist</span><span class="p">,</span> <span class="s2">&quot;VANG_C&quot;</span><span class="p">),</span>
-                   <span class="p">(</span><span class="n">cymdist</span><span class="p">,</span> <span class="s2">&quot;KWA_800032440&quot;</span><span class="p">,</span> <span class="n">gridyn</span><span class="p">,</span> <span class="s2">&quot;KWA_800032440&quot;</span><span class="p">),</span>
-                   <span class="p">(</span><span class="n">cymdist</span><span class="p">,</span> <span class="s2">&quot;KWB_800032440&quot;</span><span class="p">,</span> <span class="n">gridyn</span><span class="p">,</span> <span class="s2">&quot;KWB_800032440&quot;</span><span class="p">),</span>
-                   <span class="p">(</span><span class="n">cymdist</span><span class="p">,</span> <span class="s2">&quot;KWC_800032440&quot;</span><span class="p">,</span> <span class="n">gridyn</span><span class="p">,</span> <span class="s2">&quot;KWC_800032440&quot;</span><span class="p">),</span>
-                   <span class="p">(</span><span class="n">cymdist</span><span class="p">,</span> <span class="s2">&quot;KVARA_800032440&quot;</span><span class="p">,</span> <span class="n">gridyn</span><span class="p">,</span> <span class="s2">&quot;KVARA_800032440&quot;</span><span class="p">),</span>
-                   <span class="p">(</span><span class="n">cymdist</span><span class="p">,</span> <span class="s2">&quot;KVARB_800032440&quot;</span><span class="p">,</span> <span class="n">gridyn</span><span class="p">,</span> <span class="s2">&quot;KVARB_800032440&quot;</span><span class="p">),</span>
-                   <span class="p">(</span><span class="n">cymdist</span><span class="p">,</span> <span class="s2">&quot;KVARC_800032440&quot;</span><span class="p">,</span> <span class="n">gridyn</span><span class="p">,</span> <span class="s2">&quot;KVARC_800032440&quot;</span><span class="p">),]</span>
+    <span class="c1"># Path to the CYMDIST configuration file</span>
+    <span class="n">path_config</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s2">&quot;config.json&quot;</span><span class="p">)</span>
+    <span class="c1"># Conversion to byte for PyFMI</span>
+    <span class="n">cymdist_con_val_str</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">path_config</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
     
-    <span class="n">coupled_simulation</span> <span class="o">=</span> <span class="n">Master</span> <span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="n">connections</span><span class="p">)</span>
+    <span class="n">griddyn_input_valref</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">griddyn_output_valref</span><span class="o">=</span><span class="p">[]</span> 
+    <span class="n">griddyn_output_values</span><span class="o">=</span><span class="p">[]</span>
+    
+    <span class="n">cymdist_input_valref</span><span class="o">=</span><span class="p">[]</span> 
+    <span class="n">cymdist_output_valref</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">cymdist_output_values</span><span class="o">=</span><span class="p">[]</span>  
+    
+    <span class="n">cymdist</span> <span class="o">=</span> <span class="n">load_fmu</span><span class="p">(</span><span class="s2">&quot;../fmus/CYMDIST/CYMDIST.fmu&quot;</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+    <span class="n">griddyn</span><span class="o">=</span><span class="n">load_fmu</span><span class="p">(</span><span class="s2">&quot;../fmus/griddyn/griddyn14bus.fmu&quot;</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
 
-    <span class="n">opts</span><span class="o">=</span><span class="n">coupled_simulation</span><span class="o">.</span><span class="n">simulate_options</span><span class="p">()</span>
-    <span class="n">opts</span><span class="p">[</span><span class="s1">&#39;step_size&#39;</span><span class="p">]</span><span class="o">=</span><span class="mf">1.0</span>
-    <span class="n">opts</span><span class="p">[</span><span class="s1">&#39;logging&#39;</span><span class="p">]</span><span class="o">=</span><span class="bp">True</span>
+    <span class="n">cymdist</span><span class="o">.</span><span class="n">setup_experiment</span><span class="p">(</span><span class="n">start_time</span><span class="o">=</span><span class="n">start_time</span><span class="p">,</span> <span class="n">stop_time</span><span class="o">=</span><span class="n">stop_time</span><span class="p">)</span>
+    <span class="n">griddyn</span><span class="o">.</span><span class="n">setup_experiment</span><span class="p">(</span><span class="n">start_time</span><span class="o">=</span><span class="n">start_time</span><span class="p">,</span> <span class="n">stop_time</span><span class="o">=</span><span class="n">stop_time</span><span class="p">)</span>
+    
+    <span class="c1"># Define the inputs</span>
+    <span class="n">cymdist_input_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;VMAG_A&#39;</span><span class="p">,</span> <span class="s1">&#39;VMAG_B&#39;</span><span class="p">,</span> <span class="s1">&#39;VMAG_C&#39;</span><span class="p">,</span> <span class="s1">&#39;VANG_A&#39;</span><span class="p">,</span> <span class="s1">&#39;VANG_B&#39;</span><span class="p">,</span> <span class="s1">&#39;VANG_C&#39;</span><span class="p">]</span>
+    <span class="n">cymdist_output_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;IA&#39;</span><span class="p">,</span> <span class="s1">&#39;IB&#39;</span><span class="p">,</span> <span class="s1">&#39;IC&#39;</span><span class="p">,</span> <span class="s1">&#39;IAngleA&#39;</span><span class="p">,</span> <span class="s1">&#39;IAngleB&#39;</span><span class="p">,</span> <span class="s1">&#39;IAngleC&#39;</span><span class="p">]</span>
+    
+    <span class="n">griddyn_input_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Bus11_IA&#39;</span><span class="p">,</span> <span class="s1">&#39;Bus11_IB&#39;</span><span class="p">,</span> <span class="s1">&#39;Bus11_IC&#39;</span><span class="p">,</span> 
+                       <span class="s1">&#39;Bus11_IAngleA&#39;</span><span class="p">,</span> <span class="s1">&#39;Bus11_IAngleB&#39;</span><span class="p">,</span> <span class="s1">&#39;Bus11_IAngleC&#39;</span><span class="p">]</span>
+    <span class="n">griddyn_output_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Bus11_VA&#39;</span><span class="p">,</span> <span class="s1">&#39;Bus11_VB&#39;</span><span class="p">,</span> <span class="s1">&#39;Bus11_VC&#39;</span><span class="p">,</span> 
+                <span class="s1">&#39;Bus11_VAngleA&#39;</span><span class="p">,</span> <span class="s1">&#39;Bus11_VAngleB&#39;</span><span class="p">,</span> <span class="s1">&#39;Bus11_VAngleC&#39;</span><span class="p">]</span>
+    
+    <span class="c1"># Get the value references of griddyn inputs</span>
+    <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">griddyn_input_names</span><span class="p">:</span>
+        <span class="n">griddyn_input_valref</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">griddyn</span><span class="o">.</span><span class="n">get_variable_valueref</span><span class="p">(</span><span class="n">elem</span><span class="p">))</span>
+    
+    <span class="c1"># Get the value references of griddyn outputs</span>
+    <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">griddyn_output_names</span><span class="p">:</span>
+        <span class="n">griddyn_output_valref</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">griddyn</span><span class="o">.</span><span class="n">get_variable_valueref</span><span class="p">(</span><span class="n">elem</span><span class="p">))</span>
+    
+    <span class="c1"># Get the value references of cymdist inputs</span>
+    <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">cymdist_input_names</span><span class="p">:</span>
+        <span class="n">cymdist_input_valref</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cymdist</span><span class="o">.</span><span class="n">get_variable_valueref</span><span class="p">(</span><span class="n">elem</span><span class="p">))</span>   
+        
+    <span class="c1"># Get the value references of cymdist outputs </span>
+    <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">cymdist_output_names</span><span class="p">:</span>
+        <span class="n">cymdist_output_valref</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cymdist</span><span class="o">.</span><span class="n">get_variable_valueref</span><span class="p">(</span><span class="n">elem</span><span class="p">))</span>  
+    
+    <span class="c1"># Set the flag to save the results</span>
+    <span class="n">cymdist</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;_saveToFile&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># Get the initial outputs from griddyn</span>
+    <span class="c1"># Get value reference of the configuration file </span>
+    <span class="n">cymdist_con_val_ref</span> <span class="o">=</span> <span class="n">cymdist</span><span class="o">.</span><span class="n">get_variable_valueref</span><span class="p">(</span><span class="s2">&quot;_configurationFileName&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Set the configuration file</span>
+    <span class="n">cymdist</span><span class="o">.</span><span class="n">set_string</span><span class="p">([</span><span class="n">cymdist_con_val_ref</span><span class="p">],</span> <span class="p">[</span><span class="n">cymdist_con_val_str</span><span class="p">])</span>
+    
+    <span class="c1"># Set the value of the multiplier</span>
+    <span class="n">griddyn</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;multiplier&#39;</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)</span>
 
-    <span class="n">res</span><span class="o">=</span><span class="n">coupled_simulation</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">opts</span><span class="p">,</span> 
-                            <span class="n">start_time</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> 
-                            <span class="n">final_time</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="c1"># Initialize the FMUs</span>
+    <span class="n">cymdist</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+    <span class="n">griddyn</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+    
+    <span class="c1"># Call event update prior to entering continuous mode.</span>
+    <span class="n">cymdist</span><span class="o">.</span><span class="n">event_update</span><span class="p">()</span>
+    <span class="n">cymdist</span><span class="o">.</span><span class="n">enter_continuous_time_mode</span><span class="p">()</span>
+    
+    <span class="c1"># Co-simulation loop</span>
+    <span class="k">for</span> <span class="n">tim</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">stop_time</span><span class="p">,</span> <span class="n">step_size</span><span class="p">):</span>
+        <span class="n">cnt</span><span class="o">+=</span><span class="mi">1</span>
+        <span class="c1"># Get the outputs from griddyn</span>
+        <span class="n">griddyn_output_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">griddyn</span><span class="o">.</span><span class="n">get_real</span><span class="p">(</span><span class="n">griddyn_output_valref</span><span class="p">))</span>
+        <span class="c1"># set the time in cymdist</span>
+        <span class="n">cymdist</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">tim</span>
+        <span class="c1"># Set the inputs of cymdist</span>
+        <span class="n">cymdist</span><span class="o">.</span><span class="n">set_real</span><span class="p">(</span><span class="n">cymdist_input_valref</span><span class="p">,</span> <span class="n">griddyn_output_values</span><span class="p">)</span>
+        <span class="c1"># Get the outputs of cymdist</span>
+        <span class="n">cymdist_output_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">cymdist</span><span class="o">.</span><span class="n">get_real</span><span class="p">(</span><span class="n">cymdist_output_valref</span><span class="p">))</span>
+    <span class="c1"># Terminate FMUs</span>
+    <span class="n">cymdist</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+    <span class="n">griddyn</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
         
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">simulate_multiple_fmus</span><span class="p">()</span>
+    <span class="n">simulate_cymdist_griddyn14bus_fmus</span><span class="p">()</span>
 </pre></div>
 </td></tr></table></div>
 </div>

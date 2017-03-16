@@ -78,8 +78,8 @@ The sequence of evaluations will be as follows: During instantiation,
 both FMUs get their parameters assigned. The GridDyn parameters 
 include the parameters for CYMDIST :math:`p_c`  and the output-input 
 connection list :math:`p_l`. Then, GridDyn will instantiate a CYMDIST FMU, 
-and connect :math:`u_c` to :math:`y_g`. This CYMDIST FMU, which we call :math:`f*_c(·, ·, ·)`, 
-will not be visible to the outside. When GridDyn is invoked, it will approximate :math:`f*_c(·, ·, ·)`, 
+and connect :math:`u_c` to :math:`y_g`. This CYMDIST FMU, which we call :math:`f^*_c(·, ·, ·)`, 
+will not be visible to the outside. When GridDyn is invoked, it will approximate :math:`f^*_c(·, ·, ·)`, 
 compute a converged solution using this approximation, and compute the output :math:`y_g`. 
 The master algorithm will then assign :math:`u_g  := y_c` and evaluate the FMU :math:`f_g(p_g , p_c , p_l , u_g , t)`, 
 which completes the time step.
@@ -117,7 +117,7 @@ CYMDIST computes the outputs at that time instant and send the updated outputs.
 
 Line 88 and 89 complete the simulation and terminate both FMUs.
  
-.. literalinclude:: scripts/coupling.py
+.. literalinclude:: _scripts/coupling.py
    :language: python
    :linenos:
 
