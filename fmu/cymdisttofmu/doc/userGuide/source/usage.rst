@@ -44,7 +44,7 @@ The following requirements must be met to import and run a CYMDIST FMU:
 
 5. The CYMDIST installation directory must be added to the system ``PATH``. 
    This directory contains runtime DLLS (``mkl_core.dll``, ``mkl_def.dll``) 
-   that needed at runtime by the CYMDIST FMU. 
+   that are needed at runtime by the CYMDIST FMU. 
 
    The CYMDIST installation directory is typically found in ``path_to_CYME\CYME\`, 
    where ``path_to_CYME`` is the path to the installation folder of CYME 7.2.
