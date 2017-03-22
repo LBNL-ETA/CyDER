@@ -327,45 +327,6 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
     return {'result': 'some stuff'}
 
 
-def create_configuration_file(configurations, output_folder):
-    """
-    Input:
-    configuration = {
-                     'times': [0],
-                     'interpolation_method': 'closest_time',
-                     'models': [{
-                        'filename': 'D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//BU0001.sxst',
-                        'new_loads': [{
-                                'section_id': '800033503',
-                                'active_power': 100
-                            }],
-                        'set_loads': [{
-                                'device_name': 'name',
-                                'active_power': 100
-                            }],
-                        'new_pvs': [{
-                                'section_id': '800033503',
-                                'generation': 100
-                            }],
-                        'set_pvs': [{
-                                'device_name': 'name',
-                                'generation': 100
-                            }]
-                        }
-                    ]}
-    Return configuration filename
-    """
-    # Generate random filename
-    random_string = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
-    random_string += '_config.json'
-    filename = output_folder + random_string
-
-    with open(filename, 'w') as outfile:
-        json.dump(configurations, outfile)
-
-    return filename
-
-
 def simulate_2cymdist_gridyn_fmus(configuration_filename, configuration_filename2, start_time, end_time, step_size, _saveToFile=0, input_profiles=False, x_axis_labels=False):
     """Simulate one CYMDIST FMU.
     """
@@ -390,7 +351,7 @@ def simulate_2cymdist_gridyn_fmus(configuration_filename, configuration_filename
 
     cymdist1 = load_fmu("C:/cygwin64/home/Jonathan/project_cyder/web/docker_django/worker/simulation/fmu_code/CYMDIST.fmu", log_level=7)
     cymdist2 = load_fmu("C:/cygwin64/home/Jonathan/project_cyder/web/docker_django/worker/simulation/fmu_code/CYMDIST.fmu", log_level=7)
-    griddyn=load_fmu("C:/cygwin64/home/Jonathan/project_cyder/web/docker_django/worker/simulation/fmu_code/14bus2inputs.fmu", log_level=7)
+    griddyn=load_fmu("C:/cygwin64/home/Jonathan/project_cyder/web/docker_django/worker/simulation/fmu_code/14bus2input.fmu", log_level=7)
 
     cymdist1.setup_experiment(start_time=start_time, stop_time=stop_time)
     cymdist2.setup_experiment(start_time=start_time, stop_time=stop_time)
@@ -437,9 +398,9 @@ def simulate_2cymdist_gridyn_fmus(configuration_filename, configuration_filename
 
     # Set the flag to save the results
     cymdist1.set("_saveToFile", _saveToFile)
-    cymdist1.set("_communicationStepSize", step_size)
+    # cymdist1.set("_communicationStepSize", step_size)
     cymdist2.set("_saveToFile", _saveToFile)
-    cymdist2.set("_communicationStepSize", step_size)
+    # cymdist2.set("_communicationStepSize", step_size)
     # Get the initial outputs from griddyn
     # griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
     # Set the initial outputs of GridDyn in cymdist
@@ -452,14 +413,14 @@ def simulate_2cymdist_gridyn_fmus(configuration_filename, configuration_filename
     cymdist1.set_string([cymdist_con_val_ref1], [cymdist_con_val_str1])
     cymdist2.set_string([cymdist_con_val_ref2], [cymdist_con_val_str2])
 
-    # Verify that the multiplier is set
-    print ("This is the multiplier before it is set " + str(griddyn.get('multiplier')))
-
-    # Set the value of the multiplier
-    griddyn.set('multiplier', 3.0)
-
-    # Verify that the multiplier is set
-    print ("This is the multiplier after it is set " + str(griddyn.get('multiplier')))
+    # # Verify that the multiplier is set
+    # print ("This is the multiplier before it is set " + str(griddyn.get('multiplier')))
+    #
+    # # Set the value of the multiplier
+    # griddyn.set('multiplier', 3.0)
+    #
+    # # Verify that the multiplier is set
+    # print ("This is the multiplier after it is set " + str(griddyn.get('multiplier')))
 
     # Initialize the FMUs
     cymdist1.initialize()

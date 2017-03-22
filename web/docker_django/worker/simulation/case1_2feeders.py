@@ -59,7 +59,7 @@ configuration = func.shift_load_and_pv(load_profile, pv_profile, configuration)
 # Create the configuration file
 output_folder = 'D://Users//Jonathan//Documents//GitHub//configuration_files//'
 configuration_filename1 = func.create_configuration_file(configuration, output_folder)
-print('Configuration file created: ' + configuration_filename.split('//')[-1])
+print('Configuration file created: ' + configuration_filename1.split('//')[-1])
 
 # Initiate the configuration file
 print('Creating a configuration file...')
@@ -72,7 +72,7 @@ configuration = func.shift_load_and_pv(load_profile, pv_profile, configuration)
 # Create the configuration file
 output_folder = 'D://Users//Jonathan//Documents//GitHub//configuration_files//'
 configuration_filename2 = func.create_configuration_file(configuration, output_folder)
-print('Configuration file created: ' + configuration_filename.split('//')[-1])
+print('Configuration file created: ' + configuration_filename2.split('//')[-1])
 
 start_time = times[0]
 end_time = times[-1]
