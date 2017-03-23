@@ -196,7 +196,7 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
 
     # Set the flag to save the results
     cymdist.set("_saveToFile", _saveToFile)
-    cymdist.set("_communicationStepSize", step_size)
+    #cymdist.set("_communicationStepSize", step_size)
     # Get the initial outputs from griddyn
     # griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
     # Set the initial outputs of GridDyn in cymdist
@@ -219,6 +219,10 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
     # Initialize the FMUs
     cymdist.initialize()
     griddyn.initialize()
+    
+    # Call event update prior to entering continuous mode.
+    cymdist.event_update()
+    cymdist.enter_continuous_time_mode()
 
     # Create vector to store time
     simTim=[]
@@ -269,9 +273,12 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
 
         # Get the outputs from griddyn
         griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
-
+        # set time in cymdist
+        cymdist.time = tim
+        # Set the inputs of cymdist
         cymdist.set_real(cymdist_input_valref, griddyn_output_values)
-        cymdist.do_step(current_t=tim, step_size=step_size, new_step=0)
+        
+        #cymdist.do_step(current_t=tim, step_size=step_size, new_step=0)
         cymdist_output_values = (cymdist.get_real(cymdist_output_valref))
 
         # print(cymdist_output_values)
@@ -425,6 +432,14 @@ def simulate_2cymdist_gridyn_fmus(configuration_filename, configuration_filename
     # Initialize the FMUs
     cymdist1.initialize()
     cymdist2.initialize()
+    
+    # Call event update prior to entering continuous mode.
+    cymdist1.event_update()
+    cymdist1.enter_continuous_time_mode()
+    
+    cymdist2.event_update()
+    cymdist2.enter_continuous_time_mode()
+    
     griddyn.initialize()
 
     # Create vector to store time
@@ -478,10 +493,16 @@ def simulate_2cymdist_gridyn_fmus(configuration_filename, configuration_filename
         # griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
         griddyn_output_values1 = [2520, 2520, 2520, 0, -120, 120]
         griddyn_output_values2 = [7270, 7270, 7270, 0, -120, 120]
+        
+        # set time in cymdist
+        cymdist1.time = tim
+        # set time in cymdist
+        cymdist2.time = tim
+        
         cymdist1.set_real(cymdist_input_valref, griddyn_output_values1)
         cymdist2.set_real(cymdist_input_valref, griddyn_output_values2)
-        cymdist1.do_step(current_t=tim, step_size=step_size, new_step=0)
-        cymdist2.do_step(current_t=tim, step_size=step_size, new_step=0)
+        # cymdist1.do_step(current_t=tim, step_size=step_size, new_step=0)
+        # cymdist2.do_step(current_t=tim, step_size=step_size, new_step=0)
 
         # cymdist_output_values = (cymdist.get_real(cymdist_output_valref))
         # griddyn.set_real(griddyn_input_valref, cymdist_output_values)
