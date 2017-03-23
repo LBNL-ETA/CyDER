@@ -219,7 +219,7 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
     # Initialize the FMUs
     cymdist.initialize()
     griddyn.initialize()
-    
+
     # Call event update prior to entering continuous mode.
     cymdist.event_update()
     cymdist.enter_continuous_time_mode()
@@ -277,7 +277,7 @@ def simulate_cymdist_gridyn_fmus(configuration_filename, start_time, end_time, s
         cymdist.time = tim
         # Set the inputs of cymdist
         cymdist.set_real(cymdist_input_valref, griddyn_output_values)
-        
+
         #cymdist.do_step(current_t=tim, step_size=step_size, new_step=0)
         cymdist_output_values = (cymdist.get_real(cymdist_output_valref))
 
@@ -420,26 +420,21 @@ def simulate_2cymdist_gridyn_fmus(configuration_filename, configuration_filename
     cymdist1.set_string([cymdist_con_val_ref1], [cymdist_con_val_str1])
     cymdist2.set_string([cymdist_con_val_ref2], [cymdist_con_val_str2])
 
-    # # Verify that the multiplier is set
-    # print ("This is the multiplier before it is set " + str(griddyn.get('multiplier')))
-    #
-    # # Set the value of the multiplier
-    # griddyn.set('multiplier', 3.0)
-    #
-    # # Verify that the multiplier is set
-    # print ("This is the multiplier after it is set " + str(griddyn.get('multiplier')))
+    # Set the value of the multiplier
+    griddyn.set('multiplier10', 3.0)
+    griddyn.set('multiplier11', 3.0)
 
     # Initialize the FMUs
     cymdist1.initialize()
     cymdist2.initialize()
-    
+
     # Call event update prior to entering continuous mode.
     cymdist1.event_update()
     cymdist1.enter_continuous_time_mode()
-    
+
     cymdist2.event_update()
     cymdist2.enter_continuous_time_mode()
-    
+
     griddyn.initialize()
 
     # Create vector to store time
@@ -450,20 +445,24 @@ def simulate_2cymdist_gridyn_fmus(configuration_filename, configuration_filename
     CYMDIST_IA2 = []
     CYMDIST_IB2 = []
     CYMDIST_IC2 = []
+    GRIDDYN_V10 = []
+    GRIDDYN_V11 = []
 
     # Interactive mode on
     plt.ion()
 
     # Create the plot
-    fig = plt.figure()
-    ax = fig.add_subplot(311)
-    ax1 = fig.add_subplot(312)
-    ax2 = fig.add_subplot(313)
+    fig = plt.figure(figsize=(16, 12), dpi=80, facecolor='w', edgecolor='k')
+    ax = fig.add_subplot(411)
+    ax1 = fig.add_subplot(412)
+    ax2 = fig.add_subplot(413)
+    ax3 = fig.add_subplot(414)
     ax.set_ylabel('Inputs')
-    ax1.set_ylabel('Feeder currents\n(cymDist 1) [A]')
-    ax2.set_ylabel('Feeder currents\n(cymDist 2) [V]')
-    ax2.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
-    ax2.set_xlabel('Time (minutes)')
+    ax1.set_ylabel('Feeder currents\n(CymDist 1) [A]')
+    ax2.set_ylabel('Feeder currents\n(CymDist 2) [A]')
+    ax3.set_ylabel('Bus voltages\n(GridDyn) [V]')
+    ax3.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
+    ax3.set_xlabel('Time (minutes)')
     if input_profiles:
         for input_profile in input_profiles:
             line, = ax.plot(input_profile['x'], input_profile['y'], label=input_profile['label'])
@@ -473,9 +472,12 @@ def simulate_2cymdist_gridyn_fmus(configuration_filename, configuration_filename
     line2A, = ax2.plot(simTim, CYMDIST_IA2, label='Phase A')
     line2B, = ax2.plot(simTim, CYMDIST_IB2, label='Phase B')
     line2C, = ax2.plot(simTim, CYMDIST_IC2, label='Phase C')
+    line10, = ax3.plot(simTim, GRIDDYN_V10, label='Bus 10')
+    line11, = ax3.plot(simTim, GRIDDYN_V11, label='Bus 11')
     ax.legend(loc=0)
     ax1.legend(loc=1)
     ax2.legend(loc=1)
+    ax3.legend(loc=1)
     fig.tight_layout()
 
     # # Save all the result to a pandas dataframe
@@ -493,20 +495,19 @@ def simulate_2cymdist_gridyn_fmus(configuration_filename, configuration_filename
         # griddyn_output_values = (griddyn.get_real(griddyn_output_valref))
         griddyn_output_values1 = [2520, 2520, 2520, 0, -120, 120]
         griddyn_output_values2 = [7270, 7270, 7270, 0, -120, 120]
-        
+
         # set time in cymdist
         cymdist1.time = tim
         # set time in cymdist
         cymdist2.time = tim
-        
+
         cymdist1.set_real(cymdist_input_valref, griddyn_output_values1)
         cymdist2.set_real(cymdist_input_valref, griddyn_output_values2)
-        # cymdist1.do_step(current_t=tim, step_size=step_size, new_step=0)
-        # cymdist2.do_step(current_t=tim, step_size=step_size, new_step=0)
 
-        # cymdist_output_values = (cymdist.get_real(cymdist_output_valref))
-        # griddyn.set_real(griddyn_input_valref, cymdist_output_values)
-        # griddyn.do_step(current_t=tim, step_size=step_size, new_step=0)
+        cymdist_output_values = list(cymdist1.get_real(cymdist_output_valref))
+        cymdist_output_values.extend(cymdist2.get_real(cymdist_output_valref))
+        griddyn.set_real(griddyn_input_valref, cymdist_output_values)
+        griddyn.do_step(current_t=tim, step_size=step_size, new_step=0)
 
         CYMDIST_IA1.append(cymdist1.get_real(cymdist1.get_variable_valueref('IA'))[0])
         CYMDIST_IB1.append(cymdist1.get_real(cymdist1.get_variable_valueref('IB'))[0])
@@ -514,6 +515,8 @@ def simulate_2cymdist_gridyn_fmus(configuration_filename, configuration_filename
         CYMDIST_IA2.append(cymdist2.get_real(cymdist2.get_variable_valueref('IA'))[0])
         CYMDIST_IB2.append(cymdist2.get_real(cymdist2.get_variable_valueref('IB'))[0])
         CYMDIST_IC2.append(cymdist2.get_real(cymdist2.get_variable_valueref('IC'))[0])
+        GRIDDYN_V10.append(griddyn.get_real(griddyn.get_variable_valueref('Bus10_VA'))[0])
+        GRIDDYN_V11.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VA'))[0])
         simTim.append(tim / 60)
 
         # for name in cymdist_column_names:
@@ -536,10 +539,18 @@ def simulate_2cymdist_gridyn_fmus(configuration_filename, configuration_filename
         line2C.set_xdata(simTim)
         line2C.set_ydata(CYMDIST_IC2)
 
+        line10.set_xdata(simTim)
+        line10.set_ydata(GRIDDYN_V10)
+
+        line11.set_xdata(simTim)
+        line11.set_ydata(GRIDDYN_V11)
+
         ax1.relim()
         ax1.autoscale_view(True,True,True)
         ax2.relim()
         ax2.autoscale_view(True,True,True)
+        ax3.relim()
+        ax3.autoscale_view(True,True,True)
         fig.canvas.draw()
         plt.pause(0.01)
 
