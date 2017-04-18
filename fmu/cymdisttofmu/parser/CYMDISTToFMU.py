@@ -230,7 +230,7 @@ def zip_fmu(dirPath=None, zipFilePath=None, includeDirInZip=True):
             archivePath = archivePath.replace(os.path.sep, "", 1)
         if not includeDirInZip:
             archivePath = archivePath.replace(dirToZip + os.path.sep, "", 1)
-        return os.path.normcase(archivePath)
+        return archivePath
 
     outFile = zipfile.ZipFile(zipFilePath, "w",
                               compression=zipfile.ZIP_DEFLATED)
