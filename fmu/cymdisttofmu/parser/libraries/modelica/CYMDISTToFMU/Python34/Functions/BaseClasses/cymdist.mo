@@ -17,7 +17,7 @@ function cymdist "Function that communicates with the CYMDISTToFMU Python API"
 //   input Integer strLenRea(min=0)
 //     "Maximum length of each string that is read. If exceeded, the simulation stops with an error";
   output Real    dblOutVal[max(1, nDblOut)] "Double output values read from CYMDISTToFMU";
-  external "C" pythonExchangeValuesCymdist(moduleName,
+  external "C" pythonExchangeVariables(moduleName,
                                     functionName,
                                     conFilNam,
                                     modTim,
@@ -31,7 +31,7 @@ function cymdist "Function that communicates with the CYMDISTToFMU Python API"
                                     dblParNam,
                                     dblParVal,
                                     resWri)
-    annotation (Library={"CYMDISTToFMU",  "python34"},
+    annotation (Library={"CYMDISTToFMUPython34",  "python34"},
       LibraryDirectory={"modelica://CYMDISTToFMU.Resources/Library"},
       IncludeDirectory="modelica://CYMDISTToFMU.Resources/C-Sources",
       Include="#include \"python34Wrapper.c\"");

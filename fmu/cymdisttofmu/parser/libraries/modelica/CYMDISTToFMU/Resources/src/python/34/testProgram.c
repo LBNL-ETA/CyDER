@@ -35,7 +35,7 @@ int main(int nArgs, char ** args){
 	/*_CrtDumpMemoryLeaks(); //DEBUGGING*/
 	for(i=0; i < 10; i++){
 		printf("Calling with i for cymdist = %d.\n", i);
-		pythonExchangeValuesCymdistNoModelica(moduleName,
+		pythonExchangeVariables(moduleName,
 			functionName, 
 			configFileName, 
 			time,

@@ -16,15 +16,15 @@ REM ############################################################################
 SET SRCS=pythonInterpreter.c
 SET LIBS=pythonInterpreter.lib
 
-SET MOD_DLL=CYMDISTToFMU.dll
-SET MOD_LIB=CYMDISTToFMU.lib
+SET MOD_DLL=CYMDISTToFMUPython34.dll
+SET MOD_LIB=CYMDISTToFMUPython34.lib
 
 :: Check if we are on a 32 or 64 bit machine
 ::IF "%DevEnvDir%"=="" (
 Set RegQry=HKLM\Hardware\Description\System\CentralProcessor\0
 REG.exe Query %RegQry% > checkOS.txt
 Find /i "x86" < CheckOS.txt > StringCheck.txt
-IF %ERRORLEVEL% == 1 (
+IF %ERRORLEVEL% == 0 (
   REM Set path to the directory on 32 bit machine
   SET PYTHONInc="C:\Python34\include"
   SET PYTHONLibs="C:\Python34\libs\python34.lib"
