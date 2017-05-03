@@ -21,7 +21,7 @@ The standard invocation of the CYMDISTToFMU tool is:
 
 .. code-block:: none
 
-  > python  <scriptDir>CYMDISTToFMU.py i <io-file-path>
+  > python  <scriptDir>CYMDISTToFMU.py -s <python-scripts-path>
 
 where ``scriptDir`` is the path to the scripts directory of CYMDISTToFMU.
 This is the ``parser`` subdirectory of the installation directory.
@@ -32,7 +32,7 @@ An example of invoking ``CYMDISTToFMU.py`` on Windows is
 .. code-block:: none
 
   # Windows:
-  > python parser\CYMDISTToFMU.py -i CYMDISTModelDescription.xml
+  > python parser\CYMDISTToFMU.py -s parser\\\\utilities\\\\cymdisttofmu_wrapper.py, d:\\\\calcEng.py
 
 Following requirements must be met hen using CYMDISTToFMU
 
@@ -45,10 +45,15 @@ Following requirements must be met hen using CYMDISTToFMU
 +----------------------------------------------------+-------------------------------------------------------------------+
 | Options                                            | Purpose                                                           |
 +====================================================+===================================================================+
+| -s                                                 | Paths to python scripts required to run the                       |
+|                                                    | CYMDIST. On Windows Operating system, the paths                   |
+|                                                    | must use **double backward slash**.                               |
+|                                                    | The name of the main Python script must be cymdisttofmu_wrapper.py |                   |
++----------------------------------------------------+-------------------------------------------------------------------+
 | -c                                                 | Path to the CYMDIST model file.                                   |
 +----------------------------------------------------+-------------------------------------------------------------------+
 | -i                                                 | Path to the XML input file with the inputs/outputs of the FMU.    |
-|                                                    | Default is ``parser\\utilities\\CYMDISTModelDescription.xml``     |
+|                                                    | Default is ``parser\\utilities\\CYMDISTModelDescription.xml``       |
 +----------------------------------------------------+-------------------------------------------------------------------+
 | -v                                                 | FMI version. Options are ``1.0`` and ``2.0``. Default is ``2.0``  |
 +----------------------------------------------------+-------------------------------------------------------------------+
@@ -59,7 +64,7 @@ Following requirements must be met hen using CYMDISTToFMU
 |                                                    | (OpenModelica). Default is ``dymola``.                            |
 +----------------------------------------------------+-------------------------------------------------------------------+
 | -n                                                 | Flag to indicate if FMU needs an external execution tool to run.  |
-|                                                    | Options are ``true`` and ``false``. Default is ``true``.         |
+|                                                    | Options are ``true`` and ``false``. Default is ``true``.          |
 +----------------------------------------------------+-------------------------------------------------------------------+
 
 The main functions of CYMDISTToFMU are
@@ -142,6 +147,16 @@ def main():
     cymdist_group = parser.add_argument_group(
         'Arguments to export a CYMDIST as an FMU')
 
+    cymdist_group.add_argument(
+        '-s',
+        '--python-scripts-path',
+        required=True,
+        help='Path to the Python scripts ' +
+        ' used to interface with cymdist',
+        type=(
+            lambda s: [
+                item for item in s.split(',')]))
+
     cymdist_group.add_argument('-c', '--con-fil-path',
                                  help='Path to the configuration file')
     cymdist_group.add_argument('-i', '--io-file-path',
@@ -164,7 +179,7 @@ def main():
                                  + 'external execution tool to run. '
                                  + 'Valid options are '
                                  + '<true> and <false>.'
-                                 + 'Default is <false>')
+                                 + 'Default is <true>')
 
     # Parse the arguments
     args = parser.parse_args()
@@ -178,7 +193,7 @@ def main():
 
     # Check command line options
     if not(platform.system().lower() == 'windows'):
-        log.info('CYMDISTToFMU is only supported Windows.')
+        log.info('CYMDISTToFMU is only supported on Windows')
         return
 
     # Check export tool
@@ -245,6 +260,42 @@ def main():
             ' cs (co-simulation) & me_cs (model exchange & co-simulation) for version 2.0.')
         return
 
+    # Get the Python script path
+    python_scripts_path = args.python_scripts_path
+    # Make sure we have correct path delimiters
+    python_scripts_path = [os.path.abspath(item)
+                           for item in python_scripts_path]
+    if(platform.system().lower() == 'windows'):
+        python_scripts_path = [item.replace('\\', '\\\\')
+                               for item in python_scripts_path]
+    
+    # Save correct Python script path
+    python_scripts_base = [os.path.basename(item)
+                           for item in python_scripts_path]
+    # Check if cymdisttofmu_wrapper.py is in the list of functions
+    if not('cymdisttofmu_wrapper.py' in python_scripts_base):
+        s = ('cymdisttofmu_wrapper.py no found in the list of Python scripts={!s}').format(
+            python_scripts_path)
+        log.error(s)
+        raise ValueError(s)
+
+    # Check if the path exists
+    for python_script_path in python_scripts_path:
+        if(not os.path.exists(python_script_path)):
+            s = ('The Path to the Python script={!s} provided does not exist.').format(
+                python_script_path)
+            log.error(s)
+            raise ValueError(s)
+
+    # Check if it is a Python file
+    for python_script_path in python_scripts_path:
+        ext = os.path.splitext(python_script_path)[-1].lower()
+        if (ext != '.py'):
+            s = ('The Python script={!s} provided does not have a valid extension.').format(
+                python_script_path)
+            log.error(s)
+            raise ValueError(s)
+
     # Get the xml files
     io_file_path = args.io_file_path
     if io_file_path is None:
@@ -261,12 +312,12 @@ def main():
     # Check if fmi api is none
     if(needs_tool is None):
         log.info(
-            'Flag to specify whether an execution is needed is not specified. Default (true) will be used.')
+            'Flag to specify whether an execution is needed is not specified. Default (false) will be used.')
         needs_tool = 'true'
 
     if not (needs_tool.lower() in ['true', 'false']):
         log.info(
-            'Flag to specify whether an execution is needed is not specified. Default (true) will be used.')
+            'Flag to specify whether an execution is needed is not specified. Default (false) will be used.')
         needs_tool = 'true'
 
     # Export the tool as an FMU
@@ -277,6 +328,7 @@ def main():
                                mos_template_path,
                                XSD_FILE_PATH,
                                python_vers,
+                               python_scripts_path,
                                fmi_version,
                                fmi_api,
                                export_tool,
@@ -460,6 +512,7 @@ class CYMDISTToFMU(object):
                  mosT_path,
                  xsd_path,
                  python_vers,
+                 python_scripts_path,
                  fmi_version,
                  fmi_api,
                  export_tool,
@@ -477,6 +530,8 @@ class CYMDISTToFMU(object):
         :param mosT_path (str): Modelica script template.
         :param xsd_path (str): The path to the XML schema.
         :param python_vers (str): The python version.
+        :param python_scripts_path (str): The path to the Python
+            scripts needed to interface the cymdist.
         :param fmi_version (str): The FMI version.
         :param fmi_api (str): The FMI API.
         :param export_tool (str): The Modelica compiler.
@@ -493,6 +548,7 @@ class CYMDISTToFMU(object):
         self.mosT_path = mosT_path
         self.xsd_path = xsd_path
         self.python_vers = python_vers
+        self.python_scripts_path = python_scripts_path
         self.fmi_version = fmi_version
         self.fmi_api = fmi_api
         self.export_tool = export_tool
@@ -749,6 +805,7 @@ class CYMDISTToFMU(object):
         output_res = template.render(
             model_name=self.model_name,
             scalar_variables=scalar_variables,
+            python_scripts_path=self.python_scripts_path,
             input_variable_names=input_variable_names,
             output_variable_names=output_variable_names,
             parameter_variable_names=parameter_variable_names,
@@ -830,7 +887,7 @@ class CYMDISTToFMU(object):
         if not(current_library_path is None):
             os.environ[self.modelica_path] = current_library_path
 
-        # Renamed the FMU to indicate target Python CYMDIST
+        # Renamed the FMU to indicate target Python cymdist
         fmu_name = self.model_name + '.fmu'
 
         # Write scuccess.
