@@ -17,7 +17,7 @@ function cymdist "Function that communicates with the CYMDISTToFMU Python API"
 //   input Integer strLenRea(min=0)
 //     "Maximum length of each string that is read. If exceeded, the simulation stops with an error";
   output Real    dblOutVal[max(1, nDblOut)] "Double output values read from CYMDISTToFMU";
-  external "C" pythonExchangeVariables(moduleName,
+  external "C" modelicaToCYMDIST(moduleName,
                                     functionName,
                                     conFilNam,
                                     modTim,

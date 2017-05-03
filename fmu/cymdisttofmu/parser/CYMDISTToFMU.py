@@ -181,6 +181,9 @@ def main():
         log.info('CYMDISTToFMU is only supported Windows.')
         return
 
+    # Check export tool
+    export_tool = args.export_tool
+
     # Get the FMI version
     fmi_version = args.fmi_version
 

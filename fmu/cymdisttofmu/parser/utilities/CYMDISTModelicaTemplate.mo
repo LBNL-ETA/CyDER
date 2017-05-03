@@ -118,12 +118,12 @@ initial equation
      "initialization mode of the FMU.");
 equation 
   // Compute values that will be sent to CYMDIST
-  for i in 1:nDblInp loop
-	dblInpVal[i] = uR[i];
+  for _cnt in 1:nDblInp loop
+	dblInpVal[_cnt] = uR[_cnt];
   end for;
   
   // Exchange data
-  yR = CYMDISTToFMU.Python34.Functions.cymdist(
+  yR = CYMDISTToFMU.Python{{python_vers}}.Functions.cymdist(
 	  moduleName=moduleName,
 	  functionName=functionName,
 	  conFilNam=_configurationFileName,
