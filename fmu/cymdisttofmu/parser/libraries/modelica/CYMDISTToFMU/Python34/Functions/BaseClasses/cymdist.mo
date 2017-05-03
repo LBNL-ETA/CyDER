@@ -31,13 +31,13 @@ function cymdist "Function that communicates with the CYMDISTToFMU Python API"
                                     dblParNam,
                                     dblParVal,
                                     resWri)
-    annotation (Library={"CYMDISTToFMUPython34",  "python34"},
+    annotation (Library={"CYMDISTToFMUPython34", "python34"},
       LibraryDirectory={"modelica://CYMDISTToFMU.Resources/Library"},
       IncludeDirectory="modelica://CYMDISTToFMU.Resources/C-Sources",
-      Include="#include \"python34Wrapper.c\"");
+      Include="#include \"pythonWrapper.c\"");
   annotation (Documentation(info="<html>
 <p>
-This function exchanges data with CymDist through its Python API.
+This function exchanges data with a CYMDIST through its Python API.
 See 
 <a href=\"modelica://CYMDISTToFMU.Python34.UsersGuide\">
 CYMDISTToFMU.Python34.UsersGuide</a>
