@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>5. Usage of CYMDIST as an FMU &mdash; FMU Export of CYMDIST User Guide</title>
+    <title>5. Usage of CYMDIST as an FMU &#8212; FMU Export of CYMDIST User Guide</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,14 +17,16 @@
         VERSION:     '1.0.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="FMU Export of CYMDIST User Guide" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="6. Best Practice" href="bestPractice.html" />
     <link rel="prev" title="4. Creating an FMU" href="build.html" /> 
   </head>
@@ -40,6 +42,9 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="bestPractice.html" title="6. Best Practice"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -49,7 +54,7 @@
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of CYMDIST User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of CYMDIST User Guide</a> &#187;</li> -->
  
       </ul>
     </div>
@@ -64,15 +69,15 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/usage.txt"
+      <li><a href="_sources/usage.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -94,29 +99,6 @@
 </li>
 <li><p class="first">CYME version 7.2 must be installed. CYME can be downloaded from <a class="reference external" href="https://www.cyme.com">www.cyme.com</a>.</p>
 </li>
-<li><p class="first">The <code class="docutils literal"><span class="pre">fmu_code</span></code> functions directory must be added to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>.
-This directory contains functions needed at runtime by the CYMDIST FMU.
-The <code class="docutils literal"><span class="pre">fmu_code</span></code> functions folder can be found at the top level of
-the distribution folder of CyDER. It is in <code class="docutils literal"><span class="pre">web\docker_django\worker\simulation</span></code>.</p>
-<p>To add the <code class="docutils literal"><span class="pre">fmu_code</span></code> functions folder to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>:</p>
-<ul>
-<li><p class="first">In Search, search for and then select: System (Control Panel).</p>
-</li>
-<li><p class="first">Click the Advanced system settings link.</p>
-</li>
-<li><p class="first">Click Environment Variables. In the section System Variables,
-find a variable named <code class="docutils literal"><span class="pre">PYTHONPATH</span></code> environment variable and select it.</p>
-<blockquote>
-<div><p>If the variable does not exist, create it. Click Edit.</p>
-</div></blockquote>
-</li>
-<li><p class="first">In the Edit System Variable (or New System Variable) window,
-specify the value of the PYTHONPATH environment variable
-which should be in our case the full path to
-<code class="docutils literal"><span class="pre">web\docker_django\worker\simulation\fmu_code</span></code>.</p>
-</li>
-</ul>
-</li>
 <li><p class="first">The CYMDIST Python API directory must be added to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>.
 This directory contains scripts needed at runtime by the CYMDIST FMU.</p>
 <p>The CYMDIST Python API directory is in the installation folder of CYME.
@@ -128,7 +110,7 @@ is the path to the installation folder of CYME 7.2.</p>
 <div>To add the CYMDIST Python API scripts folder to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>,
 add <code class="docutils literal"><span class="pre">path_to_CYME\CYME</span></code> to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>.
 Note that <code class="docutils literal"><span class="pre">cympy</span></code> is not included in the name of the variable.</div></blockquote>
-<ol class="arabic" start="5">
+<ol class="arabic" start="4">
 <li><p class="first">The CYMDIST installation directory must be added to the system <code class="docutils literal"><span class="pre">PATH</span></code>.
 This directory contains runtime DLLS (<code class="docutils literal"><span class="pre">mkl_core.dll</span></code>, <code class="docutils literal"><span class="pre">mkl_def.dll</span></code>)
 that are needed at runtime by the CYMDIST FMU.</p>
@@ -156,6 +138,9 @@ is the FMU model name as defined in the XML input file.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="bestPractice.html" title="6. Best Practice"
              >next</a> |</li>
         <li class="right" >
@@ -165,13 +150,13 @@ is the FMU model name as defined in the XML input file.</p>
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of CYMDIST User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of CYMDIST User Guide</a> &#187;</li> -->
  
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2015-2018, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+        &#169; Copyright 2015-2018, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>
 </html>
