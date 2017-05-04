@@ -5,7 +5,7 @@ Running PyFMI with Python 3.4 on Windows 32 bit
 -----------------------------------------------
 :term:`PyFMI` is a python package which can be used to import and run a CYMDIST FMU. 
 In :term:`PyFMI` version 2.3.1, a master algorithm was added to import and 
-link multiple FMUs for co-simulation. At time of writing, there was no :term:`PyFMI` 
+link multiple FMUs for integrate simulation. At time of writing, there was no :term:`PyFMI` 
 2.3.1 executable available for Python 3.4 for Windows 32bit (See `PyPyi <https://pypi.python.org/pypi/PyFMI>`_.).
 The next steps describe requirements and steps to perform to compile :term:`PyFMI` version 2.3.1 from source.
 
