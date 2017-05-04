@@ -11,7 +11,6 @@ import subprocess
 try:
     from pyfmi import load_fmu
 except BaseException:
-    print ('PyFMI is not installed.')
     pass
 from datetime import datetime
 
@@ -23,22 +22,22 @@ sys.path.append(parser_path)
 
 import CYMDISTToFMU as cymdist
 
-# Get the path to the templates files
-script_path = os.path.dirname(os.path.realpath(__file__))
-utilities_path = os.path.join(script_path, '..', 'parser', 'utilities')
 XSD_SCHEMA = 'CYMDISTModelDescription.xsd'
 NEEDSEXECUTIONTOOL = 'needsExecutionTool'
 MODELDESCRIPTION = 'modelDescription.xml'
-MO_TEMPLATE = 'CYMDISTModelicaTemplate.mo'
-MOS_TEMPLATE_DYMOLA = 'CYMDISTModelicaTemplate_Dymola.mos'
-MOS_TEMPLATE_OPENMODELICA = 'CYMDISTModelicaTemplate_OpenModelica.mos'
+CYMDISTModelicaTemplate_MO = 'CYMDISTModelicaTemplate.mo'
+CYMDISTModelicaTemplate_Dymola_MOS = 'CYMDISTModelicaTemplate_Dymola.mos'
+CYMDISTModelicaTemplate_OpenModelica_MOS = 'CYMDISTModelicaTemplate_OpenModelica.mos'
 XML_MODELDESCRIPTION = 'CYMDISTModelDescription.xml'
-PYTHON_SCRIPT_PATH = os.path.join(utilities_path, 'cymdisttofmu_wrapper.py')
-MO_TEMPLATE_PATH = os.path.join(utilities_path, MO_TEMPLATE)
+# Get the path to the templates files
+script_path = os.path.dirname(os.path.realpath(__file__))
+utilities_path = os.path.join(script_path, '..', 'parser', 'utilities')
+PYTHON_SCRIPT_PATH = os.path.join(utilities_path, 'cymdist_wrapper.py')
+MO_TEMPLATE_PATH = os.path.join(utilities_path, CYMDISTModelicaTemplate_MO)
 MOS_TEMPLATE_PATH_DYMOLA = os.path.join(
-    utilities_path, MOS_TEMPLATE_DYMOLA)
+    utilities_path, CYMDISTModelicaTemplate_Dymola_MOS)
 MOS_TEMPLATE_PATH_OPENMODELICA = os.path.join(
-    utilities_path, MOS_TEMPLATE_OPENMODELICA)
+    utilities_path, CYMDISTModelicaTemplate_OpenModelica_MOS)
 XSD_FILE_PATH = os.path.join(utilities_path, XSD_SCHEMA)
 XML_INPUT_FILE = os.path.join(utilities_path, XML_MODELDESCRIPTION)
 CYMDISTToFMU_LIB_PATH = os.path.join(
@@ -46,11 +45,11 @@ CYMDISTToFMU_LIB_PATH = os.path.join(
 python_scripts_path = [PYTHON_SCRIPT_PATH]
 
 if(platform.system().lower() == 'windows'):
-    print('Convert path to Python script path={!s} to valid Windows path'.format(
+    print ("Convert path to Python script={!s} to valid Windows path".format(
         PYTHON_SCRIPT_PATH))
     python_scripts_path = [item.replace('\\', '\\\\') for item in [
         PYTHON_SCRIPT_PATH]]
-    print('The valid Python script path is {!s}.'.format(python_scripts_path))
+    print ("The valid Python script path is {!s}.".format(python_scripts_path))
 
 CYMDIST_T = cymdist.CYMDISTToFMU('con_path',
                                        XML_INPUT_FILE,
@@ -58,7 +57,7 @@ CYMDIST_T = cymdist.CYMDISTToFMU('con_path',
                                        MO_TEMPLATE_PATH,
                                        MOS_TEMPLATE_PATH_DYMOLA,
                                        XSD_FILE_PATH,
-                                       '35',
+                                       '34',
                                        python_scripts_path,
                                        '2',
                                        'me',
@@ -126,7 +125,7 @@ class Tester(unittest.TestCase):
         # Testing function to print Modelica model.
         CYMDIST_T.print_mo()
 
-    #@unittest.skip('Export CYMDIST using multiple options.')
+    @unittest.skip("Export CYMDIST using multiple options.")
     def test_cymdist_to_fmu(self):
         '''
         Test the export of an FMU with various options.
@@ -135,7 +134,7 @@ class Tester(unittest.TestCase):
 
         for tool in ['dymola', 'omc']:
             if (platform.system().lower() == 'linux' and tool == 'omc'):
-                print('tool={!s} is not supported on Linux.'.format(tool))
+                print ('tool={!s} is not supported on Linux.'.format(tool))
                 continue
             if tool == 'omc':
                 modPat = 'OPENMODELICALIBRARY'
@@ -148,7 +147,7 @@ class Tester(unittest.TestCase):
                     version = str(float(version))
                 for api in ['me']:
                     if (tool == 'omc' and version == '1.0' and api == 'cs'):
-                        print(
+                        print (
                             'tool={!s} with FMI version={!s} and FMI API={!s} is not supported.'.format(
                                 tool, version, api))
                         continue
@@ -162,7 +161,7 @@ class Tester(unittest.TestCase):
                             MO_TEMPLATE_PATH,
                             mosT,
                             XSD_FILE_PATH,
-                            '35',
+                            '34',
                             python_scripts_path,
                             version,
                             api,
@@ -170,7 +169,7 @@ class Tester(unittest.TestCase):
                             modPat,
                             cs_xml)
 
-                        print(
+                        print (
                             'Export the cymdist with tool={!s}, FMI version={!s}, FMI API={!s}'.format(
                                 tool, version, api))
                         start = datetime.now()
@@ -183,12 +182,16 @@ class Tester(unittest.TestCase):
                             'Export CYMDIST as an FMU in {!s} seconds.'.format(
                                 (end - start).total_seconds()))
 
-    @unittest.skip('Run the FMU using PyFMI')
+    #@unittest.skip("Run the FMU using PyFMI")
     def test_run_cymdist_fmu(self):
         '''
         Test the execution of one CYMDIST FMU.
 
         '''
+        
+        if not(platform.system().lower() == 'windows'):
+            print('CYMDISTToFMU is only supported on Windows.')
+            return
         for tool in ['Dymola', 'OpenModelica']:
             if platform.system().lower() == 'windows':
                 fmu_path = os.path.join(
@@ -201,62 +204,59 @@ class Tester(unittest.TestCase):
             # Parameters which will be arguments of the function
             start_time = 0.0
             stop_time = 5.0
-
-            print('Starting the simulation')
-            start = datetime.now()
+            
             # Path to configuration file
-            cymdist_con_val_str = os.path.abspath('config.json')
-            if sys.version_info.major > 2:
-                cymdist_con_val_str = bytes(cymdist_con_val_str, 'utf-8')
-
-            cymdist_input_valref = []
-            cymdist_output_valref = []
-
+            path_config=os.path.abspath("config.json")
+            cymdist_con_val_str = bytes(path_config, 'utf-8')
+            
+            cymdist_input_valref=[] 
+            cymdist_output_valref=[]
+            
             cymdist = load_fmu(fmu_path, log_level=7)
-            cymdist.setup_experiment(
-                start_time=start_time, stop_time=stop_time)
-
+            cymdist.setup_experiment(start_time=start_time, stop_time=stop_time)
+            
             # Define the inputs
-            cymdist_input_names = ['v']
-            cymdist_input_values = [220.0]
-            cymdist_output_names = ['i']
-
+            cymdist_input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
+            cymdist_input_values = [2520, 2520, 2520, 0, -120, 120]
+            cymdist_output_names = ['IA', 'IB', 'IC', 'IAngleA', 'IAngleB', 'IAngleC']
+            
             # Get the value references of cymdist inputs
             for elem in cymdist_input_names:
-                cymdist_input_valref.append(
-                    cymdist.get_variable_valueref(elem))
-
-            # Get the value references of cymdist outputs
+                cymdist_input_valref.append(cymdist.get_variable_valueref(elem))   
+                
+            # Get the value references of cymdist outputs 
             for elem in cymdist_output_names:
-                cymdist_output_valref.append(
-                    cymdist.get_variable_valueref(elem))
-
+                cymdist_output_valref.append(cymdist.get_variable_valueref(elem))  
+        
             # Set the flag to save the results
-            cymdist.set('_saveToFile', 0)
-            # Get value reference of the configuration file
-            cymdist_con_val_ref = cymdist.get_variable_valueref(
-                '_configurationFileName')
-
+            cymdist.set("_saveToFile", 0)
+            # Get value reference of the configuration file 
+            cymdist_con_val_ref = cymdist.get_variable_valueref("_configurationFileName")
+            
             # Set the configuration file
-            cymdist.set_string(
-                [cymdist_con_val_ref],
-                [cymdist_con_val_str])
-
+            cymdist.set_string([cymdist_con_val_ref], [cymdist_con_val_str])
+            
             # Initialize the FMUs
             cymdist.initialize()
-
+            
             # Call event update prior to entering continuous mode.
             cymdist.event_update()
-
+            
             # Enter continuous time mode
             cymdist.enter_continuous_time_mode()
-
+            
+            print("Done initializing the FMU")
+            # Create vector to store time
+        
+            print ("Starting the time integration" )    
+            start = datetime.now()
             cymdist.set_real(cymdist_input_valref, cymdist_input_values)
-
+            print("This is the result of the angle IAngleA: " 
+                  + str(cymdist.get_real(cymdist.get_variable_valueref('IAngleA'))))
             # Terminate FMUs
             cymdist.terminate()
             end = datetime.now()
-
+            
             print(
                 'Ran a single CYMDIST simulation with {!s} FMU={!s} in {!s} seconds.'.format(
                     tool, fmu_path, (end - start).total_seconds()))
@@ -265,14 +265,11 @@ class Tester(unittest.TestCase):
                 # Hence we only assert for Dymola FMUs
                 self.assertEqual(
                     cymdist.get_real(
-                        cymdist.get_variable_valueref('i')),
-                    1.0,
+                        cymdist.get_variable_valueref('IAngleA')),
+                    -13.7,
                     'Values are not matching.')
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Check command line options
-    if not(platform.system().lower() == 'windows'):
-        log.info('CYMDISTToFMU is only supported on Windows')
-        return
     unittest.main()

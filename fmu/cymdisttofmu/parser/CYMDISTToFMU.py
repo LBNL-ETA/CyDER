@@ -1,4 +1,6 @@
-'''
+#!/usr/bin/env python
+
+"""
 
 ___int_doc:
 CYMDISTToFMU is a software package written in Python which allows
@@ -9,10 +11,10 @@ standard `version 2.0 <https://svn.modelica.org/fmi/branches/public/specificatio
 This FMU can then be imported into a variety of simulation programs
 that support the import of the Functional Mock-up Interface.
 
-__author__ = 'Thierry S. Nouidui'
-__email__ = 'TSNouidui@lbl.gov'
-__license__ = 'BSD'
-__maintainer__ = 'Thierry S Nouidui'
+__author__ = "Thierry S. Nouidui"
+__email__ = "TSNouidui@lbl.gov"
+__license__ = "BSD"
+__maintainer__ = "Thierry S Nouidui"
 ___int_doc::
 
 To create an FMU,
@@ -32,7 +34,7 @@ An example of invoking ``CYMDISTToFMU.py`` on Windows is
 .. code-block:: none
 
   # Windows:
-  > python parser\CYMDISTToFMU.py -s parser\\\\utilities\\\\cymdisttofmu_wrapper.py, d:\\\\calcEng.py
+  > python parser\CYMDISTToFMU.py -s parser\\\\utilities\\\\cymdist_wrapper.py, d:\\\\calcEng.py
 
 Following requirements must be met hen using CYMDISTToFMU
 
@@ -46,9 +48,11 @@ Following requirements must be met hen using CYMDISTToFMU
 | Options                                            | Purpose                                                           |
 +====================================================+===================================================================+
 | -s                                                 | Paths to python scripts required to run the                       |
-|                                                    | CYMDIST. On Windows Operating system, the paths                   |
-|                                                    | must use **double backward slash**.                               |
-|                                                    | The name of the main Python script must be cymdisttofmu_wrapper.py |                   |
+|                                                    | CYMDIST.                                                          |                              |
+|                                                    | The main Python script must be an extension                       |
+|                                                    | of the ``cymdist_wrapper.py`` script which is provided in         |
+|                                                    | ``parser\\utilities\\cymdist_wrapper.py``. The name of              |
+|                                                    | the main Python script must be ``cymdist_wrapper.py``.            |
 +----------------------------------------------------+-------------------------------------------------------------------+
 | -c                                                 | Path to the CYMDIST model file.                                   |
 +----------------------------------------------------+-------------------------------------------------------------------+
@@ -83,7 +87,7 @@ The main functions of CYMDISTToFMU are
   - If option ``<-n>`` is ``false`` then the FMU only needs the Python scripts
     provided for option ``<-s>`` to run.
 
-'''
+"""
 
 from lxml import etree
 from datetime import datetime
@@ -109,22 +113,21 @@ log.getLogger().addHandler(stderrLogger)
 # directory.
 # XSD_SCHEMA: Schema used to validate the XML input
 # MO_TEMPLATE: Template used to write Modelica model
-# MOS_TEMPLATE_DYMOLA/MOS_TEMPLATE_OPENMODELICA: 
-# Template used to write mos script
+# CYMDISTModelicaTemplate_MOS: Template used to write mos script
 # XML_MODELDESCRIPTION: Default XML input file if none is provided
+
 # Get the path to the templates files
 script_path = os.path.dirname(os.path.realpath(__file__))
 utilities_path = os.path.join(script_path, 'utilities')
-XML_MODELDESCRIPTION = 'CYMDISTModelDescription.xml'
 XSD_SCHEMA = 'CYMDISTModelDescription.xsd'
 NEEDSEXECUTIONTOOL = 'needsExecutionTool'
 MODELDESCRIPTION = 'modelDescription.xml'
 MO_TEMPLATE = 'CYMDISTModelicaTemplate.mo'
 MOS_TEMPLATE_DYMOLA = 'CYMDISTModelicaTemplate_Dymola.mos'
 MOS_TEMPLATE_OPENMODELICA = 'CYMDISTModelicaTemplate_OpenModelica.mos'
+XML_MODELDESCRIPTION = 'CYMDISTModelDescription.xml'
 MO_TEMPLATE_PATH = os.path.join(utilities_path, MO_TEMPLATE)
-MOS_TEMPLATE_PATH_DYMOLA = os.path.join(
-    utilities_path, MOS_TEMPLATE_DYMOLA)
+MOS_TEMPLATE_PATH_DYMOLA = os.path.join(utilities_path, MOS_TEMPLATE_DYMOLA)
 MOS_TEMPLATE_PATH_OPENMODELICA = os.path.join(
     utilities_path, MOS_TEMPLATE_OPENMODELICA)
 XSD_FILE_PATH = os.path.join(utilities_path, XSD_SCHEMA)
@@ -133,11 +136,11 @@ CYMDISTToFMU_LIB_PATH = os.path.join(script_path, 'libraries', 'modelica')
 
 
 def main():
-    '''
+    """
     Main function to export a CYMDIST as an FMU.
 
 
-    '''
+    """
     import argparse
 
     # Configure the argument parser
@@ -145,7 +148,7 @@ def main():
     parser = argparse.ArgumentParser(
         description='Export CYMDIST as a Functional Mock-up Unit')
     cymdist_group = parser.add_argument_group(
-        'Arguments to export a CYMDIST as an FMU')
+        "Arguments to export a CYMDIST as an FMU")
 
     cymdist_group.add_argument(
         '-s',
@@ -164,17 +167,17 @@ def main():
     cymdist_group.add_argument('-v', '--fmi-version',
                                  help='FMI version. Valid options are <1.0>'
                                  + ' and <2.0>). Default is <2.0>')
-    cymdist_group.add_argument('-a', '--fmi-api',
+    cymdist_group.add_argument('-a', "--fmi-api",
                                  help='FMI API version. Valid options'
                                  + ' are <cs> for co-simulation'
                                  + ' and <me> for model exchange.'
                                  + ' Default is <me>')
-    cymdist_group.add_argument('-t', '--export-tool',
+    cymdist_group.add_argument("-t", "--export-tool",
                                  help='Modelica compiler. Valid options are '
                                  + '<dymola> for Dymola and'
                                  + ' <omc> for OpenModelica'
                                  + ' Default is <dymola>')
-    cymdist_group.add_argument('-n', '--needs-tool',
+    cymdist_group.add_argument("-n", "--needs-tool",
                                  help='Flag to indicate if FMU needs an '
                                  + 'external execution tool to run. '
                                  + 'Valid options are '
@@ -193,7 +196,7 @@ def main():
 
     # Check command line options
     if not(platform.system().lower() == 'windows'):
-        log.info('CYMDISTToFMU is only supported on Windows')
+        log.info('CYMDISTToFMU is only supported on Windows.')
         return
 
     # Check export tool
@@ -246,7 +249,7 @@ def main():
         modelica_path = 'MODELICAPATH'
     elif(export_tool.lower() == 'omc'):
         if fmi_version in ['1', '2']:
-            fmi_version = str(float(fmi_version))
+            fmi_version = str(float(fmi_version)*1.0)
         mos_template_path = MOS_TEMPLATE_PATH_OPENMODELICA
         modelica_path = 'OPENMODELICALIBRARY'
 
@@ -268,13 +271,12 @@ def main():
     if(platform.system().lower() == 'windows'):
         python_scripts_path = [item.replace('\\', '\\\\')
                                for item in python_scripts_path]
-    
-    # Save correct Python script path
+
     python_scripts_base = [os.path.basename(item)
                            for item in python_scripts_path]
-    # Check if cymdisttofmu_wrapper.py is in the list of functions
-    if not('cymdisttofmu_wrapper.py' in python_scripts_base):
-        s = ('cymdisttofmu_wrapper.py no found in the list of Python scripts={!s}').format(
+    # Check if cymdist_wrapper.py is in the list of functions
+    if not('cymdist_wrapper.py' in python_scripts_base):
+        s = ('cymdist_wrapper.py no found in the list of Python scripts={!s}').format(
             python_scripts_path)
         log.error(s)
         raise ValueError(s)
@@ -312,12 +314,12 @@ def main():
     # Check if fmi api is none
     if(needs_tool is None):
         log.info(
-            'Flag to specify whether an execution is needed is not specified. Default (false) will be used.')
+            'Flag to specify whether an execution is needed is not specified. Default (true) will be used.')
         needs_tool = 'true'
 
     if not (needs_tool.lower() in ['true', 'false']):
         log.info(
-            'Flag to specify whether an execution is needed is not specified. Default (false) will be used.')
+            'Flag to specify whether an execution is needed is not specified. Default (true) will be used.')
         needs_tool = 'true'
 
     # Export the tool as an FMU
@@ -336,7 +338,6 @@ def main():
                                needs_tool.lower())
 
     start = datetime.now()
-    ret_val = -1
     ret_val = CYMDIST.print_mo()
     if(ret_val != 0):
         s = 'Could not print the CYMDIST Modelica model. Error in print_mo().'
@@ -367,13 +368,13 @@ def main():
         log.error(s)
         raise ValueError(s)
     end = datetime.now()
-
-    log.info('Export CYMDIST as an FMU in ' +
-             str((end - start).total_seconds()) + ' seconds.')
+    
+    log.info('Export CYMDIST as an FMU in {!s} seconds.'.format(
+        (end - start).total_seconds()))
 
 
 def check_duplicates(arr):
-    '''
+    """
     Check duplicates in a list of variables.
 
     This function checks duplicates in a list
@@ -383,18 +384,17 @@ def check_duplicates(arr):
 
     :param arr(str): list of string variables.
 
-    '''
+    """
 
     dup = set([x for x in arr if arr.count(x) > 1])
     lst_dup = list(dup)
     len_lst = len(lst_dup)
     if (len_lst > 0):
-        log.error('There are duplicates names in the list '
-                  + str(arr) + '.')
+        log.error('There are duplicates names in the list {!s}.'.format(arr))
         log.error('This is invalid. Check your XML input file.')
         for i in lst_dup:
-            log.error('Variable ' + i + ' has duplicates'
-                      ' in the list ' + str(arr) + '.')
+            log.error('Variable {!s} has duplicates in the list {!s}.'.format(
+                i, arr))
         # Assert if version is different from FMI 2.0
         assert(len_lst <= 0), 'Duplicates found in the list.'
 
@@ -404,7 +404,7 @@ g_rexBadIdChars = re.compile(r'[^a-zA-Z0-9_]')
 
 
 def sanitize_name(name):
-    '''
+    """
     Make a Modelica valid name.
 
     In Modelica, a variable name:
@@ -414,7 +414,7 @@ def sanitize_name(name):
     :param name(str): Variable name to be sanitized.
     :return: Sanitized variable name.
 
-    '''
+    """
 
     # Check if variable has a length > 0
     if(len(name) <= 0):
@@ -423,7 +423,7 @@ def sanitize_name(name):
     #
     # Check if variable starts with a number.
     if(name[0].isdigit()):
-        log.warning('Variable Name ' + name + ' starts with 0.')
+        log.warning('Variable Name {!s} starts with 0.'.format(name))
         log.warning('This is invalid.')
         log.warning('The name will be changed to start with f_.')
         name = 'f_' + name
@@ -435,7 +435,7 @@ def sanitize_name(name):
 
 
 def zip_fmu(dirPath=None, zipFilePath=None, includeDirInZip=True):
-    '''
+    """
     Create a zip archive from a directory.
 
     Note that this function is designed to put files in the zip archive with
@@ -452,14 +452,14 @@ def zip_fmu(dirPath=None, zipFilePath=None, includeDirInZip=True):
     :param zipFilePath(str): String path to the output zip file. This can be an absolute
             or relative path. If the zip file already exists, it will be updated. If
             not, it will be created. If you want to replace it from scratch, delete it
-            prior to calling this function. (default is computed as dirPath + '.zip')
+            prior to calling this function. (default is computed as dirPath + ".zip")
 
     :param includeDirInZip(bool): Boolean indicating whether the top level directory
             should be included in the archive or omitted. (default True)
 
     Author: http://peterlyons.com/problog/2009/04/zip-dir-python
 
-    '''
+    """
     if not zipFilePath:
         zipFilePath = dirPath + '.zip'
     if not os.path.isdir(dirPath):
@@ -492,7 +492,7 @@ def zip_fmu(dirPath=None, zipFilePath=None, includeDirInZip=True):
 
 class CYMDISTToFMU(object):
 
-    '''
+    """
     CYMDIST FMU writer.
 
     This class contains various methods to
@@ -503,7 +503,7 @@ class CYMDISTToFMU(object):
     the model as an FMU for model exchange or
     co-simulation.
 
-    '''
+    """
 
     def __init__(self, con_path,
                  xml_path,
@@ -518,12 +518,12 @@ class CYMDISTToFMU(object):
                  export_tool,
                  modelica_path,
                  needs_tool):
-        '''
+        """
         Initialize the class.
 
         :param con_path (str): The path to the configuration file.
         :param xml_path (str): The path to the XML file.
-        :param cymdisttofmu_path (str): The path to the folder
+            cymdisttofmu_path (str): The path to the folder
             which contains the Buildings library excluding
             the ending FILE SEPARATOR.
         :param moT_path (str): Modelica model template.
@@ -535,10 +535,9 @@ class CYMDISTToFMU(object):
         :param fmi_version (str): The FMI version.
         :param fmi_api (str): The FMI API.
         :param export_tool (str): The Modelica compiler.
-        :param modelica_path (str): Path to the Modelica libraries.
         :param needs_tool (str): Needs execution tool on target machine.
 
-        '''
+        """
 
         self.con_path = con_path
         self.xml_path = xml_path
@@ -556,13 +555,13 @@ class CYMDISTToFMU(object):
         self.needs_tool = needs_tool
 
     def xml_validator(self):
-        '''
+        """
         Validate the XML file.
 
         This function validates the XML file
         against CYMDISTModelDescription.xsd.
 
-        '''
+        """
 
         try:
             # Get the XML schema to validate against
@@ -606,7 +605,7 @@ class CYMDISTToFMU(object):
                 print('type_name: ' + error.type_name)
 
     def xml_parser(self):
-        '''
+        """
         Parse the XML file.
 
         This function parses the XML file which contains
@@ -618,7 +617,7 @@ class CYMDISTToFMU(object):
                 parameter values, Modelica input names, Modelica output names,
                 Modelica output parameter names.
 
-        '''
+        """
 
         # Get the XML file
         tree = ET.parse(self.xml_path)
@@ -669,8 +668,8 @@ class CYMDISTToFMU(object):
                     log.info('Invalid characters will be removed from the '
                              'input variable name {!s}.'.format(name))
                     new_name = sanitize_name(name)
-                    log.info('The new input variable name is '
-                             + new_name + '.')
+                    log.info(
+                        'The new input variable name is {!s}.'.format(new_name))
                     modelica_input_variable_names.append(new_name)
                     scalar_variable['name'] = new_name
 
@@ -689,8 +688,8 @@ class CYMDISTToFMU(object):
                     log.info('Invalid characters will be removed from the '
                              'output variable name {!s}.'.format(name))
                     new_name = sanitize_name(name)
-                    log.info('The new output variable name is '
-                             + new_name + '.')
+                    log.info(
+                        'The new output variable name is {!s}.'.format(new_name))
                     modelica_output_variable_names.append(new_name)
                     scalar_variable['name'] = new_name
 
@@ -742,6 +741,7 @@ class CYMDISTToFMU(object):
                     elif not(start is None):
                         start = float(start)
                     # Create a dictionary
+                    # scalar_variable['name'] = name
                     if not (description is None):
                         scalar_variable['description'] = description
                     # If there is no description set this to
@@ -773,7 +773,7 @@ class CYMDISTToFMU(object):
                 modelica_parameter_variable_names
 
     def print_mo(self):
-        '''
+        """
         Print the Modelica model of a CYMDIST XML file.
 
         This function parses a CYMDIST XML file and extracts
@@ -785,7 +785,7 @@ class CYMDISTToFMU(object):
 
         :return: 0 if success.
 
-        '''
+        """
 
         self.xml_validator()
         scalar_variables, input_variable_names, \
@@ -835,7 +835,7 @@ class CYMDISTToFMU(object):
         return 0
 
     def generate_fmu(self):
-        '''
+        """
         Generate the CYMDIST FMU.
 
         This function writes the mos file which is used to create the
@@ -848,7 +848,7 @@ class CYMDISTToFMU(object):
 
         :return: 0 if success.
 
-        '''
+        """
 
         # Set the Modelica path to point to the CYMDIST Library
         current_library_path = os.environ.get(self.modelica_path)
@@ -879,9 +879,11 @@ class CYMDISTToFMU(object):
 
         if (self.export_tool == 'dymola'):
             sp.call([self.export_tool, output_file])
+            #output_sp = os.system(self.export_tool + ' ' +  output_file)
 
         if (self.export_tool == 'omc'):
             sp.call([self.export_tool, output_file, 'CYMDISTToFMU'])
+            #output_sp = os.system(self.export_tool + ' ' + output_file + ' ' + 'CYMDISTToFMU')
 
         # Reset the library path to the default
         if not(current_library_path is None):
@@ -889,6 +891,7 @@ class CYMDISTToFMU(object):
 
         # Renamed the FMU to indicate target Python cymdist
         fmu_name = self.model_name + '.fmu'
+        # os.rename(self.model_name+'.fmu', fmu_name)
 
         # Write scuccess.
         s = 'The FMU {!s} is successfully created.'.format(fmu_name)
@@ -899,12 +902,12 @@ class CYMDISTToFMU(object):
         return 0
 
     def clean_temporary(self):
-        '''
+        """
         Clean temporary generated files.
 
         :return: 0 if success.
 
-        '''
+        """
         temporary = ['buildlog.txt', 'dsin.txt', 'dslog.txt', 'dymosim',
                      'request.', 'status.', 'dsmodel.c', 'dsfinal.txt',
                      'dsmodel_fmuconf.h', 'fmiModelIdentifier.h']
@@ -929,7 +932,7 @@ class CYMDISTToFMU(object):
         return 0
 
     def rewrite_fmu(self):
-        '''
+        """
         Add needsExecutionTool and missing libraries to the CYMDIST FMU.
 
         This function unzips the FMU generated with generate_fmu(),
@@ -942,7 +945,7 @@ class CYMDISTToFMU(object):
         :return: 0 if success.
 
 
-        '''
+        """
 
         fmi_version = float(self.fmi_version)
         if (self.export_tool == 'omc' or platform.system().lower() == 'linux'
@@ -985,10 +988,10 @@ class CYMDISTToFMU(object):
                     if (os.path.exists(path_bin)):
                         if(platform.system().lower() == 'windows'):
                             libraries = [
-                                'CYMDISTToFMUPython35.dll', 'python35.dll']
+                                'CYMDISTToFMUPython34.dll', 'python34.dll']
                         elif(platform.system().lower() == 'linux'):
                             libraries = [
-                                'libCYMDISTToFMUPython35.so', 'libpython35.so']
+                                'libCYMDISTToFMUPython34.so', 'libpython34.so']
                         for cur_fil in libraries:
                             cur_dll = os.path.join(path_bin, cur_fil)
                             if(os.path.isfile(cur_dll)):
@@ -1044,9 +1047,8 @@ class CYMDISTToFMU(object):
             log.info(s)
             s = 'The FMU {!s} is in {!s}.'.format(fmu_name, os.getcwd())
             log.info(s)
-            
+
             return 0
-        
         return 0
 
 
