@@ -14,7 +14,7 @@ of inputs, outputs and parameters of the FMU. The XML snippet below shows how a 
 A template named ``CYMDISTModeldescritpion.xml`` which shows such a file is provided in the ``parser\utilities`` installation folder of CYMDISTToFMU. 
 This template should be adapted to create new XML input file.
 
-The following snippet shows an input file where the user defines 6 inputs and 6 output variables.
+The following snippet shows an input file where the user defines 6 input and 6 output variables.
 
 .. literalinclude:: ../../../parser/utilities/CYMDISTModelDescription.xml
    :language: xml
