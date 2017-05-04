@@ -111,7 +111,6 @@ def simulate_one_cymdist_fmu():
     # Parameters which will be arguments of the function
     start_time = 0.0
     stop_time  = 5.0
-    step_size  = 5.0
 
     # Path to configuration file
     path_config=os.path.abspath("config.json")
@@ -119,7 +118,6 @@ def simulate_one_cymdist_fmu():
     
     cymdist_input_valref=[] 
     cymdist_output_valref=[]
-    cymdist_output_values=[]  
     
     cymdist = load_fmu("../fmus/CYMDIST/CYMDIST.fmu", log_level=7)
     cymdist.setup_experiment(start_time=start_time, stop_time=stop_time)
