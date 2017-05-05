@@ -34,7 +34,7 @@ An example of invoking ``CYMDISTToFMU.py`` on Windows is
 .. code-block:: none
 
   # Windows:
-  > python parser\CYMDISTToFMU.py -s parser\\\\utilities\\\\cymdist_wrapper.py, d:\\\\calcEng.py
+  > python parser\CYMDISTToFMU.py -s parser\\utilities\\cymdist_wrapper.py, d:\\calcEng.py
 
 Following requirements must be met hen using CYMDISTToFMU
 
@@ -48,7 +48,7 @@ Following requirements must be met hen using CYMDISTToFMU
 | Options                                            | Purpose                                                           |
 +====================================================+===================================================================+
 | -s                                                 | Paths to python scripts required to run the                       |
-|                                                    | CYMDIST.                                                          |                              |
+|                                                    | CYMDIST.                                                          |                              
 |                                                    | The main Python script must be an extension                       |
 |                                                    | of the ``cymdist_wrapper.py`` script which is provided in         |
 |                                                    | ``parser\\utilities\\cymdist_wrapper.py``. The name of              |
