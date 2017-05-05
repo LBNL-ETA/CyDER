@@ -15,33 +15,32 @@ To export CYMDIST as an FMU, CYMDISTToFMU needs:
 
 1. Python 3.4.x. 32bit
 
-2. jinja2
+2. jinja2 (Python package)
 
-3. lxml
+3. lxml (Python package)
 
-4. pandas
+4. pandas(Python package)
 
-5. numpy
+5. numpy (Python package)
 
-6. cython 
+6. cython (Python package)
 
 7. Modelica Parser
 
-8. C-Compiler (for cython and Modelica)
+8. C-Compiler (for Cython and Modelica)
 
 
 CYMDISTToFMU has been tested on Windows with:
 
   - Dymola 2017 FD01  (Modelica parser)
   - OpenModelica 1.11.0 (Modelica parser)
-  - Microsoft Visual Studio 10 Professional (Includes C-Compiler for cython and Modelica)
+  - Microsoft Visual Studio 10 Professional (Includes C-Compiler for Cython and Modelica)
 
 .. note:: 
 
    CYMDISTToFMU can use OpenModelica and Dymola to export CYMDIST as an FMU. 
    
-   However OpenModelica does not copy all required libraries dependencies to the FMU.
-
+   However OpenModelica 1.11.0 does not copy all required libraries dependencies to the FMU.
    As a workaround, CYMDISTToFMU checks if there are missing libraries dependencies and copies the dependencies to the FMU.
 
 
@@ -52,11 +51,9 @@ Installation
 
 To install CYMDISTToFMU, proceed as follows:
 
-1. Download the installation file from the :doc:`download` page.
-
-2. Unzip the installation file into any subdirectory (hereafter referred to as the "installation directory").
+1. Download the CyDER repository from the :doc:`download` page.
  
-
+The CYMDISTToFMU directory (hereafter referred to as the "installation directory") is the ``fmu`` subdirectory of CyDER.
 The installation directory should contain the following subdirectories:
 
 - ``fmu/cymdisttofmu/``
@@ -77,7 +74,7 @@ The installation directory should contain the following subdirectories:
     (Python scripts, Modelica templates and XML validator files)
     
 
-3. Add following folders to your system path: 
+2. Add following folders to your system path: 
 
  - Python installation folder (e.g. ``C:\Python34``)
  - Python scripts folder (e.g. ``C:\Python34\Scripts``), 

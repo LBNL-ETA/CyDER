@@ -9,9 +9,9 @@ User Guide
    introduction
    download
    installation
+   bestPractice
    build
    usage
-   bestPractice
    development
    help
    notation

@@ -27,7 +27,7 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="4. Creating an FMU" href="build.html" />
+    <link rel="next" title="4. Best Practice" href="bestPractice.html" />
     <link rel="prev" title="2. Download" href="download.html" /> 
   </head>
   <body role="document">
@@ -45,7 +45,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="build.html" title="4. Creating an FMU"
+          <a href="bestPractice.html" title="4. Best Practice"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="download.html" title="2. Download"
@@ -74,8 +74,8 @@
   <p class="topless"><a href="download.html"
                         title="previous chapter">2. Download</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="build.html"
-                        title="next chapter">4. Creating an FMU</a></p>
+  <p class="topless"><a href="bestPractice.html"
+                        title="next chapter">4. Best Practice</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -109,37 +109,37 @@
 <p>To export CYMDIST as an FMU, CYMDISTToFMU needs:</p>
 <ol class="arabic simple">
 <li>Python 3.4.x. 32bit</li>
-<li>jinja2</li>
-<li>lxml</li>
-<li>pandas</li>
-<li>numpy</li>
-<li>cython</li>
+<li>jinja2 (Python package)</li>
+<li>lxml (Python package)</li>
+<li>pandas(Python package)</li>
+<li>numpy (Python package)</li>
+<li>cython (Python package)</li>
 <li>Modelica Parser</li>
-<li>C-Compiler (for cython and Modelica)</li>
+<li>C-Compiler (for Cython and Modelica)</li>
 </ol>
 <p>CYMDISTToFMU has been tested on Windows with:</p>
 <blockquote>
 <div><ul class="simple">
 <li>Dymola 2017 FD01  (Modelica parser)</li>
 <li>OpenModelica 1.11.0 (Modelica parser)</li>
-<li>Microsoft Visual Studio 10 Professional (Includes C-Compiler for cython and Modelica)</li>
+<li>Microsoft Visual Studio 10 Professional (Includes C-Compiler for Cython and Modelica)</li>
 </ul>
 </div></blockquote>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>CYMDISTToFMU can use OpenModelica and Dymola to export CYMDIST as an FMU.</p>
-<p>However OpenModelica does not copy all required libraries dependencies to the FMU.</p>
-<p class="last">As a workaround, CYMDISTToFMU checks if there are missing libraries dependencies and copies the dependencies to the FMU.</p>
+<p class="last">However OpenModelica 1.11.0 does not copy all required libraries dependencies to the FMU.
+As a workaround, CYMDISTToFMU checks if there are missing libraries dependencies and copies the dependencies to the FMU.</p>
 </div>
 </div>
 <div class="section" id="installation-directory">
 <span id="id1"></span><h2>3.2. Installation<a class="headerlink" href="#installation-directory" title="Permalink to this headline">¶</a></h2>
 <p>To install CYMDISTToFMU, proceed as follows:</p>
 <ol class="arabic simple">
-<li>Download the installation file from the <a class="reference internal" href="download.html"><span class="doc">Download</span></a> page.</li>
-<li>Unzip the installation file into any subdirectory (hereafter referred to as the &#8220;installation directory&#8221;).</li>
+<li>Download the CyDER repository from the <a class="reference internal" href="download.html"><span class="doc">Download</span></a> page.</li>
 </ol>
-<p>The installation directory should contain the following subdirectories:</p>
+<p>The CYMDISTToFMU directory (hereafter referred to as the &#8220;installation directory&#8221;) is the <code class="docutils literal"><span class="pre">fmu</span></code> subdirectory of CyDER.
+The installation directory should contain the following subdirectories:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">fmu/cymdisttofmu/</span></code><ul>
 <li><code class="docutils literal"><span class="pre">bin/</span></code>
@@ -155,7 +155,7 @@
 </ul>
 </li>
 </ul>
-<ol class="arabic simple" start="3">
+<ol class="arabic simple" start="2">
 <li>Add following folders to your system path:</li>
 </ol>
 <blockquote>
@@ -217,7 +217,7 @@ into a command prompt to see if the right version of Python, Dymola or OpenModel
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="build.html" title="4. Creating an FMU"
+          <a href="bestPractice.html" title="4. Best Practice"
              >next</a> |</li>
         <li class="right" >
           <a href="download.html" title="2. Download"
