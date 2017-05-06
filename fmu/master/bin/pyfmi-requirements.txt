@@ -10,7 +10,7 @@
 #
 ###### Requirements with Version Specifiers ######
 #   See https://www.python.org/dev/peps/pep-0440/#version-specifiers
-jinja2==2.8
+#jinja2==2.8
 cython==0.25.1
 #numpy
 pandas==0.19.0
