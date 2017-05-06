@@ -108,21 +108,21 @@
 <h2>3.1. Software requirements<a class="headerlink" href="#software-requirements" title="Permalink to this headline">¶</a></h2>
 <p>To export CYMDIST as an FMU, CYMDISTToFMU needs:</p>
 <ol class="arabic simple">
-<li>Python 3.4.x. 32bit</li>
-<li>jinja2 (Python package)</li>
-<li>lxml (Python package)</li>
-<li>pandas(Python package)</li>
-<li>numpy (Python package)</li>
-<li>cython (Python package)</li>
-<li>Modelica Parser</li>
-<li>C-Compiler (for Cython and Modelica)</li>
+<li>Python and following dependencies:<ul>
+<li>jinja2</li>
+<li>lxml</li>
+</ul>
+</li>
+<li>Modelica parser</li>
+<li>C-Compiler</li>
 </ol>
 <p>CYMDISTToFMU has been tested on Windows with:</p>
 <blockquote>
 <div><ul class="simple">
+<li>Python 3.4.0</li>
 <li>Dymola 2017 FD01  (Modelica parser)</li>
 <li>OpenModelica 1.11.0 (Modelica parser)</li>
-<li>Microsoft Visual Studio 10 Professional (Includes C-Compiler for Cython and Modelica)</li>
+<li>Microsoft Visual Studio 10 Professional (C-Compiler)</li>
 </ul>
 </div></blockquote>
 <div class="admonition note">
@@ -143,11 +143,9 @@ The installation directory should contain the following subdirectories:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">fmu/cymdisttofmu/</span></code><ul>
 <li><code class="docutils literal"><span class="pre">bin/</span></code>
-(Python scripts for running unit tests)</li>
+(Python scripts for unit tests)</li>
 <li><code class="docutils literal"><span class="pre">doc/</span></code>
 (Documentation)</li>
-<li><code class="docutils literal"><span class="pre">fmuChecker/</span></code>
-(fmuChecker binaries for running unit tests)</li>
 <li><code class="docutils literal"><span class="pre">fmus/</span></code>
 (FMUs folder)</li>
 <li><code class="docutils literal"><span class="pre">parser/</span></code>
@@ -182,15 +180,8 @@ into a command prompt to see if the right version of Python, Dymola or OpenModel
 </div></blockquote>
 <ol class="arabic" start="4">
 <li><p class="first">Install Python dependencies by running</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>pip install -r dev/cymdisttofmu/cymdisttofmu-dependencies.txt
+<div class="highlight-none"><div class="highlight"><pre><span></span>pip install -r fmu/cymdisttofmu/bin/cymdisttofmu-requirements.txt
 </pre></div>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<ul class="last simple">
-<li><code class="docutils literal"><span class="pre">cymdisttofmu-dependencies.txt</span></code> includes the versions of the Python modules which were tested.</li>
-<li><code class="docutils literal"><span class="pre">lxml</span></code> cannot be installed using <code class="docutils literal"><span class="pre">pip</span></code>. Please download and install the executable (<code class="docutils literal"><span class="pre">lxml-3.4.4.win32-py3.4.exe</span></code>) from <a class="reference external" href="https://pypi.python.org/pypi/lxml/3.4.4">PyPyi</a>.</li>
-</ul>
 </div>
 </li>
 </ol>

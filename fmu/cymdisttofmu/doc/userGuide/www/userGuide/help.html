@@ -123,7 +123,7 @@ we recommend to use pre-compiled Windows binaries whenever available.</p>
 so it can run with Python 3.4 on Windows 32 bit.</p>
 <p>Install PyFMI dependencies with</p>
 <blockquote>
-<div><div class="highlight-none"><div class="highlight"><pre><span></span>pip install -r dev/master/bin/pyfmi-dependencies.txt
+<div><div class="highlight-none"><div class="highlight"><pre><span></span>pip install -r fmu/master/bin/pyfmi-requirements.txt
 </pre></div>
 </div>
 </div></blockquote>
@@ -166,7 +166,11 @@ For those, we recommend to use the MS Windows installer directly.</p>
 </table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last"><a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> needs a C-compiler to compile the source codes. We used the Microsoft Visual Studio 10 Professional.</p>
+<ul class="last simple">
+<li><a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> needs a C-compiler to compile the source codes. We used the Microsoft Visual Studio 10 Professional.</li>
+<li><code class="docutils literal"><span class="pre">pyfmi-requirements.txt</span></code> includes the versions of the Python modules which were tested.</li>
+<li><code class="docutils literal"><span class="pre">lxml</span></code> cannot be installed using <code class="docutils literal"><span class="pre">pip</span></code>. Please download and install the executable (<code class="docutils literal"><span class="pre">lxml-3.4.4.win32-py3.4.exe</span></code>) from <a class="reference external" href="https://pypi.python.org/pypi/lxml/3.4.4">PyPI</a>.</li>
+</ul>
 </div>
 </div>
 <div class="section" id="compilation">

@@ -13,28 +13,22 @@ Software requirements
 
 To export CYMDIST as an FMU, CYMDISTToFMU needs:
 
-1. Python 3.4.x. 32bit
+1. Python and following dependencies:
 
-2. jinja2 (Python package)
+   - jinja2 
 
-3. lxml (Python package)
+   - lxml 
 
-4. pandas(Python package)
+2. Modelica parser
 
-5. numpy (Python package)
-
-6. cython (Python package)
-
-7. Modelica Parser
-
-8. C-Compiler (for Cython and Modelica)
-
+3. C-Compiler
 
 CYMDISTToFMU has been tested on Windows with:
 
+  - Python 3.4.0 
   - Dymola 2017 FD01  (Modelica parser)
   - OpenModelica 1.11.0 (Modelica parser)
-  - Microsoft Visual Studio 10 Professional (Includes C-Compiler for Cython and Modelica)
+  - Microsoft Visual Studio 10 Professional (C-Compiler)
 
 .. note:: 
 
@@ -59,13 +53,10 @@ The installation directory should contain the following subdirectories:
 - ``fmu/cymdisttofmu/``
 
   - ``bin/``
-    (Python scripts for running unit tests)
+    (Python scripts for unit tests)
 
   - ``doc/``
     (Documentation)
-
-  - ``fmuChecker/``
-    (fmuChecker binaries for running unit tests)
 
   - ``fmus/``
     (FMUs folder)
@@ -102,15 +93,7 @@ The installation directory should contain the following subdirectories:
 
    .. code-block:: none
    
-      pip install -r dev/cymdisttofmu/cymdisttofmu-dependencies.txt
-
-
-   .. note:: 
-
-     - ``cymdisttofmu-dependencies.txt`` includes the versions of the Python modules which were tested.
-
-     - ``lxml`` cannot be installed using ``pip``. Please download and install the executable (``lxml-3.4.4.win32-py3.4.exe``) from `PyPyi <https://pypi.python.org/pypi/lxml/3.4.4>`_. 
-   
+      pip install -r fmu/cymdisttofmu/bin/cymdisttofmu-requirements.txt
 
 
 Uninstallation
