@@ -13,35 +13,28 @@ Software requirements
 
 To export CYMDIST as an FMU, CYMDISTToFMU needs:
 
-1. Python 3.4.x. 32bit
+1. Python and following dependencies:
 
-2. jinja2
+   - jinja2 
 
-3. lxml
+   - lxml 
 
-4. pandas
+2. Modelica parser
 
-5. numpy
-
-6. cython 
-
-7. Modelica Parser
-
-8. C-Compiler (for cython and Modelica)
-
+3. C-Compiler
 
 CYMDISTToFMU has been tested on Windows with:
 
+  - Python 3.4.0 
   - Dymola 2017 FD01  (Modelica parser)
   - OpenModelica 1.11.0 (Modelica parser)
-  - Microsoft Visual Studio 10 Professional (Includes C-Compiler for cython and Modelica)
+  - Microsoft Visual Studio 10 Professional (C-Compiler)
 
 .. note:: 
 
    CYMDISTToFMU can use OpenModelica and Dymola to export CYMDIST as an FMU. 
    
-   However OpenModelica does not copy all required libraries dependencies to the FMU.
-
+   However OpenModelica 1.11.0 does not copy all required libraries dependencies to the FMU.
    As a workaround, CYMDISTToFMU checks if there are missing libraries dependencies and copies the dependencies to the FMU.
 
 
@@ -52,23 +45,18 @@ Installation
 
 To install CYMDISTToFMU, proceed as follows:
 
-1. Download the installation file from the :doc:`download` page.
-
-2. Unzip the installation file into any subdirectory (hereafter referred to as the "installation directory").
+1. Download the CyDER repository from the :doc:`download` page.
  
-
+The CYMDISTToFMU directory (hereafter referred to as the "installation directory") is the ``fmu`` subdirectory of CyDER.
 The installation directory should contain the following subdirectories:
 
 - ``fmu/cymdisttofmu/``
 
   - ``bin/``
-    (Python scripts for running unit tests)
+    (Python scripts for unit tests)
 
   - ``doc/``
     (Documentation)
-
-  - ``fmuChecker/``
-    (fmuChecker binaries for running unit tests)
 
   - ``fmus/``
     (FMUs folder)
@@ -77,7 +65,7 @@ The installation directory should contain the following subdirectories:
     (Python scripts, Modelica templates and XML validator files)
     
 
-3. Add following folders to your system path: 
+2. Add following folders to your system path: 
 
  - Python installation folder (e.g. ``C:\Python34``)
  - Python scripts folder (e.g. ``C:\Python34\Scripts``), 
@@ -105,15 +93,7 @@ The installation directory should contain the following subdirectories:
 
    .. code-block:: none
    
-      pip install -r dev/cymdisttofmu/cymdisttofmu-dependencies.txt
-
-
-   .. note:: 
-
-     - ``cymdisttofmu-dependencies.txt`` includes the versions of the Python modules which were tested.
-
-     - ``lxml`` cannot be installed using ``pip``. Please download and install the executable (``lxml-3.4.4.win32-py3.4.exe``) from `PyPyi <https://pypi.python.org/pypi/lxml/3.4.4>`_. 
-   
+      pip install -r fmu/cymdisttofmu/bin/cymdisttofmu-requirements.txt
 
 
 Uninstallation
