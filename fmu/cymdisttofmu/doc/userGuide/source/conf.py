@@ -12,6 +12,7 @@
 # serve to show the default.
 
 import sys, os
+from sphinx.ext.autodoc import between
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -202,21 +203,6 @@ def setup(app):
 
     from pygments.lexer import RegexLexer, bygroups
     from pygments.token import Comment, Text, Number
+    app.connect('autodoc-process-docstring', between('^.*___int_doc.*$', exclude=True))
 
-    class IDFLexer(RegexLexer):
-        name = 'IDF'
-        aliases = ['idf']
-        filenames = ['*.idf']
-
-        tokens = {
-            'root': [
-                (r'( *\d+|\.)', Number),
-                (r'(\w+)', Text),
-                (r'( )', Text),
-                (r'(, *|; *)', Text),
-                (r'(!.*)$', Comment),
-                ]
-            }
-    lexers['idf'] = IDFLexer()
-
-highlight_language = 'idf'
+highlight_language = 'python'

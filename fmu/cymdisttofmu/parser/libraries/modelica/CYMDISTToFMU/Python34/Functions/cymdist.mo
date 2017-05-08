@@ -18,33 +18,35 @@ function cymdist "Function that communicates with the CYMDISTToFMU Python API"
   //   input Integer strLenRea(min=0)
   //     "Maximum length of each string that is read. If exceeded, the simulation stops with an error";
   output Real dblOutVal[max(1, nDblOut)] "Double output values read from CYMDISTToFMU";
-protected
-  String pytPat "Value of PYTHONPATH environment variable";
-  String pytPatCYMDISTToFMU "PYTHONPATH of CYMDISTToFMU library";
-  Boolean havePytPat "true if PYTHONPATH is already set by the user";
+//   String pytPat "Value of PYTHONPATH environment variable";
+//   String pytPatCYMDISTToFMU "PYTHONPATH of CYMDISTToFMU library";
+//   Boolean havePytPat "true if PYTHONPATH is already set by the user";
   //--  String filNam = "file://Utilities/IO/Python34/UsersGuide/package.mo"
   //--    "Name to a file of the CYMDISTToFMU library";
 algorithm
-  // Get the directory to CYMDISTToFMU/Resources/Python-Sources
-  //-- The lines below do not work in Dymola 2014 due to an issue with the loadResource
-  //-- (ticket #15168). This will be fixed in future versions.
-  //-- pytPatCYMDISTToFMU := CYMDISTToFMU.BoundaryConditions.WeatherData.BaseClasses.getAbsolutePath(uri=filNam);
-  //-- pytPatCYMDISTToFMU := Modelica.Utilities.Strings.replace(
-  //--   string=pytPatCYMDISTToFMU,
-  //--   searchString=filNam,
-  //--   replaceString="Resources/Python-Sources");
-  // The next line is a temporary fix for the above problem
-  pytPatCYMDISTToFMU := "Resources/Python-Sources";
-  // Update the PYTHONPATH variable
-  (
-pytPat,havePytPat) := Modelica.Utilities.System.getEnvironmentVariable("PYTHONPATH");
-  if havePytPat then
- Modelica.Utilities.System.setEnvironmentVariable(name="PYTHONPATH",
-    content=pytPat + ":" + pytPatCYMDISTToFMU);
-  else
- Modelica.Utilities.System.setEnvironmentVariable(name="PYTHONPATH",
-    content=pytPatCYMDISTToFMU);
-  end if;
+//   // Get the directory to CYMDISTToFMU/Resources/Python-Sources
+//   //-- The lines below do not work in Dymola 2014 due to an issue with the loadResource
+//   //-- (ticket #15168). This will be fixed in future versions.
+//   //-- pytPatCYMDISTToFMU := CYMDISTToFMU.BoundaryConditions.WeatherData.BaseClasses.getAbsolutePath(uri=filNam);
+//   //-- pytPatCYMDISTToFMU := Modelica.Utilities.Strings.replace(
+//   //--   string=pytPatCYMDISTToFMU,
+//   //--   searchString=filNam,
+//   //--   replaceString="Resources/Python-Sources");
+//   // The next line is a temporary fix for the above problem
+//   pytPatCYMDISTToFMU := "Resources/Python-Sources";
+//   // Update the PYTHONPATH variable
+//   (
+// pytPat,havePytPat) := Modelica.Utilities.System.getEnvironmentVariable("PYTHONPATH");
+//   if havePytPat then
+//     Modelica.Utilities.Streams.print("Path is " + pytPat);
+//  Modelica.Utilities.System.setEnvironmentVariable(name="PYTHONPATH",
+//     content=pytPat + ":" + pytPatCYMDISTToFMU);
+//
+//   else
+//  Modelica.Utilities.System.setEnvironmentVariable(name="PYTHONPATH",
+//     content=pytPatCYMDISTToFMU);
+//         Modelica.Utilities.Streams.print("CYMDIST is " + pytPatCYMDISTToFMU);
+//   end if;
   // Call the exchange function
 dblOutVal := BaseClasses.cymdist(
       moduleName=moduleName,
@@ -62,13 +64,13 @@ dblOutVal := BaseClasses.cymdist(
       resWri=resWri);
   // Change the PYTHONPATH back to what it was so that the function has no
   // side effects.
-  if havePytPat then
- Modelica.Utilities.System.setEnvironmentVariable(name="PYTHONPATH",
-    content=pytPat);
-  else
- Modelica.Utilities.System.setEnvironmentVariable(name="PYTHONPATH",
-    content="");
-  end if;
+//   if havePytPat then
+//  Modelica.Utilities.System.setEnvironmentVariable(name="PYTHONPATH",
+//     content=pytPat);
+//   else
+//  Modelica.Utilities.System.setEnvironmentVariable(name="PYTHONPATH",
+//     content="");
+//   end if;
 annotation (Documentation(info="<html>
 <p>
 This function is a wrapper for 

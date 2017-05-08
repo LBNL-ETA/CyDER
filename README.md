@@ -1,5 +1,3 @@
-
-=======
 # Cyber Physical Co-simulation Platform for Distributed Energy Resources (CyDER)
 
 ## Overview

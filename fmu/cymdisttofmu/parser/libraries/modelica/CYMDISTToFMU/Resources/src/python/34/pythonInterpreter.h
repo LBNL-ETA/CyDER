@@ -47,28 +47,28 @@ to not export all symbols but only the needed ones */
 # define LBNLPYTHONINTERPRETER_EXPORT
 #endif
 
-/* Exchange values with Cymdist.*/
-/* Any argument that starts with 'n', such as nDblWri, may be zero.*/
-/* If there is an error, then this function calls*/
-/* ModelicaFormatError(...) which terminates the computation.*/
-/**/
-/* The arguments are as follows:*/
-/*  moduleName            - Name of the Python module.*/
-/*  functionName          - Name of the Python function.*/
-/*  configFileName        - Name of the configuration file.*/
-/*  modTim                - Model time.*/
-/*  nDblWri               - Number of inputs values to write.*/
-/*  strWri                - Name of inputs to write.*/
-/*  dblValWri             - Double inputs values to write.*/
-/*  nDblRea               - Number of outputs values to read.*/
-/*  strRea                - Name of outputs to read.*/
-/*  dblValRea             - Double outputs values to read.*/
-/*  nDblParWri            - Number of parameters to write.*/
-/*  strParWri             - Name of parameters to write.*/
-/*  dblValParWri          - Double values of parameters to write.*/
-/*  resWri                - Integer value to indicate if results should be written.*/
-/*  inModelicaFormatError - Pointer to ModelicaFormatError*/
-LBNLPYTHONINTERPRETER_EXPORT void pythonExchangeValuesCymdistNoModelica(const char * moduleName,
+/*
+ * This function exchanges variables 
+ * with an external simulator. 
+ *
+ * @param moduleName the module name 
+ * @param functionName the function name
+ * @param configFileName the configuration file
+ * @param modTim the simulation time
+ * @param nDblWri the number of double variables to write
+ * @param strWri the string variables to write
+ * @param dblValWri the double values to write
+ * @param nDblRea the number of variables to read
+ * @param strRea the string variables to read
+ * @param dblValRea the double values to read
+ * @param nDblParWri the number of parameters to write
+ * @param strParWri the string parameters to write
+ * @param dblValParWri the double parameters to write
+ * @param resWri the result flag
+ * @param ModelicaFormatError the pointer
+ * to the inModelicaFormatError
+ */
+LBNLPYTHONINTERPRETER_EXPORT void pythonExchangeVariables(const char * moduleName,
 							const char * functionName, 
 							const char * configFileName,
 							double * modTim,

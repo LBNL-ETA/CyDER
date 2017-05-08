@@ -5,7 +5,7 @@ Running PyFMI with Python 3.4 on Windows 32 bit
 -----------------------------------------------
 :term:`PyFMI` is a python package which can be used to import and run a CYMDIST FMU. 
 In :term:`PyFMI` version 2.3.1, a master algorithm was added to import and 
-link multiple FMUs for co-simulation. At time of writing, there was no :term:`PyFMI` 
+link multiple FMUs for integrate simulation. At time of writing, there was no :term:`PyFMI` 
 2.3.1 executable available for Python 3.4 for Windows 32bit (See `PyPyi <https://pypi.python.org/pypi/PyFMI>`_.).
 The next steps describe requirements and steps to perform to compile :term:`PyFMI` version 2.3.1 from source.
 
@@ -24,7 +24,7 @@ Install PyFMI dependencies with
 
    .. code-block:: none
    
-      pip install -r dev/master/bin/pyfmi-dependencies.txt
+      pip install -r fmu/master/bin/pyfmi-requirements.txt
 
 Below is a table with dependencies which fail to install using pip. 
 For those, we recommend to use the MS Windows installer directly.
@@ -45,7 +45,13 @@ For those, we recommend to use the MS Windows installer directly.
 
 .. note::
 
-   :term:`PyFMI` needs a C-compiler to compile the source codes. We used the Microsoft Visual Studio 10 Professional.
+   - :term:`PyFMI` needs a C-compiler to compile the source codes. We used the Microsoft Visual Studio 10 Professional.
+
+   - ``pyfmi-requirements.txt`` includes the versions of the Python modules which were tested.
+
+   - ``lxml`` cannot be installed using ``pip``. Please download and install the executable (``lxml-3.4.4.win32-py3.4.exe``) from `PyPI <https://pypi.python.org/pypi/lxml/3.4.4>`_.
+
+
 
 
 Compilation

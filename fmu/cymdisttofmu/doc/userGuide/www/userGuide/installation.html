@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>3. Installation and Configuration &mdash; FMU Export of CYMDIST User Guide</title>
+    <title>3. Installation and Configuration &#8212; FMU Export of CYMDIST User Guide</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,15 +17,17 @@
         VERSION:     '1.0.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="FMU Export of CYMDIST User Guide" href="index.html" />
-    <link rel="next" title="4. Creating an FMU" href="build.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="4. Best Practice" href="bestPractice.html" />
     <link rel="prev" title="2. Download" href="download.html" /> 
   </head>
   <body role="document">
@@ -40,7 +42,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="build.html" title="4. Creating an FMU"
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="bestPractice.html" title="4. Best Practice"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="download.html" title="2. Download"
@@ -49,7 +54,7 @@
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of CYMDIST User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of CYMDIST User Guide</a> &#187;</li> -->
  
       </ul>
     </div>
@@ -69,20 +74,20 @@
   <p class="topless"><a href="download.html"
                         title="previous chapter">2. Download</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="build.html"
-                        title="next chapter">4. Creating an FMU</a></p>
+  <p class="topless"><a href="bestPractice.html"
+                        title="next chapter">4. Best Practice</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/installation.txt"
+      <li><a href="_sources/installation.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -103,37 +108,44 @@
 <h2>3.1. Software requirements<a class="headerlink" href="#software-requirements" title="Permalink to this headline">¶</a></h2>
 <p>To export CYMDIST as an FMU, CYMDISTToFMU needs:</p>
 <ol class="arabic simple">
-<li>Python 3.4.x. 32bit</li>
+<li>Python and following dependencies:<ul>
 <li>jinja2</li>
 <li>lxml</li>
-<li>pandas</li>
-<li>numpy</li>
-<li>cython</li>
-<li>Modelica Parser</li>
-<li>C-Compiler (for cython and Modelica)</li>
-</ol>
-<p>CYMDISTToFMU has been tested with:</p>
-<ul class="simple">
-<li>Dymola 2017 (Modelica Parser)</li>
-<li>Microsoft Visual Studio 10 Professional (Includes C-Compiler for cython and Modelica)</li>
 </ul>
+</li>
+<li>Modelica parser</li>
+<li>C-Compiler</li>
+</ol>
+<p>CYMDISTToFMU has been tested on Windows with:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Python 3.4.0</li>
+<li>Dymola 2017 FD01  (Modelica parser)</li>
+<li>OpenModelica 1.11.0 (Modelica parser)</li>
+<li>Microsoft Visual Studio 10 Professional (C-Compiler)</li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">CYMDISTToFMU can use OpenModelica and Dymola to export CYMDIST as an FMU.
+However OpenModelica 1.11.0 does not copy all required libraries dependencies to the FMU.
+As a workaround, CYMDISTToFMU checks if there are missing libraries dependencies and copies the dependencies to the FMU.</p>
+</div>
 </div>
 <div class="section" id="installation-directory">
 <span id="id1"></span><h2>3.2. Installation<a class="headerlink" href="#installation-directory" title="Permalink to this headline">¶</a></h2>
 <p>To install CYMDISTToFMU, proceed as follows:</p>
 <ol class="arabic simple">
-<li>Download the installation file from the <a class="reference internal" href="download.html"><span class="doc">Download</span></a> page.</li>
-<li>Unzip the installation file into any subdirectory (hereafter referred to as the &#8220;installation directory&#8221;).</li>
+<li>Download the CyDER repository from the <a class="reference internal" href="download.html"><span class="doc">Download</span></a> page.</li>
 </ol>
-<p>The installation directory should contain the following subdirectories:</p>
+<p>The CYMDISTToFMU directory (hereafter referred to as the &#8220;installation directory&#8221;) is the <code class="docutils literal"><span class="pre">fmu</span></code> subdirectory of CyDER.
+The installation directory should contain the following subdirectories:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">fmu/cymdisttofmu/</span></code><ul>
 <li><code class="docutils literal"><span class="pre">bin/</span></code>
-(Python scripts for running unit tests)</li>
+(Python scripts for unit tests)</li>
 <li><code class="docutils literal"><span class="pre">doc/</span></code>
 (Documentation)</li>
-<li><code class="docutils literal"><span class="pre">fmuChecker/</span></code>
-(fmuChecker binaries for running unit tests)</li>
 <li><code class="docutils literal"><span class="pre">fmus/</span></code>
 (FMUs folder)</li>
 <li><code class="docutils literal"><span class="pre">parser/</span></code>
@@ -141,7 +153,7 @@
 </ul>
 </li>
 </ul>
-<ol class="arabic simple" start="3">
+<ol class="arabic simple" start="2">
 <li>Add following folders to your system path:</li>
 </ol>
 <blockquote>
@@ -150,7 +162,9 @@
 </li>
 <li><p class="first">Python scripts folder (e.g. <code class="docutils literal"><span class="pre">C:\Python34\Scripts</span></code>),</p>
 </li>
-<li><p class="first">Dymola executable folder (e.g. <code class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files(x86)\Dymola2017\bin</span></code>)</p>
+<li><p class="first">Dymola executable folder (e.g. <code class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files(x86)\Dymola2017</span> <span class="pre">FD01\bin</span></code>)</p>
+</li>
+<li><p class="first">OpenModelica executable folder (e.g. <code class="docutils literal"><span class="pre">C:\OpenModelica1.11.0-32bit\</span></code>)</p>
 <p>You can add folders to your system path by performing following steps on Windows 8 or 10:</p>
 <ul class="simple">
 <li>In Search, search for and then select: System (Control Panel)</li>
@@ -159,22 +173,15 @@
 <li>In the Edit System Variable (or New System Variable) window, specify the value of the PATH environment variable (e.g. <code class="docutils literal"><span class="pre">C:\Python34</span></code>, <code class="docutils literal"><span class="pre">C:\Python34\Scripts</span></code>). Click OK. Close all remaining windows by clicking OK.</li>
 <li>Reopen Command prompt window for your changes to be active.</li>
 </ul>
-<p>To check if the variables have been correctly added to the system path, type <code class="docutils literal"><span class="pre">python</span></code>
-into a command prompt to see if the right version of Python starts up.</p>
+<p>To check if the variables have been correctly added to the system path, type <code class="docutils literal"><span class="pre">python</span></code>, <code class="docutils literal"><span class="pre">dymola</span></code>, or <code class="docutils literal"><span class="pre">omc</span></code>
+into a command prompt to see if the right version of Python, Dymola or OpenModelica starts up.</p>
 </li>
 </ul>
 </div></blockquote>
 <ol class="arabic" start="4">
 <li><p class="first">Install Python dependencies by running</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>pip install -r dev/cymdisttofmu/cymdisttofmu-dependencies.txt
+<div class="highlight-none"><div class="highlight"><pre>pip install -r fmu\cymdisttofmu\bin\cymdisttofmu-requirements.txt
 </pre></div>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<ul class="last simple">
-<li><code class="docutils literal"><span class="pre">cymdisttofmu-dependencies.txt</span></code> includes the versions of the Python modules which were tested.</li>
-<li><code class="docutils literal"><span class="pre">lxml</span></code> cannot be installed using <code class="docutils literal"><span class="pre">pip</span></code>. Please download and install the executable (<code class="docutils literal"><span class="pre">lxml-3.4.4.win32-py3.4.exe</span></code>) from <a class="reference external" href="https://pypi.python.org/pypi/lxml/3.4.4">PyPyi</a>.</li>
-</ul>
 </div>
 </li>
 </ol>
@@ -198,7 +205,10 @@ into a command prompt to see if the right version of Python starts up.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="build.html" title="4. Creating an FMU"
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="bestPractice.html" title="4. Best Practice"
              >next</a> |</li>
         <li class="right" >
           <a href="download.html" title="2. Download"
@@ -207,13 +217,13 @@ into a command prompt to see if the right version of Python starts up.</p>
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of CYMDIST User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of CYMDIST User Guide</a> &#187;</li> -->
  
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2015-2018, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+        &#169; Copyright 2015-2018, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>
 </html>

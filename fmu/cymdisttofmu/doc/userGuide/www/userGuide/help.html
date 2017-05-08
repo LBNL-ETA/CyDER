@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>8. Help &mdash; FMU Export of CYMDIST User Guide</title>
+    <title>8. Help &#8212; FMU Export of CYMDIST User Guide</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,14 +17,16 @@
         VERSION:     '1.0.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="FMU Export of CYMDIST User Guide" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="9. Notation" href="notation.html" />
     <link rel="prev" title="7. Development" href="development.html" /> 
   </head>
@@ -40,6 +42,9 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="notation.html" title="9. Notation"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -49,7 +54,7 @@
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of CYMDIST User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of CYMDIST User Guide</a> &#187;</li> -->
  
       </ul>
     </div>
@@ -76,15 +81,15 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/help.txt"
+      <li><a href="_sources/help.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -104,7 +109,7 @@
 <h2>8.1. Running PyFMI with Python 3.4 on Windows 32 bit<a class="headerlink" href="#running-pyfmi-with-python-3-4-on-windows-32-bit" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> is a python package which can be used to import and run a CYMDIST FMU.
 In <a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> version 2.3.1, a master algorithm was added to import and
-link multiple FMUs for co-simulation. At time of writing, there was no <a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a>
+link multiple FMUs for integrate simulation. At time of writing, there was no <a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a>
 2.3.1 executable available for Python 3.4 for Windows 32bit (See <a class="reference external" href="https://pypi.python.org/pypi/PyFMI">PyPyi</a>.).
 The next steps describe requirements and steps to perform to compile <a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> version 2.3.1 from source.</p>
 <div class="admonition note">
@@ -118,7 +123,7 @@ we recommend to use pre-compiled Windows binaries whenever available.</p>
 so it can run with Python 3.4 on Windows 32 bit.</p>
 <p>Install PyFMI dependencies with</p>
 <blockquote>
-<div><div class="highlight-none"><div class="highlight"><pre><span></span>pip install -r dev/master/bin/pyfmi-dependencies.txt
+<div><div class="highlight-none"><div class="highlight"><pre>pip install -r fmu/master/bin/pyfmi-requirements.txt
 </pre></div>
 </div>
 </div></blockquote>
@@ -161,13 +166,17 @@ For those, we recommend to use the MS Windows installer directly.</p>
 </table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last"><a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> needs a C-compiler to compile the source codes. We used the Microsoft Visual Studio 10 Professional.</p>
+<ul class="last simple">
+<li><a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> needs a C-compiler to compile the source codes. We used the Microsoft Visual Studio 10 Professional.</li>
+<li><code class="docutils literal"><span class="pre">pyfmi-requirements.txt</span></code> includes the versions of the Python modules which were tested.</li>
+<li><code class="docutils literal"><span class="pre">lxml</span></code> cannot be installed using <code class="docutils literal"><span class="pre">pip</span></code>. Please download and install the executable (<code class="docutils literal"><span class="pre">lxml-3.4.4.win32-py3.4.exe</span></code>) from <a class="reference external" href="https://pypi.python.org/pypi/lxml/3.4.4">PyPI</a>.</li>
+</ul>
 </div>
 </div>
 <div class="section" id="compilation">
 <h3>8.1.2. Compilation<a class="headerlink" href="#compilation" title="Permalink to this headline">¶</a></h3>
 <p>To compile <a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> from source, run</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>python setup.py install --fmil-home=path_to_FMI_Library\
+<div class="highlight-none"><div class="highlight"><pre>python setup.py install --fmil-home=path_to_FMI_Library\
 </pre></div>
 </div>
 <p>where <code class="docutils literal"><span class="pre">path_to_FMI_Library\</span></code> is the path to the FMI library.</p>
@@ -190,6 +199,9 @@ we refer to the documentation located in <code class="docutils literal"><span cl
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="notation.html" title="9. Notation"
              >next</a> |</li>
         <li class="right" >
@@ -199,13 +211,13 @@ we refer to the documentation located in <code class="docutils literal"><span cl
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of CYMDIST User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of CYMDIST User Guide</a> &#187;</li> -->
  
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2015-2018, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+        &#169; Copyright 2015-2018, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>
 </html>
