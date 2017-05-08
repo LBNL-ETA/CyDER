@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>2. Installation and Configuration &mdash; CyDER Master Algorithm User Guide</title>
+    <title>2. Installation and Configuration &#8212; CyDER Master Algorithm User Guide</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,15 +17,17 @@
         VERSION:     '1.0.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="CyDER Master Algorithm User Guide" href="index.html" />
-    <link rel="next" title="3. Co-simulation" href="cosimulation.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="3. Usage of CYMDIST as an FMU" href="usage.html" />
     <link rel="prev" title="1. Introduction" href="introduction.html" /> 
   </head>
   <body role="document">
@@ -40,7 +42,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="cosimulation.html" title="3. Co-simulation"
+          <a href="usage.html" title="3. Usage of CYMDIST as an FMU"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="introduction.html" title="1. Introduction"
@@ -49,7 +51,7 @@
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li class="nav-item nav-item-0"><a href="index.html">CyDER Master Algorithm User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="index.html">CyDER Master Algorithm User Guide</a> &#187;</li> -->
  
       </ul>
     </div>
@@ -71,20 +73,20 @@
   <p class="topless"><a href="introduction.html"
                         title="previous chapter">1. Introduction</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="cosimulation.html"
-                        title="next chapter">3. Co-simulation</a></p>
+  <p class="topless"><a href="usage.html"
+                        title="next chapter">3. Usage of CYMDIST as an FMU</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/installation.txt"
+      <li><a href="_sources/installation.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -119,7 +121,7 @@ we recommend to use pre-compiled Windows binaries whenever available.</p>
 so it can run with Python 3.4 on Windows 32 bit.</p>
 <p>Install PyFMI dependencies with</p>
 <blockquote>
-<div><div class="highlight-none"><div class="highlight"><pre><span></span>pip install -r dev/master/bin/pyfmi-dependencies.txt
+<div><div class="highlight-none"><div class="highlight"><pre>pip install -r fmu\master\bin\pyfmi-dependencies.txt
 </pre></div>
 </div>
 </div></blockquote>
@@ -168,7 +170,7 @@ For those, we recommend to use the MS Windows installer directly.</p>
 <div class="section" id="compilation">
 <h3>2.1.2. Compilation<a class="headerlink" href="#compilation" title="Permalink to this headline">¶</a></h3>
 <p>To compile <a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> from source, run</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>python setup.py install --fmil-home=path_to_FMI_Library\
+<div class="highlight-none"><div class="highlight"><pre>python setup.py install --fmil-home=path_to_FMI_Library\
 </pre></div>
 </div>
 <p>where <code class="docutils literal"><span class="pre">path_to_FMI_Library\</span></code> is the path to the FMI library.</p>
@@ -189,7 +191,7 @@ For those, we recommend to use the MS Windows installer directly.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="cosimulation.html" title="3. Co-simulation"
+          <a href="usage.html" title="3. Usage of CYMDIST as an FMU"
              >next</a> |</li>
         <li class="right" >
           <a href="introduction.html" title="1. Introduction"
@@ -198,13 +200,13 @@ For those, we recommend to use the MS Windows installer directly.</p>
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li class="nav-item nav-item-0"><a href="index.html">CyDER Master Algorithm User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="index.html">CyDER Master Algorithm User Guide</a> &#187;</li> -->
  
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2015-2018, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+        &#169; Copyright 2015-2018, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>
 </html>

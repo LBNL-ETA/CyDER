@@ -34,7 +34,7 @@ An example of invoking ``CYMDISTToFMU.py`` on Windows is
 .. code-block:: none
 
   # Windows:
-  > python parser\CYMDISTToFMU.py -s parser\\utilities\\cymdist_wrapper.py, d:\\calcEng.py
+  > python parser\CYMDISTToFMU.py -s parser\\utilities\\cymdist_wrapper.py, d:\\calc.py
 
 Following requirements must be met hen using CYMDISTToFMU
 
@@ -51,13 +51,13 @@ Following requirements must be met hen using CYMDISTToFMU
 |                                                    | CYMDIST.                                                          |                              
 |                                                    | The main Python script must be an extension                       |
 |                                                    | of the ``cymdist_wrapper.py`` script which is provided in         |
-|                                                    | ``parser\\utilities\\cymdist_wrapper.py``. The name of              |
+|                                                    | ``parser/utilities/cymdist_wrapper.py``. The name of              |
 |                                                    | the main Python script must be ``cymdist_wrapper.py``.            |
 +----------------------------------------------------+-------------------------------------------------------------------+
 | -c                                                 | Path to the CYMDIST model file.                                   |
 +----------------------------------------------------+-------------------------------------------------------------------+
 | -i                                                 | Path to the XML input file with the inputs/outputs of the FMU.    |
-|                                                    | Default is ``parser\\utilities\\CYMDISTModelDescription.xml``       |
+|                                                    | Default is ``parser/utilities/CYMDISTModelDescription.xml``       |
 +----------------------------------------------------+-------------------------------------------------------------------+
 | -v                                                 | FMI version. Options are ``1.0`` and ``2.0``. Default is ``2.0``  |
 +----------------------------------------------------+-------------------------------------------------------------------+

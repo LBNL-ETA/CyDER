@@ -1,14 +1,7 @@
 #
-####### cymdistpy-requirements.txt #######
-# The release version of CYMDISTPy was 
-# tested with the versions of following moduldes:
+####### cymdisttofmu-requirements.txt #######
+# The release version of CYMDISTToFMU.py  
+# need following modules:
 ###### Requirements without Version Specifiers ######
 jinja2
 lxml
-###### Requirements with Version Specifiers ######
-#   See https://www.python.org/dev/peps/pep-0440/#version-specifiers
-#lxml
-#jinja2
-#cython==0.25.1
-#numpy==1.11.2
-#pandas==0.19.0

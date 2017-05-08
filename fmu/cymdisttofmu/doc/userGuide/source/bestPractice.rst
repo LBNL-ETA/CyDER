@@ -11,7 +11,7 @@ for an FMU.
 
 To export CYMDIST as an FMU, the user needs to write an XML file which contains the list 
 of inputs, outputs and parameters of the FMU. The XML snippet below shows how a user has to write such an input file.
-A template named ``CYMDISTModeldescritpion.xml`` which shows such a file is provided in the ``parser\utilities`` installation folder of CYMDISTToFMU. 
+A template named ``CYMDISTModeldescritpion.xml`` which shows such a file is provided in the ``parser/utilities`` installation folder of CYMDISTToFMU. 
 This template should be adapted to create new XML input file.
 
 The following snippet shows an input file where the user defines 6 input and 6 output variables.

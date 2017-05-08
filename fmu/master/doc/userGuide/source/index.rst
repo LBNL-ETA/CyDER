@@ -8,6 +8,7 @@ User Guide
 
    introduction
    installation
+   usage
    cosimulation
    notation
    glossary

@@ -31,7 +31,7 @@ Install PyFMI dependencies with
 
    .. code-block:: none
    
-      pip install -r dev/master/bin/pyfmi-dependencies.txt
+      pip install -r fmu\master\bin\pyfmi-dependencies.txt
 
 Below is a table with dependencies which fail to install using pip. 
 For those, we recommend to use the MS Windows installer directly.

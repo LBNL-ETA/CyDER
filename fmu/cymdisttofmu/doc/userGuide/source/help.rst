@@ -1,71 +1,32 @@
+.. highlight:: rest
+
+.. _help:
+
 Help
 ====
 
-Running PyFMI with Python 3.4 on Windows 32 bit
------------------------------------------------
-:term:`PyFMI` is a python package which can be used to import and run a CYMDIST FMU. 
-In :term:`PyFMI` version 2.3.1, a master algorithm was added to import and 
-link multiple FMUs for integrate simulation. At time of writing, there was no :term:`PyFMI` 
-2.3.1 executable available for Python 3.4 for Windows 32bit (See `PyPyi <https://pypi.python.org/pypi/PyFMI>`_.).
-The next steps describe requirements and steps to perform to compile :term:`PyFMI` version 2.3.1 from source.
+This chapter lists potential issues encountered when using CYMDISTToFMU.
 
-.. note::
-  
-  To avoid having to recompile :term:`PyFMI` dependent libraries from source, 
-  we recommend to use pre-compiled Windows binaries whenever available.
+Compilation failed with Dymola
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Requirements
-++++++++++++
+If the export of the CYMDIST failed when compiling the model with Dymola, comment out ``"exit()"`` in 
+``parser/utilities/CYMDISTModelica_Template_Dymola.mos`` with ``"//exit()"``, and re-run ``CYMDISTToFMU.py`` 
+to see why the complation has failed.
 
-The next table shows the list of Python modules and softwares used to compile version 2.3.1 of PyFMI from source
-so it can run with Python 3.4 on Windows 32 bit.
+Simulation failed with Dymola FMUs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Install PyFMI dependencies with
+If an FMU exported using Dymola fails to run, check if the version of Dymola which exported the FMU had the ``Binary Model Export`` license.
+The ``Binary Model Export`` license is required to export FMUs which can be run without requiring a Dymola runtime license.
+You can also inspect the model description of the FMU to see if a Dymola runtime license is required to run the FMU.
 
-   .. code-block:: none
-   
-      pip install -r fmu/master/bin/pyfmi-requirements.txt
+Compilation failed with OpenModelica
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Below is a table with dependencies which fail to install using pip. 
-For those, we recommend to use the MS Windows installer directly.
+If the export of the CYMDIST failed when compiling the model with OpenModelica, 
+check if the variable ``OPENMODELICALIBRARY`` is defined in the Windows ``Environment Variables``.
 
-+---------------+---------------------------------------------+-----------------------------------------------------------+
-| Modules       | Version                                     | Link                                                      |
-+===============+=============================================+===========================================================+
-| FMI Library   | 2.0.2 (source)                              | http://www.jmodelica.org/FMILibrary                       |
-+---------------+---------------------------------------------+-----------------------------------------------------------+
-| Scipy         | 0.16.1                                      | https://sourceforge.net/projects/scipy/files/scipy/0.16.1 |
-+---------------+---------------------------------------------+-----------------------------------------------------------+
-| lxml          | 3.4.4                                       | https://pypi.python.org/pypi/lxml/3.4.4                   |
-+---------------+---------------------------------------------+-----------------------------------------------------------+
-| Assimulo      | 2.7b1                                       | https://pypi.python.org/pypi/Assimulo/2.7b1               |
-+---------------+---------------------------------------------+-----------------------------------------------------------+
-| PyFMI         | 2.3.1 (source)                              | https://pypi.python.org/pypi/PyFMI                        |
-+---------------+---------------------------------------------+-----------------------------------------------------------+
-
-.. note::
-
-   - :term:`PyFMI` needs a C-compiler to compile the source codes. We used the Microsoft Visual Studio 10 Professional.
-
-   - ``pyfmi-requirements.txt`` includes the versions of the Python modules which were tested.
-
-   - ``lxml`` cannot be installed using ``pip``. Please download and install the executable (``lxml-3.4.4.win32-py3.4.exe``) from `PyPI <https://pypi.python.org/pypi/lxml/3.4.4>`_.
-
-
-
-
-Compilation
-+++++++++++
-
-To compile :term:`PyFMI` from source, run
-
-.. code-block:: none
-
-  python setup.py install --fmil-home=path_to_FMI_Library\
-
-where ``path_to_FMI_Library\`` is the path to the FMI library.
-
-To use :term:`PyFMI` as a master algorithm to couple a CYMDIST FMU with GridDyn FMU,
-we refer to the documentation located in ``fmu/master/doc/userGuide``.
+``OPENMODELICALIBRARY`` is the path to the libraries which are required by OpenModelica to compile Modelica models.
 
 

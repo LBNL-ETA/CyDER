@@ -24,6 +24,11 @@ sys.path.append(os.path.abspath('.'))
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 #extensions = ['sphinx.ext.autodoc', 'sphinx.ext.pngmath']
+extensions = ['sphinx.ext.autodoc', \
+              'mathjax', \
+              'numfig', \
+              'sphinxcontrib.bibtex', \
+              'sphinx.ext.todo']
 extensions = ['sphinx.ext.autodoc', 'mathjax', 'sphinxcontrib.bibtex', 'sphinx.ext.todo']
 # mathjax_path is based on http://www.mathjax.org/docs/2.0/start.html
 mathjax_path = "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"

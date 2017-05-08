@@ -10,6 +10,9 @@ This section explains how to link a CYMDIST FMU with another FMU for co-simulati
 We used the GridDyn FMU for the simulation coupling and explain the problematic caused
 by coupling the two tools with the solution implemented in CyDER. 
 
+Solving Algebraic Loops between CYMDIST and GridDyn
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Coupling GridDyn FMU to CYMDIST creates an algebraic loop that requires an iterative solution. 
 Solving this nonlinear system of equations is not likely to be robust, 
 because GridDyn and CYMDIST both contain iterative solvers. 
@@ -83,6 +86,9 @@ will not be visible to the outside. When GridDyn is invoked, it will approximate
 compute a converged solution using this approximation, and compute the output :math:`y_g`. 
 The master algorithm will then assign :math:`u_g  := y_c` and evaluate the FMU :math:`f_g(p_g , p_c , p_l , u_g , t)`, 
 which completes the time step.
+
+Coupling CYMDIST and GridDyn FMUs using PyFMI
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Next, we showed a snippet of the master algorithm which is used to 
 couple a CYMDIST FMU (``CYMDIST.FMU``) with a GridDyn FMU (``GridDyn.fmu``).
