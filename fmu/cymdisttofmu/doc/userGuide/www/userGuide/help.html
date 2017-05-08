@@ -63,11 +63,9 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">8. Help</a><ul>
-<li><a class="reference internal" href="#running-pyfmi-with-python-3-4-on-windows-32-bit">8.1. Running PyFMI with Python 3.4 on Windows 32 bit</a><ul>
-<li><a class="reference internal" href="#requirements">8.1.1. Requirements</a></li>
-<li><a class="reference internal" href="#compilation">8.1.2. Compilation</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#compilation-failed-with-dymola">8.1. Compilation failed with Dymola</a></li>
+<li><a class="reference internal" href="#simulation-failed-with-dymola-fmus">8.2. Simulation failed with Dymola FMUs</a></li>
+<li><a class="reference internal" href="#compilation-failed-with-openmodelica">8.3. Compilation failed with OpenModelica</a></li>
 </ul>
 </li>
 </ul>
@@ -104,85 +102,25 @@
           <div class="body" role="main">
             
   <div class="section" id="help">
-<h1>8. Help<a class="headerlink" href="#help" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="running-pyfmi-with-python-3-4-on-windows-32-bit">
-<h2>8.1. Running PyFMI with Python 3.4 on Windows 32 bit<a class="headerlink" href="#running-pyfmi-with-python-3-4-on-windows-32-bit" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> is a python package which can be used to import and run a CYMDIST FMU.
-In <a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> version 2.3.1, a master algorithm was added to import and
-link multiple FMUs for integrate simulation. At time of writing, there was no <a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a>
-2.3.1 executable available for Python 3.4 for Windows 32bit (See <a class="reference external" href="https://pypi.python.org/pypi/PyFMI">PyPyi</a>.).
-The next steps describe requirements and steps to perform to compile <a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> version 2.3.1 from source.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">To avoid having to recompile <a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> dependent libraries from source,
-we recommend to use pre-compiled Windows binaries whenever available.</p>
+<span id="id1"></span><h1>8. Help<a class="headerlink" href="#help" title="Permalink to this headline">¶</a></h1>
+<p>This chapter lists potential issues encountered when using CYMDISTToFMU.</p>
+<div class="section" id="compilation-failed-with-dymola">
+<h2>8.1. Compilation failed with Dymola<a class="headerlink" href="#compilation-failed-with-dymola" title="Permalink to this headline">¶</a></h2>
+<p>If the export of the CYMDIST failed when compiling the model with Dymola, comment out <code class="docutils literal"><span class="pre">&quot;exit()&quot;</span></code> in
+<code class="docutils literal"><span class="pre">parser/utilities/CYMDISTModelica_Template_Dymola.mos</span></code> with <code class="docutils literal"><span class="pre">&quot;//exit()&quot;</span></code>, and re-run <code class="docutils literal"><span class="pre">CYMDISTToFMU.py</span></code>
+to see why the complation has failed.</p>
 </div>
-<div class="section" id="requirements">
-<h3>8.1.1. Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h3>
-<p>The next table shows the list of Python modules and softwares used to compile version 2.3.1 of PyFMI from source
-so it can run with Python 3.4 on Windows 32 bit.</p>
-<p>Install PyFMI dependencies with</p>
-<blockquote>
-<div><div class="highlight-none"><div class="highlight"><pre>pip install -r fmu/master/bin/pyfmi-requirements.txt
-</pre></div>
+<div class="section" id="simulation-failed-with-dymola-fmus">
+<h2>8.2. Simulation failed with Dymola FMUs<a class="headerlink" href="#simulation-failed-with-dymola-fmus" title="Permalink to this headline">¶</a></h2>
+<p>If an FMU exported using Dymola fails to run, check if the version of Dymola which exported the FMU had the <code class="docutils literal"><span class="pre">Binary</span> <span class="pre">Model</span> <span class="pre">Export</span></code> license.
+The <code class="docutils literal"><span class="pre">Binary</span> <span class="pre">Model</span> <span class="pre">Export</span></code> license is required to export FMUs which can be run without requiring a Dymola runtime license.
+You can also inspect the model description of the FMU to see if a Dymola runtime license is required to run the FMU.</p>
 </div>
-</div></blockquote>
-<p>Below is a table with dependencies which fail to install using pip.
-For those, we recommend to use the MS Windows installer directly.</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="13%" />
-<col width="38%" />
-<col width="50%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Modules</th>
-<th class="head">Version</th>
-<th class="head">Link</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>FMI Library</td>
-<td>2.0.2 (source)</td>
-<td><a class="reference external" href="http://www.jmodelica.org/FMILibrary">http://www.jmodelica.org/FMILibrary</a></td>
-</tr>
-<tr class="row-odd"><td>Scipy</td>
-<td>0.16.1</td>
-<td><a class="reference external" href="https://sourceforge.net/projects/scipy/files/scipy/0.16.1">https://sourceforge.net/projects/scipy/files/scipy/0.16.1</a></td>
-</tr>
-<tr class="row-even"><td>lxml</td>
-<td>3.4.4</td>
-<td><a class="reference external" href="https://pypi.python.org/pypi/lxml/3.4.4">https://pypi.python.org/pypi/lxml/3.4.4</a></td>
-</tr>
-<tr class="row-odd"><td>Assimulo</td>
-<td>2.7b1</td>
-<td><a class="reference external" href="https://pypi.python.org/pypi/Assimulo/2.7b1">https://pypi.python.org/pypi/Assimulo/2.7b1</a></td>
-</tr>
-<tr class="row-even"><td>PyFMI</td>
-<td>2.3.1 (source)</td>
-<td><a class="reference external" href="https://pypi.python.org/pypi/PyFMI">https://pypi.python.org/pypi/PyFMI</a></td>
-</tr>
-</tbody>
-</table>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<ul class="last simple">
-<li><a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> needs a C-compiler to compile the source codes. We used the Microsoft Visual Studio 10 Professional.</li>
-<li><code class="docutils literal"><span class="pre">pyfmi-requirements.txt</span></code> includes the versions of the Python modules which were tested.</li>
-<li><code class="docutils literal"><span class="pre">lxml</span></code> cannot be installed using <code class="docutils literal"><span class="pre">pip</span></code>. Please download and install the executable (<code class="docutils literal"><span class="pre">lxml-3.4.4.win32-py3.4.exe</span></code>) from <a class="reference external" href="https://pypi.python.org/pypi/lxml/3.4.4">PyPI</a>.</li>
-</ul>
-</div>
-</div>
-<div class="section" id="compilation">
-<h3>8.1.2. Compilation<a class="headerlink" href="#compilation" title="Permalink to this headline">¶</a></h3>
-<p>To compile <a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> from source, run</p>
-<div class="highlight-none"><div class="highlight"><pre>python setup.py install --fmil-home=path_to_FMI_Library\
-</pre></div>
-</div>
-<p>where <code class="docutils literal"><span class="pre">path_to_FMI_Library\</span></code> is the path to the FMI library.</p>
-<p>To use <a class="reference internal" href="glossary.html#term-pyfmi"><span class="xref std std-term">PyFMI</span></a> as a master algorithm to couple a CYMDIST FMU with GridDyn FMU,
-we refer to the documentation located in <code class="docutils literal"><span class="pre">fmu/master/doc/userGuide</span></code>.</p>
-</div>
+<div class="section" id="compilation-failed-with-openmodelica">
+<h2>8.3. Compilation failed with OpenModelica<a class="headerlink" href="#compilation-failed-with-openmodelica" title="Permalink to this headline">¶</a></h2>
+<p>If the export of the CYMDIST failed when compiling the model with OpenModelica,
+check if the variable <code class="docutils literal"><span class="pre">OPENMODELICALIBRARY</span></code> is defined in the Windows <code class="docutils literal"><span class="pre">Environment</span> <span class="pre">Variables</span></code>.</p>
+<p><code class="docutils literal"><span class="pre">OPENMODELICALIBRARY</span></code> is the path to the libraries which are required by OpenModelica to compile Modelica models.</p>
 </div>
 </div>
 
