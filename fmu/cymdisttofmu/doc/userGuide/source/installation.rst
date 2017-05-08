@@ -33,7 +33,6 @@ CYMDISTToFMU has been tested on Windows with:
 .. note:: 
 
    CYMDISTToFMU can use OpenModelica and Dymola to export CYMDIST as an FMU. 
-   
    However OpenModelica 1.11.0 does not copy all required libraries dependencies to the FMU.
    As a workaround, CYMDISTToFMU checks if there are missing libraries dependencies and copies the dependencies to the FMU.
 
@@ -93,7 +92,7 @@ The installation directory should contain the following subdirectories:
 
    .. code-block:: none
    
-      pip install -r fmu/cymdisttofmu/bin/cymdisttofmu-requirements.txt
+      pip install -r fmu\cymdisttofmu\bin\cymdisttofmu-requirements.txt
 
 
 Uninstallation
