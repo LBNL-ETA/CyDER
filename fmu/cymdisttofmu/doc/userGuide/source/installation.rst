@@ -44,27 +44,7 @@ Installation
 
 To install CYMDISTToFMU, proceed as follows:
 
-1. Download the CyDER repository from the :doc:`download` page.
- 
-The CYMDISTToFMU directory (hereafter referred to as the "installation directory") is the ``fmu`` subdirectory of CyDER.
-The installation directory should contain the following subdirectories:
-
-- ``fmu/cymdisttofmu/``
-
-  - ``bin/``
-    (Python scripts for unit tests)
-
-  - ``doc/``
-    (Documentation)
-
-  - ``fmus/``
-    (FMUs folder)
-
-  - ``parser/``
-    (Python scripts, Modelica templates and XML validator files)
-    
-
-2. Add following folders to your system path: 
+1. Add following folders to your system path: 
 
  - Python installation folder (e.g. ``C:\Python34``)
  - Python scripts folder (e.g. ``C:\Python34\Scripts``), 
@@ -88,14 +68,32 @@ The installation directory should contain the following subdirectories:
  into a command prompt to see if the right version of Python, Dymola or OpenModelica starts up.
 
 
-4. Install Python dependencies by running
+2. To install CYMDISTToFMU, run 
 
-   .. code-block:: none
-   
-      pip install -r fmu\cymdisttofmu\bin\cymdisttofmu-requirements.txt
+  .. code-block:: none
+
+    > pip install CYMDISTToFMU
+ 
+  The installation directory should contain the following subdirectories:
+
+    - ``bin/``
+      (Python scripts for running unit tests)
+
+    - ``doc/``
+      (Documentation)
+
+    - ``fmus/``
+      (FMUs folder)
+
+    - ``parser/``
+      (Python scripts, Modelica templates and XML validator files)
 
 
 Uninstallation
 ^^^^^^^^^^^^^^
 
-To uninstall CYMDISTToFMU, delete the `installation directory`_.
+To uninstall CYMDISTToFMU, run
+
+.. code-block:: none
+
+    > pip uninstall CYMDISTToFMU

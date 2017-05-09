@@ -100,6 +100,7 @@ release-html:
 	-cp -R $(BUILDDIR)/html/*.* www/userGuide
 	#-cp -R $(BUILDDIR)/html/_img www/userGuide
 	-cp -R $(BUILDDIR)/html/legal.html ../../../../
+	-cp -R $(BUILDDIR)/html/legal.html ../../../cymdisttofmu/
 
 #dist:   clean cleanpdf latex html release-html copypdftodoc copydoctowww  
 dist:   clean cleanpdf latex html release-html copypdftodoc 
