@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>7. Help &#8212; PV Forecasting Module</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="8. Acknowledgments" href="acknowledgments.html" />
+    <link rel="prev" title="4. Usage of the Forecasting Module" href="usage.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="acknowledgments.html" title="8. Acknowledgments"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="4. Usage of the Forecasting Module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PV Forecasting Module</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">7. Help</a><ul>
+<li><a class="reference internal" href="#data-file-format">7.1. Data File Format</a><ul>
+<li><a class="reference internal" href="#training-and-testing-file">7.1.1. Training And Testing File</a></li>
+<li><a class="reference internal" href="#prediction-file">7.1.2. Prediction File</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="usage.html"
+                        title="previous chapter">4. Usage of the Forecasting Module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="acknowledgments.html"
+                        title="next chapter">8. Acknowledgments</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/help.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="help">
+<span id="id1"></span><h1>7. Help<a class="headerlink" href="#help" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="data-file-format">
+<h2>7.1. Data File Format<a class="headerlink" href="#data-file-format" title="Permalink to this headline">¶</a></h2>
+<p>For many of the operations within the forecasting module, a data file is required.
+This section outlines how the module expects the file to be formated.</p>
+<div class="section" id="training-and-testing-file">
+<h3>7.1.1. Training And Testing File<a class="headerlink" href="#training-and-testing-file" title="Permalink to this headline">¶</a></h3>
+<p>The training and testing files contain at the first line three comma
+numbers: number_of_entries, number_of_inputs, number_of_outputs. This is followed
+by an interleaved lines of comma seperated inputs and comma separated outputs.</p>
+<p>An example is shown below:</p>
+<div class="highlight-rest"><div class="highlight"><pre><span></span>NUM_ENTRIES, NUM_INPUTS, NUM_OUTPUTS
+input_1, input_2 # Entry 1
+<span class="gh">output_1, output_2, output_3 # Entry 1</span>
+<span class="gh">...</span>
+<span class="cp">...</span>
+input_1, input_2 # Entry NUM_ENTRIES
+output_1, output_2, output_3 # Entry NUM_ENTRIES
+</pre></div>
+</div>
+<p>A concrete example is shown below:</p>
+<div class="highlight-rest"><div class="highlight"><pre><span></span>1000 2 3
+1.000000 0.000000
+1.000000 0.000000 1.000000
+0.999950 0.010000
+0.999900 0.009999 0.999900
+0.999800 0.019999
+0.999600 0.019995 0.999600
+0.999550 0.029996
+0.999100 0.029982 0.999100
+</pre></div>
+</div>
+</div>
+<div class="section" id="prediction-file">
+<h3>7.1.2. Prediction File<a class="headerlink" href="#prediction-file" title="Permalink to this headline">¶</a></h3>
+<p>This type of file is identical to the training and testing files but in this case
+num_outputs must be set to zero and only lines representing the input are used.
+During prediction, the real outputs aren&#8217;t available so it isn&#8217;t necessary to pass
+these to the module.</p>
+<p>A concrete example is shown below:</p>
+<div class="highlight-rest"><div class="highlight"><pre><span></span>300 2 0
+-0.171866 0.985120
+-0.181708 0.983352
+-0.191533 0.981486
+-0.201338 0.979522
+-0.211123 0.977460
+-0.220887 0.975300
+-0.230628 0.973042
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="acknowledgments.html" title="8. Acknowledgments"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="4. Usage of the Forecasting Module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PV Forecasting Module</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015-2018, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
+</html>
