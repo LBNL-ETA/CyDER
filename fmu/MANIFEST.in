@@ -1,0 +1,5 @@
+recursive-include cymdisttofmu/legal.html
+recursive-include cymdisttofmu/bin *
+recursive-include cymdisttofmu/doc *
+recursive-include cymdisttofmu/fmus *
+recursive-include cymdisttofmu/parser *
