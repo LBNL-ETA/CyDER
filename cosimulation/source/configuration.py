@@ -6,59 +6,79 @@ import random
 import string
 
 
-def initialize_configuration(times, parent_folder, model_names):
-    """Initialize configuration file"""
-    configuration = {'times': times,
-                     'interpolation_method': 'closest_time',
-                     'models': []
-                     }
+class FeederConfiguration(object):
+    """Feeder configurations"""
 
-    for time, model_name in zip(times, model_names):
-        model = {
-           'filename': parent_folder + model_name,
-           'new_loads': [],
-           'set_loads': [],
-           'new_pvs': [],
-           'set_pvs': [],
-           }
-        configuration['models'].append(model)
-    return configuration
+    def __init__(self, times, feeder_name):
+        # Basic parameters
+        self.feeder_name = None
+        self.pk = 0
+        self.start = None
+        self.end = None
+        self.timestep = None
+        self.times = None
+        self.feeder_folder = '~/Jonathan/GitHub/PGE/'
+        self.directory = None
 
+        # Configuration processes
+        self.ev_forecast = False
+        self.pv_forecast = False
+        self.set_load = False
+        # self.set_pv = False
+        # self.add_load = False
+        self.add_pv = False
 
-def create_configuration_file(configurations, output_folder):
-    """
-    Input:
-    configuration = {
-                     'times': [0],
-                     'interpolation_method': 'closest_time',
-                     'models': [{
-                        'filename': 'D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//BU0001.sxst',
-                        'new_loads': [{
-                                'section_id': '800033503',
-                                'active_power': 100
-                            }],
-                        'set_loads': [{
-                                'device_name': 'name',
-                                'active_power': 100
-                            }],
-                        'new_pvs': [{
-                                'section_id': '800033503',
-                                'generation': 100
-                            }],
-                        'set_pvs': [{
-                                'device_name': 'name',
-                                'generation': 100
-                            }]
-                        }
-                    ]}
-    Return configuration filename
-    """
-    # Generate random filename
-    random_string = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
-    random_string += '_config.json'
-    filename = output_folder + random_string
+        # Create empty template
+        self.configuration = self._initialize()
 
-    with open(filename, 'w') as outfile:
-        json.dump(configurations, outfile)
+    def _initialize(self):
+        """Initialize configuration file"""
+        configuration = {'times': self.times,
+                         'interpolation_method': 'closest_time',
+                         'models': []
+                         }
 
-    return filename
+        for time in self.times:
+            model = {
+               'filename': self.feeder_folder + self.feeder_name,
+               'new_loads': [],
+               'set_loads': [],
+               'new_pvs': [],
+               'set_pvs': [],
+               }
+            configuration['models'].append(model)
+        return configuration
+
+    def save(self):
+        """
+        Input:
+        configuration = {
+                         'times': [0],
+                         'interpolation_method': 'closest_time',
+                         'models': [{
+                            'filename': 'D://Users//Jonathan//Documents//GitHub//PGE_Models_DO_NOT_SHARE//BU0001.sxst',
+                            'new_loads': [{
+                                    'section_id': '800033503',
+                                    'active_power': 100
+                                }],
+                            'set_loads': [{
+                                    'device_name': 'name',
+                                    'active_power': 100
+                                }],
+                            'new_pvs': [{
+                                    'section_id': '800033503',
+                                    'generation': 100
+                                }],
+                            'set_pvs': [{
+                                    'device_name': 'name',
+                                    'generation': 100
+                                }]
+                            }
+                        ]}
+        Return configuration filename
+        """
+        # Save
+        filename = self.directory + '_' + self.feeder_name + '_#' + str(self.pk) + '_congig.json'
+        with open(filename, 'w') as outfile:
+            json.dump(configuration, outfile)
+        return filename

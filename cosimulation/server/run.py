@@ -4,8 +4,10 @@ import pandas
 import random
 import string
 import argparse
+import datetime as dt
 import source.configuration as config
 import source.ev_forecast.tool as ev
+import source.master as m
 # import source.ev_forecast.tool as pv
 
 # Read input file
@@ -24,18 +26,36 @@ directory = 'temp/' + token + '/'
 if not os.path.exists(directory):
     os.makedirs(directory)
 
-# Create configuration file --> configuration file
-configuration = config.initialize_configuration(TIMES, PARENT_FOLDER, MODEL_NAMES)
+# Get simulation time window
+start = cyder_inputs.loc[0, 'start']
+end = cyder_inputs.loc[0, 'end']
+timestep = cyder_inputs.loc[0, 'timestep']
+times = [start + dt.timedelta(seconds=x)
+         for x in xrange(0, (end - start).total_seconds(), timestep)]
 
-# Launch ev forecast if necessary --> configuration update
-if EV_FORECAST:
-    configuration = ev.forecast(CYDER_INPUTS, token)
+# Create a configuration file for each feeder
+config_filenames = []
+for index, row in enumerate(cyder_inputs.itertuples()):
+    # Create configuration file --> configuration file
+    feeder_name = cyder_inputs.loc[index, 'feeder_name']
+    configuration = config.initialize_configuration(
+        times, '~/Jonathan/GitHub/PGE', feeder_name)
 
-# Launch pv forecast if necessary --> configuration update
-# if pv_forecast:
-#     configuration = pv.forecast(CYDER_INPUTS, token)
+    # Launch ev forecast if necessary --> configuration update
+    if cyder_inputs.loc[index, 'ev_forecast'] is not False:
+        configuration = ev.forecast(cyder_inputs, token)
 
-# Save configuration to the system
-filename = config.create_configuration_file(configurations, token)
+    # Launch pv forecast if necessary --> configuration update
+    # if pv_forecast:
+    #     configuration = pv.forecast(CYDER_INPUTS, token)
+
+    # Save configuration to the system
+    filename = config.create_configuration_file(configuration, token)
+    config_filenames.append(filename)
 
 # Launch PyFmi master
+master = m.Master()
+master.filenames = config_filenames
+master.start = start
+master.times = times
+master.solve()
