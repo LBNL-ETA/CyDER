@@ -118,7 +118,7 @@ class EVForecast(object):
         # 2) Filter - remove vehicle parked more than x hours at work
         x_hours = 6
         veh_ids = veh.keys()
-        for veh_id in veh_ids:
+        for veh_id in list(veh_ids):
             # Remove vehicle
             if sum(veh[veh_id]) / 60 > x_hours:
                 veh.pop(veh_id)

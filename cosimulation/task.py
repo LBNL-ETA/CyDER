@@ -20,7 +20,7 @@ cyder_inputs = pandas.read_excel(configuration_file)
 start = cyder_inputs.loc[0, 'start']
 end = cyder_inputs.loc[0, 'end']
 timestep = cyder_inputs.loc[0, 'timestep']
-times = [x for x in xrange(0, int((end - start).total_seconds()), int(timestep))]
+times = [x for x in range(0, int((end - start).total_seconds()), int(timestep))]
 
 # Get token (job id)
 token = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
