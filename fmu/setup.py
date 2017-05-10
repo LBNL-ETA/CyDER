@@ -13,7 +13,7 @@ setup(
     author="Thierry S. Nouidui",
     author_email="TSNouidui@lbl.gov",
     description=("Package for exporting CYMDIST as a Functional Mock-up Unit"),
-    long_description=read('cymdisttofmu/README.rst'),
+    long_description=read('README.rst'),
     license="3-clause BSD",
     url="https://github.com/LBNL-ETA/CyDER/tree/master/fmu/cymdisttofmu",
     install_requires=['lxml',

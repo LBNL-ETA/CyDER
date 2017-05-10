@@ -33,7 +33,7 @@ help:
 
 clean:
 	@echo "Deleted temporary files and folders."
-	-rm -rf $(BUILDDIR)/*
+	-rm -rf $(BUILDDIR)
 	-rm -rf *.log
 
 cleanpdf:

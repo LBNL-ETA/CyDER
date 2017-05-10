@@ -9,4 +9,8 @@ standard version 1.0 or 2.0 (https://fmi-standard.org).
 This FMU can then be imported into a variety of simulation programs 
 that support the import of Functional Mock-up Units.
 
+The license is at cymdisttofmu/LICENSE.txt
+
+
+
 
