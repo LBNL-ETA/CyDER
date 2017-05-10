@@ -105,7 +105,7 @@ release-html:
 	-cp -R source/license.rst ../../LICENSE.txt
 
 #dist:   clean cleanpdf latex html release-html copypdftodoc copydoctowww  
-dist:   clean cleanpdf latex html release-html copypdftodoc html
+dist:   clean cleanpdf latex html release-html copypdftodoc
 
 copypdftodoc:
 	@echo "Copy pdf files to the userGuide folder."
