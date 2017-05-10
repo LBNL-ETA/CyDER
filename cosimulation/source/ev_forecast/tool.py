@@ -3,153 +3,271 @@ from __future__ import division
 import v2gsim
 import pandas
 import datetime
-import v2gsim
 import random
 import numpy
+import matplotlib.pyplot as plt
+import progressbar
 
+class EVForecast(object):
+    """Forecast EV demand at a feeder"""
 
-def occupancy_to_itineraries(row, itinerary_db, df_itinerary_db, max_hour_parked=6):
-    """return a frame of itineraries"""
+    def __init__(self):
+        self.ev_forecast = None
+        self.vehicle_project = None
+        self.directory = None
+        self.pk = None
+        self.feeder_timestep = None
+        self.itinerary_path = None
+        self.power_demand_path = None
+        self.configuration = None
 
-    def activity_to_boolean(start, end, boolean):
-        delta_minutes = int((end - start).total_seconds() / 60)
-        return [boolean] * delta_minutes
+    def initialize(self, feeder):
+        """Initialize feeder inputs"""
+        self.ev_forecast = pandas.read_excel(feeder.cyder_input_row.ev_forecast)
+        self.vehicle_project = pandas.read_excel(
+            self.ev_forecast.loc[0, 'vehicle_parameters'], sheetname=None)
+        self.directory = feeder.directory
+        self.pk = feeder.pk
+        self.feeder_timestep = feeder.timestep
+        self.itinerary_path = self.directory + str(self.pk) + '_itinerary.csv'
+        self.power_demand_path = self.directory + str(self.pk) + '_power.csv'
+        self.configuration = feeder.configuration
 
-    def fit_with_average_parked_duration(parked_duration, mean, std, duration_weight):
-        return (1/(std * numpy.sqrt(2 * numpy.pi)) * numpy.exp( - (parked_duration - mean)**2 / (2 * std**2) ) * 10)**duration_weight
+    def forecast(self):
+        """Forecast EV demand and return configuration file for CyDER"""
+        # Create an itinerary file from an occupancy schedule
+        self._occupancy_to_itineraries()
 
-    # Load occupancy
-    dfocc = pandas.read_pickle(row.occupancy_filename)
+        # Forecast power demand based on the an itinerary file
+        power_demand = self._itineraries_to_power_demand()
 
-    # Initiliaze vehicles
-    # 1) Filter - Remove vehicle that don't have work places chargers
-    veh = {}
-    sub_vehicles = []
-    for vehicle in itinerary_db.vehicles:
-        for activity in vehicle.activities:
-            if isinstance(activity, v2gsim.model.Parked):
-                if activity.location.category in row.location_name:
-                    sub_vehicles.append(vehicle)
-                    break
+        # Save power demand with the right format
+        formatted_power_demand = self._save_power_demand(power_demand)
 
-    for vehicle in sub_vehicles:
-        veh[vehicle.id] = []
-        for activity in vehicle.activities:
-            if isinstance(activity, v2gsim.model.Parked):
-                if activity.location.category in row.location_name:
-                    # Add the right number of minute as True
-                    veh[vehicle.id].extend(activity_to_boolean(activity.start, activity.end, 1))
+        # Update the configuration file
+        # -->
+
+        # Read power demand and plot
+        (formatted_power_demand / 1000).plot()
+        plt.ylabel('Power demand [kW]')
+        plt.xlabel('Time')
+        plt.show()
+        return self.configuration
+
+    def _open_itinerary_database(self):
+        """Open itinerary database to pick itineraries"""
+        # Create a V2G-Sim project
+        itinerary_db = v2gsim.model.Project()
+
+        # Initialize starting date before loading vehicles
+        itinerary_db.date = self.vehicle_project['project'].loc[0, 'start_date']
+
+        # Load vehicles into the V2G-Sim project
+        print('')
+        print('Loading itineraries...')
+        df_itinerary_db = pandas.read_excel(
+            io=self.ev_forecast.loc[0, 'itinerary_database'], sheetname='Activity')
+        itinerary_db = v2gsim.itinerary.from_excel(
+            itinerary_db, is_preload=True, df=df_itinerary_db)
+
+        # Filter out vehicles that don't have a full cycle over the day
+        # (avoid midnight mismatch)
+        itinerary_db.vehicles = v2gsim.itinerary.get_cycling_itineraries(itinerary_db)
+        return itinerary_db, df_itinerary_db
+
+    def _preprocess_itinerary_database(self, row, itinerary_db):
+        """Filter out itineraries before picking itineraries
+        Return a dictionary containing boolean describing vehicle match with the
+        occupancy schedule"""
+
+        def activity_to_boolean(start, end, boolean):
+            delta_minutes = int((end - start).total_seconds() / 60)
+            return [boolean] * delta_minutes
+
+        # Load occupancy
+        dfocc = pandas.read_pickle(row.occupancy_filename)
+
+        # Initiliaze vehicles
+        # 1) Filter - Remove vehicle that don't have work places chargers
+        veh = {}
+        sub_vehicles = []
+        for vehicle in itinerary_db.vehicles:
+            for activity in vehicle.activities:
+                if isinstance(activity, v2gsim.model.Parked):
+                    if activity.location.category in row.location_name:
+                        sub_vehicles.append(vehicle)
+                        break
+
+        for vehicle in sub_vehicles:
+            veh[vehicle.id] = []
+            for activity in vehicle.activities:
+                if isinstance(activity, v2gsim.model.Parked):
+                    if activity.location.category in row.location_name:
+                        # Add the right number of minute as True
+                        veh[vehicle.id].extend(activity_to_boolean(activity.start, activity.end, 1))
+                    else:
+                        # Add the right number of zeros
+                        veh[vehicle.id].extend(activity_to_boolean(activity.start, activity.end, 0))
                 else:
                     # Add the right number of zeros
                     veh[vehicle.id].extend(activity_to_boolean(activity.start, activity.end, 0))
-            else:
-                # Add the right number of zeros
-                veh[vehicle.id].extend(activity_to_boolean(activity.start, activity.end, 0))
-        if len(veh[vehicle.id]) != 1440:
-            import pdb
-            pdb.set_trace()
+            if len(veh[vehicle.id]) != 1440:
+                import pdb
+                pdb.set_trace()
 
-    # 2) Filter - remove vehicle parked more than x hours at work
-    x_hours = max_hour_parked
-    veh_ids = veh.keys()
-    for veh_id in veh_ids:
-        # Remove vehicle
-        if sum(veh[veh_id]) / 60 > x_hours:
-            veh.pop(veh_id)
+        # 2) Filter - remove vehicle parked more than x hours at work
+        x_hours = 6
+        veh_ids = veh.keys()
+        for veh_id in veh_ids:
+            # Remove vehicle
+            if sum(veh[veh_id]) / 60 > x_hours:
+                veh.pop(veh_id)
+        return veh, dfocc
 
-    # Initialize occupancy
-    occ = {}
-    occ[0] = dfocc.parked[0:-1].tolist()  # Remove last value
+    def _select_itineraries(self, veh, dfocc):
+        """Match occupancy schedule with itineraries and return vehicle ids"""
 
-    # Scoring process and update of the new occupancy
-    number_of_iteration = 100
-    it = 0
-    minimum_score = 0
-    max_score = 999
-    mean_duration, std_duration = 3, 2
-    duration_weight = 1.5  # How much should the scoring system prefere vehicle with mean_duration
-    remove_vehicle = True
-    temp_veh = veh.copy()
-    scores = {}
+        def fit_with_average_parked_duration(parked_duration, mean, std, duration_weight):
+            return (1/(std * numpy.sqrt(2 * numpy.pi)) * numpy.exp( - (parked_duration - mean)**2 / (2 * std**2) ) * 10)**duration_weight
+        # Initialize occupancy
+        occ = {}
+        occ[0] = dfocc.parked[0:-1].tolist()  # Remove last value
 
-    while max_score > minimum_score and it < number_of_iteration:
-        print(str(it) + ' / ', end='')
+        # Scoring process and update of the new occupancy
+        number_of_iteration = 100
+        it = 0
+        minimum_score = 0
+        max_score = 999
+        mean_duration, std_duration = 3, 2
+        duration_weight = 1.5  # How much should the scoring system prefere vehicle with mean_duration
+        remove_vehicle = True
+        temp_veh = veh.copy()
+        scores = {}
 
-        # Score each vehicle
-        temp_scores = []
-        for veh_id in temp_veh:
-            temp_scores.append([sum([occ[it][i]
-                                    if temp_veh[veh_id][i] > 0
-                                    else 0
-                                    for i in range(0, len(occ[it]))]), veh_id, sum(temp_veh[veh_id]) / 60])
-            temp_scores[-1][0] *= fit_with_average_parked_duration(temp_scores[-1][2], mean_duration, std_duration, duration_weight)
+        # Create the progress bar
+        print('')
+        print('Selecting itineraries...')
+        progress = progressbar.ProgressBar(widgets=['progress: ',
+                                                    progressbar.Percentage(),
+                                                    progressbar.Bar()],
+                                           maxval=number_of_iteration).start()
 
-        # Find the vehicle with the best score and save stats
-        scores[it] = {}
-        scores[it]['max'], scores[it]['vehicle_id'], scores[it]['duration'] = max(temp_scores, key=lambda item:item[0])
-        scores[it]['average'] = sum([pair[0] for pair in temp_scores]) / len(temp_scores)
-        max_score = scores[it]['max']
+        while max_score > minimum_score and it < number_of_iteration:
 
-        # Get the next occ
-        occ[it + 1] = [occ[it][i] - 1
-                       if temp_veh[scores[it]['vehicle_id']][i] > 0
-                       else occ[it][i]
-                       for i in range(0, len(occ[it]))]
+            # Score each vehicle
+            temp_scores = []
+            for veh_id in temp_veh:
+                temp_scores.append([sum([occ[it][i]
+                                        if temp_veh[veh_id][i] > 0
+                                        else 0
+                                        for i in range(0, len(occ[it]))]), veh_id, sum(temp_veh[veh_id]) / 60])
+                temp_scores[-1][0] *= fit_with_average_parked_duration(temp_scores[-1][2], mean_duration, std_duration, duration_weight)
 
-        # Remove vehicle
-        if remove_vehicle:
-            temp_veh.pop(scores[it]['vehicle_id'])
+            # Find the vehicle with the best score and save stats
+            scores[it] = {}
+            scores[it]['max'], scores[it]['vehicle_id'], scores[it]['duration'] = max(temp_scores, key=lambda item:item[0])
+            scores[it]['average'] = sum([pair[0] for pair in temp_scores]) / len(temp_scores)
+            max_score = scores[it]['max']
 
-        # Increase iteration
-        it += 1
+            # Get the next occ
+            occ[it + 1] = [occ[it][i] - 1
+                           if temp_veh[scores[it]['vehicle_id']][i] > 0
+                           else occ[it][i]
+                           for i in range(0, len(occ[it]))]
 
-    # Down-select vehicles
-    vehicle_ids = [scores[i]['vehicle_id'] for i in range(0, it)]
-    return_df = df_itinerary_db[df_itinerary_db['Vehicle ID'].isin(vehicle_ids)]
-    return_df = return_df.drop('Nothing', axis=1)
-    return_df = return_df.rename(columns={'Vehicle ID': 'id', 'State': 'state',
-                            'Start time (hour)': 'start',
-                            'End time (hour)': 'end',
-                            'Distance (mi)': 'distance',
-                            'P_max (W)': 'maximum_power',
-                            'Location': 'location',
-                            'NHTS HH Wt': 'weight'})
-    return_df = return_df.replace(row.location_name, row.node_name)
-    return return_df
+            # Remove vehicle
+            if remove_vehicle:
+                temp_veh.pop(scores[it]['vehicle_id'])
 
+            # Increase iteration
+            it += 1
+            progress.update(it)
+        progress.finish()
+        return [scores[i]['vehicle_id'] for i in range(0, it)]
 
-def itinerary_to_power_demand(df):
-    """return power demand per node"""
-    # Create a project and reduce the number of vehicles
-    project = v2gsim.tool.project_from_csv(df)
+    def _postprocess_selected_itineraries(self, row, vehicle_ids, df_itinerary_db):
+        """Create a dataframe using the itinerary database with only the chosen vehicles"""
+        # Down select vehicle within the big pool of vehicles
+        return_df = df_itinerary_db[df_itinerary_db['Vehicle ID'].isin(vehicle_ids)]
+        return_df = return_df.drop('Nothing', axis=1)
+        return_df = return_df.rename(columns={'Vehicle ID': 'id', 'State': 'state',
+                                'Start time (hour)': 'start',
+                                'End time (hour)': 'end',
+                                'Distance (mi)': 'distance',
+                                'P_max (W)': 'maximum_power',
+                                'Location': 'location',
+                                'NHTS HH Wt': 'weight'})
+        return_df = return_df.replace(row.location_name, row.load_name)
+        return return_df
 
-    # Set number of vehicles
-    df['vehicle_stock'].loc[0, 'number_of_vehicles'] = int(len(project.vehicles) * 0.3)
-    df['vehicle_stock'].loc[1, 'number_of_vehicles'] = int(len(project.vehicles) * 0.7)
+    def _occupancy_to_itineraries(self):
+        """Load occupancy schedule and create a new itinerary file"""
+        # Open and instantiate the itinerary database
+        itinerary_db, df_itinerary_db = self._open_itinerary_database()
 
-    # Load car models
-    project.car_models = v2gsim.tool.car_model_from_excel(df, project.ambient_temperature)
+        # For each occupancy schedule pick itineraries
+        itineraries = []
+        for row in self.ev_forecast.itertuples():
+            veh, occupancy = self._preprocess_itinerary_database(row, itinerary_db)
+            vehicles_ids = self._select_itineraries(veh, occupancy)
+            itineraries.append(self._postprocess_selected_itineraries(
+                row, vehicles_ids, df_itinerary_db))
 
-    # Assign car model to vehicles
-    scaling = v2gsim.tool.assign_car_model(df, project)
+        # Merge all itineraries into a single file
+        itinerary = pandas.DataFrame()
+        for frame in itineraries:
+            itinerary = pandas.concat([itinerary, frame], axis=1)
+        itinerary.to_csv(self.itinerary_path)
 
-    # Load infrastructure description
-    project.charging_stations = v2gsim.tool.charging_stations_from_excel(df)
+    def _itineraries_to_power_demand(self):
+        """Return power demand per node from a standart itinerary file"""
+        df = self.vehicle_project
 
-    # Set available infrastructures at locations
-    v2gsim.tool.set_available_infrastructures_at_locations_v2(df, project)
+        # Create a project and reduce the number of vehicles
+        project = v2gsim.tool.project_from_csv(df, filename=self.itinerary_path)
 
-    # Change the function to get result from locations
-    for location in project.locations:
-        location.result_function = v2gsim.tool.custom_save_location_state
+        # Set number of vehicles
+        df['vehicle_stock'].loc[0, 'number_of_vehicles'] = int(len(project.vehicles) * 0.3)
+        df['vehicle_stock'].loc[1, 'number_of_vehicles'] = int(len(project.vehicles) * 0.7)
 
-    # Change the way charging station behave
-    for station in project.charging_stations:
-        station.charging = v2gsim.charging.uncontrolled.charge_soc_dependent
+        # Load car models
+        project.car_models = v2gsim.tool.car_model_from_excel(df, project.ambient_temperature)
 
-    # Launch the simulation
-    v2gsim.core.run(project, date_from=project.date,
-                    date_to=project.date + datetime.timedelta(days=project.nb_days))
+        # Assign car model to vehicles
+        scaling = v2gsim.tool.assign_car_model(df, project)
 
-    # Get the results
-    return v2gsim.post_simulation.result.total_power_demand(project)
+        # Load infrastructure description
+        project.charging_stations = v2gsim.tool.charging_stations_from_excel(df)
+
+        # Set available infrastructures at locations
+        v2gsim.tool.set_available_infrastructures_at_locations_v2(df, project)
+
+        # Change the function to get result from locations
+        for location in project.locations:
+            location.result_function = v2gsim.tool.custom_save_location_state
+
+        # Change the way charging station behave
+        for station in project.charging_stations:
+            station.charging = v2gsim.charging.uncontrolled.charge_soc_dependent
+
+        # Launch the simulation
+        print('')
+        print('Forecasting power demand...')
+        v2gsim.core.run(project, date_from=project.date,
+                        date_to=project.date + datetime.timedelta(days=project.nb_days))
+
+        # Get the results
+        return v2gsim.post_simulation.result.total_power_demand(project)
+
+    def _save_power_demand(self, power_demand):
+        """Save power demand with the right timestep for a selection of load"""
+        # Export results to a flat format
+        timestep_min = str(int(self.feeder_timestep  / 60)) + 'T'
+        nb_days = (self.vehicle_project['project'].loc[0, 'end_date'] - self.vehicle_project['project'].loc[0, 'start_date']).days
+        tsd = self.vehicle_project['project'].loc[0, 'start_date'] + datetime.timedelta(days=nb_days - 1)
+        ted = self.vehicle_project['project'].loc[0, 'end_date']
+        load_names = self.ev_forecast.load_name.unique().tolist()
+        load_names_demand = [value + '_demand' for value in load_names]
+        power_demand = power_demand[tsd:ted][load_names_demand].resample(timestep_min).last()
+        power_demand.to_csv(self.power_demand_path)
+        return power_demand
