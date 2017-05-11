@@ -7,13 +7,13 @@ import progressbar
 class Master(object):
     """docstring for Master."""
 
-    def __init__(selfs):
+    def __init__(self):
         # Simulation parameters
         self.feeder_configurations = None
         self.timestep = None
         self.times = None
-        self.cymdist_fmu_path = PATH_TO_FMU
-        self.griddyn_fmu_path = PATH_TO_FMU
+        self.cymdist_fmu_path = './static/fmu/CYMDIST.fmu'
+        self.griddyn_fmu_path = './static/fmu/griddyn14bus.fmu'
         self.save_to_file = 0
         self.feeder_voltage_reference = None
 
@@ -51,8 +51,8 @@ class Master(object):
             self.feeders.append(load_fmu(self.cymdist_fmu_path, log_level=7))
 
             # Setup experiment
-            self.feeder[-1].setup_experiment(
-                start_time=self.time[0], stop_time=self.time[-1])
+            self.feeders[-1].setup_experiment(
+                start_time=self.times[0], stop_time=self.times[-1])
 
             # Create lists to hold value references
             self.feeder_input_valref.append([])
@@ -60,25 +60,25 @@ class Master(object):
 
             # Get the value references of cymdist inputs
             for elem in self.feeder_input_names:
-                self.feeder_input_valref[-1].append(self.feeder[-1].get_variable_valueref(elem))
+                self.feeder_input_valref[-1].append(self.feeders[-1].get_variable_valueref(elem))
 
             # Get the value references of cymdist outputs
             for elem in self.feeder_output_names:
-                self.feeder_output_valref[-1].append(self.feeder[-1].get_variable_valueref(elem))
+                self.feeder_output_valref[-1].append(self.feeders[-1].get_variable_valueref(elem))
 
             # Set flag
-            self.feeder[-1].set("_saveToFile", self.save_to_file)
+            self.feeders[-1].set("_saveToFile", self.save_to_file)
 
             # Set configuration file
-            ref = self.feeder[-1].get_variable_valueref("_configurationFileName")
-            self.feeder[-1].set_string([ref], [feeder_configurations_bytes[-1]])
+            ref = self.feeders[-1].get_variable_valueref("_configurationFileName")
+            self.feeders[-1].set_string([ref], [feeder_configurations_bytes[-1]])
 
             # Initialize the FMUs
-            self.feeder[-1].initialize()
+            self.feeders[-1].initialize()
 
             # Call event update prior to entering continuous mode.
-            self.feeder[-1].event_update()
-            self.feeder[-1].enter_continuous_time_mode()
+            self.feeders[-1].event_update()
+            self.feeders[-1].enter_continuous_time_mode()
 
             # Create holder for output variables
             self.feeder_result.append({name: [] for name in self.feeder_output_names})
@@ -89,7 +89,7 @@ class Master(object):
         self.transmission = load_fmu(self.griddyn_fmu_path, log_level=7)
 
         # Set up experiment
-        griddyn.setup_experiment(start_time=start_time, stop_time=stop_time)
+        griddyn.setup_experiment(start_time=self.times[0], stop_time=self.times[-1])
 
         self.transmission_input_names = ['Bus11_IA', 'Bus11_IB', 'Bus11_IC',
                        'Bus11_IAngleA', 'Bus11_IAngleB', 'Bus11_IAngleC']
@@ -136,7 +136,7 @@ class Master(object):
         for iteration, time in enumerate(self.times):
             # Set feeder voltage reference and do step
             output_values_accross_all_feeders = []
-            for index in range(0, len(self.feeders))
+            for index in range(0, len(self.feeders)):
                 self.feeders[index].time = time
                 self.feeders[index].set_real(
                     self.feeder_input_valref[index],
@@ -144,7 +144,7 @@ class Master(object):
 
                 # Save feeder results
                 output_values = list(
-                    self.feeder[index].get_real(self.feeder_output_valref))
+                    self.feeders[index].get_real(self.feeder_output_valref))
                 for name, value in zip(self.feeder_output_names, output_values):
                     self.feeder_result[index][name].append(value)
 

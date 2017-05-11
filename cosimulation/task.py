@@ -31,21 +31,22 @@ directory = 'temp/' + token + '/'
 if not os.path.exists(directory):
     os.makedirs(directory)
 
-# Create a configuration file for each feeder
-feeder_configurations = []
-for index, row in enumerate(cyder_inputs.itertuples()):
-    # Create a feeder configuration
-    config = c.FeederConfiguration()
-    config.pk = index
-    config.token = token
-    config.directory = directory
-    config.times = times
-    config.cyder_input_row = row
+# # Create a configuration file for each feeder
+# feeder_configurations = []
+# for index, row in enumerate(cyder_inputs.itertuples()):
+#     # Create a feeder configuration
+#     config = c.FeederConfiguration()
+#     config.pk = index
+#     config.token = token
+#     config.directory = directory
+#     config.times = times
+#     config.cyder_input_row = row
+#
+#     # Configure based on inputs
+#     config.configure()
+#     feeder_configurations.append(config.save())
 
-    # Configure based on inputs
-    config.configure()
-    feeder_configurations.append(config.save())
-
+feeder_configurations = ["D:\\Users\\Jonathan\\Desktop\\CyDER\\cosimulation\\temp\XIA09NBBZ8"]
 # Create a configuration file for the transmission network
 # -->
 
@@ -60,7 +61,7 @@ master = m.Master()
 master.feeder_configurations = feeder_configurations
 master.times = times
 master.timestep = timestep
-master.feeder_voltage_reference = [REFERENCE_VOLTAGE_AT_FEEDER]
+master.feeder_voltage_reference = [[2520, 2520, 2520, 0, -120, 120]]
 master.solve()
 
 import pdb
