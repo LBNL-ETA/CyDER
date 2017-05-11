@@ -50,7 +50,6 @@ stop
 
 # Files in top-level directory
 #####################################
-/*.py
 /*.sh
 /*.mos
 

@@ -1,0 +1,7 @@
+include cymdisttofmu/LICENSE.txt
+include cymdisttofmu/userGuide.pdf
+include cymdisttofmu/README.rst
+recursive-include cymdisttofmu/bin *
+recursive-include cymdisttofmu/doc *
+recursive-include cymdisttofmu/fmus *
+recursive-include cymdisttofmu/parser *

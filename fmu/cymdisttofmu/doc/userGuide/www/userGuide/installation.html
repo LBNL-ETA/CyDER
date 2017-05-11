@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>3. Installation and Configuration &#8212; FMU Export of CYMDIST User Guide</title>
+    <title>2. Installation and Configuration &#8212; FMU Export of CYMDIST User Guide</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -27,8 +27,8 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="4. Best Practice" href="bestPractice.html" />
-    <link rel="prev" title="2. Download" href="download.html" /> 
+    <link rel="next" title="3. Best Practice" href="bestPractice.html" />
+    <link rel="prev" title="1. Introduction" href="introduction.html" /> 
   </head>
   <body role="document">
 <div class="headerStyle">
@@ -45,10 +45,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="bestPractice.html" title="4. Best Practice"
+          <a href="bestPractice.html" title="3. Best Practice"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="download.html" title="2. Download"
+          <a href="introduction.html" title="1. Introduction"
              accesskey="P">previous</a> |</li>
     <li><a href="http://simulationresearch.lbl.gov/fmu/CYMDIST/export/index.html">Home</a> |
     <a href="index.html">User Guide</a></li>
@@ -62,20 +62,20 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">3. Installation and Configuration</a><ul>
-<li><a class="reference internal" href="#software-requirements">3.1. Software requirements</a></li>
-<li><a class="reference internal" href="#installation-directory">3.2. Installation</a></li>
-<li><a class="reference internal" href="#uninstallation">3.3. Uninstallation</a></li>
+<li><a class="reference internal" href="#">2. Installation and Configuration</a><ul>
+<li><a class="reference internal" href="#software-requirements">2.1. Software requirements</a></li>
+<li><a class="reference internal" href="#installation-directory">2.2. Installation</a></li>
+<li><a class="reference internal" href="#uninstallation">2.3. Uninstallation</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="download.html"
-                        title="previous chapter">2. Download</a></p>
+  <p class="topless"><a href="introduction.html"
+                        title="previous chapter">1. Introduction</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="bestPractice.html"
-                        title="next chapter">4. Best Practice</a></p>
+                        title="next chapter">3. Best Practice</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -102,10 +102,10 @@
           <div class="body" role="main">
             
   <div class="section" id="installation-and-configuration">
-<span id="installation"></span><h1>3. Installation and Configuration<a class="headerlink" href="#installation-and-configuration" title="Permalink to this headline">¶</a></h1>
+<span id="installation"></span><h1>2. Installation and Configuration<a class="headerlink" href="#installation-and-configuration" title="Permalink to this headline">¶</a></h1>
 <p>This chapter describes how to install, configure and uninstall CYMDISTToFMU.</p>
 <div class="section" id="software-requirements">
-<h2>3.1. Software requirements<a class="headerlink" href="#software-requirements" title="Permalink to this headline">¶</a></h2>
+<h2>2.1. Software requirements<a class="headerlink" href="#software-requirements" title="Permalink to this headline">¶</a></h2>
 <p>To export CYMDIST as an FMU, CYMDISTToFMU needs:</p>
 <ol class="arabic simple">
 <li>Python and following dependencies:<ul>
@@ -133,27 +133,9 @@ As a workaround, CYMDISTToFMU checks if there are missing libraries dependencies
 </div>
 </div>
 <div class="section" id="installation-directory">
-<span id="id1"></span><h2>3.2. Installation<a class="headerlink" href="#installation-directory" title="Permalink to this headline">¶</a></h2>
+<span id="id1"></span><h2>2.2. Installation<a class="headerlink" href="#installation-directory" title="Permalink to this headline">¶</a></h2>
 <p>To install CYMDISTToFMU, proceed as follows:</p>
 <ol class="arabic simple">
-<li>Download the CyDER repository from the <a class="reference internal" href="download.html"><span class="doc">Download</span></a> page.</li>
-</ol>
-<p>The CYMDISTToFMU directory (hereafter referred to as the &#8220;installation directory&#8221;) is the <code class="docutils literal"><span class="pre">fmu</span></code> subdirectory of CyDER.
-The installation directory should contain the following subdirectories:</p>
-<ul class="simple">
-<li><code class="docutils literal"><span class="pre">fmu/cymdisttofmu/</span></code><ul>
-<li><code class="docutils literal"><span class="pre">bin/</span></code>
-(Python scripts for unit tests)</li>
-<li><code class="docutils literal"><span class="pre">doc/</span></code>
-(Documentation)</li>
-<li><code class="docutils literal"><span class="pre">fmus/</span></code>
-(FMUs folder)</li>
-<li><code class="docutils literal"><span class="pre">parser/</span></code>
-(Python scripts, Modelica templates and XML validator files)</li>
-</ul>
-</li>
-</ul>
-<ol class="arabic simple" start="2">
 <li>Add following folders to your system path:</li>
 </ol>
 <blockquote>
@@ -174,17 +156,34 @@ The installation directory should contain the following subdirectories:</p>
 <p>To check if the variables have been correctly added to the system path, type <code class="docutils literal"><span class="pre">python</span></code>, <code class="docutils literal"><span class="pre">dymola</span></code>, or <code class="docutils literal"><span class="pre">omc</span></code>
 into a command prompt to see if the right version of Python, Dymola or OpenModelica starts up.</p>
 </div></blockquote>
-<ol class="arabic" start="4">
-<li><p class="first">Install Python dependencies by running</p>
-<div class="highlight-none"><div class="highlight"><pre>pip install -r fmu\cymdisttofmu\bin\cymdisttofmu-requirements.txt
+<ol class="arabic simple" start="2">
+<li>To install CYMDISTToFMU, run</li>
+</ol>
+<blockquote>
+<div><div class="highlight-none"><div class="highlight"><pre>&gt; pip install CYMDISTToFMU
 </pre></div>
 </div>
-</li>
-</ol>
+<p>The installation directory should contain the following subdirectories:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">bin/</span></code>
+(Python scripts for running unit tests)</li>
+<li><code class="docutils literal"><span class="pre">doc/</span></code>
+(Documentation)</li>
+<li><code class="docutils literal"><span class="pre">fmus/</span></code>
+(FMUs folder)</li>
+<li><code class="docutils literal"><span class="pre">parser/</span></code>
+(Python scripts, Modelica templates and XML validator files)</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
 </div>
 <div class="section" id="uninstallation">
-<h2>3.3. Uninstallation<a class="headerlink" href="#uninstallation" title="Permalink to this headline">¶</a></h2>
-<p>To uninstall CYMDISTToFMU, delete the <a class="reference internal" href="#installation-directory">installation directory</a>.</p>
+<h2>2.3. Uninstallation<a class="headerlink" href="#uninstallation" title="Permalink to this headline">¶</a></h2>
+<p>To uninstall CYMDISTToFMU, run</p>
+<div class="highlight-none"><div class="highlight"><pre>&gt; pip uninstall CYMDISTToFMU
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -204,10 +203,10 @@ into a command prompt to see if the right version of Python, Dymola or OpenModel
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="bestPractice.html" title="4. Best Practice"
+          <a href="bestPractice.html" title="3. Best Practice"
              >next</a> |</li>
         <li class="right" >
-          <a href="download.html" title="2. Download"
+          <a href="introduction.html" title="1. Introduction"
              >previous</a> |</li>
     <li><a href="http://simulationresearch.lbl.gov/fmu/CYMDIST/export/index.html">Home</a> |
     <a href="index.html">User Guide</a></li>

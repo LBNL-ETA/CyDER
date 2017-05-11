@@ -32,7 +32,9 @@ help:
 	@echo "  copypdftodoc  to copy PDF file to userGuide folder for distribution"
 
 clean:
-	-rm -rf $(BUILDDIR)/*
+	@echo "Deleted temporary files and folders."
+	-rm -rf $(BUILDDIR)
+	-rm -rf *.log
 
 cleanpdf:
 	-rm -rf *.pdf
@@ -99,14 +101,15 @@ release-html:
 	@echo "Copy html files to the www folder."
 	-cp -R $(BUILDDIR)/html/*.* www/userGuide
 	#-cp -R $(BUILDDIR)/html/_img www/userGuide
-	-cp -R $(BUILDDIR)/html/legal.html ../../../../
+	-cp -R $(BUILDDIR)/html/license.html ../../../../
+	-cp -R source/license.rst ../../LICENSE.txt
 
 #dist:   clean cleanpdf latex html release-html copypdftodoc copydoctowww  
-dist:   clean cleanpdf latex html release-html copypdftodoc 
+dist:   clean cleanpdf latex html release-html copypdftodoc
 
 copypdftodoc:
 	@echo "Copy pdf files to the userGuide folder."
-	-cp -R $(BUILDDIR)/latex/*.pdf .
+	-cp -R $(BUILDDIR)/latex/*.pdf ../../.
 
 copydoctowww:
 	@echo "Sent files to the server excluding .svn."

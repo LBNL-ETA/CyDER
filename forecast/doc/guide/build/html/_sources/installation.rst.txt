@@ -1,0 +1,8 @@
+
+
+.. highlight:: rest
+
+.. _installation:
+
+Installation
+============

@@ -7,7 +7,6 @@ User Guide
    :maxdepth: 3
 
    introduction
-   download
    installation
    bestPractice
    build
@@ -18,4 +17,4 @@ User Guide
    glossary
    acknowledgments
    disclaimer
-   legal
+   license
