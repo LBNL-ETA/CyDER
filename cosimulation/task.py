@@ -55,14 +55,13 @@ for index, row in enumerate(cyder_inputs.itertuples()):
 # Create a GridDyn FMU
 # -->
 
-import pdb
-pdb.set_trace()
-
 # Launch PyFmi master
 master = m.Master()
 master.feeder_configurations = feeder_configurations
-master.griddyn_configuration = None
-master.t_and_d_coupling = None
-master.start = start
 master.times = times
+master.timestep = timestep
+master.feeder_voltage_reference = [REFERENCE_VOLTAGE_AT_FEEDER]
 master.solve()
+
+import pdb
+pdb.set_trace()
