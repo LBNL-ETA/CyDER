@@ -1,6 +1,7 @@
 from __future__ import division
 from pyfmi import load_fmu
 from pyfmi.master import Master
+import matplotlib.pyplot as plt
 import progressbar
 
 
@@ -170,5 +171,8 @@ class Master(object):
         for index in range(0, len(self.feeders)):
             self.feeders[index].terminate()
         self.transmission.terminate()
+
+        # Close any plot
+        plt.close()
 
         print("########## HOURRRA ##############")
