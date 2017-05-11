@@ -188,11 +188,11 @@ class Tester(unittest.TestCase):
         Test the execution of one CYMDIST FMU.
 
         '''
-        
+
         if not(platform.system().lower() == 'windows'):
             print('CYMDISTToFMU is only supported on Windows.')
             return
-        for tool in ['Dymola', 'OpenModelica']:
+        for tool in ['OpenModelica']:
             if platform.system().lower() == 'windows':
                 fmu_path = os.path.join(
                     script_path, '..', 'fmus', tool, 'windows', 'CYMDIST.fmu')
@@ -204,59 +204,59 @@ class Tester(unittest.TestCase):
             # Parameters which will be arguments of the function
             start_time = 0.0
             stop_time = 5.0
-            
+
             # Path to configuration file
             path_config=os.path.abspath("config.json")
             cymdist_con_val_str = bytes(path_config, 'utf-8')
-            
-            cymdist_input_valref=[] 
+
+            cymdist_input_valref=[]
             cymdist_output_valref=[]
-            
+
             cymdist = load_fmu(fmu_path, log_level=7)
             cymdist.setup_experiment(start_time=start_time, stop_time=stop_time)
-            
+
             # Define the inputs
             cymdist_input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
             cymdist_input_values = [2520, 2520, 2520, 0, -120, 120]
             cymdist_output_names = ['IA', 'IB', 'IC', 'IAngleA', 'IAngleB', 'IAngleC']
-            
+
             # Get the value references of cymdist inputs
             for elem in cymdist_input_names:
-                cymdist_input_valref.append(cymdist.get_variable_valueref(elem))   
-                
-            # Get the value references of cymdist outputs 
+                cymdist_input_valref.append(cymdist.get_variable_valueref(elem))
+
+            # Get the value references of cymdist outputs
             for elem in cymdist_output_names:
-                cymdist_output_valref.append(cymdist.get_variable_valueref(elem))  
-        
+                cymdist_output_valref.append(cymdist.get_variable_valueref(elem))
+
             # Set the flag to save the results
             cymdist.set("_saveToFile", 0)
-            # Get value reference of the configuration file 
+            # Get value reference of the configuration file
             cymdist_con_val_ref = cymdist.get_variable_valueref("_configurationFileName")
-            
+
             # Set the configuration file
             cymdist.set_string([cymdist_con_val_ref], [cymdist_con_val_str])
-            
+
             # Initialize the FMUs
             cymdist.initialize()
-            
+
             # Call event update prior to entering continuous mode.
             cymdist.event_update()
-            
+
             # Enter continuous time mode
             cymdist.enter_continuous_time_mode()
-            
+
             print("Done initializing the FMU")
             # Create vector to store time
-        
-            print ("Starting the time integration" )    
+
+            print ("Starting the time integration" )
             start = datetime.now()
             cymdist.set_real(cymdist_input_valref, cymdist_input_values)
-            print("This is the result of the angle IAngleA: " 
+            print("This is the result of the angle IAngleA: "
                   + str(cymdist.get_real(cymdist.get_variable_valueref('IAngleA'))))
             # Terminate FMUs
             cymdist.terminate()
             end = datetime.now()
-            
+
             print(
                 'Ran a single CYMDIST simulation with {!s} FMU={!s} in {!s} seconds.'.format(
                     tool, fmu_path, (end - start).total_seconds()))
