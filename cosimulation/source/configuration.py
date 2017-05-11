@@ -37,6 +37,7 @@ class FeederConfiguration(object):
         """Initialize configuration file"""
         self.feeder_name = self.cyder_input_row.feeder_name
         self.timestep = self.cyder_input_row.timestep
+        self.start = self.cyder_input_row.start
         configuration = {'times': self.times,
                          'interpolation_method': 'closest_time',
                          'models': []

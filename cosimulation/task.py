@@ -1,5 +1,6 @@
 from __future__ import division
 import os
+CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 import pandas
 import random
 import string
@@ -7,6 +8,7 @@ import argparse
 import datetime as dt
 import source.configuration as c
 import source.master as m
+import os
 
 # Read input file
 try:
@@ -16,6 +18,7 @@ try:
     configuration_file = str(args.configuration_file)
 except:
     sys.exit('Error: could not retrieve argument')
+os.chdir(CURRENT_PATH)
 cyder_inputs = pandas.read_excel(configuration_file)
 start = cyder_inputs.loc[0, 'start']
 end = cyder_inputs.loc[0, 'end']

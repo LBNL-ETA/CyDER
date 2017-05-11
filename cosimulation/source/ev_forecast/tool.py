@@ -1,5 +1,6 @@
 from __future__ import print_function
 from __future__ import division
+import source.cymdist_tool.tool as cymdist
 import v2gsim
 import pandas
 import datetime
@@ -7,6 +8,11 @@ import random
 import numpy
 import matplotlib.pyplot as plt
 import progressbar
+import traceback
+try:
+    import cympy
+except:
+    pass
 
 class EVForecast(object):
     """Forecast EV demand at a feeder"""
@@ -29,6 +35,7 @@ class EVForecast(object):
         self.directory = feeder.directory
         self.pk = feeder.pk
         self.feeder_timestep = feeder.timestep
+        self.feeder = feeder
         self.itinerary_path = self.directory + str(self.pk) + '_itinerary.csv'
         self.power_demand_path = self.directory + str(self.pk) + '_power.csv'
         self.configuration = feeder.configuration
@@ -45,7 +52,7 @@ class EVForecast(object):
         formatted_power_demand = self._save_power_demand(power_demand)
 
         # Update the configuration file
-        # -->
+        self._update_configuration(formatted_power_demand)
 
         # Read power demand and plot
         (formatted_power_demand / 1000).plot()
@@ -271,3 +278,35 @@ class EVForecast(object):
         power_demand = power_demand[tsd:ted][load_names_demand].resample(timestep_min).last()
         power_demand.to_csv(self.power_demand_path)
         return power_demand
+
+    def _update_configuration(self, power_demand):
+        """Update configuration file with EV consumption at load"""
+        # Open model and list the loads
+        cympy.study.Open(self.feeder.feeder_folder + self.feeder.cyder_input_row.feeder_name)
+        loads = cymdist.list_loads()
+
+        # Select loads of interest
+        load_ids = [value.split('_')[1] for value in power_demand.columns.tolist()]
+        loads = loads[loads.device_number.isin(load_ids)]
+
+        # Loop over time window
+        for index, time in enumerate(self.configuration['times']):
+            for load, column_name in zip(loads.iterrows(), power_demand.columns.tolist()):
+                _, load = load
+                self.configuration['models'][index]['set_loads'].append({'device_number': load['device_number'],
+                                                                'active_power': []})
+
+                # Dummy way to count the phases
+                phase_count = 0
+                for phase_index in ['0', '1', '2']:
+                    if load['activepower_' + phase_index]:
+                        phase_count += 1
+
+                current_time = self.feeder.start + datetime.timedelta(seconds=time)
+                power_to_add = power_demand.loc[current_time, column_name] / (1000 * phase_count)
+                for phase_index in ['0', '1', '2']:
+                    if load['activepower_' + phase_index]:
+                        self.configuration['models'][index]['set_loads'][-1]['active_power'].append(
+                            {'active_power': float(load['activepower_' + phase_index]) + power_to_add,
+                             'phase_index': phase_index,
+                             'phase': str(load['phase_' + phase_index])})
