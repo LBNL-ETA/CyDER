@@ -205,9 +205,12 @@ class Tester(unittest.TestCase):
             start_time = 0.0
             stop_time = 5.0
 
+            print ('Starting the simulation')
+            start = datetime.now()
             # Path to configuration file
-            path_config=os.path.abspath("config.json")
-            cymdist_con_val_str = bytes(path_config, 'utf-8')
+            cymdistr_con_val_str = os.path.abspath('config.json')
+            if sys.version_info.major > 2:
+                cymdistr_con_val_str = bytes(cymdist_con_val_str, 'utf-8')
 
             cymdist_input_valref=[]
             cymdist_output_valref=[]
@@ -231,7 +234,7 @@ class Tester(unittest.TestCase):
             # Set the flag to save the results
             cymdist.set("_saveToFile", 0)
             # Get value reference of the configuration file
-            cymdist_con_val_ref = cymdist.get_variable_valueref("_configurationFileName")
+            cymdist_con_val_ref = cymdist.get_variable_valueref('_configurationFileName')
 
             # Set the configuration file
             cymdist.set_string([cymdist_con_val_ref], [cymdist_con_val_str])
@@ -248,11 +251,10 @@ class Tester(unittest.TestCase):
             print("Done initializing the FMU")
             # Create vector to store time
 
-            print ("Starting the time integration" )
-            start = datetime.now()
             cymdist.set_real(cymdist_input_valref, cymdist_input_values)
             print("This is the result of the angle IAngleA: "
                   + str(cymdist.get_real(cymdist.get_variable_valueref('IAngleA'))))
+
             # Terminate FMUs
             cymdist.terminate()
             end = datetime.now()
