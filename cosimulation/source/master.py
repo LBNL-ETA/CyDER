@@ -1,5 +1,5 @@
 from __future__ import division
-# import source.monitor as m
+import source.monitor as m
 from pyfmi import load_fmu
 import matplotlib.pyplot as plt
 import progressbar
@@ -72,10 +72,6 @@ class Master(object):
             self.feeders[-1].set("_saveToFile", self.save_to_file)
 
             # Set configuration file
-            print('#########################')
-            print('Configuration filename: ' + feeder_conf)
-            print(str(feeder_configurations_bytes[-1]))
-            print('#########################')
             ref = self.feeders[-1].get_variable_valueref("_configurationFileName")
             self.feeders[-1].set_string([ref], [feeder_configurations_bytes[-1]])
 
@@ -134,9 +130,9 @@ class Master(object):
         # Initialize transmission
         self._initialize_transmission_1bus()
 
-        # # Initialize monitoring
-        # if self.monitoring:
-        #     monitor = m.Monitor()
+        # Initialize monitoring
+        if self.monitoring:
+            monitor = m.Monitor()
 
         print('')
         print('Cosimulation in progress...')
@@ -177,9 +173,9 @@ class Master(object):
             for name, value in zip(self.transmission_output_names, output_values):
                 self.transmission_result[name].append(value)
 
-            # # Monitor progress
-            # if self.monitoring:
-            #     monitor.update(self)
+            # Monitor progress
+            if self.monitoring:
+                monitor.update(self)
 
             # Update progress bar
             progress.update(iteration)
@@ -191,6 +187,5 @@ class Master(object):
         self.transmission.terminate()
 
         # Close any plot
+        import pdb; pdb.set_trace()
         plt.close()
-
-        print("########## HOURRRA ##############")
