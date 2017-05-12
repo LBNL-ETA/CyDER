@@ -12,69 +12,63 @@ class Monitor(object):
     """Monitor simulation progress"""
 
     def __init__(self):
-        pass
+        self.fig = None
+        self.ax1 = None
+        self.ax2 = None
+        self.current_a = None
+        self.current_b = None
+        self.current_c = None
+        self.voltage_abc = None
 
-    def initialize(self, master):
+        # Initialize monitor
+        self.initialize()
+
+    def initialize(self):
         """Initialize graphs"""
         # Interactive mode on
         plt.ion()
 
         # Create the plot
-        fig = plt.figure()
-        ax1 = fig.add_subplot(211)
-        ax2 = fig.add_subplot(212)
-        ax1.set_ylabel('Feeder voltages\n(GridDyn) [V]')
-        ax2.set_ylabel('Feeder currents\n(cymDist) [A]')
-        ax2.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
-        ax2.set_xlabel('Time (minutes)')
+        self.fig = plt.figure()
+        self.ax1 = self.fig.add_subplot(211)
+        self.ax2 = self.fig.add_subplot(212)
+        self.ax1.set_ylabel('Feeder voltages\n(GridDyn) [V]')
+        self.ax2.set_ylabel('Feeder currents\n(CymDIST) [A]')
+        self.ax2.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
+        self.ax2.set_xlabel('Time (minutes)')
 
         # Create lines
-        current_a, = ax1.plot(simTim, CYMDIST_IA, label='Phase A')
-        current_b, = ax1.plot(simTim, CYMDIST_IB, label='Phase B')
-        current_c, = ax1.plot(simTim, CYMDIST_IC, label='Phase C')
-        voltage_abc, = ax2.plot(simTim, GRIDDYN_VA, label='Balanced accross phases')
+        self.current_a, = self.ax1.plot([], [], label='Phase A')
+        self.current_b, = self.ax1.plot([], [], label='Phase B')
+        self.current_c, = self.ax1.plot([], [], label='Phase C')
+        self.voltage_abc, = self.ax2.plot([], [], label='Balanced accross phases')
 
         # Add legends and tight layout
-        ax1.legend(loc=1)
-        ax2.legend(loc=1)
-        fig.tight_layout()
+        self.ax1.legend(loc=1)
+        self.ax2.legend(loc=1)
+        self.fig.tight_layout()
 
-
-    def visualize(self, master):
+    def update(self, master):
         """Visualize simulation progress"""
+        # Find current index
+        index = len(master.feeder_result[0]['IA'])
 
+        # Update plot values
+        self.current_a.set_xdata(master.times[0:index])
+        self.current_a.set_ydata(master.feeder_result[0]['IA'])
+        self.current_b.set_xdata(master.times[0:index])
+        self.current_b.set_ydata(master.feeder_result[0]['IB'])
+        self.current_c.set_xdata(master.times[0:index])
+        self.current_c.set_ydata(master.feeder_result[0]['IC'])
+        self.voltage_abc.set_xdata(master.times[0:index])
+        self.voltage_abc.set_ydata(master.transmission_result['Bus11_VA'])
 
-CYMDIST_IA.append(cymdist.get_real(cymdist.get_variable_valueref('IA'))[0])
-CYMDIST_IB.append(cymdist.get_real(cymdist.get_variable_valueref('IB'))[0])
-CYMDIST_IC.append(cymdist.get_real(cymdist.get_variable_valueref('IC'))[0])
-GRIDDYN_VA.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VA'))[0])
-GRIDDYN_VB.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VB'))[0])
-GRIDDYN_VC.append(griddyn.get_real(griddyn.get_variable_valueref('Bus11_VC'))[0])
-simTim.append(tim / 60)
+        # Redefine graph scale
+        self.ax1.relim()
+        self.ax1.autoscale_view(True,True,True)
+        self.ax2.relim()
+        self.ax2.autoscale_view(True,True,True)
 
-# for name in cymdist_column_names:
-#     df.loc[simTim[-1], name] = cymdist.get_real(cymdist.get_variable_valueref(name))[0]
-#
-# for name in griddyn_column_names:
-#     df.loc[simTim[-1], name] = griddyn.get_real(griddyn.get_variable_valueref(name))[0]
-
-line1A.set_xdata(simTim)
-line1A.set_ydata(CYMDIST_IA)
-line1B.set_xdata(simTim)
-line1B.set_ydata(CYMDIST_IB)
-line1C.set_xdata(simTim)
-line1C.set_ydata(CYMDIST_IC)
-
-line2A.set_xdata(simTim)
-line2A.set_ydata(GRIDDYN_VA)
-line2B.set_xdata(simTim)
-line2B.set_ydata(GRIDDYN_VB)
-line2C.set_xdata(simTim)
-line2C.set_ydata(GRIDDYN_VC)
-
-ax1.relim()
-ax1.autoscale_view(True,True,True)
-ax2.relim()
-ax2.autoscale_view(True,True,True)
-fig.canvas.draw()
-plt.pause(0.01)
+        # Update plot
+        self.fig.canvas.draw()
+        plt.pause(0.01)

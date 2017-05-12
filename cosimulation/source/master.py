@@ -1,4 +1,5 @@
 from __future__ import division
+import source.monitor as m
 from pyfmi import load_fmu
 from pyfmi.master import Master
 import matplotlib.pyplot as plt
@@ -17,6 +18,7 @@ class Master(object):
         self.griddyn_fmu_path = './static/fmu/griddyn14bus.fmu'
         self.save_to_file = 0
         self.feeder_voltage_reference = None
+        self.monitoring = True
 
         # Simulation variables
         self.feeders = None
@@ -126,6 +128,10 @@ class Master(object):
         # Initialize transmission
         self._initialize_transmission_1bus()
 
+        # Initialize monitoring
+        if self.monitoring:
+            monitor = m.Monitor()
+
         print('')
         print('Cosimulation in progress...')
         progress = progressbar.ProgressBar(widgets=['progress: ',
@@ -164,6 +170,12 @@ class Master(object):
                 self.transmission.get_real(self.transmission_output_valref))
             for name, value in zip(self.transmission_output_names, output_values):
                 self.transmission_result[name].append(value)
+
+            # Monitor progress
+            if self.monitoring:
+                monitor.update(self)
+
+            # Update progress bar
             progress.update(iteration)
         progress.finish()
 
