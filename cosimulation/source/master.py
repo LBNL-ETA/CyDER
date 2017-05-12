@@ -1,7 +1,6 @@
 from __future__ import division
-import source.monitor as m
+# import source.monitor as m
 from pyfmi import load_fmu
-from pyfmi.master import Master
 import matplotlib.pyplot as plt
 import progressbar
 
@@ -14,8 +13,8 @@ class Master(object):
         self.feeder_configurations = None
         self.timestep = None
         self.times = None
-        self.cymdist_fmu_path = './static/fmu/CYMDIST.fmu'
-        self.griddyn_fmu_path = './static/fmu/griddyn14bus.fmu'
+        self.cymdist_fmu_path = './static/fmus/CYMDIST.fmu'
+        self.griddyn_fmu_path = './static/fmus/griddyn14bus.fmu'
         self.save_to_file = 0
         self.feeder_voltage_reference = None
         self.monitoring = True
@@ -73,6 +72,10 @@ class Master(object):
             self.feeders[-1].set("_saveToFile", self.save_to_file)
 
             # Set configuration file
+            print('#########################')
+            print('Configuration filename: ' + feeder_conf)
+            print(str(feeder_configurations_bytes[-1]))
+            print('#########################')
             ref = self.feeders[-1].get_variable_valueref("_configurationFileName")
             self.feeders[-1].set_string([ref], [feeder_configurations_bytes[-1]])
 
@@ -92,7 +95,7 @@ class Master(object):
         self.transmission = load_fmu(self.griddyn_fmu_path, log_level=7)
 
         # Set up experiment
-        griddyn.setup_experiment(start_time=self.times[0], stop_time=self.times[-1])
+        self.transmission.setup_experiment(start_time=self.times[0], stop_time=self.times[-1])
 
         self.transmission_input_names = ['Bus11_IA', 'Bus11_IB', 'Bus11_IC',
                        'Bus11_IAngleA', 'Bus11_IAngleB', 'Bus11_IAngleC']
@@ -117,6 +120,9 @@ class Master(object):
         # Set the value of the multiplier
         self.transmission.set('multiplier', 3.0)
 
+        # Create holder for output variables
+        self.transmission_result = {name: [] for name in self.transmission_output_names}
+
         # Initialize
         self.transmission.initialize()
 
@@ -128,16 +134,16 @@ class Master(object):
         # Initialize transmission
         self._initialize_transmission_1bus()
 
-        # Initialize monitoring
-        if self.monitoring:
-            monitor = m.Monitor()
+        # # Initialize monitoring
+        # if self.monitoring:
+        #     monitor = m.Monitor()
 
         print('')
         print('Cosimulation in progress...')
         progress = progressbar.ProgressBar(widgets=['progress: ',
                                                     progressbar.Percentage(),
                                                     progressbar.Bar()],
-                                           maxval=len(times)).start()
+                                           maxval=len(self.times)).start()
 
         # Co-simulation loop
         for iteration, time in enumerate(self.times):
@@ -171,9 +177,9 @@ class Master(object):
             for name, value in zip(self.transmission_output_names, output_values):
                 self.transmission_result[name].append(value)
 
-            # Monitor progress
-            if self.monitoring:
-                monitor.update(self)
+            # # Monitor progress
+            # if self.monitoring:
+            #     monitor.update(self)
 
             # Update progress bar
             progress.update(iteration)

@@ -192,7 +192,7 @@ class Tester(unittest.TestCase):
         if not(platform.system().lower() == 'windows'):
             print('CYMDISTToFMU is only supported on Windows.')
             return
-        for tool in ['OpenModelica']:
+        for tool in ['Dymola']:
             if platform.system().lower() == 'windows':
                 fmu_path = os.path.join(
                     script_path, '..', 'fmus', tool, 'windows', 'CYMDIST.fmu')
