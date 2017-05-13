@@ -1,3 +1,9 @@
+# exclude log from fmus
+cosimulation/CYMDIST_log.txt
+cosimulation/fmiGridDynSharedLib_log.txt
+cosimulation/totalResults.csv
+cosimulation/kinsol.out
+
 # exclude everything
 cosimulation/temp/*
 
