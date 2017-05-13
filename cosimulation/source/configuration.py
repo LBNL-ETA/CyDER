@@ -4,6 +4,7 @@ import random
 import string
 import source.ev_forecast.tool as ev
 import source.pv_forecast.tool as pv
+import source.load_forecast.tool as l
 
 
 class FeederConfiguration(object):
@@ -82,19 +83,23 @@ class FeederConfiguration(object):
 
         # --> SET PV
 
-        # Launch ev forecast --> SET LOAD
-        if self.ev_forecast is True:
-            ev_demand = ev.EVForecast()
-            ev_demand.initialize(self)
-            self.configuration = ev_demand.forecast()
-
-        # Launch pv forecast --> Update SET and ADD PV
+        # Launch pv forecast --> Update SET PV
         if self.pv_forecast is True:
             pv_gen = pv.PVForecast()
             pv_gen.initialize(self)
             self.configuration = pv_gen.forecast()
 
-        # Launch load forecast --> Update SET and ADD Load
+        # Launch load forecast --> Update SET LOAD
+        if self.load_forecast is True:
+            load_demand = l.LoadForecast()
+            load_demand.initialize(self)
+            self.configuration = load_demand.forecast()
+
+        # Launch ev forecast --> Update SET LOAD
+        if self.ev_forecast is True:
+            ev_demand = ev.EVForecast()
+            ev_demand.initialize(self)
+            self.configuration = ev_demand.forecast()
 
     def save(self):
         """

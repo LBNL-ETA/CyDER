@@ -17,18 +17,12 @@ class PVForecast(object):
         self.configuration = feeder.configuration
 
     def forecast(self):
-        """Forecast EV demand and return configuration file for CyDER"""
+        """Forecast PV demand and return configuration file for CyDER"""
         # Save normalized generation with the right format
         pv_forecast = self._load_forecast()
 
         # Update the configuration file
         self._update_configuration(pv_forecast)
-
-        # Read pv generation demand and plot
-        (pv_forecast).plot()
-        plt.ylabel('Normalized generation')
-        plt.xlabel('Time')
-        plt.show()
         return self.configuration
 
     def _update_configuration(self, pv_forecast):
