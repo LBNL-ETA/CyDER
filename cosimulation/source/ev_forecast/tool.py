@@ -282,7 +282,7 @@ class EVForecast(object):
     def _update_configuration(self, power_demand):
         """Update configuration file with EV consumption at load"""
         # Open model and list the loads
-        cympy.study.Open(self.feeder.feeder_folder + self.feeder.cyder_input_row.feeder_name)
+        cympy.study.Open(self.feeder.feeder_folder + self.feeder.feeder_name)
         loads = cymdist.list_loads()
 
         # Select loads of interest

@@ -3,6 +3,7 @@ import json
 import random
 import string
 import source.ev_forecast.tool as ev
+import source.pv_forecast.tool as pv
 
 
 class FeederConfiguration(object):
@@ -88,6 +89,10 @@ class FeederConfiguration(object):
             self.configuration = ev_demand.forecast()
 
         # Launch pv forecast --> Update SET and ADD PV
+        if self.pv_forecast is True:
+            pv_gen = pv.PVForecast()
+            pv_gen.initialize(self)
+            self.configuration = pv_gen.forecast()
 
         # Launch load forecast --> Update SET and ADD Load
 
