@@ -6,7 +6,7 @@ except:
     pass
 
 
-def cymdist(configuration_filename, time, input_voltage_names, 
+def cymdist(configuration_filename, time, input_voltage_names,
             input_voltage_values, output_names, input_save_to_file):
     """Communicate with the FMU to launch a Cymdist simulation
 
@@ -17,7 +17,7 @@ def cymdist(configuration_filename, time, input_voltage_names,
         input_voltage_values (Floats): voltage vector values (same length as voltage_names)
         output_names (Strings): vector of name matching CymDIST nomenclature
         input_save_to_file (1 or 0): save all nodes results to a file
-        
+
     Example:
         >>> time = 0
         >>> input_save_to_file = 0
@@ -26,7 +26,7 @@ def cymdist(configuration_filename, time, input_voltage_names,
         >>> configuration_filename = 'config.json'
         >>> output_names = ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']
 
-        >>> cymdist(configuration_filename, time, input_voltage_names, 
+        >>> cymdist(configuration_filename, time, input_voltage_names,
                 input_voltage_values, output_names, input_save_to_file)
     Note:
         config.json file format:
@@ -156,11 +156,10 @@ def cymdist(configuration_filename, time, input_voltage_names,
                 pv['device_number'], 39)
         return True
 
-    def _write_results(input_model_filename):
+    def _write_results(variables, output_filename):
         """Write result to the file system"""
-        # nodes = functions.list_nodes()
-        # nodes = functions.get_voltage(nodes, is_node=True)
-        # nodes.to_csv(input_model_filename + '_result.csv')
+        with open(output_filename, 'w') as f:
+            f.write('Hello world')
         return True
 
     def _output_values(source_node_id, output_names):
@@ -177,9 +176,9 @@ def cymdist(configuration_filename, time, input_voltage_names,
         input_save_to_file = True
     else:
         input_save_to_file = False
-        
+
     model = _read_configuration_file(configuration_filename, time)
-    
+
     # Open the model
     cympy.study.Open(model['filename'])
 
@@ -208,8 +207,8 @@ def cymdist(configuration_filename, time, input_voltage_names,
     lf.Run()
 
     # Write full results?
-    if input_save_to_file:
-        _write_results(model['filename'])
+    if model['save'] not in 'False':
+        _write_results(model['to_save'], model['save'])
 
     # Return the right values
     source_node_id = cympy.study.GetValueTopo("Sources[0].SourceNodeID", networks[0])

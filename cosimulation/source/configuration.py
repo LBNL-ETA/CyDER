@@ -8,6 +8,7 @@ import source.pv_forecast.tool as pv
 import source.load_forecast.tool as l
 import matplotlib.pyplot as plt
 import seaborn
+import os
 seaborn.set_style("whitegrid")
 seaborn.despine()
 
@@ -26,6 +27,8 @@ class FeederConfiguration(object):
         self.token = None
         self.directory = None
         self.cyder_input_row = None
+        self.save = True
+        self.to_save = None
 
         # Configuration processes
         self.ev_forecast = False
@@ -44,14 +47,26 @@ class FeederConfiguration(object):
         self.feeder_name = self.cyder_input_row.feeder_name
         self.timestep = self.cyder_input_row.timestep
         self.start = self.cyder_input_row.start
+
+        # Do you want to save things to the file system?
+        if self.save:
+            self.save = self.directory + self.pk + '/'
+            os.makedirs(self.save)
+        else:
+            self.save = 'False'
+
+        # Upper structure of the configuration file
         configuration = {'times': self.times,
                          'interpolation_method': 'closest_time',
                          'models': []
                          }
 
+        # Configuration file inside of models
         for time in self.times:
             model = {
                'filename': self.feeder_folder + self.feeder_name,
+               'save': self.save + str(time) + '.csv',
+               'to_save': [],
                'new_loads': [],
                'set_loads': [],
                'new_pvs': [],
