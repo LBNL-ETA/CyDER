@@ -27,8 +27,8 @@ class FeederConfiguration(object):
         self.token = None
         self.directory = None
         self.cyder_input_row = None
-        self.save = True
-        self.to_save = None
+        self.save_results = True
+        self.result_to_save = None
 
         # Configuration processes
         self.ev_forecast = False
@@ -49,11 +49,11 @@ class FeederConfiguration(object):
         self.start = self.cyder_input_row.start
 
         # Do you want to save things to the file system?
-        if self.save:
-            self.save = self.directory + self.pk + '/'
-            os.makedirs(self.save)
+        if self.save_results:
+            self.save_results = self.directory + str(self.pk) + '/'
+            os.makedirs(self.save_results)
         else:
-            self.save = 'False'
+            self.save_results = 'False'
 
         # Upper structure of the configuration file
         configuration = {'times': self.times,
@@ -65,7 +65,7 @@ class FeederConfiguration(object):
         for time in self.times:
             model = {
                'filename': self.feeder_folder + self.feeder_name,
-               'save': self.save + str(time) + '.csv',
+               'save': self.save_results + str(time) + '.csv',
                'to_save': [],
                'new_loads': [],
                'set_loads': [],
