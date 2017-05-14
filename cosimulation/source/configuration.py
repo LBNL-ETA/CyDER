@@ -1,11 +1,15 @@
 from __future__ import division
 import json
 import random
+import datetime
 import string
 import source.ev_forecast.tool as ev
 import source.pv_forecast.tool as pv
 import source.load_forecast.tool as l
-
+import matplotlib.pyplot as plt
+import seaborn
+seaborn.set_style("whitegrid")
+seaborn.despine()
 
 class FeederConfiguration(object):
     """Feeder configurations"""
@@ -56,7 +60,7 @@ class FeederConfiguration(object):
             configuration['models'].append(model)
 
         # Initialize step of the calibration process
-        if self.cyder_input_row.ev_forecast is not False:
+        if self.cyder_input_row.ev_forecast:
             self.ev_forecast = True
         if self.cyder_input_row.pv_forecast is not False:
             self.pv_forecast = True
@@ -134,3 +138,30 @@ class FeederConfiguration(object):
         with open(filename, 'w') as outfile:
             json.dump(self.configuration, outfile)
         return filename
+
+    def visualize(self):
+        """Create a plot with the loads and generation from the configuration"""
+        # Create y and x vectors
+        pv = [0] * len(self.configuration['times'])
+        load = [0] * len(self.configuration['times'])
+        dates = [datetime.datetime(2017, 6, 17, 6, 0, 0) +
+                 datetime.timedelta(seconds=value)
+                 for value in self.configuration['times']]
+
+        # Get the y values (generation and load versus time)
+        for index, model in enumerate(self.configuration['models']):
+            for set_load in model['set_loads']:
+                for phase in set_load['active_power']:
+                    load[index] += phase['active_power']
+
+            for set_pv in model['set_pvs']:
+                pv[index] += set_pv['generation']
+
+        # Plot results
+        plt.figure(figsize=(10, 5), dpi=110)
+        plt.plot(dates, load, label='Load demand')
+        plt.plot(dates, pv, label='PV demand')
+        plt.ylabel('Power output in [kW]')
+        plt.xlabel('Time')
+        plt.legend(loc=0)
+        plt.show()

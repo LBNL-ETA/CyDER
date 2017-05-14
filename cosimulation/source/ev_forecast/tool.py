@@ -293,8 +293,10 @@ class EVForecast(object):
         for index, time in enumerate(self.configuration['times']):
             for load, column_name in zip(loads.iterrows(), power_demand.columns.tolist()):
                 _, load = load
-                self.configuration['models'][index]['set_loads'].append({'device_number': load['device_number'],
-                                                                'active_power': []})
+                self.configuration['models'][index]['set_loads'].append(
+                    {'device_number': load['device_number'],
+                     'active_power': [],
+                     'description': 'ev forecast'})
 
                 # Dummy way to count the phases
                 phase_count = 0

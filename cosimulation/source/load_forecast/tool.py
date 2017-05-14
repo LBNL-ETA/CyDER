@@ -2,6 +2,10 @@ from __future__ import division
 import source.cymdist_tool.tool as cymdist
 import datetime
 import pandas
+try:
+    import cympy
+except:
+    pass
 
 
 class LoadForecast(object):
@@ -40,7 +44,8 @@ class LoadForecast(object):
                 _, load = load
                 self.configuration['models'][index]['set_loads'].append(
                     {'device_number': load['device_number'],
-                     'active_power': []})
+                     'active_power': [],
+                     'description': 'load forecast'})
                 for phase_index in ['0', '1', '2']:
                     if load['activepower_' + phase_index]:
                         self.configuration['models'][index]['set_loads'][-1]['active_power'].append(
@@ -53,4 +58,4 @@ class LoadForecast(object):
         """Load forecast from static file directly"""
         # Load prediction from file
         return pandas.read_csv(
-            '/static/load/profile.csv', index_col=0, parse_dates=[0])
+            'static/load/profile.csv', index_col=0, parse_dates=[0])

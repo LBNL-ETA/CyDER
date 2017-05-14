@@ -10,7 +10,7 @@ class Master(object):
 
     def __init__(self):
         # Simulation parameters
-        self.feeder_configurations = None
+        self.feeder_path_to_configurations = None
         self.timestep = None
         self.times = None
         self.cymdist_fmu_path = './static/fmus/CYMDIST.fmu'
@@ -45,7 +45,7 @@ class Master(object):
         self.feeder_result = []
 
         # Loop for each feeder model
-        for feeder_conf in self.feeder_configurations:
+        for feeder_conf in self.feeder_path_to_configurations:
             # Ask Thierry about this??
             feeder_configurations_bytes.append(bytes(feeder_conf, 'utf-8'))
 

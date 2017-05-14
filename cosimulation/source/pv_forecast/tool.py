@@ -2,6 +2,10 @@ from __future__ import division
 import source.cymdist_tool.tool as cymdist
 import datetime
 import pandas
+try:
+    import cympy
+except:
+    pass
 
 
 class PVForecast(object):
@@ -39,10 +43,11 @@ class PVForecast(object):
             for pv in pvs.itertuples():
                 self.configuration['models'][index]['set_pvs'].append(
                     {'device_number': pv.device_number,
-                     'generation': pv.generation * pv_forecast.loc[dt, 'profile']})
+                     'generation': pv.generation * pv_forecast.loc[dt, 'profile'],
+                     'description': 'pv forecast'})
 
     def _load_forecast(self):
         """Load forecast from static file directly"""
         # Load prediction from file
         return pandas.read_csv(
-            '/static/pv/profile.csv', index_col=0, parse_dates=[0])
+            'static/pv/profile.csv', index_col=0, parse_dates=[0])
