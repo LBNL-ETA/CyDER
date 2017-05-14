@@ -6,8 +6,10 @@ import random
 import string
 import argparse
 import datetime as dt
+import matplotlib.pyplot as plt
 import source.configuration as c
 import source.master as m
+import source.monitor
 import os
 
 # Read input file
@@ -63,3 +65,6 @@ master.times = times
 master.timestep = timestep
 master.feeder_voltage_reference = [[2520, 2520, 2520, 0, -120, 120]]
 master.solve()
+
+# Plot under voltage and over loading
+source.monitor.plot_post_simulation(start, config.configuration, directory, 0)

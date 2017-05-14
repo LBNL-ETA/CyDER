@@ -4,6 +4,8 @@ from matplotlib.ticker import FormatStrFormatter
 import matplotlib.pyplot as plt
 import seaborn
 import numpy
+import datetime
+import json
 plt.switch_backend('Qt4Agg')
 seaborn.set_style("whitegrid")
 seaborn.despine()
@@ -79,3 +81,74 @@ class Monitor(object):
         # Update plot
         self.fig.canvas.draw()
         plt.pause(0.01)
+
+
+def format_configuration_to_plot(start, configuration):
+    """Return x and y vectors to plot the configuration"""
+    # Create y and x vectors
+    pv = [0] * len(configuration['times'])
+    load = [0] * len(configuration['times'])
+    dates = [start + datetime.timedelta(seconds=value)
+             for value in configuration['times']]
+
+    # Get the y values (generation and load versus time)
+    for index, model in enumerate(configuration['models']):
+        for set_load in model['set_loads']:
+            for phase in set_load['active_power']:
+                load[index] += phase['active_power']
+
+        for set_pv in model['set_pvs']:
+            pv[index] += set_pv['generation']
+
+    return dates, [{'y': load, 'label': 'Load demand'}, {'y': pv, 'label': 'PV generation'}]
+
+
+def plot_post_simulation(start, configuration, directory, pk):
+    """Plot configuration and some inside data from the feeder models"""
+    # Get data for the configuration plot
+    x, ys = format_configuration_to_plot(start, configuration)
+
+    # Get data for the post simulation plot
+    keys = ['DwOverloadWorstA', 'DwOverloadWorstB', 'DwOverloadWorstC',
+            'DwLowVoltWorstA', 'DwLowVoltWorstB', 'DwLowVoltWorstC']
+    timeseries = {key: [] for key in keys}
+
+    # Loop over all the files
+    for time in configuration['times']:
+        with open(directory + str(pk) + '/' + str(time) + '.json') as f:
+            data = json.load(f)
+        for key in keys:
+            timeseries[key].append(data[key])
+
+    # Create plot
+    fig = plt.figure(figsize=(10, 5), dpi=110)
+    fig.suptitle('Worst Over Loading and Under Voltage on the feeder')
+    ax1 = fig.add_subplot(311)
+    ax2 = fig.add_subplot(312)
+    ax3 = fig.add_subplot(313)
+    ax3.set_ylabel('Worst Over-loading [%]')
+    ax2.set_ylabel('Worst Under-voltage [%]')
+    ax2.set_xlabel('Time')
+
+    # Create lines
+    for y in ys:
+        ax1.plot(x, y['y'], label=y['label'])
+
+    for key in keys[0:3]:
+        ax3.plot(x, timeseries[key], label=key)
+
+    for key in keys[3:6]:
+        ax2.plot(x, timeseries[key], label=key)
+
+    # Add legends and tight layout
+    ax1.legend(loc=0)
+    ax3.legend(loc=0)
+    ax2.legend(loc=0)
+    fig.tight_layout()
+
+    # Adjust plot to leave some space for the title
+    fig.subplots_adjust(top=0.88)
+
+    # Show
+    plt.show()
+    import pdb; pdb.set_trace()

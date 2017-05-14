@@ -156,11 +156,18 @@ def cymdist(configuration_filename, time, input_voltage_names,
                 pv['device_number'], 39)
         return True
 
-    def _write_results(variables, output_filename):
+    def _write_results(source_node_id, output_filename):
         """Write result to the file system"""
+        # Get results
+        result = {}
+        keys = ['DwOverloadWorstA', 'DwOverloadWorstB', 'DwOverloadWorstC',
+                'DwLowVoltWorstA', 'DwLowVoltWorstB', 'DwLowVoltWorstC']
+        for key in keys:
+            result[key] = cympy.study.QueryInfoNode(key, str(source_node_id))
+
+        # Save results
         with open(output_filename, 'w') as f:
-            f.write('Hello world')
-        return True
+            json.dump(result, f)
 
     def _output_values(source_node_id, output_names):
         """Query the right output name at the source node"""
@@ -206,11 +213,11 @@ def cymdist(configuration_filename, time, input_voltage_names,
     lf = cympy.sim.LoadFlow()
     lf.Run()
 
-    # Write full results?
-    if model['save'] not in 'False':
-        _write_results(model['to_save'], model['save'])
-
     # Return the right values
     source_node_id = cympy.study.GetValueTopo("Sources[0].SourceNodeID", networks[0])
     output = _output_values(source_node_id, output_names)
+
+    # Write results?
+    if model['save'] not in 'False':
+        _write_results(source_node_id, model['save'])
     return output

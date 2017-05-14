@@ -6,6 +6,7 @@ import string
 import source.ev_forecast.tool as ev
 import source.pv_forecast.tool as pv
 import source.load_forecast.tool as l
+import source.monitor as m
 import matplotlib.pyplot as plt
 import seaborn
 import os
@@ -65,8 +66,7 @@ class FeederConfiguration(object):
         for time in self.times:
             model = {
                'filename': self.feeder_folder + self.feeder_name,
-               'save': self.save_results + str(time) + '.csv',
-               'to_save': [],
+               'save': self.save_results + str(time) + '.json',
                'new_loads': [],
                'set_loads': [],
                'new_pvs': [],
@@ -156,27 +156,16 @@ class FeederConfiguration(object):
 
     def visualize(self):
         """Create a plot with the loads and generation from the configuration"""
-        # Create y and x vectors
-        pv = [0] * len(self.configuration['times'])
-        load = [0] * len(self.configuration['times'])
-        dates = [datetime.datetime(2017, 6, 17, 6, 0, 0) +
-                 datetime.timedelta(seconds=value)
-                 for value in self.configuration['times']]
-
-        # Get the y values (generation and load versus time)
-        for index, model in enumerate(self.configuration['models']):
-            for set_load in model['set_loads']:
-                for phase in set_load['active_power']:
-                    load[index] += phase['active_power']
-
-            for set_pv in model['set_pvs']:
-                pv[index] += set_pv['generation']
+        # Get data
+        x, data = m.format_configuration_to_plot(self.start, self.configuration)
 
         # Plot results
-        plt.figure(figsize=(10, 5), dpi=110)
-        plt.plot(dates, load, label='Load demand')
-        plt.plot(dates, pv, label='PV demand')
-        plt.ylabel('Power output in [kW]')
-        plt.xlabel('Time')
-        plt.legend(loc=0)
+        fig = plt.figure(figsize=(10, 5), dpi=110)
+        ax1 = fig.add_subplot(111)
+        for value in data:
+            ax1.plot(x, value['y'], label=value['label'])
+        ax1.set_ylabel('Power output in [kW]')
+        ax1.set_xlabel('Time')
+        ax1.legend(loc=0)
         plt.show()
+        plt.close()
