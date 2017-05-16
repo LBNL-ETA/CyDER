@@ -810,7 +810,6 @@ class CYMDISTToFMU(object):
         output_res = template.render(
             model_name=self.model_name,
             scalar_variables=scalar_variables,
-            python_scripts_path=self.python_scripts_path,
             input_variable_names=input_variable_names,
             output_variable_names=output_variable_names,
             parameter_variable_names=parameter_variable_names,
