@@ -278,20 +278,20 @@ void pythonExchangeVariables(const char * moduleName,
 			);
 	}
 
-	/* Convert the arguments*/
-	/* f) Convert double[]*/
-	if (nDblParWri > 0){
-		createPythonArgumentLists(DBL_FLAG, 0, 
-			nDblParWri, NULL, dblValParWri, 
+	/* f) Convert char **, an array of character arrays*/
+	if (nStrParWri > 0){
+		createPythonArgumentLists(STR_FLAG, 
+			nStrParWri, 0, strParWri, NULL, 
 			pModule, pFunc, pArgs, 
 			*ModelicaFormatError
 			);
 	}
-
-	/* g) Convert char **, an array of character arrays*/
-	if (nStrParWri > 0){
-		createPythonArgumentLists(STR_FLAG, 
-			nStrParWri, 0, strParWri, NULL, 
+	
+	/* Convert the arguments*/
+	/* g) Convert double[]*/
+	if (nDblParWri > 0){
+		createPythonArgumentLists(DBL_FLAG, 0, 
+			nDblParWri, NULL, dblValParWri, 
 			pModule, pFunc, pArgs, 
 			*ModelicaFormatError
 			);
