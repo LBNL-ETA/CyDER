@@ -67,9 +67,6 @@ Following requirements must be met hen using CYMDISTToFMU
 | -t                                                 | Modelica compiler. Options are ``dymola`` (Dymola) and ``omc``    |
 |                                                    | (OpenModelica). Default is ``dymola``.                            |
 +----------------------------------------------------+-------------------------------------------------------------------+
-| -n                                                 | Flag to indicate if FMU needs an external execution tool to run.  |
-|                                                    | Options are ``true`` and ``false``. Default is ``true``.          |
-+----------------------------------------------------+-------------------------------------------------------------------+
 
 The main functions of CYMDISTToFMU are
 
@@ -79,14 +76,6 @@ The main functions of CYMDISTToFMU are
  - invoking a Modelica compiler to compile the :term:`Modelica` code as an FMU 
    for model exchange or co-simulation ``1.0`` or ``2.0``.
 
-
-.. note::
-
-  - If option ``<-n>`` is ``true`` then the simulation program/script which will be invoked
-    in the Python scripts provided for option ``<-s>`` must be installed on the target
-    machine where the FMU will be run.
-  - If option ``<-n>`` is ``false`` then the FMU only needs the Python scripts
-    provided for option ``<-s>`` to run.
 
 """
 
@@ -178,12 +167,12 @@ def main():
                                  + '<dymola> for Dymola and'
                                  + ' <omc> for OpenModelica'
                                  + ' Default is <dymola>')
-    cymdist_group.add_argument("-n", "--needs-tool",
-                                 help='Flag to indicate if FMU needs an '
-                                 + 'external execution tool to run. '
-                                 + 'Valid options are '
-                                 + '<true> and <false>.'
-                                 + 'Default is <true>')
+#     simulator_group.add_argument("-n", "--needs-tool",
+#                                  help='Flag to indicate if FMU needs an '
+#                                  + 'external execution tool to run. '
+#                                  + 'Valid options are '
+#                                  + '<true> and <false>.'
+#                                  + 'Default is <false>')
 
     # Parse the arguments
     args = parser.parse_args()
@@ -311,7 +300,12 @@ def main():
     con_path = ''
 
     # Get the need execution
-    needs_tool = args.needs_tool
+    #needs_tool = args.needs_tool
+    # Leave this to eventually avoid having
+    # to add "model_name".scripts to the python path
+    # Currently adding an import statement in the Python
+    # main script will cause the module to fail 
+    needs_tool = 'True'
     # Check if fmi api is none
     if(needs_tool is None):
         log.info(
@@ -344,7 +338,8 @@ def main():
         s = 'Could not print the CYMDIST Modelica model. Error in print_mo().'
         parser.print_help()
         log.error(s)
-        raise ValueError(s)
+        raise ValueError(s)    
+    
     ret_val = -1
     ret_val = CYMDIST.generate_fmu()
     if(ret_val != 0):
@@ -352,6 +347,15 @@ def main():
         parser.print_help()
         log.error(s)
         raise ValueError(s)
+    
+    ret_val = -1
+    ret_val = CYMDIST.create_scripts_folder()
+    if(ret_val != 0):
+        s = 'Could not create the Python scripts folder. Error in create_scripts_folder().'
+        parser.print_help()
+        log.error(s)
+        raise ValueError(s)
+    
     ret_val = -1
     ret_val = CYMDIST.clean_temporary()
     if(ret_val != 0):
@@ -806,7 +810,6 @@ class CYMDISTToFMU(object):
         output_res = template.render(
             model_name=self.model_name,
             scalar_variables=scalar_variables,
-            python_scripts_path=self.python_scripts_path,
             input_variable_names=input_variable_names,
             output_variable_names=output_variable_names,
             parameter_variable_names=parameter_variable_names,
@@ -900,6 +903,41 @@ class CYMDISTToFMU(object):
         s = 'The FMU {!s} is in {!s}.'.format(fmu_name, os.getcwd())
         log.info(s)
 
+        return 0
+    
+    def create_scripts_folder(self):
+        
+        """
+        Create folder which contains the scripts to be 
+        added to the PYTHONPATH of the target machine where 
+        the FMU will be run.
+
+        :return: 0 if success.
+
+        """
+        
+        # Copy all resources file in a directory
+        dir_name = self.model_name +'.scripts'
+        if os.path.exists(dir_name):
+            shutil.rmtree(dir_name)
+        log.info('Create the folder Simulator.scripts with scripts to be added to the PYTHONPATH')
+        os.makedirs(dir_name)
+        for python_script_path in self.python_scripts_path:
+            shutil.copy2(python_script_path, dir_name)
+        fnam = os.path.join(dir_name, "README.txt")
+        fh = open(fnam, "w")
+        readme = 'IMPORTANT:\n\n' + \
+                 'The files contains in this folder must be added to the PYTHONPATH.\n' + \
+                 'This can be done by adding the folder ' + dir_name + ' to the PYTHONPATH.\n\n'
+        fh.write(readme)
+        fh.close()
+        dir_name_zip = dir_name + '.zip'
+        if os.path.exists(dir_name_zip):
+            os.remove(dir_name_zip)
+        zip_fmu(dir_name, includeDirInZip=False)
+        # Delete the folder created
+        shutil.rmtree(dir_name)   
+        
         return 0
 
     def clean_temporary(self):
