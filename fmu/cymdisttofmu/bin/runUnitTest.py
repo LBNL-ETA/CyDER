@@ -192,7 +192,7 @@ class Tester(unittest.TestCase):
         if not(platform.system().lower() == 'windows'):
             print('CYMDISTToFMU is only supported on Windows.')
             return
-        for tool in ['Dymola']:
+        for tool in ['Dymola', 'OpenModelica']:
             if platform.system().lower() == 'windows':
                 fmu_path = os.path.join(
                     script_path, '..', 'fmus', tool, 'windows', 'CYMDIST.fmu')
@@ -210,7 +210,7 @@ class Tester(unittest.TestCase):
             # Path to configuration file
             cymdistr_con_val_str = os.path.abspath('config.json')
             if sys.version_info.major > 2:
-                cymdistr_con_val_str = bytes(cymdist_con_val_str, 'utf-8')
+                cymdistr_con_val_str = bytes(cymdistr_con_val_str, 'utf-8')
 
             cymdist_input_valref=[]
             cymdist_output_valref=[]
@@ -237,7 +237,7 @@ class Tester(unittest.TestCase):
             cymdist_con_val_ref = cymdist.get_variable_valueref('_configurationFileName')
 
             # Set the configuration file
-            cymdist.set_string([cymdist_con_val_ref], [cymdist_con_val_str])
+            cymdist.set_string([cymdist_con_val_ref], [cymdistr_con_val_str])
 
             # Initialize the FMUs
             cymdist.initialize()
