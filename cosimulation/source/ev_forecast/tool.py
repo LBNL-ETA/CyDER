@@ -93,6 +93,10 @@ class EVForecast(object):
 
         # Load occupancy
         dfocc = pandas.read_pickle(row.occupancy_filename)
+        (dfocc.parked).plot()
+        plt.ylabel('Number of vehicles')
+        plt.xlabel('Time')
+        plt.show()
 
         # Initiliaze vehicles
         # 1) Filter - Remove vehicle that don't have work places chargers
