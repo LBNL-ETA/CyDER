@@ -35,6 +35,7 @@ if not os.path.exists(directory):
 
 # Create a configuration file for each feeder
 feeder_path_to_configurations = []
+configurations = []
 for index, row in enumerate(cyder_inputs.itertuples()):
     # Create a feeder configuration
     config = c.FeederConfiguration()
@@ -48,6 +49,7 @@ for index, row in enumerate(cyder_inputs.itertuples()):
     config.configure()
     feeder_path_to_configurations.append(config.save())
     config.visualize()
+    configurations.append(config)
 
 # Create a configuration file for the transmission network
 # -->
@@ -59,12 +61,22 @@ for index, row in enumerate(cyder_inputs.itertuples()):
 # -->
 
 # Launch PyFmi master
-master = m.Master()
+master = m.Master(number_of_feeder=len(feeder_path_to_configurations))
 master.feeder_path_to_configurations = feeder_path_to_configurations
 master.times = times
 master.timestep = timestep
 master.feeder_voltage_reference = [[2520, 2520, 2520, 0, -120, 120]]
+master.monitoring_class = source.monitor.Monitor
+
+# Lines that changes with 2 feeders
+if len(feeder_path_to_configurations) == 2:
+    master.monitoring_class = source.monitor.Monitor2Feeder
+    master.feeder_voltage_reference = [[2520, 2520, 2520, 0, -120, 120],
+                                       [7270, 7270, 7270, 0, -120, 120]]
+    master.griddyn_fmu_path = './static/fmus/14bus2input.fmu'
 master.solve()
 
 # Plot under voltage and over loading
-source.monitor.plot_post_simulation(start, config.configuration, directory, 0)
+for pk in range(0, len(feeder_path_to_configurations)):
+    source.monitor.plot_post_simulation(
+        start, configurations[pk].configuration, directory, pk)

@@ -1,7 +1,9 @@
 from __future__ import division
 import source.cymdist_tool.tool as cymdist
 import datetime
+import progressbar
 import pandas
+import time as s
 try:
     import cympy
 except:
@@ -49,5 +51,15 @@ class PVForecast(object):
     def _load_forecast(self):
         """Load forecast from static file directly"""
         # Load prediction from file
+        progress = progressbar.ProgressBar(widgets=['progress: ',
+                                                    progressbar.Percentage(),
+                                                    progressbar.Bar()],
+                                           maxval=20).start()
+        # Replace below with actual call to Rafael's module
+        # For now place holder (sleep function)
+        for it in range(0, 20):
+            s.sleep(0.2)
+            progress.update(it)
+        progress.finish()
         return pandas.read_csv(
             'static/pv/profile.csv', index_col=0, parse_dates=[0])

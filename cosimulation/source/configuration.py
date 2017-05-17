@@ -8,10 +8,9 @@ import source.pv_forecast.tool as pv
 import source.load_forecast.tool as l
 import source.monitor as m
 import matplotlib.pyplot as plt
-import seaborn
+from matplotlib.dates import DateFormatter
 import os
-seaborn.set_style("whitegrid")
-seaborn.despine()
+
 
 class FeederConfiguration(object):
     """Feeder configurations"""
@@ -104,18 +103,24 @@ class FeederConfiguration(object):
 
         # Launch pv forecast --> Update SET PV
         if self.pv_forecast is True:
+            print('')
+            print('Forecasting PV generation...')
             pv_gen = pv.PVForecast()
             pv_gen.initialize(self)
             self.configuration = pv_gen.forecast()
 
         # Launch load forecast --> Update SET LOAD
         if self.load_forecast is True:
+            print('')
+            print('Forecasting load demand...')
             load_demand = l.LoadForecast()
             load_demand.initialize(self)
             self.configuration = load_demand.forecast()
 
         # Launch ev forecast --> Update SET LOAD
         if self.ev_forecast is True:
+            print('')
+            print('Forecasting EV demand...')
             ev_demand = ev.EVForecast()
             ev_demand.initialize(self)
             self.configuration = ev_demand.forecast()
@@ -164,8 +169,9 @@ class FeederConfiguration(object):
         ax1 = fig.add_subplot(111)
         for value in data:
             ax1.plot(x, value['y'], label=value['label'])
+        formatter = DateFormatter('%H:%M')
+        ax1.xaxis.set_major_formatter(formatter)
         ax1.set_ylabel('Power output in [kW]')
         ax1.set_xlabel('Time')
         ax1.legend(loc=0)
         plt.show()
-        plt.close()

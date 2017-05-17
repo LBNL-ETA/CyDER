@@ -8,7 +8,7 @@ import progressbar
 class Master(object):
     """docstring for Master."""
 
-    def __init__(self):
+    def __init__(self, number_of_feeder):
         # Simulation parameters
         self.feeder_path_to_configurations = None
         self.timestep = None
@@ -18,6 +18,7 @@ class Master(object):
         self.save_to_file = 0
         self.feeder_voltage_reference = None
         self.monitoring = True
+        self.monitoring_class = None
 
         # Simulation variables
         self.feeders = None
@@ -34,7 +35,22 @@ class Master(object):
         self.feeder_output_names = ['IA', 'IB', 'IC', 'IAngleA', 'IAngleB', 'IAngleC']
         self.transmission_input_names = None
         self.transmission_output_names = None
-
+        if number_of_feeder == 1:
+            self.transmission_input_names = ['Bus11_IA', 'Bus11_IB', 'Bus11_IC',
+                           'Bus11_IAngleA', 'Bus11_IAngleB', 'Bus11_IAngleC']
+            self.transmission_output_names = ['Bus11_VA', 'Bus11_VB', 'Bus11_VC',
+                    'Bus11_VAngleA', 'Bus11_VAngleB', 'Bus11_VAngleC']
+            self.multiplier = ['multiplier']
+        elif number_of_feeder == 2:
+            self.transmission_input_names = ['Bus10_IA', 'Bus10_IB', 'Bus10_IC',
+                                   'Bus10_IAngleA', 'Bus10_IAngleB', 'Bus10_IAngleC',
+                                   'Bus11_IA', 'Bus11_IB', 'Bus11_IC',
+                                   'Bus11_IAngleA', 'Bus11_IAngleB', 'Bus11_IAngleC']
+            self.transmission_output_names = ['Bus10_VA', 'Bus10_VB', 'Bus10_VC',
+                                    'Bus10_VAngleA', 'Bus10_VAngleB', 'Bus10_VAngleC',
+                                    'Bus11_VA', 'Bus11_VB', 'Bus11_VC',
+                                    'Bus11_VAngleA', 'Bus11_VAngleB', 'Bus11_VAngleC']
+            self.multiplier = ['multiplier10', 'multiplier11']
     def _initialize_feeders(self):
         """Initiliaze feeders"""
         # Initiliaze parameters
@@ -85,18 +101,13 @@ class Master(object):
             # Create holder for output variables
             self.feeder_result.append({name: [] for name in self.feeder_output_names})
 
-    def _initialize_transmission_1bus(self):
+    def _initialize_transmission(self):
         """Initialize transmission"""
         # Load GridDyn Fmu
         self.transmission = load_fmu(self.griddyn_fmu_path, log_level=7)
 
         # Set up experiment
         self.transmission.setup_experiment(start_time=self.times[0], stop_time=self.times[-1])
-
-        self.transmission_input_names = ['Bus11_IA', 'Bus11_IB', 'Bus11_IC',
-                       'Bus11_IAngleA', 'Bus11_IAngleB', 'Bus11_IAngleC']
-        self.transmission_output_names = ['Bus11_VA', 'Bus11_VB', 'Bus11_VC',
-                'Bus11_VAngleA', 'Bus11_VAngleB', 'Bus11_VAngleC']
 
         # Create holders for the value reference
         self.transmission_input_valref = []
@@ -114,7 +125,8 @@ class Master(object):
 
 
         # Set the value of the multiplier
-        self.transmission.set('multiplier', 3.0)
+        for multiplier in self.multiplier:
+            self.transmission.set(multiplier, 3.0)
 
         # Create holder for output variables
         self.transmission_result = {name: [] for name in self.transmission_output_names}
@@ -128,11 +140,11 @@ class Master(object):
         self._initialize_feeders()
 
         # Initialize transmission
-        self._initialize_transmission_1bus()
+        self._initialize_transmission()
 
         # Initialize monitoring
         if self.monitoring:
-            monitor = m.Monitor()
+            monitor = self.monitoring_class()
 
         print('')
         print('Cosimulation in progress...')
@@ -153,7 +165,7 @@ class Master(object):
 
                 # Save feeder results
                 output_values = list(
-                    self.feeders[index].get_real(self.feeder_output_valref))
+                    self.feeders[index].get_real(self.feeder_output_valref[index]))
                 for name, value in zip(self.feeder_output_names, output_values):
                     self.feeder_result[index][name].append(value)
 
