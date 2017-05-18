@@ -2,6 +2,7 @@ from __future__ import division
 import json
 import random
 import datetime
+import pandas
 import string
 import source.ev_forecast.tool as ev
 import source.pv_forecast.tool as pv
@@ -31,13 +32,13 @@ class FeederConfiguration(object):
         self.result_to_save = None
 
         # Configuration processes
-        self.ev_forecast = False
-        self.pv_forecast = False
-        self.load_forecast = False
-        self.set_load = False
-        self.set_pv = False
-        self.add_load = False
-        self.add_pv = False
+        self.do_ev_forecast = False
+        self.do_pv_forecast = False
+        self.do_load_forecast = False
+        self.do_set_load = False
+        self.do_set_pv = False
+        self.do_add_load = False
+        self.do_add_pv = False
 
         # Configuration
         self.configuration = None
@@ -75,17 +76,17 @@ class FeederConfiguration(object):
 
         # Initialize step of the calibration process
         if self.cyder_input_row.ev_forecast:
-            self.ev_forecast = True
+            self.do_ev_forecast = True
         if self.cyder_input_row.pv_forecast is not False:
-            self.pv_forecast = True
-        if self.cyder_input_row.add_load is not False:
-            self.add_load = True
-            self.set_load = True
-        if self.cyder_input_row.add_pv is not False:
-            self.add_pv = True
-            self.set_pv = True
+            self.do_pv_forecast = True
+        if self.cyder_input_row.add_load:
+            self.do_add_load = True
+            self.do_set_load = True
+        if self.cyder_input_row.add_pv:
+            self.do_add_pv = True
+            self.do_set_pv = True
         if self.cyder_input_row.load_forecast is not False:
-            self.load_forecast = True
+            self.do_load_forecast = True
         return configuration
 
     def configure(self):
@@ -93,37 +94,110 @@ class FeederConfiguration(object):
         # Create empty template
         self.configuration = self._initialize()
 
-        # --> ADD LOAD
-
-        # --> ADD PV
-
-        # --> SET LOAD
-
-        # --> SET PV
-
         # Launch pv forecast --> Update SET PV
-        if self.pv_forecast is True:
+        if self.do_pv_forecast is True:
             print('')
             print('Forecasting PV generation...')
             pv_gen = pv.PVForecast()
             pv_gen.initialize(self)
-            self.configuration = pv_gen.forecast()
+            pv_profile, self.configuration = pv_gen.forecast()
 
         # Launch load forecast --> Update SET LOAD
-        if self.load_forecast is True:
+        if self.do_load_forecast is True:
             print('')
             print('Forecasting load demand...')
             load_demand = l.LoadForecast()
             load_demand.initialize(self)
-            self.configuration = load_demand.forecast()
+            load_profile, self.configuration = load_demand.forecast()
 
         # Launch ev forecast --> Update SET LOAD
-        if self.ev_forecast is True:
+        if self.do_ev_forecast is True:
             print('')
             print('Forecasting EV demand...')
             ev_demand = ev.EVForecast()
             ev_demand.initialize(self)
             self.configuration = ev_demand.forecast()
+
+        # Update configuration with additional loads--> SET LOAD
+        if self.do_set_load:
+            self.set_load(load_profile)
+
+        # Update configuration with additional pvs --> SET PV
+        if self.do_set_pv:
+            self.set_pv(pv_profile)
+
+    def set_load(self, load_profile):
+        """Set load in the configuration file using existing set points"""
+        # Read input file
+        set_load_input = pandas.read_excel(self.cyder_input_row.add_load)
+
+        # GET FIRST TIME load FORECAST <----
+        start = load_profile.index[0]
+
+        # For times in the simulation
+        for index, time in enumerate(self.configuration['times']):
+
+            # Current time in date format
+            dt = start + datetime.timedelta(seconds=time)
+
+            # For rows in input file
+            for row in set_load_input.itertuples():
+                found_device_in_configuration = False
+
+                # Look in the configuration file for existing set point
+                for index2, device in enumerate(self.configuration['models'][index]['set_loads']):
+                    if device['device_number'] == str(row.device_number):
+
+                        # Count phases index
+                        phase_count = len(self.configuration['models'][index]['set_loads'][index2]['active_power'])
+
+                        # Add the additional power demand at the device
+                        for index3, phase in enumerate(self.configuration['models'][index]['set_loads'][index2]['active_power']):
+                            # additional
+                            temp = row.added_power_kw * load_profile.loc[dt, 'profile'] / phase_count
+                            self.configuration['models'][index]['set_loads'][index2]['active_power'][index3]['active_power'] += temp
+
+                        # Go to the next device in the input file
+                        found_device_in_configuration = True
+                        break
+
+                # If device not found we could add an entry
+                if not found_device_in_configuration:
+                    raise Exception('Setting load with an unauthorized device number')
+
+    def set_pv(self, pv_profile):
+        """Set load in the configuration file using existing set points"""
+        # Read input file
+        set_pv_input = pandas.read_excel(self.cyder_input_row.add_pv)
+
+        # GET FIRST TIME load FORECAST <----
+        start = pv_profile.index[0]
+
+        # For times in the simulation
+        for index, time in enumerate(self.configuration['times']):
+
+            # Current time in date format
+            dt = start + datetime.timedelta(seconds=time)
+
+            # For rows in input file
+            for row in set_pv_input.itertuples():
+                found_device_in_configuration = False
+
+                # Look in the configuration file for existing set point
+                for index2, device in enumerate(self.configuration['models'][index]['set_pvs']):
+                    if device['device_number'] == str(row.device_number):
+
+                        # Additional generation
+                        temp = row.added_power_kw * pv_profile.loc[dt, 'profile']
+                        self.configuration['models'][index]['set_pvs'][index2]['generation'] += temp
+
+                        # Go to the next device in the input file
+                        found_device_in_configuration = True
+                        break
+
+                # If device not found we could add an entry
+                if not found_device_in_configuration:
+                    raise Exception('Setting load with an unauthorized device number')
 
     def save(self):
         """

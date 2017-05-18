@@ -160,7 +160,8 @@ def cymdist(configuration_filename, time, input_voltage_names,
         """Write result to the file system"""
         # Get results
         result = {}
-        keys = ['DwLowVoltWorstA', 'DwLowVoltWorstB', 'DwLowVoltWorstC']
+        keys = ['DwLowVoltWorstA', 'DwLowVoltWorstB', 'DwLowVoltWorstC',
+                'DwHighVoltWorstA', 'DwHighVoltWorstB', 'DwHighVoltWorstC']
         for key in keys:
             result[key] = cympy.study.QueryInfoNode(key, str(source_node_id))
 

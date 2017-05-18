@@ -27,7 +27,7 @@ class LoadForecast(object):
 
         # Update the configuration file
         self._update_configuration(load_forecast)
-        return self.configuration
+        return load_forecast, self.configuration
 
     def _update_configuration(self, load_forecast):
         """Update all pvs within feeder with the pv_forecast timeserie"""

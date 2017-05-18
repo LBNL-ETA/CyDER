@@ -113,7 +113,8 @@ def plot_post_simulation(start, configuration, directory, pk):
     x, ys = format_configuration_to_plot(start, configuration)
 
     # Get data for the post simulation plot
-    keys = ['DwLowVoltWorstA', 'DwLowVoltWorstB', 'DwLowVoltWorstC']
+    keys = ['DwLowVoltWorstA', 'DwLowVoltWorstB', 'DwLowVoltWorstC',
+            'DwHighVoltWorstA', 'DwHighVoltWorstB', 'DwHighVoltWorstC']
     timeseries = {key: [] for key in keys}
 
     # Loop over all the files
@@ -124,27 +125,34 @@ def plot_post_simulation(start, configuration, directory, pk):
             timeseries[key].append(data[key])
 
     # Create plot
-    fig = plt.figure(figsize=(10, 10), dpi=95)
+    fig = plt.figure(figsize=(10, 10), dpi=105)
     fig.suptitle('Under Voltage on the feeder')
-    ax1 = fig.add_subplot(211)
-    ax2 = fig.add_subplot(212)
+    ax1 = fig.add_subplot(311)
+    ax2 = fig.add_subplot(312)
+    ax3 = fig.add_subplot(313)
     formatter = DateFormatter('%H:%M')
     ax1.xaxis.set_major_formatter(formatter)
     ax2.xaxis.set_major_formatter(formatter)
+    ax3.xaxis.set_major_formatter(formatter)
     ax1.set_ylabel('Input scenario [kW]')
     ax2.set_ylabel('Worst Under-voltage [%]')
-    ax2.set_xlabel('Time')
+    ax3.set_ylabel('Worst Over-voltage [%]')
+    ax3.set_xlabel('Time')
 
     # Create lines
     for y in ys:
         ax1.plot(x, y['y'], label=y['label'])
 
-    for key in keys:
+    for key in keys[0:3]:
         ax2.plot(x, timeseries[key], label=key)
+
+    for key in keys[3:6]:
+        ax3.plot(x, timeseries[key], label=key)
 
     # Add legends and tight layout
     ax1.legend(loc=0)
     ax2.legend(loc=0)
+    ax3.legend(loc=0)
     fig.tight_layout()
 
     # Adjust plot to leave some space for the title
@@ -154,6 +162,9 @@ def plot_post_simulation(start, configuration, directory, pk):
     plt.show()
     plt.pause(1)
     import pdb; pdb.set_trace()
+
+    # Save to the result folder
+    fig.savefig(directory + str(pk) + '/' + 'result.png', bbox_inches='tight')
 
 
 class Monitor2Feeder(object):
