@@ -36,7 +36,7 @@ class LoadForecast(object):
         loads = cymdist.list_loads()
 
         # GET FIRST TIME PV FORECAST <----
-        start = load_forecast.index[0]
+        start = datetime.datetime(2014, 2, 1, 6, 0, 0)
 
         for index, time in enumerate(self.configuration['times']):
             dt = start + datetime.timedelta(seconds=time)

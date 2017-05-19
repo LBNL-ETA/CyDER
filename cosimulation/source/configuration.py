@@ -132,7 +132,7 @@ class FeederConfiguration(object):
         set_load_input = pandas.read_excel(self.cyder_input_row.add_load)
 
         # GET FIRST TIME load FORECAST <----
-        start = load_profile.index[0]
+        start = datetime.datetime(2014, 2, 1, 6, 0, 0)
 
         # For times in the simulation
         for index, time in enumerate(self.configuration['times']):
