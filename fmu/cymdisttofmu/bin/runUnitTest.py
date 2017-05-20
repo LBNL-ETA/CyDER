@@ -200,77 +200,78 @@ class Tester(unittest.TestCase):
                 start_time = 0.0
                 stop_time = 5.0
     
-            print ('Starting the simulation')
-            start = datetime.now()
-            # Path to configuration file
-            cymdistr_con_val_str = os.path.abspath('config.json')
-            if sys.version_info.major > 2:
-                cymdistr_con_val_str = bytes(cymdistr_con_val_str, 'utf-8')
-
-                cymdist_input_valref=[]
-                cymdist_output_valref=[]
+                print ('Starting the simulation with tool={!s}'. format(tool))
+                start = datetime.now()
+                # Path to configuration file
+                cymdist_con_val_str = os.path.abspath('config.json')
+                if sys.version_info.major > 2:
+                    cymdist_con_val_str = bytes(cymdist_con_val_str, 'utf-8')
     
-                cymdist = load_fmu(fmu_path, log_level=7)
-                cymdist.setup_experiment(start_time=start_time, stop_time=stop_time)
-    
-                # Define the inputs
-                cymdist_input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
-                cymdist_input_values = [2520, 2520, 2520, 0, -120, 120]
-                cymdist_output_names = ['IA', 'IB', 'IC', 'IAngleA', 'IAngleB', 'IAngleC']
-    
-                # Get the value references of cymdist inputs
-                for elem in cymdist_input_names:
-                    cymdist_input_valref.append(cymdist.get_variable_valueref(elem))
-    
-                # Get the value references of cymdist outputs
-                for elem in cymdist_output_names:
-                    cymdist_output_valref.append(cymdist.get_variable_valueref(elem))
-    
-                # Set the flag to save the results
-                cymdist.set("_saveToFile", 0)
-                # Get value reference of the configuration file
-                cymdist_con_val_ref = cymdist.get_variable_valueref('_configurationFileName')
-    
-                # Set the configuration file
-                # Setting strings failed in JModelica. This seems to be a bug
-                # since JModelica sets the variability of models which contain
-                # a string parameter to constant. Consequently the FMU cannot
-                # be modified at runtime. The workaround will be to pass the
-                # path to the configuration file when invoking SimulatorToFMU so
-                # it has the configuration file in its resource folders.
-                if not (tool=='JModelica'):
-                    simulator.set_string(
-                        [simulator_con_val_ref],
-                        [simulator_con_val_str])
-    
-                # Initialize the FMUs
-                cymdist.initialize()
-    
-                # Call event update prior to entering continuous mode.
-                cymdist.event_update()
-    
-                # Enter continuous time mode
-                cymdist.enter_continuous_time_mode()
-    
-                # set inputs
-                cymdist.set_real(cymdist_input_valref, cymdist_input_values)
-                print("This is the result of the angle IAngleA: "
-                      + str(cymdist.get_real(cymdist.get_variable_valueref('IAngleA'))))
-    
-                # Terminate FMUs
-                cymdist.terminate()
-                end = datetime.now()
-    
-                print(
-                    'Ran a single CYMDIST simulation with {!s} FMU={!s} in {!s} seconds.'.format(
-                        tool, fmu_path, (end - start).total_seconds()))
-                if not(tool == 'OpenModelica'):
-                    # PyFMI fails to get the output of an OpenModelica FMU.
-                    self.assertEqual(
-                        cymdist.get_real(
-                            cymdist.get_variable_valueref('IAngleA')),
-                        -13.7,
-                        'Values are not matching.')
+                    cymdist_input_valref=[]
+                    cymdist_output_valref=[]
+        
+                    cymdist = load_fmu(fmu_path, log_level=7)
+                    cymdist.setup_experiment(start_time=start_time, stop_time=stop_time)
+        
+                    # Define the inputs
+                    cymdist_input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
+                    cymdist_input_values = [2520, 2520, 2520, 0, -120, 120]
+                    cymdist_output_names = ['IA', 'IB', 'IC', 'IAngleA', 'IAngleB', 'IAngleC']
+        
+                    # Get the value references of cymdist inputs
+                    for elem in cymdist_input_names:
+                        cymdist_input_valref.append(cymdist.get_variable_valueref(elem))
+        
+                    # Get the value references of cymdist outputs
+                    for elem in cymdist_output_names:
+                        cymdist_output_valref.append(cymdist.get_variable_valueref(elem))
+        
+                    # Set the flag to save the results
+                    cymdist.set("_saveToFile", 0)
+                    # Get value reference of the configuration file
+                    cymdist_con_val_ref = cymdist.get_variable_valueref('_configurationFileName')
+        
+                    # Set the configuration file
+                    # Setting strings failed in JModelica. This seems to be a bug
+                    # since JModelica sets the variability of models which contain
+                    # a string parameter to constant. Consequently the FMU cannot
+                    # be modified at runtime. The workaround will be to pass the
+                    # path to the configuration file when invoking SimulatorToFMU so
+                    # it has the configuration file in its resource folders.
+                    if not (tool=='JModelica'):
+                        cymdist.set_string(
+                            [cymdist_con_val_ref],
+                            [cymdist_con_val_str])
+        
+                    # Initialize the FMUs
+                    cymdist.initialize()
+        
+                    # Call event update prior to entering continuous mode.
+                    cymdist.event_update()
+        
+                    # Enter continuous time mode
+                    cymdist.enter_continuous_time_mode()
+        
+                    # set inputs
+                    cymdist.set_real(cymdist_input_valref, cymdist_input_values)
+                    print("This is the result of the angle IAngleA: "
+                          + str(cymdist.get_real(cymdist.get_variable_valueref('IAngleA'))))
+        
+                    end = datetime.now()
+        
+                    print(
+                        'Ran a single CYMDIST simulation with {!s} FMU={!s} in {!s} seconds.'.format(
+                            tool, fmu_path, (end - start).total_seconds()))
+                    if not(tool == 'OpenModelica'):
+                        # PyFMI fails to get the output of an OpenModelica FMU.
+                        self.assertEqual(
+                            cymdist.get_real(
+                                cymdist.get_variable_valueref('IAngleA')),
+                            -13.7,
+                            'Values are not matching.')
+                    
+                    # Terminate FMUs
+                    cymdist.terminate()
         else:
             print('The unit tests for simulating FMUs only run on Windows')
                     
