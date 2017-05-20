@@ -14,8 +14,6 @@ function cymdist "Function that communicates with the CYMDISTToFMU Python API"
   input Integer nDblOut(min=0) "Number of double outputs to read from CYMDISTToFMU";
   input Integer nDblPar(min=0) "Number of double parameters to send to CYMDISTToFMU";
   input Real    resWri[1]  "Flag for enabling results writing. 1: write results, 0: else";
-//   input Integer strLenRea(min=0)
-//     "Maximum length of each string that is read. If exceeded, the simulation stops with an error";
   output Real    dblOutVal[max(1, nDblOut)] "Double output values read from CYMDISTToFMU";
   external "C" modelicaToCYMDIST(moduleName,
                                     functionName,
@@ -32,8 +30,8 @@ function cymdist "Function that communicates with the CYMDISTToFMU Python API"
                                     dblParVal,
                                     resWri)
     annotation (Library={"CYMDISTToFMUPython34", "python34"},
-      LibraryDirectory={"modelica://CYMDISTToFMU.Resources/Library"},
-      IncludeDirectory="modelica://CYMDISTToFMU.Resources/C-Sources",
+      LibraryDirectory={"modelica://CYMDISTToFMU/Resources/Library"},
+      IncludeDirectory="modelica://CYMDISTToFMU/Resources/C-Sources",
       Include="#include \"pythonWrapper.c\"");
   annotation (Documentation(info="<html>
 <p>
