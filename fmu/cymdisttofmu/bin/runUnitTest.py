@@ -126,65 +126,66 @@ class Tester(unittest.TestCase):
         # Testing function to print Modelica model.
         CYMDIST_T.print_mo()
 
-    @unittest.skip("Export CYMDIST using multiple options.")
+    #@unittest.skip("Export CYMDIST using multiple options.")
     def test_cymdist_to_fmu(self):
         '''
         Test the export of an FMU with various options.
 
         '''
-        if platform.system().lower() == 'windows':
-            for tool in ['dymola', 'jmodelica', 'omc']:
-                if tool == 'omc':
-                    modPat = 'OPENMODELICALIBRARY'
-                    mosT = MOS_TEMPLATE_PATH_OPENMODELICA
-                elif tool == 'dymola':
-                    modPat = 'MODELICAPATH'
-                    mosT = MOS_TEMPLATE_PATH_DYMOLA
-                elif tool == 'jmodelica':
-                    modPat = None
-                    mosT = MOS_TEMPLATE_PATH_JMODELICA
-                for version in ['1', '2']:
-                    if (tool == 'omc' or tool == 'jmodelica'):
-                        version = str(float(version))
-                    for api in ['me']:
-                        if (tool == 'omc' and version == '1.0' and api == 'cs'):
-                            print (
-                                'tool={!s} with FMI version={!s} and FMI API={!s} is not supported.'.format(
-                                    tool, version, api))
+
+        for tool in ['omc', 'jmodelica', 'dymola']:
+            if (platform.system().lower() == 'linux' and tool == 'omc'):
+                print ('tool={!s} is not supported on Linux.'.format(tool))
+                continue
+            if tool == 'omc':
+                modPat = 'OPENMODELICALIBRARY'
+                mosT = MOS_TEMPLATE_PATH_OPENMODELICA
+            elif tool == 'dymola':
+                modPat = 'MODELICAPATH'
+                mosT = MOS_TEMPLATE_PATH_DYMOLA
+            elif tool == 'jmodelica':
+                modPat = None
+                mosT = MOS_TEMPLATE_PATH_JMODELICA
+            for version in ['1', '2']:
+                if (tool == 'omc' or tool == 'jmodelica'):
+                    version = str(float(version))
+                for api in ['me', 'cs']:
+                    if (tool == 'omc' and version == '1.0' and api == 'cs'):
+                        print (
+                            'tool={!s} with FMI version={!s} and FMI API={!s} is not supported.'.format(
+                                tool, version, api))
+                        continue
+                    for cs_xml in ['false', 'true']:
+                        if (version == '1'):
                             continue
-                        for cs_xml in ['false', 'true']:
-                            if (version == '1'):
-                                continue
-                            CYMDIST_Test = cymdist.CYMDISTToFMU(
-                                'con_path',
-                                XML_INPUT_FILE,
-                                CYMDISTToFMU_LIB_PATH,
-                                MO_TEMPLATE_PATH,
-                                mosT,
-                                XSD_FILE_PATH,
-                                '34',
-                                python_scripts_path,
-                                version,
-                                api,
-                                tool,
-                                None,
-                                modPat,
-                                cs_xml)
-    
-                            print (
-                                'Export the cymdist with tool={!s}, FMI version={!s}, FMI API={!s}'.format(
-                                    tool, version, api))
-                            start = datetime.now()
-                            CYMDIST_Test.print_mo()
-                            CYMDIST_Test.generate_fmu()
-                            CYMDIST_Test.clean_temporary()
-                            CYMDIST_Test.rewrite_fmu()
-                            end = datetime.now()
-                            print(
-                                'Export CYMDIST as an FMU in {!s} seconds.'.format(
-                                    (end - start).total_seconds()))
-        else:
-            print('The unit tests for exporting FMUs only run on Windows')
+                        CYMDIST_Test = cymdist.CYMDISTToFMU(
+                            'con_path',
+                            XML_INPUT_FILE,
+                            CYMDISTToFMU_LIB_PATH,
+                            MO_TEMPLATE_PATH,
+                            mosT,
+                            XSD_FILE_PATH,
+                            '35',
+                            python_scripts_path,
+                            version,
+                            api,
+                            tool,
+                            None,
+                            modPat,
+                            cs_xml)
+
+                        print (
+                            'Export CYMDIST with tool={!s}, FMI version={!s}, FMI API={!s}'.format(
+                                tool, version, api))
+                        start = datetime.now()
+                        CYMDIST_Test.print_mo()
+                        CYMDIST_Test.generate_fmu()
+                        CYMDIST_Test.clean_temporary()
+                        CYMDIST_Test.rewrite_fmu()
+                        end = datetime.now()
+                        print(
+                            'Export CYMDIST as an FMU in {!s} seconds.'.format(
+                                (end - start).total_seconds()))
 
     #@unittest.skip("Run the FMU using PyFMI")
     def test_run_cymdist_fmu(self):
