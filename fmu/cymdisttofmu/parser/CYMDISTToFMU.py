@@ -78,16 +78,16 @@ The main functions of CYMDISTToFMU are
  - invoking a Modelica compiler to compile the :term:`Modelica` code as an FMU 
    for model exchange or co-simulation ``1.0`` or ``2.0``.
 
-The next section discusses requirements onf some of the arguments of CYMDISTToFMU
+The next section discusses requirements of some of the arguments of CYMDISTToFMU
 
 Simulation model or configuration file 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 An FMU exported by CYMDISTToFMU requires a configuration file to run.
-There are two ways of providing the configuration file to the FMU
+There are two ways of providing the configuration file to the FMU:
 
-  1. The path to the configuration file can be passed as argument ``"<-c>"`` 
-     to CYMDISTToFMU. In this situation, the configuration file is copied 
+  1. The path to the configuration file is passed as the comamnd line argument ``"<-c>"`` 
+     of CYMDISTToFMU.py. In this situation, the configuration file is copied 
      in the resources folder of the FMU.
   2. The path to the configuration is set by the master algorithm before initializing the FMU.
      
@@ -103,7 +103,7 @@ Depending on the tool used to export the FMU, following requirements/restriction
 Dymola
 ******
 
-- If the path to a configuration file is provided,  then
+- If the path to the configuration file is provided,  then
   Dymola copies the file to its resources folder and uses the configuration file at runtime.
   In this case, the path to the configuration file can't be set and changed by the master algorithm. 
 
@@ -113,12 +113,12 @@ Dymola
 JModelica
 *********
 
-- If the path to a configuration file is provided,  then
+- If the path to the configuration file is provided,  then
   JModelica will not copy it to the resources folder of the FMU. 
   Instead, the path to the configuration is hard-coded in the FMU. 
-  In this case, the path to the configuration file can't be set and changed by the master algorithm. 
+  As a further restriction, the path to the configuration file can't be set and changed by the master algorithm. 
  
-  This is a limitation in JModelica 2.0 which is currently investigated by the JModelica team.
+  These are known limitations in JModelica 2.0.
   The workaround is to make sure that the path of the configuration file is 
   the same on the machine where the FMU will be run.
   
@@ -131,11 +131,11 @@ OpenModelica
 - If the path to a configuration file is provided,  then
   OpenModelica will not copy it to the resources folder of the FMU. 
   Instead, the path to the configuration is hard-coded in the FMU. 
-  In this case, the path to the configuration file can be set and changed by the master algorithm. 
+  However, the path to the configuration file can be set and changed by the master algorithm. 
 
-  This is a limitation in OpenModelica 1.11.0 which is currently investigated by the OpenModelica team.
+  This is a known limitation in OpenModelica 1.11.0.
   The workaround is to either make sure that the path of the configuration file is 
-  the same on the machine where the FMU will be run or set the path of the configuration 
+  the same on the machine where the FMU will be run, or set the path of the configuration file
   when running the FMU.
   
 - If the configuration file is not provided, then the path to the configuration file must 
@@ -147,11 +147,11 @@ Reserved variable names
 
 Following variables names are not allowed to be used as FMU input, output, or parameter names.
 
-- ``_configurationFileName``: Variable name used to set the path to a simulation model or configuration file
-- ``_saveToFile``: Variable used to set the flag for storing simulation results or not (1 for storing, 0 else)
+- ``_configurationFileName``: Variable name used to set the path to the CYMDIST configuration file.
+- ``_saveToFile``: Variable used to set the flag for storing simulation results (1 for storing, 0 else).
 - ``time``: Internal FMU simulation time.
 
-If any of these variables is used for an FMU input or output name, CYMDISTToFMu will exit with an error.
+If any of these variables is used for an FMU input or output name, CYMDISTToFMU will exit with an error.
 
 
 """

@@ -23,7 +23,7 @@ The following snippet shows an input file where the user defines 6 input and 6 o
 To create such an input file, the user needs to specify the name of the FMU (Line 5). 
 This is the ``modelName`` which should be unique.
 The user then needs to define the inputs and outputs of the FMUs. 
-This is done by adding ``ScalarVariable`` into the list of ``ModelVariables``.
+This is done by adding a ``ScalarVariable`` into the list of ``ModelVariables``.
 
 To parametrize the ``ScalarVariable`` as an input variable, the user needs to
 

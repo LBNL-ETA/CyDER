@@ -5,7 +5,7 @@
 Installation and Configuration
 ==============================
 
-This chapter describes how to install, configure and uninstall CYMDISTToFMU.
+This chapter describes how to install, configure, and uninstall CYMDISTToFMU.
 
 
 Software requirements
@@ -77,7 +77,7 @@ To install CYMDISTToFMU, proceed as follows:
    to the executables to CYMDISTToFMU.py. See :ref:`build_cmd` for the lists of arguments 
    of CYMDISTToFMU.
 
-2. To install CYMDISTToFMU, run 
+2. Install CYMDISTToFMU by running 
 
   .. code-block:: none
 
@@ -86,10 +86,10 @@ To install CYMDISTToFMU, proceed as follows:
   The installation directory should contain the following subdirectories:
 
     - ``bin/``
-      (Python scripts for running unit tests)
+      (Scripts for running unit tests)
 
     - ``doc/``
-      (Documentation)
+      (Documentation sources)
 
     - ``fmus/``
       (FMUs folder)
