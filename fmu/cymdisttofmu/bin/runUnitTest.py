@@ -236,7 +236,7 @@ class Tester(unittest.TestCase):
                     # since JModelica sets the variability of models which contain
                     # a string parameter to constant. Consequently the FMU cannot
                     # be modified at runtime. The workaround will be to pass the
-                    # path to the configuration file when invoking SimulatorToFMU so
+                    # path to the configuration file when invoking CYMDISTToFMU so
                     # it has the configuration file in its resource folders.
                     if not (tool=='JModelica'):
                         cymdist.set_string(
@@ -272,6 +272,84 @@ class Tester(unittest.TestCase):
                     
                     # Terminate FMUs
                     cymdist.terminate()
+        else:
+            print('The unit tests for simulating FMUs only run on Windows')
+            
+
+    #@unittest.skip("Export CYMDIST using multiple options.")
+    def test_updates_fmu(self):
+        '''
+        Test the export and updates of FMUs.
+
+        '''
+
+        # The order matters. If Dymola is executed before JModelica
+        # then the script will fail. Maybe Dymola sets some environment
+        # variables which are used by JModelica.
+        
+        if platform.system().lower() == 'windows':
+            for tool in ['omc', 'jmodelica', 'dymola', ]:
+                if tool == 'omc':
+                    modPat = 'OPENMODELICALIBRARY'
+                    mosT = MOS_TEMPLATE_PATH_OPENMODELICA
+                elif tool == 'dymola':
+                    modPat = 'MODELICAPATH'
+                    mosT = MOS_TEMPLATE_PATH_DYMOLA
+                elif tool == 'jmodelica':
+                    modPat = None
+                    mosT = MOS_TEMPLATE_PATH_JMODELICA
+                for version in ['2']:
+                    if (tool == 'omc' or tool == 'jmodelica'):
+                        version = str(float(version))
+                    for api in ['me']:
+                        if (tool == 'omc' and version == '1.0' and api == 'cs'):
+                            print (
+                                'tool={!s} with FMI version={!s} and FMI API={!s} is not supported.'.format(
+                                    tool, version, api))
+                            continue
+                        for cs_xml in ['true']:
+                            if (version == '1'):
+                                continue
+                            CYMDIST_Test = cymdist.CYMDISTToFMU(
+                                'con_path',
+                                XML_INPUT_FILE,
+                                CYMDISTToFMU_LIB_PATH,
+                                MO_TEMPLATE_PATH,
+                                mosT,
+                                XSD_FILE_PATH,
+                                '34',
+                                python_scripts_path,
+                                version,
+                                api,
+                                tool,
+                                None,
+                                modPat,
+                                cs_xml)
+    
+                            print (
+                                'Export CYMDIST with tool={!s}, FMI version={!s}, FMI API={!s}'.format(
+                                    tool, version, api))
+                            start = datetime.now()
+                            CYMDIST_Test.print_mo()
+                            CYMDIST_Test.generate_fmu()
+                            CYMDIST_Test.clean_temporary()
+                            CYMDIST_Test.rewrite_fmu()
+                            end = datetime.now()
+                            print(
+                                'Export CYMDIST as an FMU in {!s} seconds.'.format(
+                                    (end - start).total_seconds()))
+                            
+                            if(tool=='dymola'):
+                                tool_folder='Dymola'
+                            elif(tool=='jmodelica'):
+                                tool_folder='JModelica'
+                            elif(tool=='omc'):
+                                tool_folder='OpenModelica'
+                            fmu_path = os.path.join(
+                            script_path, '..', 'fmus', tool_folder, platform.system().lower())
+                            print(
+                                'Copy CYMDIST.fmu to {!s}.'.format(fmu_path))
+                            shutil.copy2('CYMDIST.fmu', fmu_path)
         else:
             print('The unit tests for simulating FMUs only run on Windows')
                     

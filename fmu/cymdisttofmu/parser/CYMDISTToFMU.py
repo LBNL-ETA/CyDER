@@ -1071,23 +1071,32 @@ class CYMDISTToFMU(object):
                 
         # Compile the FMU using Dymola      
         if (self.export_tool == 'dymola'):
-            sp.call([command, output_file])
+            retStr=sp.check_output([command, output_file])
 
         # Compile the FMU using JModelica
         if (self.export_tool == 'jmodelica'):
             if(platform.system().lower()=='linux'):
-                sp.call([command, output_file])
+                retStr = sp.check_output([command, output_file])
             else:
                 # 
                 output_cmd = 'python ' + str(output_file)
                 # Run multiple commands in the same shell
-                os.system(command + "&&" + output_cmd )
-            
+                retStr = sp.check_output(command + "&&" + output_cmd, shell=True)
+
         # Compile the FMU using OpenModelica 
         if (self.export_tool == 'omc'):
-            sp.call([command, output_file, 'CYMDISTToFMU'])
-            #output_sp = os.system(self.export_tool + ' ' + output_file + ' ' + 'CYMDISTToFMU')
-
+            retStr = sp.check_output([command, output_file, 'CYMDISTToFMU'])
+        
+        # Check if there is any error message in the output
+        if not (retStr is None):
+            retStr=retStr.lower()
+            if sys.version_info.major > 2:
+                retStr = str(retStr, 'utf-8')
+            if(retStr.find('error')>=0):
+                s='{!s} failed to export {!s} as an FMU with error={!s}'.format(self.export_tool,
+                                                                        self.model_name,
+                                                                        retStr)
+                raise ValueError(s)
         # Reset the library path to the default
         if not(self.export_tool == 'jmodelica'):
             if not(current_library_path is None):
