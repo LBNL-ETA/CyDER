@@ -197,6 +197,9 @@ class Tester(unittest.TestCase):
         '''
         
         if platform.system().lower() == 'windows':
+            # OMC needs to be run first otherwise PyFMI will segfault.
+            # It seems like either Dymola or JModelica is not releasing
+            # resources hence causing OpenModelica to fail.
             for tool in ['OpenModelica', 'Dymola', 'JModelica']:
                 fmu_path = os.path.join(
                         script_path, '..', 'fmus', tool, 'windows', 'CYMDIST.fmu')
