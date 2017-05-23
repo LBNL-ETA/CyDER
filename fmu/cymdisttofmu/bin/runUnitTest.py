@@ -8,6 +8,7 @@ import os
 import sys
 import platform
 import subprocess
+import shutil
 try:
     from pyfmi import load_fmu
 except BaseException:
@@ -166,7 +167,7 @@ class Tester(unittest.TestCase):
                             MO_TEMPLATE_PATH,
                             mosT,
                             XSD_FILE_PATH,
-                            '35',
+                            '34',
                             python_scripts_path,
                             version,
                             api,
