@@ -133,7 +133,7 @@ class Tester(unittest.TestCase):
 
         '''
 
-        for tool in ['omc', 'jmodelica', 'dymola']:
+        for tool in ['dymola', 'jmodelica', 'omc']:
             if (platform.system().lower() == 'linux' and tool == 'omc'):
                 print ('tool={!s} is not supported on Linux.'.format(tool))
                 continue
@@ -144,6 +144,7 @@ class Tester(unittest.TestCase):
                 modPat = 'MODELICAPATH'
                 mosT = MOS_TEMPLATE_PATH_DYMOLA
             elif tool == 'jmodelica':
+                os.environ['MODELICAPATH']=''
                 modPat = None
                 mosT = MOS_TEMPLATE_PATH_JMODELICA
             for version in ['1', '2']:
@@ -193,8 +194,9 @@ class Tester(unittest.TestCase):
         Test the execution of one CYMDIST FMU.
 
         '''
+        
         if platform.system().lower() == 'windows':
-            for tool in ['OpenModelica', 'JModelica', 'Dymola']:
+            for tool in ['OpenModelica', 'Dymola', 'JModelica']:
                 fmu_path = os.path.join(
                         script_path, '..', 'fmus', tool, 'windows', 'CYMDIST.fmu')
                 # Parameters which will be arguments of the function
@@ -283,13 +285,9 @@ class Tester(unittest.TestCase):
         Test the export and updates of FMUs.
 
         '''
-
-        # The order matters. If Dymola is executed before JModelica
-        # then the script will fail. Maybe Dymola sets some environment
-        # variables which are used by JModelica.
         
         if platform.system().lower() == 'windows':
-            for tool in ['omc', 'jmodelica', 'dymola', ]:
+            for tool in ['dymola', 'jmodelica', 'omc']:
                 if tool == 'omc':
                     modPat = 'OPENMODELICALIBRARY'
                     mosT = MOS_TEMPLATE_PATH_OPENMODELICA
@@ -297,6 +295,7 @@ class Tester(unittest.TestCase):
                     modPat = 'MODELICAPATH'
                     mosT = MOS_TEMPLATE_PATH_DYMOLA
                 elif tool == 'jmodelica':
+                    os.environ['MODELICAPATH']=''
                     modPat = None
                     mosT = MOS_TEMPLATE_PATH_JMODELICA
                 for version in ['2']:
