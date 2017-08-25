@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<item name="report">
+    <item name="general">
+        <property name="Date">
+            <value>Thu, 24 Aug 2017 16:37:10</value>
+        </property>
+        <property name="RTLAB version">
+            <value>v11.1.4.59</value>
+        </property>
+    </item>
+    <item name="log">
+        <item name="Compilation">
+            <textlog name="Compilation">
+                <value>
+-------------------- Starting compilation --------------------
+Start at : Thursday, August 24, 2017, 16:36:31
+
+The current RT-LAB version is:  v11.1.4.59
+The current model is:           C:\Users\Public\opa_rt_thierry\OpalRTToFMU\OpalRTToFMU\examples\acquisition\models\simulink\compilation.mdl
+The current host platform is:   Windows
+The current target platform is: Windows
+The current compiler is:        Visual C++ 2010 - ver 10.0
+Preparing original model for code separation and generation...
+Matlab version v7.13 (32 Bit) is different from model version v7.3
+The current Matlab version is:  v7.13 (32 Bit)
+
+ 
+Diagnostics: 
+ 
+Reported by: RT-LAB
+Source     : compilation
+Message    : Warning: The Signal Storage Reuse parameter is set to on. To see all signals of the model, this option 
+             must be set to off. To modify this parameter, open the 'Simulation/Configuration Parameters/Optimization' 
+             dialog box and modify the Signal Storage Reuse parameter. 
+            
+
+RtlabInfo not loaded
+A copy of the original file &quot;compilation.mdl&quot; has been created because it was last saved in an earlier version of Simulink.  To recover the original version, rename the file &quot;compilation.mdl.r2006b&quot; as &quot;compilation.mdl&quot;.
+
+You can turn this feature off using the &lt;a href=&quot;matlab:slprivate('showprefs')&quot;&gt;Simulink Preferences&lt;/a&gt;.  Click &lt;a href=&quot;matlab:com.mathworks.services.Prefs.setBooleanPref('SimulinkShowPersistentBackupNotification',false)&quot;&gt;here&lt;/a&gt; if you don't want to see this message again.
+Separating RT-LAB model (number of RT subsystems = 1, console detected).
+Separating RT-LAB subsystem 'sm_computation'.
+WARNING: Saving subsystems with breaklinks option has been disabled. Subsystems real-time behavior may be different.
+WARNING: Saving subsystems with breaklinks option has been disabled. Subsystems real-time behavior may be different.
+Separating RT-LAB subsystem 'sc_user_interface'.
+WARNING: Saving subsystems with breaklinks option has been disabled. Subsystems real-time behavior may be different.
+WARNING: Saving subsystems with breaklinks option has been disabled. Subsystems real-time behavior may be different.
+
+Model preparation and separation duration : 00h:00m:12s
+-------------------- Completed successfully --------------------
+
+
+-------------------- Generating C code --------------------
+
+Using System Target File (TLC file) : rtlab_rtmodel.tlc...
+
+Using Template Makefile (TMF file) : rtlab_rtmodel.tmf...
+
+-------------------- Generating compilation_1_sm_computation C code --------------------
+Calling RTW Make Command make_rtw...
+### Starting build procedure for model: compilation_1_sm_computation
+### Generating code into build folder: C:\Users\Public\opa_rt_thierry\OpalRTToFMU\OpalRTToFMU\examples\acquisition\models\simulink\compilation_1_sm_computation_rtlab
+{Warning: Use fixed buffer size in 'compilation_1_sm_computation/sm_computation/Actuator response time' is not selected. When generating
+GRT/ERT code, Simulink will automatically use fixed buffer of the initial buffer size set by user. Code generation results and
+simulation results may differ} 
+{Warning: Use fixed buffer size in 'compilation_1_sm_computation/sm_computation/Sensor response time' is not selected. When generating
+GRT/ERT code, Simulink will automatically use fixed buffer of the initial buffer size set by user. Code generation results and
+simulation results may differ} 
+
+### Invoking Target Language Compiler on compilation_1_sm_computation.rtw
+### Using System Target File: c:\opal-rt\rt-lab\v11.1.4.59\Simulink\rtw\c\common\rtlab_rtmodel.tlc
+### Loading TLC function libraries
+.....
+### Initial pass through model to cache user defined code
+...
+### Caching model source code
+...........................................................
+### Writing header file compilation_1_sm_computation.h
+### Writing header file compilation_1_sm_computation_types.h
+### Writing header file rtwtypes.h
+.
+### Writing source file compilation_1_sm_computation.c
+### Writing header file compilation_1_sm_computation_private.h
+### Writing header file rtmodel.h
+.
+### Writing source file compilation_1_sm_computation_data.c
+### Writing header file rt_nonfinite.h
+### Writing source file rt_nonfinite.c
+.
+### Writing header file rt_defines.h
+### Writing header file rtGetInf.h
+### Writing source file rtGetInf.c
+.
+### Writing header file rtGetNaN.h
+### Writing source file rtGetNaN.c
+### TLC code generation complete.
+.
+Version 8.1 (R2011b) 08-Jul-2011
+### Creating model mapping file compilation_1_sm_computation.map using Map_r2010a_2013b.tlc
+......### Creating project marker file: rtw_proj.tmw
+.
+### Processing Template Makefile: c:\opal-rt\rt-lab\v11.1.4.59\Simulink\rtw\c\common\rtlab_rtmodel.tmf
+### Wrapping unrecognized make command (angle brackets added)
+###    &lt;make&gt;
+### in default batch file
+!-----
+
+The following make variables are used in the template make file, but they are 
+not defined. You may have a mismatch between the system target file and the 
+template make file
+= |&gt;MAT_FILE&lt;|
+= |&gt;CLASSIC_INTERFACE&lt;|
+= |&gt;COMBINE_OUTPUT_UPDATE_FCNS&lt;|
+= |&gt;MULTI_INSTANCE_CODE&lt;|
+-----!
+### Creating compilation_1_sm_computation.mk from c:\opal-rt\rt-lab\v11.1.4.59\Simulink\rtw\c\common\rtlab_rtmodel.tmf
+### Successful completion of code generation for model: compilation_1_sm_computation
+
+
+compilation_1_sm_computation : Generating C code duration : 00h:00m:07s
+Generating C code total duration : 00h:00m:07s
+
+-------------------- Completed successfully --------------------
+
+-------------------- Creating the parameter database --------------------
+Parameter(s) with more than 1000 values will be disabled. 
+Use PARAM_VECTOR_SIZE_LIMIT environment variable to modify this limit.
+Parameter database creation duration: 00h:00m:00s
+-------------------- Parameter database created successfully --------------------
+
+-------------------- Creating the signals database --------------------
+Signal(s) with more than 1000 values will be disabled.
+Use SIGNALS_VECTOR_SIZE_LIMIT environment variable to modify this limit.
+
+Signal database creation duration: 00h:00m:00s
+-------------------- Signal database created successfully --------------------
+Generating simulation data...
+Data generated in 00h:00m:00s
+
+Closing Matlab... OK.
+Updating dependencies... OK.
+
+------------------------ Copying the generated C code ----------------------
+
+Setting destination directory to C:\Users\Public\opa_rt_thierry\OpalRTToFMU\OpalRTToFMU\examples\acquisition\models\simulink\compilation_sm_computation\OpNTtarget\... OK.
+Copying c:\opal-rt\rt-lab\v11.1.4.59\Simulink/rtw/c/common/win32.opt... OK.
+Copying c:\opal-rt\rt-lab\v11.1.4.59\Simulink/rtw/c/common/win32.rules... OK.
+
+-------------------- Building the generated C code --------------------
+
+Executing script c:\opal-rt\rt-lab\v11.1.4.59\common\python\rtlab\global\target_precompile.py ... done
+===Python mistakenly enters in this contitional.
+===Fixme: Disabled next check because of wrong interpretation.
+
+-------------------- Building compilation_1_sm_computation --------------------
+
+
+C:\Users\Public\opa_rt_thierry\OpalRTToFMU\OpalRTToFMU\examples\acquisition\models\simulink\compilation_sm_computation\OpNTtarget&gt;call &quot;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\vcvars32.bat&quot; 
+Setting environment for using Microsoft Visual Studio 2010 x86 tools.
+
+C:\Users\Public\opa_rt_thierry\OpalRTToFMU\OpalRTToFMU\examples\acquisition\models\simulink\compilation_sm_computation\OpNTtarget&gt;gmake -f &quot;C:\Users\Public\opa_rt_thierry\OpalRTToFMU\OpalRTToFMU\examples\acquisition\models\simulink\compilation_sm_computation\OpNTtarget\compilation_1_sm_computation.mk&quot; 
+cl -c  /Ox /Ob2 /Oi /GS- /arch:SSE2 /fp:fast    -DUSE_RTMODEL -DMODEL=compilation_1_sm_computation -DRT=RT -DNUMST=2 -DTID01EQ=1 -DNCSTATES=3 -DMT=0 -DTERMFCN=1 -DMULTITASKING=0 -D_SIMULINK -DRTLAB -DOP_MATLABR2011B	 /MD -W3 -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo -D_X86_=1 -D_WINNT -DWIN32 -D_WIN32 -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300 -DWINVER=0x0400 -D_CRT_SECURE_NO_WARNINGS  -I. -IC:\PROGRA~2\MATLAB\R2011b/simulink/include -IC:\PROGRA~2\MATLAB\R2011b/extern/include -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src/matrixmath -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/libsrc  -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/drive/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/mech/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/foundation/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/ne_sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/network_engine/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/common/foundation/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/compiler/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/extern/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/smlink/api/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dsp/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dspblks/include			 -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include_target -Ic:\opal-rt\rt-lab\v11.1.4.59/RT-LAB/include     compilation_1_sm_computation.c
+compilation_1_sm_computation.c
+cl -c  /Ox /Ob2 /Oi /GS- /arch:SSE2 /fp:fast    -DUSE_RTMODEL -DMODEL=compilation_1_sm_computation -DRT=RT -DNUMST=2 -DTID01EQ=1 -DNCSTATES=3 -DMT=0 -DTERMFCN=1 -DMULTITASKING=0 -D_SIMULINK -DRTLAB -DOP_MATLABR2011B	 /MD -W3 -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo -D_X86_=1 -D_WINNT -DWIN32 -D_WIN32 -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300 -DWINVER=0x0400 -D_CRT_SECURE_NO_WARNINGS  -I. -IC:\PROGRA~2\MATLAB\R2011b/simulink/include -IC:\PROGRA~2\MATLAB\R2011b/extern/include -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src/matrixmath -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/libsrc  -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/drive/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/mech/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/foundation/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/ne_sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/network_engine/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/common/foundation/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/compiler/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/extern/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/smlink/api/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dsp/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dspblks/include			 -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include_target -Ic:\opal-rt\rt-lab\v11.1.4.59/RT-LAB/include     compilation_1_sm_computation_data.c
+compilation_1_sm_computation_data.c
+cl -c  /Ox /Ob2 /Oi /GS- /arch:SSE2 /fp:fast    -DUSE_RTMODEL -DMODEL=compilation_1_sm_computation -DRT=RT -DNUMST=2 -DTID01EQ=1 -DNCSTATES=3 -DMT=0 -DTERMFCN=1 -DMULTITASKING=0 -D_SIMULINK -DRTLAB -DOP_MATLABR2011B	 /MD -W3 -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo -D_X86_=1 -D_WINNT -DWIN32 -D_WIN32 -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300 -DWINVER=0x0400 -D_CRT_SECURE_NO_WARNINGS  -I. -IC:\PROGRA~2\MATLAB\R2011b/simulink/include -IC:\PROGRA~2\MATLAB\R2011b/extern/include -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src/matrixmath -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/libsrc  -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/drive/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/mech/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/foundation/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/ne_sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/network_engine/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/common/foundation/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/compiler/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/extern/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/smlink/api/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dsp/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dspblks/include			 -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include_target -Ic:\opal-rt\rt-lab\v11.1.4.59/RT-LAB/include     c:\opal-rt\rt-lab\v11.1.4.59/Simulink/rtw/c/common/model_main.c
+model_main.c
+cl -c  /Ox /Ob2 /Oi /GS- /arch:SSE2 /fp:fast    -DUSE_RTMODEL -DMODEL=compilation_1_sm_computation -DRT=RT -DNUMST=2 -DTID01EQ=1 -DNCSTATES=3 -DMT=0 -DTERMFCN=1 -DMULTITASKING=0 -D_SIMULINK -DRTLAB -DOP_MATLABR2011B	 /MD -W3 -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo -D_X86_=1 -D_WINNT -DWIN32 -D_WIN32 -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300 -DWINVER=0x0400 -D_CRT_SECURE_NO_WARNINGS  -I. -IC:\PROGRA~2\MATLAB\R2011b/simulink/include -IC:\PROGRA~2\MATLAB\R2011b/extern/include -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src/matrixmath -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/libsrc  -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/drive/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/mech/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/foundation/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/ne_sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/network_engine/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/common/foundation/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/compiler/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/extern/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/smlink/api/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dsp/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dspblks/include			 -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include_target -Ic:\opal-rt\rt-lab\v11.1.4.59/RT-LAB/include     rtGetInf.c
+rtGetInf.c
+cl -c  /Ox /Ob2 /Oi /GS- /arch:SSE2 /fp:fast    -DUSE_RTMODEL -DMODEL=compilation_1_sm_computation -DRT=RT -DNUMST=2 -DTID01EQ=1 -DNCSTATES=3 -DMT=0 -DTERMFCN=1 -DMULTITASKING=0 -D_SIMULINK -DRTLAB -DOP_MATLABR2011B	 /MD -W3 -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo -D_X86_=1 -D_WINNT -DWIN32 -D_WIN32 -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300 -DWINVER=0x0400 -D_CRT_SECURE_NO_WARNINGS  -I. -IC:\PROGRA~2\MATLAB\R2011b/simulink/include -IC:\PROGRA~2\MATLAB\R2011b/extern/include -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src/matrixmath -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/libsrc  -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/drive/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/mech/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/foundation/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/ne_sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/network_engine/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/common/foundation/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/compiler/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/extern/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/smlink/api/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dsp/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dspblks/include			 -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include_target -Ic:\opal-rt\rt-lab\v11.1.4.59/RT-LAB/include     rtGetNaN.c
+rtGetNaN.c
+cl -c  /Ox /Ob2 /Oi /GS- /arch:SSE2 /fp:fast    -DUSE_RTMODEL -DMODEL=compilation_1_sm_computation -DRT=RT -DNUMST=2 -DTID01EQ=1 -DNCSTATES=3 -DMT=0 -DTERMFCN=1 -DMULTITASKING=0 -D_SIMULINK -DRTLAB -DOP_MATLABR2011B	 /MD -W3 -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo -D_X86_=1 -D_WINNT -DWIN32 -D_WIN32 -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300 -DWINVER=0x0400 -D_CRT_SECURE_NO_WARNINGS  -I. -IC:\PROGRA~2\MATLAB\R2011b/simulink/include -IC:\PROGRA~2\MATLAB\R2011b/extern/include -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src/matrixmath -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/libsrc  -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/drive/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/mech/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/foundation/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/ne_sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/network_engine/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/common/foundation/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/compiler/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/extern/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/smlink/api/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dsp/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dspblks/include			 -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include_target -Ic:\opal-rt\rt-lab\v11.1.4.59/RT-LAB/include     C:\PROGRA~2\MATLAB\R2011b/rtw/c/src/rt_logging.c
+rt_logging.c
+cl -c  /Ox /Ob2 /Oi /GS- /arch:SSE2 /fp:fast    -DUSE_RTMODEL -DMODEL=compilation_1_sm_computation -DRT=RT -DNUMST=2 -DTID01EQ=1 -DNCSTATES=3 -DMT=0 -DTERMFCN=1 -DMULTITASKING=0 -D_SIMULINK -DRTLAB -DOP_MATLABR2011B	 /MD -W3 -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo -D_X86_=1 -D_WINNT -DWIN32 -D_WIN32 -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300 -DWINVER=0x0400 -D_CRT_SECURE_NO_WARNINGS  -I. -IC:\PROGRA~2\MATLAB\R2011b/simulink/include -IC:\PROGRA~2\MATLAB\R2011b/extern/include -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src/matrixmath -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/libsrc  -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/drive/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/mech/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/foundation/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/ne_sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/network_engine/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/common/foundation/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/compiler/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/extern/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/smlink/api/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dsp/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dspblks/include			 -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include_target -Ic:\opal-rt\rt-lab\v11.1.4.59/RT-LAB/include     rt_nonfinite.c
+rt_nonfinite.c
+cl -c  /Ox /Ob2 /Oi /GS- /arch:SSE2 /fp:fast    -DUSE_RTMODEL -DMODEL=compilation_1_sm_computation -DRT=RT -DNUMST=2 -DTID01EQ=1 -DNCSTATES=3 -DMT=0 -DTERMFCN=1 -DMULTITASKING=0 -D_SIMULINK -DRTLAB -DOP_MATLABR2011B	 /MD -W3 -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo -D_X86_=1 -D_WINNT -DWIN32 -D_WIN32 -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300 -DWINVER=0x0400 -D_CRT_SECURE_NO_WARNINGS  -I. -IC:\PROGRA~2\MATLAB\R2011b/simulink/include -IC:\PROGRA~2\MATLAB\R2011b/extern/include -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src/matrixmath -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/libsrc  -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/drive/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/mech/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/foundation/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/ne_sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/network_engine/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/common/foundation/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/compiler/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/extern/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/smlink/api/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dsp/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dspblks/include			 -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include_target -Ic:\opal-rt\rt-lab\v11.1.4.59/RT-LAB/include     C:\PROGRA~2\MATLAB\R2011b/rtw/c/src/rt_printf.c
+rt_printf.c
+cl -c  /Ox /Ob2 /Oi /GS- /arch:SSE2 /fp:fast    -DUSE_RTMODEL -DMODEL=compilation_1_sm_computation -DRT=RT -DNUMST=2 -DTID01EQ=1 -DNCSTATES=3 -DMT=0 -DTERMFCN=1 -DMULTITASKING=0 -D_SIMULINK -DRTLAB -DOP_MATLABR2011B	 /MD -W3 -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo -D_X86_=1 -D_WINNT -DWIN32 -D_WIN32 -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300 -DWINVER=0x0400 -D_CRT_SECURE_NO_WARNINGS  -I. -IC:\PROGRA~2\MATLAB\R2011b/simulink/include -IC:\PROGRA~2\MATLAB\R2011b/extern/include -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/src/matrixmath -IC:\PROGRA~2\MATLAB\R2011b/rtw/c/libsrc  -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/drive/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/mech/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/foundation/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/ne_sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/sli/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/engine/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/network_engine/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/common/foundation/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/simscape/compiler/core/c -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/extern/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/physmod/smlink/api/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dsp/include -IC:\PROGRA~2\MATLAB\R2011b/toolbox/dspblks/include			 -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include -Ic:\opal-rt\rt-lab\v11.1.4.59/common/include_target -Ic:\opal-rt\rt-lab\v11.1.4.59/RT-LAB/include     C:\PROGRA~2\MATLAB\R2011b/rtw/c/src/rt_sim.c
+rt_sim.c
+&quot;### Linking ...&quot; 
+C:\PROGRA~2\MATLAB\R2011b\sys\perl\win32\bin\perl C:\PROGRA~2\MATLAB\R2011b\rtw\c\tools\mkvc_lnk.pl compilation_1_sm_computation.lnk compilation_1_sm_computation.obj compilation_1_sm_computation_data.obj model_main.obj rtGetInf.obj rtGetNaN.obj rt_logging.obj rt_nonfinite.obj rt_printf.obj rt_sim.obj
+link   /LIBPATH:c:\opal-rt\rt-lab\v11.1.4.59\Simulink\libR2011B /LIBPATH:c:\opal-rt\rt-lab\v11.1.4.59\Simulink\libR2011B\win32 /LIBPATH:c:\opal-rt\rt-lab\v11.1.4.59\common\lib /LIBPATH:c:\opal-rt\rt-lab\v11.1.4.59\common\lib\win32 /LIBPATH:c:\opal-rt\rt-lab\v11.1.4.59\common\bin /LIBPATH:c:\opal-rt\rt-lab\v11.1.4.59\common\bin\x32    /RELEASE /INCREMENTAL:NO /PDB:NONE /RELEASE /NOLOGO -subsystem:console,4.0 C:\ProgramData\OPAL-RT\RT-LAB\v11.1.4.59\rtw\R2011B\oprtwlibr_vc10_dyn.lib  @compilation_1_sm_computation.lnk libOpalOhci.lib libOpalUtils.lib libOpalCore.lib liblicense.lib System.lib DbgHelp.lib Matio.lib Framework.lib Opal.lib Infrastructure.lib KLU.lib Numeric.lib Matlab-Handler.lib Simulink.lib Network.lib SimCoreLib.lib OpalSimCore.lib ole32.lib oleaut32.lib SyncExchangerLib.lib ConnectionLib.lib ConnectionFactoryLib.lib OpalR2011B.lib libOpalSfunR2011B.lib BlocksRT-2011b.lib libdspR2011B.lib libsimscapeR2011B.lib        user32.lib oldnames.lib kernel32.lib ws2_32.lib advapi32.lib Winmm.lib Setupapi.lib psapi.lib rpcrt4.lib iphlpapi.lib shell32.lib /NODEFAULTLIB:libcd /NODEFAULTLIB:libc -out:compilation_1_sm_computation.exe
+LINK : warning LNK4010: invalid subsystem version number 4.0; default subsystem version assumed
+   Creating library compilation_1_sm_computation.lib and object compilation_1_sm_computation.exp
+&quot;### Created executable compilation_1_sm_computation.exe&quot; 
+
+compilation_1_sm_computation : Building subsystem duration : 00h:00m:07s
+
+Building model total duration : 00h:00m:07s
+-------------------- Completed successfully --------------------
+
+End at : Thursday, August 24, 2017, 16:37:08
+
+Compilation duration : 00h:00m:37s
+
+Updating status for next build...OK
+</value>
+            </textlog>
+        </item>
+        <item name="llm">
+            <textlog name="llm">
+                <value>[Compilation_NT]
+sm_computation=31
+[Compilation_QNXNTO]
+sm_computation=31
+[Compilation_REDHAWK]
+sm_computation=31
+[EnvVars]
+ABORT_COMPILE_WHEN_NO_BITSTREAM=0
+AcquisitionMemory=0,2500,24,100
+ACTION_AFTER_N_OVERRUNS=10
+ACTION_ON_OVERRUNS=0
+ActiveGroups=7/0/24/25/26/27/28/29/
+CACHEABLE_DMA_MEMORY_ACCESS=ON
+ClockPeriodMode=Free-Clock
+ClockPeriodTime=10
+COMM_RT=UDP/IP
+DEBUG=0
+DETECT_OVERRUNS=ON
+ENABLE_WATCHDOG=ON
+EXT_CC_OPTS=
+EXT_LD_OPTS=
+EXT_LIB=
+EXT_LIBPATH=
+MaxDynamicSignals=2/0/100/24/100/
+MODEL_PAUSE_TIME=0.000000
+MODEL_STOP_TIME=0.000000
+MONITORING=ON
+MONITORING_BLOCK=OFF
+MONITORING_DISPLAY=NEVER
+MSG_PRECISION_FACTOR=0
+NB_STEP_WITHOUT_OVERRUNS=10
+OP_MATLABR2011B=1
+OPAL_DEBUG=OFF
+OS_COMPILE_RELEASE=
+PRINT_LOG_LEVEL=ALWAYS
+RESET_IO_MISSING=ON
+SYSNAME=
+USER_INCS=
+USER_SRCS=
+WATCHDOG_TIMEOUT=5000
+[EnvVars_QNXNTO_DYN_1]
+ARTEMIS_TARGET_ROOT=
+FPGA_BITSTREAM_INFO=
+INTERNAL_ADD_SOURCE_FILE=
+INTERNAL_IGN_SOURCE_FILE=
+INTERNAL_INCLUDE_PATH=
+INTERNAL_LIBRARY1=
+INTERNAL_LIBRARY2=
+INTERNAL_LIBRARY3=
+INTERNAL_LIBRARY_PATH=
+RTEVENTS_TARGET_ROOT=
+[EnvVars_REDHAWK_DYN_1]
+ARTEMIS_TARGET_ROOT=
+FPGA_BITSTREAM_INFO=
+INTERNAL_ADD_SOURCE_FILE=
+INTERNAL_IGN_SOURCE_FILE=
+INTERNAL_INCLUDE_PATH=
+INTERNAL_LIBRARY1=
+INTERNAL_LIBRARY2=
+INTERNAL_LIBRARY3=
+INTERNAL_LIBRARY_PATH=
+RTEVENTS_TARGET_ROOT=
+[General]
+ATT_CHECKSUM1=1747811805
+ATT_CHECKSUM2=3917171914
+ATT_CHECKSUM3=1283107991
+ATT_CHECKSUM4=215230926
+ATT_CREATED_BY=Paul Baracos
+ATT_CREATED_ON=Wed Nov 21 11:28:32 2001
+ATT_ENABLE_PTA=OFF
+ATT_HANDLE_CONSOLE=ON
+ATT_LAST_SAVED_BY=BiaoYu
+ATT_LAST_SAVED_ON=Fri Dec 16 17:52:47 2011
+ATT_REFERENCE_MDL_PATHS=
+ATT_REVISION=1.103
+AutoRetrieveFiles=ON
+AutoRetrieveRtlab=ON
+CompilerVersion=AUTOMATIC
+DESCRIPTION=
+DinamoFlag=OFF
+FILENAME=C:\Users\Public\opa_rt_thierry\OpalRTToFMU\OpalRTToFMU\examples\acquisition\models\simulink\compilation.mdl
+FORCE_RECOMPILE=1
+IMPORTED_GLOBAL_VARIABLES=1
+LastCompileRtlabVersion=v11.1.4.59
+LastMatlabUsed=21
+LastMatlabUsedName=v7.13
+MatlabHostRoot=c:\matlab6p5
+Name=compilation
+PETALINUX_LAST_COMPILE_VERSION=
+PostBuildCmd=
+PreBuildCmd=
+PRINT_CYCLE=OFF
+QNX_LAST_COMPILE_VERSION=
+ReportFileId=
+RetrieveBuildTree=ON
+RetrieveRootDir=
+RH64_LAST_COMPILE_VERSION=
+RH_LAST_COMPILE_VERSION=
+sc_user_interfaceTimeStep=-1.000000000000000
+SimulationMode=0
+sm_computationTimeStep=0.001000000000000
+TargetCompileCmd=
+TargetPlatform=NT
+TimeFactor=1.000000000000000
+TimeStep=0.001000000000000
+TLC=Automatic
+TMF=Automatic
+TRANSFERFILE_AT_LOAD=ON
+[General_NT_1]
+TargetPostCompileCmd=
+TargetPreCompileCmd=
+[General_QNXNTO_1]
+TargetPostCompileCmd=
+TargetPreCompileCmd=
+[General_REDHAWK_1]
+TargetPostCompileCmd=
+TargetPreCompileCmd=
+[NodeMapping]
+sm_computation=localhost
+sm_computation_CORE_ASSIGNATION=1
+sm_computation_CPU=-1
+sm_computation_DEBUG=OFF
+sm_computation_XHP_ENABLE=FALSE
+[zorgbul]
+HandleConsole=0
+</value>
+            </textlog>
+        </item>
+    </item>
+</item>

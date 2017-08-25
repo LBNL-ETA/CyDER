@@ -1,0 +1,17 @@
+[
+  {"version":2},
+  {
+    "Opal::Simulation::SerializeableAliasList":
+    {
+      "copyOnWrite":0,
+      "locked":0,
+      "name":"6B3A5175-F20D-4D8D-B87E-5CAA2972061F",
+      "versioned":0,
+      "aliasSets":
+      [
+      ],
+      "history":"",
+      "parent":"/"
+    }
+  }
+]

@@ -1,0 +1,186 @@
+#--------------------------- Tool Specifications -------------------------
+#
+# Modify the following macros to reflect the tools you wish to use for
+# compiling and linking your code.
+#
+
+USE_EXPAND_RTWLIB = 0
+
+RTW_PROGRAMDATA_PATH = $(OPAL_PROGRAMDATA_PATH)\RT-LAB\$(RTLAB_PRODUCT_VERSION)\rtw
+
+# Support MATLAB R2011B  installed in C:\Program Files\MATLAB\R2011B 
+ifeq ($(OP_MATLABR2011B),1)
+MATLAB_ROOT = $(ALT_MATLAB_ROOT)
+RTWLIB_PATH = $(RTW_PROGRAMDATA_PATH)\R2011B
+endif
+
+# Support MATLAB R2012A which is installed in C:\Program Files\MATLAB\R2012A by default
+ifeq ($(OP_MATLABR2012A),1)
+MATLAB_ROOT = $(ALT_MATLAB_ROOT)
+RTWLIB_PATH = $(RTW_PROGRAMDATA_PATH)\R2012A
+endif
+
+# Support MATLAB R2012B  installed in C:\Program Files\MATLAB\R2012B 
+ifeq ($(OP_MATLABR2012B),1)
+MATLAB_ROOT = $(ALT_MATLAB_ROOT)
+RTWLIB_PATH = $(RTW_PROGRAMDATA_PATH)\R2012B
+endif
+
+# Support MATLAB R2013A which is installed in C:\Program Files\MATLAB\R2013A by default
+ifeq ($(OP_MATLABR2013A),1)
+MATLAB_ROOT = $(ALT_MATLAB_ROOT)
+RTWLIB_PATH = $(RTW_PROGRAMDATA_PATH)\R2013A
+endif
+
+# Support MATLAB R2013B  installed in C:\Program Files\MATLAB\R2013B 
+ifeq ($(OP_MATLABR2013B),1)
+MATLAB_ROOT = $(ALT_MATLAB_ROOT)
+RTWLIB_PATH = $(RTW_PROGRAMDATA_PATH)\R2013B
+endif
+
+# Support MATLAB R2014A which is installed in C:\Program Files\MATLAB\R2014A by default
+ifeq ($(OP_MATLABR2014A),1)
+MATLAB_ROOT = $(ALT_MATLAB_ROOT)
+RTWLIB_PATH = $(RTW_PROGRAMDATA_PATH)\R2014A
+endif
+
+# Support MATLAB R2014B  installed in C:\Program Files\MATLAB\R2014B 
+ifeq ($(OP_MATLABR2014B),1)
+MATLAB_ROOT = $(ALT_MATLAB_ROOT)
+RTWLIB_PATH = $(RTW_PROGRAMDATA_PATH)\R2014B
+endif
+
+# Support MATLAB R2015ASP1 which is installed in C:\Program Files\MATLAB\R2015ASP1 by default
+ifeq ($(OP_MATLABR2015A),1)
+MATLAB_ROOT = $(ALT_MATLAB_ROOT)
+RTWLIB_PATH = $(RTW_PROGRAMDATA_PATH)\R2015A
+endif
+
+# Support MATLAB R2015B  installed in C:\Program Files\MATLAB\R2015B
+ifeq ($(OP_MATLABR2015B),1)
+MATLAB_ROOT = $(ALT_MATLAB_ROOT)
+RTWLIB_PATH = $(RTW_PROGRAMDATA_PATH)\R2015B
+endif
+
+# Support MATLAB R2016A  installed in C:\Program Files\MATLAB\R2016A 
+ifeq ($(OP_MATLABR2016A),1)
+MATLAB_ROOT = $(ALT_MATLAB_ROOT)
+RTWLIB_PATH = $(RTW_PROGRAMDATA_PATH)\R2016A
+endif
+
+# Support MATLAB R2016B  installed in C:\Program Files\MATLAB\R2016B 
+ifeq ($(OP_MATLABR2016B),1)
+MATLAB_ROOT = $(ALT_MATLAB_ROOT)
+RTWLIB_PATH = $(RTW_PROGRAMDATA_PATH)\R2016B
+endif
+
+# Support P:TA 
+ifeq ($(MODELCOM_ENABLED),1)
+#provide a path independant of RT-LAB version for P:TA until we can access their software folder.
+MODELCOM_CFLAGS = /DRTLAB_MODELMAIN_HOOK -I C:\OPAL-RT\RT-LAB\externals\include
+else
+MODELCOM_CFLAGS =
+endif
+
+CC = cl
+LD = link
+LIBCMD = lib
+PERL = $(ALT_MATLAB_ROOT)\sys\perl\win32\bin\perl
+CMD_FILE = $(MODEL).lnk
+GEN_LNK_SCRIPT = $(ALT_MATLAB_ROOT)\rtw\c\tools\mkvc_lnk.pl
+
+# Backward compatibility
+TARGET_RTLAB_ROOT = $(NT_OPALRT_ROOT)
+TARGET_MATLAB_ROOT = $(ALT_MATLAB_ROOT)
+
+# Optimization Options
+conflags = /INCREMENTAL:NO /PDB:NONE /RELEASE /NOLOGO -subsystem:console,4.0
+
+# General User Options
+# src_IS_DEBUG_BUILD is set by \soft\SConscript depending if configuration is in release or debug
+ifeq (0,1)
+	TARGET_CFLAGS = /MDd -W3 -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo -D_X86_=1 -D_WINNT -DWIN32 -D_WIN32 -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300 -DWINVER=0x0400 -D_CRT_SECURE_NO_WARNINGS $(MODELCOM_CFLAGS)
+else
+	TARGET_CFLAGS = /MD -W3 -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo -D_X86_=1 -D_WINNT -DWIN32 -D_WIN32 -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300 -DWINVER=0x0400 -D_CRT_SECURE_NO_WARNINGS $(MODELCOM_CFLAGS)
+endif
+
+LIBSRC = $(ALT_MATLAB_ROOT\rtw\c\libsrc
+
+ifdef OPT_OPTS
+	RTWLIB  = $(RTWLIB_PATH)\oprtwlibr_vc10_dyn.lib
+else
+	ifeq ($(DEBUG),1)
+		OPT_OPTS = -D_DEBUG /Zi
+		ldebug = /DEBUG /DEBUGTYPE:CV
+		RTWLIB   = $(RTWLIB_PATH)\oprtwlibd_vc10_dyn.lib
+	else
+		OPT_OPTS = /Ox /Ob2 /Oi /GS- /arch:SSE2 /fp:fast
+		ldebug = /RELEASE
+		RTWLIB   = $(RTWLIB_PATH)\oprtwlibr_vc10_dyn.lib
+	endif
+endif
+
+opconlibs = user32.lib oldnames.lib kernel32.lib ws2_32.lib advapi32.lib Winmm.lib Setupapi.lib psapi.lib rpcrt4.lib iphlpapi.lib shell32.lib
+LIBS = libOpalOhci.lib libOpalUtils.lib libOpalCore.lib liblicense.lib System.lib DbgHelp.lib Matio.lib Framework.lib Opal.lib Infrastructure.lib KLU.lib Numeric.lib Matlab-Handler.lib Simulink.lib Network.lib SimCoreLib.lib OpalSimCore.lib ole32.lib oleaut32.lib SyncExchangerLib.lib ConnectionLib.lib ConnectionFactoryLib.lib
+
+ifeq ($(OP_MATLABR2011B),1)
+LIBPATH = /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2011B /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2011B\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\lib /LIBPATH:$(NT_OPALRT_ROOT)\common\lib\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\bin /LIBPATH:$(NT_OPALRT_ROOT)\common\bin\x32 $(INTERNAL_LIBRARY_PATH) $(EXT_LIBPATH)
+LIBS    += OpalR2011B.lib libOpalSfunR2011B.lib BlocksRT-2011b.lib libdspR2011B.lib libsimscapeR2011B.lib $(INTERNAL_LIBRARY1) $(INTERNAL_LIBRARY2) $(INTERNAL_LIBRARY3) $(INTERNAL_LIBRARY4) $(INTERNAL_LIBRARY5) $(INTERNAL_LIBRARY6) $(EXT_LIB) $(opconlibs) /NODEFAULTLIB:libcd /NODEFAULTLIB:libc
+endif
+ifeq ($(OP_MATLABR2012A),1)
+LIBPATH = /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2012A /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2012A\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\lib /LIBPATH:$(NT_OPALRT_ROOT)\common\lib\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\bin /LIBPATH:$(NT_OPALRT_ROOT)\common\bin\x32 $(INTERNAL_LIBRARY_PATH) $(EXT_LIBPATH)
+LIBS    += OpalR2012A.lib libOpalSfunR2012A.lib BlocksRT-2012a.lib libdspR2012A.lib libsimscapeR2012A.lib $(INTERNAL_LIBRARY1) $(INTERNAL_LIBRARY2) $(INTERNAL_LIBRARY3) $(INTERNAL_LIBRARY4) $(INTERNAL_LIBRARY5) $(INTERNAL_LIBRARY6) $(EXT_LIB) $(opconlibs) /NODEFAULTLIB:libcd /NODEFAULTLIB:libc
+endif
+ifeq ($(OP_MATLABR2012B),1)
+LIBPATH = /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2012B /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2012B\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\lib /LIBPATH:$(NT_OPALRT_ROOT)\common\lib\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\bin /LIBPATH:$(NT_OPALRT_ROOT)\common\bin\x32 $(INTERNAL_LIBRARY_PATH) $(EXT_LIBPATH)
+LIBS    += OpalR2012B.lib libOpalSfunR2012B.lib BlocksRT-2012b.lib libdspR2012B.lib libsimscapeR2012B.lib $(INTERNAL_LIBRARY1) $(INTERNAL_LIBRARY2) $(INTERNAL_LIBRARY3) $(INTERNAL_LIBRARY4) $(INTERNAL_LIBRARY5) $(INTERNAL_LIBRARY6) $(EXT_LIB) $(opconlibs) /NODEFAULTLIB:libcd /NODEFAULTLIB:libc
+endif
+ifeq ($(OP_MATLABR2013A),1)
+LIBPATH = /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2013A /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2013A\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\lib /LIBPATH:$(NT_OPALRT_ROOT)\common\lib\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\bin /LIBPATH:$(NT_OPALRT_ROOT)\common\bin\x32 $(INTERNAL_LIBRARY_PATH) $(EXT_LIBPATH)
+LIBS    += OpalR2013A.lib libOpalSfunR2013A.lib BlocksRT-2013a.lib libdspR2013A.lib libsimscapeR2013A.lib $(INTERNAL_LIBRARY1) $(INTERNAL_LIBRARY2) $(INTERNAL_LIBRARY3) $(INTERNAL_LIBRARY4) $(INTERNAL_LIBRARY5) $(INTERNAL_LIBRARY6) $(EXT_LIB) $(opconlibs) /NODEFAULTLIB:libcd /NODEFAULTLIB:libc
+endif
+ifeq ($(OP_MATLABR2013B),1)
+LIBPATH = /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2013B /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2013B\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\lib /LIBPATH:$(NT_OPALRT_ROOT)\common\lib\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\bin /LIBPATH:$(NT_OPALRT_ROOT)\common\bin\x32 $(INTERNAL_LIBRARY_PATH) $(EXT_LIBPATH)
+LIBS    += OpalR2013B.lib libOpalSfunR2013B.lib BlocksRT-2013b.lib libdspR2013B.lib libsimscapeR2013B.lib $(INTERNAL_LIBRARY1) $(INTERNAL_LIBRARY2) $(INTERNAL_LIBRARY3) $(INTERNAL_LIBRARY4) $(INTERNAL_LIBRARY5) $(INTERNAL_LIBRARY6) $(EXT_LIB) $(opconlibs) /NODEFAULTLIB:libcd /NODEFAULTLIB:libc
+endif
+ifeq ($(OP_MATLABR2014A),1)
+LIBPATH = /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2014A /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2014A\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\lib /LIBPATH:$(NT_OPALRT_ROOT)\common\lib\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\bin /LIBPATH:$(NT_OPALRT_ROOT)\common\bin\x32 $(INTERNAL_LIBRARY_PATH) $(EXT_LIBPATH)
+LIBS    += OpalR2014A.lib libOpalSfunR2014A.lib BlocksRT-2014a.lib libdspR2014A.lib libsimscapeR2014A.lib $(INTERNAL_LIBRARY1) $(INTERNAL_LIBRARY2) $(INTERNAL_LIBRARY3) $(INTERNAL_LIBRARY4) $(INTERNAL_LIBRARY5) $(INTERNAL_LIBRARY6) $(EXT_LIB) $(opconlibs) /NODEFAULTLIB:libcd /NODEFAULTLIB:libc
+endif
+ifeq ($(OP_MATLABR2014B),1)
+LIBPATH = /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2014B /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2014B\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\lib /LIBPATH:$(NT_OPALRT_ROOT)\common\lib\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\bin /LIBPATH:$(NT_OPALRT_ROOT)\common\bin\x32 $(INTERNAL_LIBRARY_PATH) $(EXT_LIBPATH)
+LIBS    += OpalR2014B.lib libOpalSfunR2014B.lib BlocksRT-2014b.lib libdspR2014B.lib libsimscapeR2014B.lib $(INTERNAL_LIBRARY1) $(INTERNAL_LIBRARY2) $(INTERNAL_LIBRARY3) $(INTERNAL_LIBRARY4) $(INTERNAL_LIBRARY5) $(INTERNAL_LIBRARY6) $(EXT_LIB) $(opconlibs) /NODEFAULTLIB:libcd /NODEFAULTLIB:libc
+endif
+ifeq ($(OP_MATLABR2015A),1)
+LIBPATH = /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2015A /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2015A\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\lib /LIBPATH:$(NT_OPALRT_ROOT)\common\lib\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\bin /LIBPATH:$(NT_OPALRT_ROOT)\common\bin\x32 $(INTERNAL_LIBRARY_PATH) $(EXT_LIBPATH)
+LIBS    += OpalR2015A.lib libOpalSfunR2015A.lib BlocksRT-2015a.lib libdspR2015A.lib libsimscapeR2015A.lib $(INTERNAL_LIBRARY1) $(INTERNAL_LIBRARY2) $(INTERNAL_LIBRARY3) $(INTERNAL_LIBRARY4) $(INTERNAL_LIBRARY5) $(INTERNAL_LIBRARY6) $(EXT_LIB) $(opconlibs) /NODEFAULTLIB:libcd /NODEFAULTLIB:libc
+endif
+ifeq ($(OP_MATLABR2015B),1)
+LIBPATH = /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2015B /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2015B\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\lib /LIBPATH:$(NT_OPALRT_ROOT)\common\lib\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\bin /LIBPATH:$(NT_OPALRT_ROOT)\common\bin\x32 $(INTERNAL_LIBRARY_PATH) $(EXT_LIBPATH)
+LIBS    += OpalR2015B.lib libOpalSfunR2015B.lib BlocksRT-2015b.lib libdspR2015B.lib libsimscapeR2015B.lib $(INTERNAL_LIBRARY1) $(INTERNAL_LIBRARY2) $(INTERNAL_LIBRARY3) $(INTERNAL_LIBRARY4) $(INTERNAL_LIBRARY5) $(INTERNAL_LIBRARY6) $(EXT_LIB) $(opconlibs) /NODEFAULTLIB:libcd /NODEFAULTLIB:libc
+endif
+ifeq ($(OP_MATLABR2016A),1)
+LIBPATH = /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2016A /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2016A\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\lib /LIBPATH:$(NT_OPALRT_ROOT)\common\lib\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\bin /LIBPATH:$(NT_OPALRT_ROOT)\common\bin\x32 $(INTERNAL_LIBRARY_PATH) $(EXT_LIBPATH)
+LIBS    += OpalR2016A.lib libOpalSfunR2016A.lib BlocksRT-2016a.lib libdspR2016A.lib libsimscapeR2016A.lib $(INTERNAL_LIBRARY1) $(INTERNAL_LIBRARY2) $(INTERNAL_LIBRARY3) $(INTERNAL_LIBRARY4) $(INTERNAL_LIBRARY5) $(INTERNAL_LIBRARY6) $(EXT_LIB) $(opconlibs) /NODEFAULTLIB:libcd /NODEFAULTLIB:libc
+endif
+ifeq ($(OP_MATLABR2016B),1)
+LIBPATH = /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2016B /LIBPATH:$(NT_OPALRT_ROOT)\Simulink\libR2016B\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\lib /LIBPATH:$(NT_OPALRT_ROOT)\common\lib\win32 /LIBPATH:$(NT_OPALRT_ROOT)\common\bin /LIBPATH:$(NT_OPALRT_ROOT)\common\bin\x32 $(INTERNAL_LIBRARY_PATH) $(EXT_LIBPATH)
+LIBS    += OpalR2016B.lib libOpalSfunR2016B.lib BlocksRT-2016b.lib libdspR2016B.lib libsimscapeR2016B.lib $(INTERNAL_LIBRARY1) $(INTERNAL_LIBRARY2) $(INTERNAL_LIBRARY3) $(INTERNAL_LIBRARY4) $(INTERNAL_LIBRARY5) $(INTERNAL_LIBRARY6) $(EXT_LIB) $(opconlibs) /NODEFAULTLIB:libcd /NODEFAULTLIB:libc
+endif
+
+RTLAB_LDFLAGS = $(ldebug) $(conflags)
+
+OBJS1 = $(notdir $(SRCS:.c=.obj))
+USER_OBJS1 = $(notdir $(USER_SRCS:.c=.obj))
+OBJS = $(notdir $(OBJS1:.cpp=.obj))
+USER_OBJS = $(notdir $(USER_OBJS1:.cpp=.obj))
+USER_RTLAB_DUMMY_LIB = usr_rtlab_dummy.lib
+
+ifeq ($(MODELREF_TARGET_TYPE),NONE)
+	PROGRAM = $(MODEL).exe
+else
+	PROGRAM = $(MODELLIB)
+endif
+
+SHARED_OBJS = $(addsuffix .obj, $(basename $(SHARED_SRC)))
+SHARED_OUTPUT_OPTS = -o $@

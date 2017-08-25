@@ -1,0 +1,9 @@
+[AcqGr1]
+1=compilation/sm_computation/port1|b|1|1|1
+2=compilation/sm_computation/port2|d|2|1|1
+3=compilation/sm_computation/port3|c|3|1|1
+4=compilation/sm_computation/port4|e|4|1|1
+nbsignals=4
+[sm_computation]
+1=compilation/sc_user_interface/port1|a|1|1|1
+nbsignals=1

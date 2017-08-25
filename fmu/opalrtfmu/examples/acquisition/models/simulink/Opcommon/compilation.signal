@@ -1,0 +1,20 @@
+[Signal]
+1=compilation/sm_computation/OpComm/Receive/S-Function/port1|signal1|1|1|1|1|1|1|S||
+2=compilation/sm_computation/Integrator3/port1|d|1|1|2|1|1|1|S||
+3=compilation/sm_computation/Sum3/port1|Error|1|1|3|1|1|1|S||
+4=compilation/sm_computation/Gain1/port1|signal1|1|1|4|1|1|1|S||
+5=compilation/sm_computation/Sum1/port1|c|1|1|5|1|1|1|S||
+6=compilation/sm_computation/Clock/port1|e|1|1|6|1|1|1|S||
+7=compilation/sm_computation/Gain/port1|signal1|1|1|7|1|1|1|S||
+8=compilation/sm_computation/Integrator2/port1|plant response|1|1|8|1|1|1|S||
+[FixedSignal]
+1=compilation/sm_computation/port1|b|1|1|0|1|
+2=compilation/sm_computation/port2|d|1|1|0|1|
+3=compilation/sm_computation/port3|c|1|1|0|1|
+4=compilation/sm_computation/port4|e|1|1|0|1|
+[ControlSignal]
+1=compilation/sc_user_interface/port1|a|1|1|1|1|
+[Size]
+nbSignals=8
+nbFixedSignals=4
+nbControlSignal=1

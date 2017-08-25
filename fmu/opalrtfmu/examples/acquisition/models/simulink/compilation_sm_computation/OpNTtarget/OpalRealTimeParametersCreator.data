@@ -1,0 +1,56 @@
+sm_computation/Integrator3/InitialCondition
+64
+F64
+1
+sm_computation/Integrator3/UpperSaturationLimit
+72
+F64
+1
+sm_computation/Integrator3/LowerSaturationLimit
+80
+F64
+1
+sm_computation/Sensor response time/DelayTime
+88
+F64
+1
+sm_computation/Sensor response time/InitialOutput
+96
+F64
+1
+sm_computation/Gain Kp/Gain
+104
+F64
+1
+sm_computation/Integrator1/InitialCondition
+112
+F64
+1
+sm_computation/Gain Ki/Gain
+120
+F64
+1
+sm_computation/Gain1/Gain
+128
+F64
+1
+sm_computation/Gain Kd/Gain
+136
+F64
+1
+sm_computation/Actuator response time/DelayTime
+168
+F64
+1
+sm_computation/Actuator response time/InitialOutput
+176
+F64
+1
+sm_computation/Gain/Gain
+184
+F64
+1
+sm_computation/Integrator2/InitialCondition
+192
+F64
+1

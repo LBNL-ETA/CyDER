@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<item name="report">
+    <item name="general">
+        <property name="Date">
+          <value></value>
+        </property>
+        <property name="RTLAB version">
+          <value></value>
+        </property>
+     </item>     
+</item>

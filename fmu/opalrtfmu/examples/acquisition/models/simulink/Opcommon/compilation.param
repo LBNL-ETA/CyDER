@@ -1,0 +1,23 @@
+[General]
+ATT_VERSION=1
+[Size]
+nbParameters=14
+nbValues=14
+nbVariables=0
+nbParamsVar=0
+[Parameter]
+0=compilation/sm_computation/Integrator3|InitialCondition| |Scalar|1|1|8|0.0|1|1|
+1=compilation/sm_computation/Integrator3|UpperSaturationLimit| |Scalar|1|1|9|200.0|1|1|
+2=compilation/sm_computation/Integrator3|LowerSaturationLimit| |Scalar|1|1|10|0.0|1|1|
+3=compilation/sm_computation/Sensor response time|DelayTime| |Scalar|1|1|11|0.005|1|1|
+4=compilation/sm_computation/Sensor response time|InitialOutput| |Scalar|1|1|12|0.0|1|1|
+5=compilation/sm_computation/Gain Kp|Gain| |Scalar|1|1|13|20.0|1|1|
+6=compilation/sm_computation/Integrator1|InitialCondition| |Scalar|1|1|14|0.0|1|1|
+7=compilation/sm_computation/Gain Ki|Gain| |Scalar|1|1|15|5.0|1|1|
+8=compilation/sm_computation/Gain1|Gain| |Scalar|1|1|16|-1.0|1|1|
+9=compilation/sm_computation/Gain Kd|Gain| |Scalar|1|1|17|5.0|1|1|
+10=compilation/sm_computation/Actuator response time|DelayTime| |Scalar|1|1|21|0.005|1|1|
+11=compilation/sm_computation/Actuator response time|InitialOutput| |Scalar|1|1|22|0.0|1|1|
+12=compilation/sm_computation/Gain|Gain| |Scalar|1|1|23|1.0|1|1|
+13=compilation/sm_computation/Integrator2|InitialCondition| |Scalar|1|1|24|0.0|1|1|
+[Variable]

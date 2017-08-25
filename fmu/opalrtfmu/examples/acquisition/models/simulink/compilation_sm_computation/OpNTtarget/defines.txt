@@ -1,0 +1,8 @@
+MODEL=compilation_1_sm_computation
+NUMST=2
+NCSTATES=3
+HAVESTDIO
+RT
+USE_RTMODEL
+INTEGER_CODE=0
+MT=0
