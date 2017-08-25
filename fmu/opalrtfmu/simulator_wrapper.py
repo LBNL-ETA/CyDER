@@ -35,7 +35,7 @@ def compileAndInstantiate(projectPath):
         print("=====Check that the \\common\\bin folder of RT-Lab is on the system PATH.")
         raise
 
-        print("=====MetaController is successfully started.")
+    print("=====MetaController is successfully started.")
 
     # Wait 1 second to give time to the MetaController to start
     sleep(1.0)
