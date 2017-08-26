@@ -26,16 +26,18 @@ def compileAndInstantiate(projectPath):
     # Check if MetaController is running and if not start it up
 
     import subprocess
-    print("=====Starting the MetaController.")
     # Start the MetaController
-    try:
-        subprocess.Popen("MetaController")
-    except:
-        print("=====MetaController.exe couldn't be started. ")
-        print("=====Check that the \\common\\bin folder of RT-Lab is on the system PATH.")
-        raise
+    tasklist = subprocess.check_output('tasklist', shell=True)
+    if not "MetaController.exe" in tasklist:
+        print("=====Starting the MetaController.")
+        try:
+            subprocess.Popen("MetaController")
+        except:
+            print("=====MetaController.exe couldn't be started. ")
+            print("=====Check that the \\common\\bin folder of RT-Lab is on the system PATH.")
+            raise
 
-    print("=====MetaController is successfully started.")
+        print("=====MetaController is successfully started.")
 
     # Wait 1 second to give time to the MetaController to start
     sleep(1.0)
@@ -58,6 +60,7 @@ def compileAndInstantiate(projectPath):
         if modelState == RtlabApi.MODEL_RUNNING:
             #print("This is the output value={!s}".format(RtlabApi.GetSignalsByName('sm_computation.reference_out')))
             ## Pause the model
+            print ("=====The model is running and won't be recompiled.")
             return
 
     except Exception:
@@ -151,7 +154,8 @@ def compileAndInstantiate(projectPath):
 
     finally:
         ## Always disconnect from the model when the connection is completed
-        RtlabApi.Disconnect()
+        print ("The model has been successfully compiled and is now running.")
+        #RtlabApi.Disconnect()
 
 def setData(projectPath, inputNames, inputValues, simulationTime):
     """
@@ -263,7 +267,6 @@ def getData(projectPath, outputNames, simulationTime):
                            "output values for the output names={!s}.".format(simulationTime, outputNames))
                     raise
 
-
         ## if the model is not running
         else:
             ## Print the model state
@@ -298,19 +301,17 @@ if __name__ == "__main__":
 
     ## Connect to a running model using its name.
     ## The system control is release
-    projectName = os.path.abspath(os.path.join('examples', 'acquisition', 'acquisition.llp'))
+    projectName = os.path.abspath(os.path.join('examples', 'demo', 'demo.llp'))
 
     print ("=====Ready to compile, load, and execute the model.")
     # Compile and Run the model for the first time
     compileAndInstantiate(projectName)
 
-    print ("=====The model is compiled and up and running.")
-
     # These variables will be retreived from the exchange Python function
-    inputNames = 'compilation/sc_user_interface/port1'
+    inputNames = 'demo/sc_user_interface/port1'
     #inputNames = None
     inputValues = 1.0
-    outputNames = ('compilation/sm_computation/port1', 'compilation/sm_computation/port2', 'compilation/sm_computation/port3', 'compilation/sc_user_interface/port1')
+    outputNames = ('demo/sm_computation/port1', 'demo/sm_computation/port2', 'demo/sm_computation/port3', 'demo/sc_user_interface/port1')
     simulationTime = 0.0
     print ("=====Ready to exchange data with the OPAL-RT running model.")
     # Handle the case when inputNames is None
@@ -329,6 +330,7 @@ if __name__ == "__main__":
         else:
             setData(projectName, inputNames, inputValues, simulationTime)
         print("=====The input variables={!s} were successfully set.".format(inputNames))
+
     if (outputNames is not None):
         print ("=====Ready to get the output variables={!s} at time={!s}.".format(outputNames, simulationTime))
         if (isinstance(outputNames, list)):
