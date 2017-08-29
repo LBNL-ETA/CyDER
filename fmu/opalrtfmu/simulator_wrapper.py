@@ -14,6 +14,7 @@ import RtlabApi
 from time import sleep
 import os
 import sys
+from datetime import datetime
 
 def compileAndInstantiate(projectPath):
     """
@@ -72,6 +73,8 @@ def compileAndInstantiate(projectPath):
             ## If a exception occur: stop waiting
             print ("An error occured during compilation.")
             #raise
+
+    start = datetime.now()
 
     mdlFolder, mdlName = RtlabApi.GetCurrentModel()
     mdlPath = os.path.join(mdlFolder, mdlName)
@@ -152,6 +155,10 @@ def compileAndInstantiate(projectPath):
                 print ("An error occured during execution.")
                 raise
 
+        end = datetime.now()
+        print(
+            'Compiled, loaded and executed the model for the first time in {!s} seconds.'.format(
+                (end - start).total_seconds()))
     finally:
         ## Always disconnect from the model when the connection is completed
         print ("The model has been successfully compiled and is now running.")
@@ -168,8 +175,11 @@ def setData(projectPath, inputNames, inputValues, simulationTime):
 
     """
 
-    ## Connect to a running model using its name.
-    #projectName = os.path.abspath(projectPath)
+    sleep(1.0)
+    projectName = os.path.abspath(projectPath)
+    print("=====Path to the project={!s}".format(projectName))
+
+    start = datetime.now()
     RtlabApi.OpenProject(projectName)
     print ("=====The connection with {!s} is completed.".format(projectName))
     try:
@@ -211,6 +221,10 @@ def setData(projectPath, inputNames, inputValues, simulationTime):
             ## Print the model state
             print ("The model state is not running. Simulation will be terminated.")
             raise
+        end = datetime.now()
+        print(
+            'Send values={!s} of inputs with names={!s} in {!s} seconds.'.format(inputValues,
+            inputNames, (end - start).total_seconds()))
     finally:
         ## Always disconnect from the model when the connection
         ## is completed
@@ -241,7 +255,11 @@ def getData(projectPath, outputNames, simulationTime):
     """
 
     ## Connect to a running model using its name.
-    #projectName = os.path.abspath(projectPath)
+    sleep(1.0)
+    projectName = os.path.abspath(projectPath)
+    print("=====Path to the project={!s}".format(projectName))
+
+    start = datetime.now()
     RtlabApi.OpenProject(projectName)
     print ("=====The connection with {!s} is completed.".format(projectName))
     try:
@@ -272,6 +290,11 @@ def getData(projectPath, outputNames, simulationTime):
             ## Print the model state
             print ("The model state is not running. Simulation will be terminated.")
             raise
+
+        end = datetime.now()
+        print(
+            'Get values={!s} of outputs with names={!s} in {!s} seconds.'.format(outputValues,
+            outputNames, (end - start).total_seconds()))
     finally:
         ## Always disconnect from the model when the connection
         ## is completed
@@ -292,72 +315,80 @@ def getData(projectPath, outputNames, simulationTime):
 
     return outputValues
 
-# def exchange(projectPath, inputNames, inputValues, outputNames, simulationTime):
-#     """
-#     This function is used to exchange data with the Opal RT FMU.
-#
-#     """
-if __name__ == "__main__":
+def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, writeResults):
+
+#if __name__ == "__main__":
 
     ## Connect to a running model using its name.
-    ## The system control is release
-    projectName = os.path.abspath(os.path.join('examples', 'demo', 'demo.llp'))
+    #projectName = os.path.abspath(os.path.join('examples', 'demo', 'demo.llp'))
 
-    print ("=====Ready to compile, load, and execute the model.")
-    # Compile and Run the model for the first time
-    compileAndInstantiate(projectName)
+     """
+     This function is used to exchange data with the Opal RT FMU.
 
-    # These variables will be retreived from the exchange Python function
-    inputNames = 'demo/sc_user_interface/port1'
-    #inputNames = None
-    inputValues = 1.0
-    outputNames = ('demo/sm_computation/port1', 'demo/sm_computation/port2', 'demo/sm_computation/port3', 'demo/sc_user_interface/port1')
-    simulationTime = 0.0
-    print ("=====Ready to exchange data with the OPAL-RT running model.")
-    # Handle the case when inputNames is None
-    if(inputNames is not None):
-        print ("=====Ready to set the input variables={!s} with values={!s} at time={!s}.".format(inputNames, inputValues, simulationTime))
-        if (isinstance(inputNames, list)):
-            len_inputNames = len(inputNames)
-            len_inputValues = len(inputValues)
-            if(len_inputNames<>len_inputValues):
-                print ("An error occured at simulationTime={!s}. "\
-                        "Length of inputNames={!s} ({!s}) does not match " \
-                        "length of input values={!s} ({!s}).".format(simulationTime, inputNames,
-                        len_inputNames, inputValues, len_inputValues))
-                raise
-            setData(projectName, tuple(inputNames), tuple(inputValues), simulationTime)
-        else:
-            setData(projectName, inputNames, inputValues, simulationTime)
-        print("=====The input variables={!s} were successfully set.".format(inputNames))
+     """
 
-    if (outputNames is not None):
-        print ("=====Ready to get the output variables={!s} at time={!s}.".format(outputNames, simulationTime))
-        if (isinstance(outputNames, list)):
-            outputValues = getData(projectName, tuple(outputNames), simulationTime)
-            len_outputNames = len(outputNames)
-            len_outputValues = len(outputValues)
-            if(len_outputNames<>len_outputValues):
-                print ("An error occured at simulationTime={!s}. "\
-                        "Length of outputNames={!s} ({!s}) does not match " \
-                        "length of output values={!s} ({!s}).".format(simulationTime, outputNames,
-                        len_outputNames, outputValues, len_outputValues))
-                raise
-            outputValues = getData(projectName, tuple(outputNames), simulationTime)
-        else:
-            outputValues = getData(projectName, outputNames, simulationTime)
-        print("=====The output variables={!s} were successfully retrieved.".format(outputNames))
-        if(outputValues is None):
-            print ("output values for outputNames={!=} is empty at time={!s}.".
-                   format(outputNames, simulationTime))
-            raise
-        print ("=====The values of the output variables:{!s} are equal {!s} at time={!s}.".format(outputNames,
-                outputValues, simulationTime))
+     projectName = "D:\\Users\\emma\\Documents\\GitHub\\CyDER\\fmu\\opalrtfmu\\examples\\demo\\demo.llp"
 
-    # Convert the output values to float so they can be used on the receiver side.
-    retOutputValues = []
-    if (isinstance(outputNames, tuple)):
-        for elem in outputValues:
-            retOutputValues.append(1.0*float(elem))
-    else:
-        retOutputValues = 1.0 * float (outputValues)
+     print ("=====Ready to compile, load, and execute the model.")
+     # Compile and Run the model for the first time
+     compileAndInstantiate(projectName)
+
+     # These variables will be retreived from the exchange Python function
+     inputNames = 'demo/sc_user_interface/port1'
+     #inputNames = None
+     inputValues = 1.0
+     outputNames = ['demo/sm_computation/port1', 'demo/sm_computation/port2', 'demo/sm_computation/port3']
+     simulationTime = 0.0
+     print ("=====Ready to exchange data with the OPAL-RT running model.")
+     # Handle the case when inputNames is None
+     if(inputNames is not None):
+         print ("=====Ready to set the input variables={!s} with values={!s} at time={!s}.".format(inputNames, inputValues, simulationTime))
+         if (isinstance(inputNames, list)):
+             len_inputNames = len(inputNames)
+             len_inputValues = len(inputValues)
+             if(len_inputNames<>len_inputValues):
+                 print ("An error occured at simulationTime={!s}. "\
+                         "Length of inputNames={!s} ({!s}) does not match " \
+                         "length of input values={!s} ({!s}).".format(simulationTime, inputNames,
+                         len_inputNames, inputValues, len_inputValues))
+                 raise
+             setData(projectName, tuple(inputNames), tuple(inputValues), simulationTime)
+         else:
+             setData(projectName, inputNames, inputValues, simulationTime)
+         print("=====The input variables={!s} were successfully set.".format(inputNames))
+
+     if (outputNames is not None):
+         print ("=====Ready to get the output variables={!s} at time={!s}.".format(outputNames, simulationTime))
+         if (isinstance(outputNames, list)):
+             outputValues = getData(projectName, tuple(outputNames), simulationTime)
+             len_outputNames = len(outputNames)
+             len_outputValues = len(outputValues)
+             if(len_outputNames<>len_outputValues):
+                 print ("An error occured at simulationTime={!s}. "\
+                         "Length of outputNames={!s} ({!s}) does not match " \
+                         "length of output values={!s} ({!s}).".format(simulationTime, outputNames,
+                         len_outputNames, outputValues, len_outputValues))
+                 raise
+             outputValues = getData(projectName, tuple(outputNames), simulationTime)
+         else:
+             outputValues = getData(projectName, outputNames, simulationTime)
+         print("=====The output variables={!s} were successfully retrieved.".format(outputNames))
+         if(outputValues is None):
+             print ("output values for outputNames={!=} is empty at time={!s}.".
+                    format(outputNames, simulationTime))
+             raise
+         print ("=====The values of the output variables:{!s} are equal {!s} at time={!s}.".format(outputNames,
+                 outputValues, simulationTime))
+
+     # Convert the output values to float so they can be used on the receiver side.
+     retOutputValues = []
+     if (isinstance(outputValues, tuple)):
+         for elem in outputValues:
+             retOutputValues.append(1.0*float(elem))
+     else:
+         retOutputValues = 1.0 * float (outputValues)
+
+#if __name__ == "__main__":
+
+    ## Connect to a running model using its name.
+    #projectName = os.path.abspath(os.path.join('examples', 'demo', 'demo.llp'))
