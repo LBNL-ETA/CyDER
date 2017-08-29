@@ -1,0 +1,13 @@
+config_input_signal_length=3
+config_output_signal_length=1
+config_num_tapped_delay_lines=2
+config_num_hidden_layers=1
+config_initial_weight_range=0.100000
+config_initial_learning_rate=0.010000
+config_initial_momentum=0.010000
+input_block_start=0
+output_block_start=6
+last_error=0.000000
+current_epoch=1
+input=0.000000 0.000000 0.000000 0.000374 0.000000 0.000000 0.000000 0.000748 
+output=0.014345 

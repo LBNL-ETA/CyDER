@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 import pandas
-import type_lookup as lookup
+import source.cymdist_tool.type_lookup as lookup
 import pickle
 import numpy as np
 import json

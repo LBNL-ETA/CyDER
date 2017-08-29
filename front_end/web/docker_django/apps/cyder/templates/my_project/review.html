@@ -1,0 +1,111 @@
+{% extends "_base.html" %}
+{% block content %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.0.1/spin.min.js'></script>
+<script src="/static/js.cookie.js"></script>
+<link rel="stylesheet" href="/static/magnific-popup/magnific-popup.css">
+<script src="/static/magnific-popup/jquery.magnific-popup.js"></script>
+
+<div id="add-popup" class="white-popup mfp-with-anim mfp-hide">
+  <div id="spinner">
+  </div>
+</div>
+
+<div style="max-width: 800px; margin: 0 auto;">
+  <div class="text-center">
+    <h1><b>CyDER</b></h1>
+    <p>Simulation models and parameters:</p>
+  </div>
+
+  <br>
+
+  <div class="text-center">
+    {% for value in project_models %}
+      <div class="row">
+        <div class="col-md-8" style="text-align:left;">
+          <p><b>Id</b>: {{ value.model.id }} |
+          <b>Region</b>: {{ value.model.region }} |
+          <b>Breaker name</b>: {{ value.model.breaker_name }}</p>
+        </div>
+        <br>
+        <br>
+      </div>
+    {% endfor %}
+  </div>
+
+  <br>
+  <br>
+
+  <div class="text-center">
+    <p>Launch the simulation!</p>
+    <div id="option" class="row">
+      <a class="button3" href="/my_projects/">Back</a>
+      <a id="simulate" class="button1">Simulate</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// loader settings
+var opts = {
+  lines: 9, // The number of lines to draw
+  length: 9, // The length of each line
+  width: 5, // The line thickness
+  radius: 14, // The radius of the inner circle
+  color: '#EE3124', // #rgb or #rrggbb or array of colors
+  speed: 1.9, // Rounds per second
+  trail: 40, // Afterglow percentage
+  className: 'spinner', // The CSS class to assign to the spinner
+};
+
+var csrftoken = Cookies.get('csrftoken');
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+$(document).ready(function(){
+  $("#simulate").click(function(){
+      // trigger popup
+      $.magnificPopup.open({
+          items: {
+            src: '#add-popup'
+          },
+          removalDelay: 500, //delay removal by X to allow out-animation
+          mainClass: 'mfp-fade'
+      });
+
+      // trigger loader
+      var target = document.getElementById("option");
+      var spinner = new Spinner(opts).spin(target);
+
+      // Send post request
+      $.post("/api/simulation/{{ project_id }}/simulate/?format=json",
+      {
+        "options": "string",
+        "description": "string"
+      },
+      function(data, status){
+          // stop spin.js loader
+          spinner.stop();
+
+          // close the pop up
+          $.magnificPopup.close()
+      });
+  });
+});
+</script>
+
+
+{% endblock %}

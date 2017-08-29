@@ -1,0 +1,25 @@
+{% extends "_base.html" %}
+{% block content %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+<div style="max-width: 700px; margin: 0 auto;">
+  <div class="text-center">
+    <h1><b>CyDER</b></h1>
+    <br>
+    <p>Set your scenario:</p>
+  </div>
+
+  {% csrf_token %}
+  {% crispy form %}
+
+  <br>
+  <br>
+
+  <div class="text-center">
+    <p>Take me back to the main menu</p>
+    <a class="button3" href="/my_project_model_settings/{{ project_model_id }}">Back</a>
+  </div>
+</div>
+
+{% endblock %}

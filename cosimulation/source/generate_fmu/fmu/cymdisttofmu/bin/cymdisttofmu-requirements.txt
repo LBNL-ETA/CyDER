@@ -1,0 +1,7 @@
+#
+####### cymdisttofmu-requirements.txt #######
+# The release version of CYMDISTToFMU.py  
+# need following modules:
+###### Requirements without Version Specifiers ######
+jinja2
+lxml

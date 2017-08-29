@@ -1,0 +1,48 @@
+{% load staticfiles %}
+<head>
+  <title>CyDER!</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static "main.css" %}">
+</head>
+
+{% block content %}
+
+{% if form.errors %}
+<p>Your username and password didn't match. Please try again.</p>
+{% endif %}
+
+{% if next %}
+    {% if user.is_authenticated %}
+    <p>Your account doesn't have access to this page. To proceed,
+    please login with an account that has access.</p>
+    {% else %}
+    <p>Please login to see this page.</p>
+    {% endif %}
+{% endif %}
+
+<div class="text-center">
+  <h1><b>CyDER</b></h1>
+  <br>
+
+  <form method="post" action="{% url 'login' %}">
+  {% csrf_token %}
+
+  <div>
+    <td>{{ form.username.label_tag }}</td>
+    <td>{{ form.username }}</td>
+  </div>
+  <div>
+    <td>{{ form.password.label_tag }}</td>
+    <td>{{ form.password }}</td>
+  </div>
+
+  <div style="margin-left: 180px;">
+    <input type="submit" value="login" />
+    <input type="hidden" name="next" value="" />
+  </div>
+  </form>
+</div>
+
+{% endblock %}

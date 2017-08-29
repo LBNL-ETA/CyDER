@@ -1,0 +1,98 @@
+{% extends "_base.html" %}
+{% block content %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.4.3/d3.js" charset="utf-8"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.0.1/spin.min.js'></script>
+
+
+<div style="max-width: 500px; margin: 0 auto;">
+
+  <div class="text-center">
+    <h1><b>CyDER</b></h1>
+    <p>Simulation result:</p>
+    <br>
+  </div>
+</div>
+
+<div id="graph" style="width: 70%; height: 500px; margin: 0 auto;"></div>
+
+<div class="text-center">
+  <p>Take me back to the main menu</p>
+  <a class="button3" href="/my_projects/">Back</a>
+</div>
+
+<script>
+  // loader settings
+  var opts = {
+    lines: 9, // The number of lines to draw
+    length: 9, // The length of each line
+    width: 5, // The line thickness
+    radius: 14, // The radius of the inner circle
+    color: '#EE3124', // #rgb or #rrggbb or array of colors
+    speed: 1.9, // Rounds per second
+    trail: 40, // Afterglow percentage
+    className: 'spinner', // The CSS class to assign to the spinner
+  };
+
+  // trigger loader
+  var target = document.getElementById("graph");
+  var spinner = new Spinner(opts).spin(target);
+
+  d3.json("/api/project_model_node_result/?simulation_id={{ project_model_id }}", function(error, json) {
+    if (error) return console.warn(error);
+
+    // stop spin.js loader
+    spinner.stop();
+
+    var x = [];
+    var y1 = [];
+    var y2 = [];
+    var y3 = [];
+
+    json.forEach(function(d){
+      x.push(d.distance / 1000);
+      y1.push(d.voltage_A)
+      y2.push(d.voltage_B)
+      y3.push(d.voltage_C)
+
+    });
+
+    var trace = {
+      x: x,
+      y: y1,
+      mode: 'markers',
+      type: 'scatter',
+      name: 'Phase A'
+    };
+
+    var trace2 = {
+      x: x,
+      y: y2,
+      mode: 'markers',
+      type: 'scatter',
+      name: 'Phase B'
+    };
+
+    var trace3 = {
+      x: x,
+      y: y3,
+      mode: 'markers',
+      type: 'scatter',
+      name: 'Phase C'
+    };
+
+    var layout = {
+      xaxis: {title: 'Distance (km)'},
+      yaxis: {title: 'Voltage (pu)'},
+    };
+
+    var data = [trace, trace2, trace3];
+
+    Plotly.newPlot('graph', data, layout);
+  });
+</script>
+
+
+{% endblock content %}

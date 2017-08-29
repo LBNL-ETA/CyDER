@@ -1,0 +1,14 @@
+Django==1.8.1
+gunicorn==19.3.0
+psycopg2==2.6
+redis==2.10.3
+celery==3.1.16
+simplejson
+django-crispy-forms
+pdb
+django-bootstrap3-datetimepicker
+djangorestframework
+django-rest-swagger
+numpy
+markdown
+django-filter
