@@ -78,8 +78,8 @@ def run_simulator ():
     end = datetime.now()
 
     print(
-        'Ran a single Simulator simulation with {!s} FMU={!s} in {!s} seconds.'.format(
-            tool, fmu_path, (end - start).total_seconds()))
+        'Ran a single Opal-RT simulation with FMU={!s} in {!s} seconds.'.format(
+            fmu_path, (end - start).total_seconds()))
 
     # Terminate FMUs
     sim_mod.terminate()

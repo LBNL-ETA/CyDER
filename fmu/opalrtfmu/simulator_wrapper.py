@@ -62,6 +62,7 @@ def compileAndInstantiate(projectPath):
             #print("This is the output value={!s}".format(RtlabApi.GetSignalsByName('sm_computation.reference_out')))
             ## Pause the model
             print ("=====The model is running and won't be recompiled.")
+            RtlabApi.Disconnect()
             return
 
     except Exception:
@@ -162,7 +163,7 @@ def compileAndInstantiate(projectPath):
     finally:
         ## Always disconnect from the model when the connection is completed
         print ("The model has been successfully compiled and is now running.")
-        #RtlabApi.Disconnect()
+        RtlabApi.Disconnect()
 
 def setData(projectPath, inputNames, inputValues, simulationTime):
     """
@@ -334,10 +335,14 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
      compileAndInstantiate(projectName)
 
      # These variables will be retreived from the exchange Python function
-     inputNames = 'demo/sc_user_interface/port1'
+     print ("These are the inputNames={!s}".format(inputNames))
+     print ("These are the inputValues={!s}".format(inputValues))
+     print ("These are the outputNames={!s}".format(outputNames))
+
+     #inputNames = 'demo/sc_user_interface/port1'
      #inputNames = None
-     inputValues = 1.0
-     outputNames = ['demo/sm_computation/port1', 'demo/sm_computation/port2', 'demo/sm_computation/port3']
+     #inputValues = 1.0
+     #outputNames = ['demo/sm_computation/port1', 'demo/sm_computation/port2', 'demo/sm_computation/port3']
      simulationTime = 0.0
      print ("=====Ready to exchange data with the OPAL-RT running model.")
      # Handle the case when inputNames is None
@@ -382,11 +387,14 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
 
      # Convert the output values to float so they can be used on the receiver side.
      retOutputValues = []
+     print("The outputValues are={!s}".format(outputValues))
      if (isinstance(outputValues, tuple)):
          for elem in outputValues:
              retOutputValues.append(1.0*float(elem))
      else:
          retOutputValues = 1.0 * float (outputValues)
+
+     return retOutputValues
 
 #if __name__ == "__main__":
 
