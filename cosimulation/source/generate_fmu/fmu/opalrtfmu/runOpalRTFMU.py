@@ -21,14 +21,14 @@ sys.path.append(parser_path)
 def run_simulator ():
 
     '''
-    Function for running FMUs exported from Dymola, JModelica, and OpenModelica with PyFMI.
+    Function for running an OPAL-RT FMU exported with JModelica 2.0 using PyFMI.
 
     '''
 
     try:
         from pyfmi import load_fmu
     except BaseException:
-        print ('PyFMI not installed. Test will not be be run.')
+        print ('PyFMI not installed. Script will not be be run.')
         return
 
     fmu_path = 'Simulator.fmu'
@@ -85,5 +85,5 @@ def run_simulator ():
     sim_mod.terminate()
 
 if __name__ == "__main__":
-        # Check command line options
+    # Check command line options
     run_simulator()

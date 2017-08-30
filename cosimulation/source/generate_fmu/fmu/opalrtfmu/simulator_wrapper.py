@@ -343,7 +343,7 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
      """
 
      # This is just for testing and will be retrieved from the project path
-     projectName = "D:\\Users\\emma\\Documents\\GitHub\\CyDER\\fmu\\opalrtfmu\\examples\\demo\\demo.llp"
+     projectName = "D:\\Users\\emma\\Documents\\GitHub\\CyDER\\cosimulation\\source\\generate_fmu\\fmu\\opalrtfmu\\examples\\demo\\demo.llp"
 
      # Convert the input and output names to be strings that can be set in Opal-RT models
      #inputNames = 'demo/sc_user_interface/port1'
