@@ -34,7 +34,7 @@ def run_simulator ():
     fmu_path = 'Simulator.fmu'
     # Parameters which will be arguments of the function
     start_time = 0.0
-    stop_time = 5.0
+    stop_time = 2.0
 
     print ('Starting the simulation')
     start = datetime.now()
