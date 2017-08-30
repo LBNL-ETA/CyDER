@@ -62,6 +62,7 @@ def compileAndInstantiate(projectPath):
             #print("This is the output value={!s}".format(RtlabApi.GetSignalsByName('sm_computation.reference_out')))
             ## Pause the model
             print ("=====The model is running and won't be recompiled.")
+            RtlabApi.Disconnect()
             return
 
     except Exception:
@@ -162,7 +163,7 @@ def compileAndInstantiate(projectPath):
     finally:
         ## Always disconnect from the model when the connection is completed
         print ("The model has been successfully compiled and is now running.")
-        #RtlabApi.Disconnect()
+        RtlabApi.Disconnect()
 
 def setData(projectPath, inputNames, inputValues, simulationTime):
     """
@@ -315,6 +316,20 @@ def getData(projectPath, outputNames, simulationTime):
 
     return outputValues
 
+def convertUnicodeString(inputNames):
+    """
+    This function gets an unicode string and convert it to a string.
+    """
+    retNames = []
+    if (isinstance(inputNames, list)):
+        for elem in inputNames:
+            retNames.append(str(elem))
+    else:
+        retNames = str(inputNames)
+
+    return retNames
+
+
 def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, writeResults):
 
 #if __name__ == "__main__":
@@ -327,20 +342,28 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
 
      """
 
+     # This is just for testing and will be retrieved from the project path
      projectName = "D:\\Users\\emma\\Documents\\GitHub\\CyDER\\fmu\\opalrtfmu\\examples\\demo\\demo.llp"
+
+     # Convert the input and output names to be strings that can be set in Opal-RT models
+     #inputNames = 'demo/sc_user_interface/port1'
+     #inputNames = None
+     #inputValues = 1.0
+     #outputNames = ['demo/sm_computation/port1', 'demo/sm_computation/port2', 'demo/sm_computation/port3']
+     if (inputNames is not None):
+         inputNames=convertUnicodeString(inputNames)
+     if (outputNames is not None):
+        outputNames=convertUnicodeString(outputNames)
 
      print ("=====Ready to compile, load, and execute the model.")
      # Compile and Run the model for the first time
      compileAndInstantiate(projectName)
 
-     # These variables will be retreived from the exchange Python function
-     inputNames = 'demo/sc_user_interface/port1'
-     #inputNames = None
-     inputValues = 1.0
-     outputNames = ['demo/sm_computation/port1', 'demo/sm_computation/port2', 'demo/sm_computation/port3']
+
      simulationTime = 0.0
      print ("=====Ready to exchange data with the OPAL-RT running model.")
      # Handle the case when inputNames is None
+
      if(inputNames is not None):
          print ("=====Ready to set the input variables={!s} with values={!s} at time={!s}.".format(inputNames, inputValues, simulationTime))
          if (isinstance(inputNames, list)):
@@ -382,11 +405,14 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
 
      # Convert the output values to float so they can be used on the receiver side.
      retOutputValues = []
+     print("The outputValues are={!s}".format(outputValues))
      if (isinstance(outputValues, tuple)):
          for elem in outputValues:
              retOutputValues.append(1.0*float(elem))
      else:
          retOutputValues = 1.0 * float (outputValues)
+
+     return retOutputValues
 
 #if __name__ == "__main__":
 

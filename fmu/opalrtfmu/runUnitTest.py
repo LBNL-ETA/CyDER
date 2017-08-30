@@ -34,7 +34,7 @@ def run_simulator ():
     fmu_path = 'Simulator.fmu'
     # Parameters which will be arguments of the function
     start_time = 0.0
-    stop_time = 5.0
+    stop_time = 2.0
 
     print ('Starting the simulation')
     start = datetime.now()
@@ -78,8 +78,8 @@ def run_simulator ():
     end = datetime.now()
 
     print(
-        'Ran a single Simulator simulation with {!s} FMU={!s} in {!s} seconds.'.format(
-            tool, fmu_path, (end - start).total_seconds()))
+        'Ran a single Opal-RT simulation with FMU={!s} in {!s} seconds.'.format(
+            fmu_path, (end - start).total_seconds()))
 
     # Terminate FMUs
     sim_mod.terminate()
