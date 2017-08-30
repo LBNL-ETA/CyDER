@@ -1,0 +1,32 @@
+http:
+        image: nginx
+        ports:
+                - "80:80"
+        volumes:
+                - ./http/nginx_conf.d:/etc/nginx/conf.d
+                - ./CyDER/static:/var/www/
+        links:
+                - wsgi
+                
+wsgi:
+        build: wsgi
+        expose:
+                - "8000"
+        volumes:
+                - ./wsgi/init:/usr/src/at-build/init
+                - ./CyDER/django:/usr/src/app
+        links:
+                - redis
+
+redis:
+        image: redis
+# Uncomment if need of persistence
+#        volumes:
+#                - ./redis/data:/data
+                
+worker:
+        build: worker
+        volumes:
+                - ./CyDER/django:/usr/src/app
+        links:
+                - redis

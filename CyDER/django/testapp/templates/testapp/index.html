@@ -1,0 +1,8 @@
+<form action="{% url 'index' %}" method="POST">
+	{% csrf_token %}
+	<input type="hidden" name="triggered" value="true">
+	<input type="submit" value="Do some work">
+</form>
+{% if triggered %}
+    <p>Message sent to the worker</p>
+{% endif %}
