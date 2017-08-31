@@ -10,6 +10,7 @@ import platform
 import subprocess
 import shutil
 from datetime import datetime
+from time import sleep
 
 # Appending parser_path to the system path os required to be able
 # to find the SimulatorToFMU model from this directory
@@ -35,6 +36,7 @@ def run_simulator ():
     # Parameters which will be arguments of the function
     start_time = 0.0
     stop_time = 2.0
+    step_size = 1.0
 
     print ('Starting the simulation')
     start = datetime.now()
@@ -43,6 +45,7 @@ def run_simulator ():
     simulator_output_valref = []
 
     sim_mod = load_fmu(fmu_path, log_level=7)
+
     sim_mod.setup_experiment(
         start_time=start_time, stop_time=stop_time)
 
@@ -67,22 +70,31 @@ def run_simulator ():
     # Initialize the FMUs
     sim_mod.initialize()
 
+    print ("===========Initialization is completed")
+
     # Call event update prior to entering continuous mode.
-    sim_mod.event_update()
+    #sim_mod.event_update()
+    #sim_mod.enter_continuous_time_mode()
 
-    # Enter continuous time mode
-    sim_mod.enter_continuous_time_mode()
+    import numpy as np
 
-    sim_mod.set_real(simulator_input_valref, simulator_input_values)
+    for tim in np.arange(start_time, stop_time, step_size):
+        # Enter continuous time mode
+        print ("Set values at time={!s}".format(tim))
+        sim_mod.time = tim
+        sim_mod.set_real(simulator_input_valref, simulator_input_values)
+        end = datetime.now()
 
-    end = datetime.now()
-
-    print(
-        'Ran a single Opal-RT simulation with FMU={!s} in {!s} seconds.'.format(
-            fmu_path, (end - start).total_seconds()))
+    # print ("Th value of the signal='demo/sm_computation/port3' is ={!s}".format(
+    # sim_mod.get_real(sim_mod.get_variable_valueref('demo_sm_computation_port3'))
+    # ))
+    #
+    # print(
+    #     'Ran a single Opal-RT simulation with FMU={!s} in {!s} seconds.'.format(
+    #         fmu_path, (end - start).total_seconds()))
 
     # Terminate FMUs
-    sim_mod.terminate()
+    #sim_mod.terminate()
 
 if __name__ == "__main__":
     # Check command line options
