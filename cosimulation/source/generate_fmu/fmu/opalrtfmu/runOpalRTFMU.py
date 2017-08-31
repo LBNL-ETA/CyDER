@@ -35,7 +35,7 @@ def run_simulator ():
     fmu_path = 'Simulator.fmu'
     # Parameters which will be arguments of the function
     start_time = 0.0
-    stop_time = 2.0
+    stop_time = 1.0
     step_size = 1.0
 
     print ('Starting the simulation')
@@ -83,6 +83,7 @@ def run_simulator ():
         print ("Set values at time={!s}".format(tim))
         sim_mod.time = tim
         sim_mod.set_real(simulator_input_valref, simulator_input_values)
+        sleep(10)
         end = datetime.now()
 
     # print ("Th value of the signal='demo/sm_computation/port3' is ={!s}".format(
