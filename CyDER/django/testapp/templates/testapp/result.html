@@ -1,0 +1,10 @@
+<h1>Result</h1>
+<p>
+	Task id: {{ taskid }}<br>
+{% if result.status ==  'SUCCESS' %}
+	Result: {{ result.get }}
+{% else %}
+	Result not available yet (Status: {{ result.status }})<br>
+	<a href="{% url 'result' taskid %}">Refresh</a>
+{% endif %}
+</p>
