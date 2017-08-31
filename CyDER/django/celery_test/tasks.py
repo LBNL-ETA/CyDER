@@ -1,5 +1,5 @@
 from .celery import app
 
 @app.task
-def do_some_work(x, y):
+def start_sim(x, y):
     return x + y

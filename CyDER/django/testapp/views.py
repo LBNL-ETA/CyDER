@@ -1,21 +1,25 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
-from celery_test.tasks import do_some_work
+import celery_test.tasks
 
 # Create your views here.
 def index(request):
+	return render(request, 'testapp/index.html')
+
+def start_sim(request):
 	try:
-		triggered = request.POST['triggered']
+		param_1 = int(request.POST['param_1'])
+		param_2 = int(request.POST['param_2'])
 	except (KeyError):
-		context = { 'triggered':False }
+		return render(request, 'testapp/error.html', { 'errormsg':"Missing parameter(s)" })
+	except (ValueError):
+		return render(request, 'testapp/error.html', { 'errormsg':"Bad parameter(s)" })
 	else:
-		if triggered == 'true':
-			context = { 'triggered':True }
-			# TODO: Send message with Celery
-			do_some_work.delay(2, 5)
-		else:
-			context = { 'triggered':False }
-
-	return render(request, 'testapp/index.html', context)
-
+		result = celery_test.tasks.start_sim.delay(param_1, param_2)
+		return redirect(sim_started)
+		
+def sim_started(request):
+	return render(request, 'testapp/sim_started.html')
 	
+def result(request):
+	return render(request, 'testapp/result.html')
