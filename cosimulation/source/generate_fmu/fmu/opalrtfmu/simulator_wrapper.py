@@ -47,38 +47,25 @@ def resetModel(projectPath, reset):
         RtlabApi.OpenProject(projectName)
         log.info ("=====The connection with {!s} is completed.".format(projectName))
 
-        # Check if model was already compiled and is already running
-        try:
-            ## Get the model state and the real time mode
-            modelState, realTimeMode = RtlabApi.GetModelState()
+        ## Get the model state and the real time mode
+        modelState, realTimeMode = RtlabApi.GetModelState()
 
-            ## Print the model state
-            log.info ("=====The model state is {!s}.".format(RtlabApi.OP_MODEL_STATE(modelState)))
+        ## Print the model state
+        log.info ("=====The model state is {!s}.".format(RtlabApi.OP_MODEL_STATE(modelState)))
 
-            ## If the model is running
-            if modelState == RtlabApi.MODEL_RUNNING:
-                #print("This is the output value={!s}".format(RtlabApi.GetSignalsByName('sm_computation.reference_out')))
-                ## Pause the model
-                log.info ("=====The model is running and will be reset.")
-                ctlr = 1
-                RtlabApi.GetSystemControl (ctlr)
-                RtlabApi.Reset()
-                ctlr = 0
-                RtlabApi.GetSystemControl (ctlr)
-                # Return an internal defined code to avoid recompilation.
-                RtlabApi.Disconnect()
-                return -2222
-
-        except Exception:
-            ## Ignore error 11 which is raised when
-            ## RtlabApi.DisplayInformation is called whereas there is no
-            ## pending message
-            info = sys.exc_info()
-            if info[1][0] != 11:  # 'There is currently no data waiting.'
-                ## If a exception occur: stop waiting
-                log.error ("=====An error occured while resetting the model.")
-                #raise
-
+        ## If the model is running
+        if modelState == RtlabApi.MODEL_RUNNING:
+            #print("This is the output value={!s}".format(RtlabApi.GetSignalsByName('sm_computation.reference_out')))
+            ## Pause the model
+            log.info ("=====The model is running and will be reset.")
+            ctlr = 1
+            RtlabApi.GetSystemControl (ctlr)
+            RtlabApi.Reset()
+            ctlr = 0
+            RtlabApi.GetSystemControl (ctlr)
+            # Return an internal defined code to avoid recompilation.
+            RtlabApi.Disconnect()
+        return -2222
 
 def compileAndInstantiate(projectPath):
     """
@@ -244,7 +231,7 @@ def setData(projectPath, inputNames, inputValues, simulationTime):
 
     """
 
-    # Wait prior to setting the inputs 
+    # Wait prior to setting the inputs
     sleep (0.5)
     projectName = os.path.abspath(projectPath)
     #log.info("=====Path to the project={!s}".format(projectName))
@@ -453,26 +440,27 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
 
      """
 
+     # Convert the unicode string to a string
+     projectPath = convertUnicodeString(projectPath)
+
      # This is just for testing and will be retrieved from the project path
      #projectName = "D:\\Users\\emma\\Documents\\GitHub\\CyDER\\cosimulation\\source\\generate_fmu\\fmu\\opalrtfmu\\examples\\demo\\demo.llp"
-     #retVal = resetModel (projectName, 1)
-     #if retVal == -2222:
-    #    return zeroOutputValues(outputNames)
+     reset = 0
+     retVal = resetModel (projectPath, reset)
+     if retVal == -2222:
+       return zeroOutputValues(outputNames)
      # Convert the input and output names to be strings that can be set in Opal-RT models
      #inputNames = 'demo/sc_user_interface/port1'
      #inputNames = None
      #inputValues = 1.0
      #outputNames = ['demo/sm_computation/port1', 'demo/sm_computation/port2', 'demo/sm_computation/port3']
 
-     # Convert the unicode string to a string
-     projectPath = convertUnicodeString(projectPath)
-
      if (inputNames is not None):
          inputNames=convertUnicodeString(inputNames)
      if (outputNames is not None):
         outputNames=convertUnicodeString(outputNames)
 
-     log.info ("=====Ready to compile, load, and execute the model.")
+     log.info ("=====Ready to compile, load, or execute the model.")
      # Compile and Run the model for the first time
      retVal = compileAndInstantiate(projectPath)
      if (retVal <> -1111):
