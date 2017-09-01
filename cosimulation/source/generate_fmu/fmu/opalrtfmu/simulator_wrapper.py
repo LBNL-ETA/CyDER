@@ -244,6 +244,8 @@ def setData(projectPath, inputNames, inputValues, simulationTime):
 
     """
 
+    # Wait prior to setting the inputs 
+    sleep (0.5)
     projectName = os.path.abspath(projectPath)
     #log.info("=====Path to the project={!s}".format(projectName))
 
