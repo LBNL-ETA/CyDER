@@ -35,7 +35,7 @@ def run_simulator ():
     fmu_path = 'Simulator.fmu'
     # Parameters which will be arguments of the function
     start_time = 0.0
-    stop_time = 1.0
+    stop_time = 2.0
     step_size = 1.0
 
     print ('Starting the simulation')
@@ -53,6 +53,8 @@ def run_simulator ():
     simulator_input_names = ['demo_sc_user_interface_port1']
     simulator_input_values = [1.0]
     simulator_output_names = ['demo_sm_computation_port1', 'demo_sm_computation_port2', 'demo_sm_computation_port3']
+    # This could be set if the FMU is exported using Dymola. Using JModelica, the configuration
+    # file path will be encoded in the FMU itself. This is a known limitation of JModelica
 
     # Get the value references of simulator inputs
     for elem in simulator_input_names:
@@ -67,35 +69,46 @@ def run_simulator ():
     # Set the flag to save the results
     sim_mod.set('_saveToFile', 0)
 
+    # Get value reference of the configuration file
+    #config_con_val_ref = sim_mod.get_variable_valueref("_configurationFileName")
+
+    # Set the configuration file
+    #sim_mod.set_string([config_con_val_ref], [config_file])
+
     # Initialize the FMUs
     sim_mod.initialize()
-
     print ("===========Initialization is completed")
 
     # Call event update prior to entering continuous mode.
     #sim_mod.event_update()
     #sim_mod.enter_continuous_time_mode()
 
-    import numpy as np
+    # sim_mod.time = 0.0
+    # sim_mod.set_real(simulator_input_valref, [1.0])
+    # sim_mod.get_real(sim_mod.get_variable_valueref('demo_sm_computation_port3'))
+    # sleep(10)
+    #
+    # sim_mod.time = 1.0
+    # sim_mod.set_real(simulator_input_valref, [1.0])
+    # sim_mod.get_real(sim_mod.get_variable_valueref('demo_sm_computation_port3'))
+    # end = datetime.now()
 
+    import numpy as np
     for tim in np.arange(start_time, stop_time, step_size):
         # Enter continuous time mode
         print ("Set values at time={!s}".format(tim))
         sim_mod.time = tim
-        sim_mod.set_real(simulator_input_valref, simulator_input_values)
-        sleep(10)
-        end = datetime.now()
+        sim_mod.set_real(simulator_input_valref, [tim])
+        demo_sm_computation_port3=sim_mod.get_real(sim_mod.get_variable_valueref('demo_sm_computation_port3'))
 
-    # print ("Th value of the signal='demo/sm_computation/port3' is ={!s}".format(
-    # sim_mod.get_real(sim_mod.get_variable_valueref('demo_sm_computation_port3'))
-    # ))
-    #
-    # print(
-    #     'Ran a single Opal-RT simulation with FMU={!s} in {!s} seconds.'.format(
-    #         fmu_path, (end - start).total_seconds()))
+        print ("The value of the signal='demo/sm_computation/port3' is ={!s}".format(demo_sm_computation_port3))
+    end = datetime.now()
+    print(
+        'Ran a single Opal-RT simulation with FMU={!s} in {!s} seconds.'.format(
+            fmu_path, (end - start).total_seconds()))
 
     # Terminate FMUs
-    #sim_mod.terminate()
+    sim_mod.terminate()
 
 if __name__ == "__main__":
     # Check command line options

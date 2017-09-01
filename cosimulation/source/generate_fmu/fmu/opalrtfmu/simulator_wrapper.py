@@ -35,7 +35,7 @@ def resetModel(projectPath, reset):
     This function will be removed in production code.
 
     :param projectPath: Path to the project file
-    :param reset: Flag to activate reset
+    :param reset: Flag to activate a reset of the model
 
     """
 
@@ -325,6 +325,9 @@ def getData(projectPath, outputNames, simulationTime):
 
     """
 
+    # Wait prior to getting the outputs
+    sleep(1.0)
+
     ## Connect to a running model using its name.
     projectName = os.path.abspath(projectPath)
     #log.info("=====Path to the project={!s}".format(projectName))
@@ -387,10 +390,10 @@ def getData(projectPath, outputNames, simulationTime):
         return outputValues
     else:
         ctlr = 1
-        RtlabApi.GetSystemControl (ctlr)
-        RtlabApi.Reset()
+        #RtlabApi.GetSystemControl (ctlr)
+        #RtlabApi.Reset()
         ctlr = 0
-        RtlabApi.GetSystemControl (ctlr)
+        #RtlabApi.GetSystemControl (ctlr)
         RtlabApi.Disconnect()
         log.info ("=====The simulation stoptime={!s} is reached. "\
                "The model is reset and the connection is closed.".format(RtlabApi.GetStopTime()))
@@ -449,12 +452,8 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
      """
 
      # This is just for testing and will be retrieved from the project path
-     projectName = "D:\\Users\\emma\\Documents\\GitHub\\CyDER\\cosimulation\\source\\generate_fmu\\fmu\\opalrtfmu\\examples\\demo\\demo.llp"
+     #projectName = "D:\\Users\\emma\\Documents\\GitHub\\CyDER\\cosimulation\\source\\generate_fmu\\fmu\\opalrtfmu\\examples\\demo\\demo.llp"
      #retVal = resetModel (projectName, 1)
-     # This is just for manually testing that resetting the model
-     # will trigger a recompilation. Otherwise we will have to
-     # log off and log on to trigger recompilation
-     # This section of the code will be removed
      #if retVal == -2222:
     #    return zeroOutputValues(outputNames)
      # Convert the input and output names to be strings that can be set in Opal-RT models
@@ -462,6 +461,10 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
      #inputNames = None
      #inputValues = 1.0
      #outputNames = ['demo/sm_computation/port1', 'demo/sm_computation/port2', 'demo/sm_computation/port3']
+
+     # Convert the unicode string to a string
+     projectPath = convertUnicodeString(projectPath)
+
      if (inputNames is not None):
          inputNames=convertUnicodeString(inputNames)
      if (outputNames is not None):
@@ -469,7 +472,7 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
 
      log.info ("=====Ready to compile, load, and execute the model.")
      # Compile and Run the model for the first time
-     retVal = compileAndInstantiate(projectName)
+     retVal = compileAndInstantiate(projectPath)
      if (retVal <> -1111):
         log.info ("=====The model hasn't been compiled yet.")
         return zeroOutputValues (outputNames)
@@ -489,15 +492,15 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
                          "length of input values={!s} ({!s}).".format(simulationTime, inputNames,
                          len_inputNames, inputValues, len_inputValues))
                  raise
-             setData(projectName, tuple(inputNames), tuple(inputValues), simulationTime)
+             setData(projectPath, tuple(inputNames), tuple(inputValues), simulationTime)
          else:
-             setData(projectName, inputNames, inputValues, simulationTime)
+             setData(projectPath, inputNames, inputValues, simulationTime)
          log.info("=====The input variables={!s} were successfully set.".format(inputNames))
 
      if (outputNames is not None):
          log.info ("=====Ready to get the output variables={!s} at time={!s}.".format(outputNames, simulationTime))
          if (isinstance(outputNames, list)):
-             outputValues = getData(projectName, tuple(outputNames), simulationTime)
+             outputValues = getData(projectPath, tuple(outputNames), simulationTime)
              len_outputNames = len(outputNames)
              len_outputValues = len(outputValues)
              if(len_outputNames<>len_outputValues):
@@ -506,9 +509,9 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
                          "length of output values={!s} ({!s}).".format(simulationTime, outputNames,
                          len_outputNames, outputValues, len_outputValues))
                  raise
-             outputValues = getData(projectName, tuple(outputNames), simulationTime)
+             outputValues = getData(projectPath, tuple(outputNames), simulationTime)
          else:
-             outputValues = getData(projectName, outputNames, simulationTime)
+             outputValues = getData(projectPath, outputNames, simulationTime)
          log.info("=====The output variables={!s} were successfully retrieved.".format(outputNames))
 
          if(outputValues is None):
@@ -517,7 +520,7 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
              raise
          log.info ("=====The values of the output variables:{!s} are equal {!s} at time={!s}.".format(outputNames,
                  outputValues, simulationTime))
-     #
+
      # Convert the output values to float so they can be used on the receiver side.
      retOutputValues = []
      if (isinstance(outputValues, tuple)):
