@@ -112,4 +112,6 @@ def run_simulator ():
 
 if __name__ == "__main__":
     # Check command line options
+    # The OPAL-RT model is running with a time factor of 1
+    # The time factor is set in the model directly
     run_simulator()
