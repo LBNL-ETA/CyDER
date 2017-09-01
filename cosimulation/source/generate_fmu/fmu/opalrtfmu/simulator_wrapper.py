@@ -444,7 +444,8 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
      projectPath = convertUnicodeString(projectPath)
 
      # This is just for testing and will be retrieved from the project path
-     #projectName = "D:\\Users\\emma\\Documents\\GitHub\\CyDER\\cosimulation\\source\\generate_fmu\\fmu\\opalrtfmu\\examples\\demo\\demo.llp"
+     # The section below will be removed in production code
+     ######################################################
      reset = 0
      retVal = resetModel (projectPath, reset)
      if retVal == -2222:
@@ -454,7 +455,7 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
      #inputNames = None
      #inputValues = 1.0
      #outputNames = ['demo/sm_computation/port1', 'demo/sm_computation/port2', 'demo/sm_computation/port3']
-
+     ######################################################
      if (inputNames is not None):
          inputNames=convertUnicodeString(inputNames)
      if (outputNames is not None):
