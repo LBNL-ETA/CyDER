@@ -23,10 +23,12 @@ redis:
 # Uncomment if need of persistence
 #        volumes:
 #                - ./redis/data:/data
+        ports:
+                - "6379:6379"
                 
-worker:
-        build: worker
-        volumes:
-                - ./CyDER/django:/usr/src/app
-        links:
-                - redis
+#worker:
+#        build: worker
+#        volumes:
+#                - ./CyDER/django:/usr/src/app
+#        links:
+#                - redis
