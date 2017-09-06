@@ -1,0 +1,22 @@
+\begin{theindex}
+\def\bigletter#1{{\Large\sffamily#1}\nopagebreak\vspace{1mm}}
+
+  \bigletter D
+  \item Dymola, \hyperindexformat{\textbf}{11}
+
+  \indexspace
+  \bigletter F
+  \item Functional Mock-up Interface, \hyperindexformat{\textbf}{11}
+  \item Functional Mock-up Unit, \hyperindexformat{\textbf}{11}
+
+  \indexspace
+  \bigletter M
+  \item Modelica, \hyperindexformat{\textbf}{11}
+  \item MODELISAR, \hyperindexformat{\textbf}{11}
+
+  \indexspace
+  \bigletter P
+  \item PyFMI, \hyperindexformat{\textbf}{11}
+  \item Python, \hyperindexformat{\textbf}{11}
+
+\end{theindex}
