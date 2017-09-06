@@ -1,4 +1,4 @@
-FROM python
+FROM python:3.4.3
 
 WORKDIR /usr/src/at-build
 COPY ./requirements.txt requirements.txt
