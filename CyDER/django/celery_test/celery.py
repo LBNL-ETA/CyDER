@@ -7,8 +7,8 @@ app = Celery('celery_test',
 
 # Optional configuration, see the application user guide.
 app.conf.update(
-    result_expires=3600,
-    task_track_started=True,
+    CELERY_TASK_RESULT_EXPIRES=3600,
+    CELERY_TRACK_STARTED=True,
 )
 
 if __name__ == '__main__':
