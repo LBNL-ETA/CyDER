@@ -1,9 +1,8 @@
 from django.shortcuts import render, redirect
-
+import pandas
 import celery_test.tasks
 from celery.result import AsyncResult
-
-import pandas
+from .models import Device
 
 # Create your views here.
 def index(request):
@@ -24,14 +23,16 @@ def update_db(request, taskid):
 		devices = result.get()
 		lenght = len(devices)
 		for index in range(0, lenght):
-			device = devices.iloc[0]
-			#device['device_number']
-			#device['device_type']
-			#device['device_type_id']
-			#device['distance']
-			#device['section_id']
-			#device['latitude']
-			#device['longitude']
+			device = devices.iloc[index]
+			d = Device()
+			d.device_number = device['device_number']
+			d.device_type = device['device_type']
+			d.device_type_id = device['device_type_id']
+			d.device_number = device['distance']
+			d.distance = device['section_id']
+			d.latitude = device['latitude']
+			d.longitude = device['longitude']
+			d.save()
 		return redirect(db_updated)
 	else:
 		return render(request, 'testapp/wait.html', { 'taskid':taskid , 'status':result.status })
