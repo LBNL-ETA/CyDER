@@ -1,7 +1,6 @@
 <h1>CyDER</h1>
-<form action="{% url 'start_sim' %}" method="POST">
+<form action="{% url 'ask_model' %}" method="POST">
 	{% csrf_token %}
-	<input type="number" name="param_1"><br>
-	<input type="number" name="param_2"><br>
+	<input type="text" name="modelfile"><br>
 	<input type="submit" value="Start Sim">
 </form>

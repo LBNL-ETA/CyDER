@@ -3,25 +3,38 @@ from django.shortcuts import render, redirect
 import celery_test.tasks
 from celery.result import AsyncResult
 
+import pandas
+
 # Create your views here.
 def index(request):
 	return render(request, 'testapp/index.html')
 
-def start_sim(request):
+def ask_model(request):
 	try:
-		param_1 = int(request.POST['param_1'])
-		param_2 = int(request.POST['param_2'])
+		modelfile = request.POST['modelfile']
 	except (KeyError):
 		return render(request, 'testapp/error.html', { 'errormsg':"Missing parameter(s)" })
-	except (ValueError):
-		return render(request, 'testapp/error.html', { 'errormsg':"Bad parameter(s)" })
 	else:
-		result = celery_test.tasks.start_sim.delay(param_1, param_2)
-		return redirect(sim_started, taskid=result.id)
-		
-def sim_started(request, taskid):
-	return render(request, 'testapp/sim_started.html', { 'taskid':taskid })
+		result = celery_test.tasks.get_model_devices.delay(modelfile)
+		return redirect(update_db, taskid=result.id)
 	
-def result(request, taskid):
+def update_db(request, taskid):
 	result = AsyncResult(taskid)
-	return render(request, 'testapp/result.html', { 'taskid':taskid , 'result':result })
+	if result.status ==  'SUCCESS':
+		devices = result.get()
+		lenght = len(devices)
+		for index in range(0, lenght):
+			device = devices.iloc[0]
+			#device['device_number']
+			#device['device_type']
+			#device['device_type_id']
+			#device['distance']
+			#device['section_id']
+			#device['latitude']
+			#device['longitude']
+		return redirect(db_updated)
+	else:
+		return render(request, 'testapp/wait.html', { 'taskid':taskid , 'status':result.status })
+
+def db_updated(request):
+	return render(request, 'testapp/db_updated.html')
