@@ -10,13 +10,21 @@ http:
                 
 wsgi:
         build: wsgi
-        expose:
-                - "8000"
         volumes:
                 - ./wsgi/init:/usr/src/at-build/init
                 - ./CyDER/django:/usr/src/app
         links:
                 - redis
+                - db
+                
+db:
+        image: postgres
+        volumes:
+                - ./db/data:/var/lib/postgresql/data
+        environment:
+                POSTGRES_PASSWORD: admin
+        ports:
+                - "5432:5432"
 
 redis:
         image: redis
