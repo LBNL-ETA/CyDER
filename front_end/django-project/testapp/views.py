@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 import pandas
-import celery_test.tasks
+import sym_worker.tasks
 from celery.result import AsyncResult
 from .models import Device
 
@@ -14,7 +14,7 @@ def ask_model(request):
 	except (KeyError):
 		return render(request, 'testapp/error.html', { 'errormsg':"Missing parameter(s)" })
 	else:
-		result = celery_test.tasks.get_model_devices.delay(modelfile)
+		result = sym_worker.tasks.get_model_devices.delay(modelfile)
 		return redirect(update_db, taskid=result.id)
 	
 def update_db(request, taskid):

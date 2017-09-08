@@ -1,9 +1,9 @@
 from celery import Celery
 
-app = Celery('celery_test',
+app = Celery('sym_worker',
              broker='redis://128.3.146.130:6379/0',
              backend='redis://128.3.146.130:6379/0',
-             include=['celery_test.tasks'])
+             include=['sim_worker.tasks'])
 
 # Optional configuration, see the application user guide.
 app.conf.update(

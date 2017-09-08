@@ -4,7 +4,7 @@ http:
                 - "80:80"
         volumes:
                 - ./http/nginx_conf.d:/etc/nginx/conf.d
-                - ./CyDER/static:/var/www/
+                - ./http/static:/var/www/
         links:
                 - wsgi
                 
@@ -12,7 +12,8 @@ wsgi:
         build: wsgi
         volumes:
                 - ./wsgi/init:/usr/src/at-build/init
-                - ./CyDER/django:/usr/src/app
+                - ./django-project:/usr/src/app
+                - ./http/static:/var/www/
         links:
                 - redis
                 - db
@@ -33,10 +34,3 @@ redis:
 #                - ./redis/data:/data
         ports:
                 - "6379:6379"
-                
-#worker:
-#        build: worker
-#        volumes:
-#                - ./CyDER/django:/usr/src/app
-#        links:
-#                - redis

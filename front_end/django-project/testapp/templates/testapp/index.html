@@ -1,3 +1,7 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'testapp/style.css' %}" />
+
 <h1>CyDER</h1>
 <form action="{% url 'ask_model' %}" method="POST">
 	{% csrf_token %}
