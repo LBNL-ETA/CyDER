@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 import pandas
-import sym_worker.tasks
+import sim_worker.tasks
 from celery.result import AsyncResult
 from .models import Device
 

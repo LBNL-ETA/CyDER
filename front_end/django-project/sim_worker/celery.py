@@ -1,6 +1,6 @@
 from celery import Celery
 
-app = Celery('sym_worker',
+app = Celery('sim_worker',
              broker='redis://128.3.146.130:6379/0',
              backend='redis://128.3.146.130:6379/0',
              include=['sim_worker.tasks'])
