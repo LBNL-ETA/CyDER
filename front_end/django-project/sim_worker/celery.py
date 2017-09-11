@@ -1,3 +1,6 @@
+# This file should be in /front-end/django-project/sim_worker/celery.py as well as in /worker/sim_worker/celery.py
+# If you modify one, please copy/paste the modification in the other one
+
 from celery import Celery
 
 app = Celery('sim_worker',
