@@ -17,10 +17,10 @@ def update():
 		d.device_number = device['device_number']
 		d.device_type = device['device_type']
 		d.device_type_id = device['device_type_id']
-		d.device_number = device['distance']
-		d.distance = device['section_id']
+		d.section_id = device['section_id']
+		d.distance = device['distance']
 		d.latitude = device['latitude']
 		d.longitude = device['longitude']
 		d.save()
-		print("\rUpdated devices: %d/%d" % (index, lenght), end="")
+		print("\rUpdated devices: %d/%d" % (index+1, lenght), end="")
 	print()
