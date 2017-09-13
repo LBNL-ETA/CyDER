@@ -6,7 +6,7 @@ Objective
 
 Make an architecture in docker containers to run nginx, django, gunicorn, celery, redis and postgresql.
 Make them working together.  
-Create a Django app (called testapp) to run a task on a celery worker.  
+Create a Django app to run a task on a celery worker.  
 
 Project components
 -----

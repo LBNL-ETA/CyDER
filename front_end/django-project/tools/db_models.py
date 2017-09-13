@@ -1,6 +1,6 @@
 import sim_worker.tasks
 import pandas
-from testapp.models import Model, Device, Node
+from cyder.models import Model, Device, Node
 
 def import_model(modelfile):
 	try:

@@ -6,4 +6,4 @@ COPY ./requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 WORKDIR /usr/src/app/
-CMD ["gunicorn", "--reload", "CyDER.wsgi", "-b", "0.0.0.0:8000"]
+CMD ["gunicorn", "--reload", "config.wsgi", "-b", "0.0.0.0:8000"]

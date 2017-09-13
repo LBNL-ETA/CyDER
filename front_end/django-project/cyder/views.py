@@ -6,13 +6,13 @@ from .models import Device
 
 # Create your views here.
 def index(request):
-	return render(request, 'testapp/index.html')
+	return render(request, 'cyder/index.html')
 
 def ask_model(request):
 	try:
 		modelfile = request.POST['modelfile']
 	except (KeyError):
-		return render(request, 'testapp/error.html', { 'errormsg':"Missing parameter(s)" })
+		return render(request, 'cyder/error.html', { 'errormsg':"Missing parameter(s)" })
 	else:
 		result = sym_worker.tasks.get_model_devices.delay(modelfile)
 		return redirect(update_db, taskid=result.id)
@@ -35,7 +35,7 @@ def update_db(request, taskid):
 			d.save()
 		return redirect(db_updated)
 	else:
-		return render(request, 'testapp/wait.html', { 'taskid':taskid , 'status':result.status })
+		return render(request, 'cyder/wait.html', { 'taskid':taskid , 'status':result.status })
 
 def db_updated(request):
-	return render(request, 'testapp/db_updated.html')
+	return render(request, 'cyder/db_updated.html')
