@@ -21,7 +21,9 @@ def get_model_devices(modelfile):
 	# Remove cympy object to be able to serialize
 	devices = devices.drop('device', axis=1)
 
-	return devices
+	# Return result and exit the worker to "free" cympy
+	app.backend.mark_as_done(get_model_devices.request.id, devices)
+	exit(0)
 
 @app.task
 def get_model_nodes(modelfile):
@@ -39,4 +41,6 @@ def get_model_nodes(modelfile):
 	# Remove cympy object to be able to serialize
 	nodes = nodes.drop('node_object', axis=1)
 
-	return nodes
+	# Return result and exit the worker to "free" cympy
+	app.backend.mark_as_done(get_model_nodes.request.id, nodes)
+	exit(0)
