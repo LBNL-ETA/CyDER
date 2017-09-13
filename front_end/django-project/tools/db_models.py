@@ -9,10 +9,8 @@ def import_model(modelfile):
 		model = None
 	
 	print("Get model from worker...")
-	resultDevices = sim_worker.tasks.get_model_devices.delay(modelfile)
-	resultNodes =  sim_worker.tasks.get_model_nodes.delay(modelfile)
-	devices_df = resultDevices.get()
-	nodes_df = resultNodes.get()
+	result = sim_worker.tasks.get_model.delay(modelfile)
+	(devices_df, nodes_df) = result.get()
 	
 	if model != None:
 		print("Updating model in DB...")

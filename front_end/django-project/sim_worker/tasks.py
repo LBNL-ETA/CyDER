@@ -3,9 +3,6 @@
 from .celery import app
 
 @app.task
-def get_model_devices(modelfile):
+def get_model(modelfile):
 	return
 
-@app.task
-def get_model_nodes(modelfile):
-	return
