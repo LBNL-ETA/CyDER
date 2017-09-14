@@ -34,6 +34,8 @@ def import_model(modelfile):
 		device.distance = device_row['distance']
 		device.latitude = device_row['latitude']
 		device.longitude = device_row['longitude']
+		device.from_node_id = device_row['from']
+		device.to_node_id = device_row['to']
 		device.save()
 		print("\rImported devices: %d/%d" % (index+1, lenght), end="")
 	print()

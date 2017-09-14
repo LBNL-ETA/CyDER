@@ -448,3 +448,28 @@ def get_unbalanced_line(devices):
     voltage['diff_with_mean'] = voltage[['mean_voltage_ABC', 'voltage_A', 'voltage_B', 'voltage_C']].apply(_diff, axis=1)
 
     return voltage
+
+def get_sections(devices):
+    """
+    Args:
+        devices (DataFrame): list of all the devices to include
+
+    Return:
+        devices_section (DataFrame): devices and their section info (from node and to node)
+    """
+    sections = devices.copy()
+
+    # Reset or create new columns to hold the result
+    sections['from'] = [0] * len(sections)
+    sections['to'] = [0] * len(sections)
+
+    for device in devices.itertuples():
+        # Get the according latitude in a pandas dataframe
+        sections.loc[device.Index, 'from'] = cympy.study.QueryInfoDevice(
+            "FromNodeId", device.device_number, int(device.device_type_id))
+
+        # Get the according longitude in a pandas dataframe
+        sections.loc[device.Index, 'to'] = cympy.study.QueryInfoDevice(
+            "ToNodeId", device.device_number, int(device.device_type_id))
+    
+    return sections

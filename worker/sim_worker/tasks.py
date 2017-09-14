@@ -17,7 +17,7 @@ def get_model(modelfile):
 	devices = cymdist.list_devices()
 	devices = cymdist.get_distance(devices)
 	devices = cymdist.get_coordinates(devices)
-
+	devices = cymdist.get_sections(devices)
 	# Get all the node informations
 	nodes = cymdist.list_nodes()
 

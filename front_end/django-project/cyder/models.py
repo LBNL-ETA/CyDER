@@ -35,5 +35,7 @@ class Device(models.Model):
 	distance = models.FloatField(null=True, blank=True)
 	latitude = models.FloatField(null=True, blank=True)
 	longitude = models.FloatField(null=True, blank=True)
+	from_node_id = models.CharField(max_length=50, null=True, blank=True)
+	to_node_id = models.CharField(max_length=50, null=True, blank=True)
 	class Meta:
 		unique_together = ('model', 'device_number',)
