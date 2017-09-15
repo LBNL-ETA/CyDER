@@ -5,26 +5,20 @@ import pandas
 
 @app.task
 def get_model(modelfile):
-	# Import cympy from the function to prevent multiple import caused by celery importing this module at launch
-	import cympy
-	from .cymdist_tool import tool as cymdist
+    # Import cympy from the function to prevent multiple import caused by celery importing this module at launch
+    from . import cymdist
 
-	# Open a study
-	filename = "C:\\Users\\DRRC\\Desktop\\PGE_Models_DO_NOT_SHARE\\" + modelfile
-	cympy.study.Open(filename)
+    cymdist.open_study(modelfile)
 
-	# Get all the devices informations
-	devices = cymdist.list_devices()
-	devices = cymdist.get_distance(devices)
-	devices = cymdist.get_coordinates(devices)
-	devices = cymdist.get_sections(devices)
-	# Get all the node informations
-	nodes = cymdist.list_nodes()
+    devices = cymdist.list_devices()
+    nodes = cymdist.list_nodes()
+    sections = cymdist.list_sections()
 
-	# Remove cympy object to be able to serialize
-	devices = devices.drop('device', axis=1)
-	nodes = nodes.drop('node_object', axis=1)
+    # Remove cympy objects to be able to serialize
+    devices = devices.drop('device_object', axis=1)
+    nodes = nodes.drop('node_object', axis=1)
+    sections = sections.drop('section_object', axis=1)
 
-	# Return result and exit the worker to "free" cympy
-	app.backend.mark_as_done(get_model.request.id, (devices, nodes))
-	exit(0)
+    # Return result and exit the worker to "free" cympy
+    app.backend.mark_as_done(get_model.request.id, (nodes,sections,devices))
+    exit(0)
