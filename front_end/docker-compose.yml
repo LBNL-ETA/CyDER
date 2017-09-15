@@ -10,6 +10,8 @@ http:
                 
 wsgi:
         build: wsgi
+        ports:
+                - "8080:8080" # Use for the dev server
         volumes:
                 - ./wsgi/init:/usr/src/at-build/init
                 - ./django-project:/usr/src/app
