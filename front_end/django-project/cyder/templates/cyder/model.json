@@ -1,0 +1,15 @@
+{
+    "modelfile": "{{ modelfile }}",
+    "nodes": [
+    {% for node in nodes %}
+        { "longitude": "{{ node.longitude }}", "latitude": "{{ node.latitude }}" }
+        {% if not forloop.last %},{% endif %}
+    {% endfor %}
+    ],
+    "lines": [
+    {% for line in lines %}
+        { "from": ["{{ line.section.from_node.latitude }}","{{ line.section.from_node.longitude }}"], "to": ["{{ line.section.to_node.latitude }}","{{ line.section.to_node.longitude }}"] }
+        {% if not forloop.last %},{% endif %}
+    {% endfor %}
+    ]
+}

@@ -2,11 +2,23 @@ from django.shortcuts import render, redirect
 import pandas
 import sim_worker.tasks
 from celery.result import AsyncResult
-from .models import Device
+from .models import *
+from django.db.models import Q
 
 # Create your views here.
 def index(request):
     return render(request, 'cyder/index.html')
+
+def map(request):
+    
+    return render(request, 'cyder/map.html') 
+
+def get_model(request, modelname):
+    modelfile = modelname + ".sxst"
+    model = Model.objects.get(filename=modelfile)
+    nodes = Node.objects.filter(model=model)
+    lines = Device.objects.filter(Q(model=model), Q(device_type=10) | Q(device_type=13))
+    return render(request, 'cyder/model.json', { 'modelfile':modelfile, 'nodes':nodes, 'lines':lines })
 
 def ask_model(request):
     try:
