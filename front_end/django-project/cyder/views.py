@@ -1,24 +1,35 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 import pandas
 import sim_worker.tasks
 from celery.result import AsyncResult
 from .models import *
 from django.db.models import Q
+import json
 
 # Create your views here.
 def index(request):
     return render(request, 'cyder/index.html')
 
 def map(request):
+    models = Model.objects.all()
     
-    return render(request, 'cyder/map.html') 
+    return render(request, 'cyder/map.html', {'models': models})
 
-def get_model(request, modelname):
-    modelfile = modelname + ".sxst"
+def get_model(request, modelfile):
     model = Model.objects.get(filename=modelfile)
     nodes = Node.objects.filter(model=model)
-    lines = Device.objects.filter(Q(model=model), Q(device_type=10) | Q(device_type=13))
-    return render(request, 'cyder/model.json', { 'modelfile':modelfile, 'nodes':nodes, 'lines':lines })
+    lines = Device.objects.filter(Q(model=model), Q(device_type=10) | Q(device_type=13)).select_related('section__from_node', 'section__to_node')
+    
+    list_nodes = []
+    for node in nodes:
+        list_nodes.append({ "longitude": node.longitude, "latitude": node.latitude })
+    list_lines = []
+    for line in lines:
+        list_lines.append({ "from": [line.section.from_node.latitude, line.section.from_node.longitude], "to": [line.section.to_node.latitude, line.section.to_node.longitude] })
+    json_model = json.dumps({"modelfile": modelfile, "nodes": list_nodes, "lines": list_lines }, separators=(',',':'))
+    
+    return HttpResponse(json_model)
 
 def ask_model(request):
     try:

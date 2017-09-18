@@ -42,8 +42,7 @@ Update static files
 
 Run
 ```
-sudo docker-compose exec wsgi python manage.py collectstatic clear
-sudo docker-compose exec wsgi python manage.py collectstatic
+sudo docker-compose exec wsgi python manage.py collectstatic --clear
 ```
 
 Use Django debug server
