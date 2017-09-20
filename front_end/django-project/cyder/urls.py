@@ -1,11 +1,12 @@
 from django.conf.urls import url
 from . import views
+from . import geojson
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
-    url(r'^map$', views.map, name='map'),
-    url(r'^get_model/(?P<modelfile>[0-9a-zA-Z.]+)$', views.get_model, name='get_model'),
-    url(r'^ask_model$', views.ask_model, name='ask_model'),
-    url(r'^updade_db/(?P<taskid>[0-9a-z-]+)$', views.update_db, name='update_db'),
-    url(r'^db_updated$', views.db_updated, name='db_updated'),
+    url(r'^model_viewer/(?P<modelfile>[0-9a-zA-Z.]*)$', views.model_viewer, name='model_viewer'),
+    
+    # geojson
+    url(r'^geojson/models$', geojson.models_list),
+    url(r'^geojson/models/(?P<modelfile>[0-9a-zA-Z.]+)$', geojson.get_model),
 ]
