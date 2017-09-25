@@ -4,8 +4,8 @@
 from celery import Celery
 
 app = Celery('sim_worker',
-             broker='redis://128.3.146.130:6379/0',
-             backend='redis://128.3.146.130:6379/0',
+             broker='redis://128.3.144.76:6379/0',
+             backend='redis://128.3.144.76:6379/0',
              include=['sim_worker.tasks'])
 
 # Optional configuration, see the application user guide.
