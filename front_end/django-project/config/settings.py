@@ -27,6 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['198.128.208.77', '128.3.144.76', '127.0.0.1']
 
+SESSION_COOKIE_SECURE = True
+CSRF_USE_SESSIONS = True
+#CSRF_COOKIE_SECURE = True
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
