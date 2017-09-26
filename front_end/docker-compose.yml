@@ -2,12 +2,14 @@ http:
         image: nginx
         ports:
                 - "80:80"
+                - "443:443"
         volumes:
                 - ./http/nginx_conf.d:/etc/nginx/conf.d
+                - ./http/ssl:/etc/nginx/ssl
                 - ./http/static:/var/www/
         links:
                 - wsgi
-                
+
 wsgi:
         build: wsgi
         ports:
@@ -19,7 +21,7 @@ wsgi:
         links:
                 - redis
                 - db
-                
+
 db:
         image: postgres
         volumes:
