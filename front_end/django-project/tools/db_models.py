@@ -1,29 +1,29 @@
 import sim_worker.tasks
 import pandas
-from cyder.models import Model, Device, Node, Section
+from cyder.grid_models.models import Model, Device, Node, Section
 
 def import_model(modelfile):
     try:
         model = Model.objects.get(filename=modelfile)
     except Model.DoesNotExist:
         model = None
-    
+
     print("Get model from worker...")
     result = sim_worker.tasks.get_model.delay(modelfile)
     (nodes_df, sections_df, devices_df) = result.get()
-    
+
     if model != None:
         print("Updating model in DB...")
         Node.objects.filter(model=model).delete()
         Section.objects.filter(model=model).delete()
         Device.objects.filter(model=model).delete()
-        
+
     else:
         print("Importing model in DB...")
         model = Model()
         model.filename = modelfile
         model.save()
-    
+
     lenght = len(nodes_df)
     for index in range(0, lenght):
         node_row = nodes_df.iloc[index]
@@ -35,7 +35,7 @@ def import_model(modelfile):
         node.save()
         print("\rImported nodes: %d/%d" % (index+1, lenght), end="")
     print()
-    
+
     lenght = len(sections_df)
     for index in range(0, lenght):
         section_row = sections_df.iloc[index]
@@ -50,7 +50,7 @@ def import_model(modelfile):
         section.save()
         print("\rImported sections: %d/%d" % (index+1, lenght), end="")
     print()
-    
+
     lenght = len(devices_df)
     for index in range(0, lenght):
         device_row = devices_df.iloc[index]

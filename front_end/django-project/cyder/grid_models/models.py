@@ -3,18 +3,6 @@ from django.db import models
 # Create your models here.
 class Model(models.Model):
     filename = models.CharField(max_length=50, null=True, blank=True)
-    #lat = models.FloatField(null=True, blank=True)
-    #lon = models.FloatField(null=True, blank=True)
-    #breaker_name = models.CharField(max_length=50, null=True, blank=True)
-    #city = models.CharField(max_length=50, null=True, blank=True)
-    #area = models.CharField(max_length=50, null=True, blank=True)
-    #region = models.CharField(max_length=50, null=True, blank=True)
-    #zip_code = models.CharField(max_length=50, null=True, blank=True)
-    #version = models.CharField(max_length=50, null=True, blank=True)
-    #upmu_location = models.CharField(max_length=50, null=True, blank=True)
-
-    #def __str__(self):
-        #return u"%s %s" % (self.region, self.filename)
     def __str__(self):
         return self.filename
 

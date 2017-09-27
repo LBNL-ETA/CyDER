@@ -23,20 +23,20 @@ var leaflet_toplayers = [];
 var html = {};
 
 window.onload = function () {
-    
+
     // Init map
     leaflet_map = L.map('map').setView([37.8,-122.0], 9);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(leaflet_map);
-    
+
     // Get DOM element
     html.modelmenu = document.getElementById('modelmenu')
-    
+
     // Set events
     html.modelmenu.addEventListener("change", modelmenu_onchange)
-    
+
     // Trigger onpopstate to initialise the page in the asked context
     history.replaceState(state, "", window.location.href);
     window.onpopstate({state: state});
@@ -45,8 +45,8 @@ window.onload = function () {
 
 
 function change_state() {
-    
-    
+
+
 }
 
 window.onpopstate = function(e) {
@@ -64,7 +64,7 @@ function modelmenu_onchange() {
     else
         href = "./" + html.modelmenu.value;
     state.modelfile = html.modelmenu.value;
-    
+
     // Trigger onpopstate to update the page in the asked context
     history.pushState(state, "", href);
     window.onpopstate({state: state});
@@ -74,20 +74,20 @@ function display_models_list() {
     for(layer of leaflet_toplayers)
         layer.remove();
     leaflet_toplayers = [];
-        
-    getJSON("../geojson/models", function(err, json){
+
+    getJSON("../api/geojson/models", function(err, json){
         if(err != null) { alert("Erreur: " + err); return; }
-        
+
         var onEachFeature = function(feature, layer) {
             layer.bindPopup(feature.properties.modelfile + "<br><a onclick='popups_onclick(\"" + feature.properties.modelfile + "\")'>Open</a>");
         }
-        
+
         var layerGeoJson = L.geoJson(json, {
             onEachFeature: onEachFeature
             }).addTo(leaflet_map);
         leaflet_toplayers.push(layerGeoJson);
         leaflet_map.fitBounds(layerGeoJson.getBounds());
-        
+
         var newHtml = '<option value=""></option>';
         for(feature of json.features)
             newHtml += '<option value="' + feature.properties.modelfile + '">' + feature.properties.modelfile + '</option>';
@@ -97,7 +97,7 @@ function display_models_list() {
 
 function popups_onclick(modelfile) {
     state.modelfile = modelfile;
-    
+
     // Trigger onpopstate to update the page in the asked context
     history.pushState(state, "", "./" + modelfile);
     window.onpopstate({state: state});
@@ -107,25 +107,25 @@ function display_model(modelfile) {
     for(layer of leaflet_toplayers)
         layer.remove();
     leaflet_toplayers = [];
-    
-    getJSON("../geojson/models/" + modelfile, function(err, json){
+
+    getJSON("../api/geojson/models/" + modelfile, function(err, json){
         if(err != null) { alert("Erreur: " + err); return; }
-        
+
         var pointToLayer = function(feature, latlng) {
             return L.circle(latlng, {
                 color: 'red',
                 weight: 2,
                 fillOpacity: 1,
-                radius: 3 
+                radius: 3
                 });
         }
-        
+
         var layerGeoJson = L.geoJson(json, {
             pointToLayer: pointToLayer,
             }).addTo(leaflet_map);
         leaflet_toplayers.push(layerGeoJson);
         leaflet_map.fitBounds(layerGeoJson.getBounds());
-        
+
         html.modelmenu.value = modelfile;
     });
 }

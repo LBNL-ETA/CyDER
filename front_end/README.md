@@ -14,8 +14,7 @@ How to use
 
 Require docker and docker-compose (and root privilege to be able to use docker)
 
-If it's the first time you use the project, run `sudo ./install.sh` (it will create database, collect the static files...)  
-In django-project/config/setting.py, in ALLOWED_HOST, change the address to the address of the pc that run the containers  
+If it's the first time you use the project, run `sudo ./install.sh` (it will create database, collect the static files...)
 In django-project/sim_worker/celery.py change the address of the redis db to the address of the pc that run the containers  
 
 Then start containers using `sudo docker-compose up`  

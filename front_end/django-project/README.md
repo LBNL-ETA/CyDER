@@ -4,9 +4,9 @@ CyDER - Django project
 Project folders
 --------
 
-- config: the Django project config (settings.py, wsgi.py, urls.py...)  
+- config: the Django project config (settings, wsgi.py, urls.py...)  
 - sim_worker: the celery module which allow sending task to the worker  
-- cyder: the Django app (http://127.0.0.1/cyder/)
+- cyder: the Django apps
 - tools: Django module containing tool script
 
 -------
@@ -18,7 +18,7 @@ Update Django models
 
 Run
 ```
-python manage.py makemigrations cyder
+python manage.py makemigrations grid_models
 python manage.py migrate`
 ```
 
