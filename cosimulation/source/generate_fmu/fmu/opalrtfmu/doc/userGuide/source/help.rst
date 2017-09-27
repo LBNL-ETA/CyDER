@@ -5,7 +5,7 @@
 Help
 ====
 
-Refer to the help section of SimulatorToFMU if issues are encountered when exporting or running the OPAL-RT FMU.
+The help section of SimulatorToFMU dicusses issues and solutions encountered when exporting or running the RT-LAB API FMU.
 
 
 
