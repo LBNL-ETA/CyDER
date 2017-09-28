@@ -51,19 +51,19 @@ function change_state() {
 
 window.onpopstate = function(e) {
     state = e.state;
-    if(state.modelfile == "")
+    if(state.modelname == "")
         display_models_list();
     else
-        display_model(state.modelfile);
+        display_model(state.modelname);
 }
 
 function modelmenu_onchange() {
     var href;
-    if(state.modelfile == "")
+    if(state.modelname == "")
         href = "./" + html.modelmenu.value;
     else
         href = "./" + html.modelmenu.value;
-    state.modelfile = html.modelmenu.value;
+    state.modelname = html.modelmenu.value;
 
     // Trigger onpopstate to update the page in the asked context
     history.pushState(state, "", href);
@@ -79,7 +79,7 @@ function display_models_list() {
         if(err != null) { alert("Erreur: " + err); return; }
 
         var onEachFeature = function(feature, layer) {
-            layer.bindPopup(feature.properties.modelfile + "<br><a onclick='popups_onclick(\"" + feature.properties.modelfile + "\")'>Open</a>");
+            layer.bindPopup(feature.properties.modelname + "<br><a onclick='popups_onclick(\"" + feature.properties.modelname + "\")'>Open</a>");
         }
 
         var layerGeoJson = L.geoJson(json, {
@@ -90,25 +90,25 @@ function display_models_list() {
 
         var newHtml = '<option value=""></option>';
         for(feature of json.features)
-            newHtml += '<option value="' + feature.properties.modelfile + '">' + feature.properties.modelfile + '</option>';
+            newHtml += '<option value="' + feature.properties.modelname + '">' + feature.properties.modelname + '</option>';
         html.modelmenu.innerHTML = newHtml;
     });
 }
 
-function popups_onclick(modelfile) {
-    state.modelfile = modelfile;
+function popups_onclick(modelname) {
+    state.modelname = modelname;
 
     // Trigger onpopstate to update the page in the asked context
-    history.pushState(state, "", "./" + modelfile);
+    history.pushState(state, "", "./" + modelname);
     window.onpopstate({state: state});
 }
 
-function display_model(modelfile) {
+function display_model(modelname) {
     for(layer of leaflet_toplayers)
         layer.remove();
     leaflet_toplayers = [];
 
-    getJSON("../api/geojson/models/" + modelfile, function(err, json){
+    getJSON("../api/geojson/models/" + modelname, function(err, json){
         if(err != null) { alert("Erreur: " + err); return; }
 
         var pointToLayer = function(feature, latlng) {
@@ -126,6 +126,6 @@ function display_model(modelfile) {
         leaflet_toplayers.push(layerGeoJson);
         leaflet_map.fitBounds(layerGeoJson.getBounds());
 
-        html.modelmenu.value = modelfile;
+        html.modelmenu.value = modelname;
     });
 }

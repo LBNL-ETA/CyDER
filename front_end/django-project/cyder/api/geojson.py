@@ -5,7 +5,7 @@ import json
 
 def models_list(request):
     models = Model.objects.all()
-    
+
     features = []
     for model in models:
         first_node = Node.objects.filter(model=model)[0]
@@ -15,14 +15,14 @@ def models_list(request):
                 "type": "Point",
                 "coordinates": [first_node.longitude,first_node.latitude]
                 },
-            "properties": { "modelfile": model.filename }
+            "properties": { "modelname": model.name }
             });
     geojson = json.dumps({"type": "FeatureCollection", "features": features }, separators=(',',':'))
 
     return HttpResponse(geojson)
 
-def get_model(request, modelfile):
-    model = Model.objects.get(filename=modelfile)
+def get_model(request, modelname):
+    model = Model.objects.get(name=modelname)
     nodes = Node.objects.filter(model=model)
     lines = Device.objects.filter(Q(model=model), Q(device_type=10) | Q(device_type=13)).select_related('section__from_node', 'section__to_node')
 

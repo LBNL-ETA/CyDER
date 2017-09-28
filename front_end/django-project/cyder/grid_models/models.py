@@ -2,9 +2,9 @@ from django.db import models
 
 # Create your models here.
 class Model(models.Model):
-    filename = models.CharField(max_length=50, null=True, blank=True)
+    name = models.CharField(max_length=50, null=True, blank=True)
     def __str__(self):
-        return self.filename
+        return self.name
 
 class Node(models.Model):
     model = models.ForeignKey(Model, null=True, blank=True)

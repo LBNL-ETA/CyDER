@@ -3,6 +3,5 @@
 from .celery import app
 
 @app.task
-def get_model(modelfile):
+def get_model(modelname):
     return
-

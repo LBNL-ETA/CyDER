@@ -9,8 +9,8 @@
     integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
     crossorigin=""></script>
 <script src="{% static 'cyder/model_viewer.js' %}"></script>
-<script>var state = {modelfile: "{{ modelfile|escapequotes|safe }}"};</script>
-    
+<script>var state = {modelname: "{{ modelname|escapequotes|safe }}"};</script>
+
 <div id="map" style="height: 500px"></div>
 
 <select id="modelmenu">

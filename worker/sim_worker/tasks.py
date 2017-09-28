@@ -4,11 +4,11 @@ from .celery import app
 import pandas
 
 @app.task
-def get_model(modelfile):
+def get_model(modelname):
     # Import cympy from the function to prevent multiple import caused by celery importing this module at launch
     from . import cymdist
 
-    cymdist.open_study(modelfile)
+    cymdist.open_study(modelname + '.sxst')
 
     devices = cymdist.list_devices()
     nodes = cymdist.list_nodes()

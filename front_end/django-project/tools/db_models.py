@@ -2,14 +2,14 @@ import sim_worker.tasks
 import pandas
 from cyder.grid_models.models import Model, Device, Node, Section
 
-def import_model(modelfile):
+def import_model(modelname):
     try:
-        model = Model.objects.get(filename=modelfile)
+        model = Model.objects.get(name=modelname)
     except Model.DoesNotExist:
         model = None
 
     print("Get model from worker...")
-    result = sim_worker.tasks.get_model.delay(modelfile)
+    result = sim_worker.tasks.get_model.delay(modelname)
     (nodes_df, sections_df, devices_df) = result.get()
 
     if model != None:
@@ -21,7 +21,7 @@ def import_model(modelfile):
     else:
         print("Importing model in DB...")
         model = Model()
-        model.filename = modelfile
+        model.name = modelname
         model.save()
 
     lenght = len(nodes_df)
