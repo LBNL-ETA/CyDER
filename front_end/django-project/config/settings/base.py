@@ -26,9 +26,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'cyder.main',
     'cyder.api',
     'cyder.grid_models',
-    'rest_framework',
 ]
 
 MIDDLEWARE = [
