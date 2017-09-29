@@ -17,7 +17,6 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^model_viewer/', include('cyder.grid_models.urls')),
-    url(r'^api/', include('cyder.api.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^', include('cyder.urls'))
 ]

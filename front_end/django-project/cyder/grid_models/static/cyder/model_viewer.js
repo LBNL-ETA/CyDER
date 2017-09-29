@@ -75,7 +75,7 @@ function display_models_list() {
         layer.remove();
     leaflet_toplayers = [];
 
-    getJSON("../api/geojson/models", function(err, json){
+    getJSON("../api/models/geojson", function(err, json){
         if(err != null) { alert("Erreur: " + err); return; }
 
         var onEachFeature = function(feature, layer) {
@@ -108,7 +108,7 @@ function display_model(modelname) {
         layer.remove();
     leaflet_toplayers = [];
 
-    getJSON("../api/geojson/models/" + modelname, function(err, json){
+    getJSON("../api/models/" + modelname + "/geojson", function(err, json){
         if(err != null) { alert("Erreur: " + err); return; }
 
         var pointToLayer = function(feature, latlng) {

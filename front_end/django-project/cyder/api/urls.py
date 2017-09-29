@@ -1,13 +1,20 @@
 from django.conf.urls import url, include
 from rest_framework import routers
-from . import geojson
-from . import views
 
-router = routers.DefaultRouter()
-router.register(r'models', views.ModelViewSet)
+apirouter = routers.DefaultRouter()
+urlpatterns = []
 
-urlpatterns = [
-    url(r'^geojson/models$', geojson.models_list),
-    url(r'^geojson/models/(?P<modelname>[0-9a-zA-Z.]+)$', geojson.get_model),
-    url(r'^', include(router.urls)),
-]
+# Import the api.py from each cyder.* app installed
+import re
+import importlib
+from django.apps import apps
+apps = apps.get_app_configs()
+regex = re.compile(r'^cyder.')
+for app in apps:
+    if regex.match(app.name):
+        try:
+            importlib.import_module(app.name + '.api')
+        except ModuleNotFoundError:
+            pass
+
+urlpatterns.append(url(r'^', include(apirouter.urls)))
