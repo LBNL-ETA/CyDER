@@ -1,18 +1,29 @@
+{% extends 'cyder/base.html' %}
+{% load escapequotes %} {# Cf. cyder/main/templatetags/escapedoublequote.py #}
 {% load static %}
-{% load escapequotes %} <!-- Cf. templatetags/escapedoublequote.py -->
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
-    integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
-    crossorigin=""/>
-<!-- Make sure you put this AFTER Leaflet's CSS -->
-<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
-    integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
-    crossorigin=""></script>
-<script src="{% static 'cyder/model_viewer.js' %}"></script>
-<script>var state = {modelname: "{{ modelname|escapequotes|safe }}"};</script>
+{% block css %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+        integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+        crossorigin=""/>
+{% endblock css %}
 
-<div id="map" style="height: 500px"></div>
+{% block content %}
+    Select a model to view:
+    <select class="custom-select" id="modelmenu">
+        <option value=""></option>
+    </select>
 
-<select id="modelmenu">
-    <option value=""></option>
-</select>
+    <div id="map" style="height: 70vh; margin: 1rem 0 1rem 0"></div>
+{% endblock content %}
+
+{% block script %}
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+        integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+        crossorigin=""></script>
+    <script src="{% static 'cyder/model_viewer.js' %}"></script>
+    <script>
+        $(".navbar [data-name='model_viewer']").addClass("active");
+        var state = {modelname: "{{ modelname|escapequotes|safe }}"};
+    </script>
+{% endblock script %}
