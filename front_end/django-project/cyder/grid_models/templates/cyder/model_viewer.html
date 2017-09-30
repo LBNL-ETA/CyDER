@@ -6,6 +6,9 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
         integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
         crossorigin=""/>
+    <style>
+        .card { height: 100%; }
+    </style>
 {% endblock css %}
 
 {% block content %}
@@ -15,6 +18,44 @@
     </select>
 
     <div id="map" style="height: 70vh; margin: 1rem 0 1rem 0"></div>
+
+    <div class="row" style="margin-bottom: 2rem">
+        <div class=col-md-4>
+            <div class="card">
+                <div class="card-header">
+                    Infos
+                </div>
+                <div class="card-body">
+                    Model name: <span id="modelname"></span><br>
+                    Nodes count: <span id="nodescount"></span><br>
+                    Devices count: <span id="devicescount"></span><br>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    Devices count detail
+                </div>
+                <div id="devicecountdetail" class="card-body">
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header input-group">
+                    <input class="form-control" placeholder="Search" name="srch-term" id="srch-term" type="text">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" type="submit">Search</button>
+                    </div>
+                </div>
+                <div id="searchresult" class="card-body">
+                    Search
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}
 
 {% block script %}
