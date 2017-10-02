@@ -1,8 +1,12 @@
 from rest_framework import serializers
-from cyder.grid_models.models import Model
+from cyder.grid_models.models import Model, Node
 
-class ModelSerializer(serializers.HyperlinkedModelSerializer):
+class ModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Model
-        fields = '__all__'
-        extra_kwargs = { 'url': { 'view_name': 'api:model-detail', 'lookup_field': 'name'}}
+        exclude = ['id']
+
+class NodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Node
+        exclude = ['id', 'model']

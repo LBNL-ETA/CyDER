@@ -1,12 +1,15 @@
-from cyder.api.urls import apirouter
+from cyder.api.urls import apirouter, urlpatterns
 
 from django.db.models import Q
 from django.urls import reverse
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
+from rest_framework_nested import routers
 from .models import Model, Node, Device, Section
-from .serializers import ModelSerializer
+from .serializers import ModelSerializer, NodeSerializer
+from django.conf.urls import url, include
+from django.shortcuts import get_object_or_404
 
 class ModelViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Model.objects.all()
@@ -62,5 +65,17 @@ class ModelViewSet(viewsets.ReadOnlyModelViewSet):
                 });
 
         return Response({"type": "FeatureCollection", "features": features })
-
 apirouter.register(r'models', ModelViewSet)
+
+models_router = routers.NestedSimpleRouter(apirouter, r'models', lookup='model')
+
+class NodeViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Node.objects.all()
+    serializer_class = NodeSerializer
+    lookup_field = 'node_id'
+    def get_queryset(self):
+        model = get_object_or_404(Model.objects.all(), name=self.kwargs['model_name'])
+        return Node.objects.filter(model=model)
+models_router.register(r'nodes', NodeViewSet, base_name='model-nodes')
+
+urlpatterns.append(url(r'^', include(models_router.urls)))
