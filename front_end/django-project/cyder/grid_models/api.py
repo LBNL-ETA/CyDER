@@ -7,7 +7,7 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework_nested import routers
 from .models import Model, Node, Device, Section
-from .serializers import ModelSerializer, NodeSerializer
+from .serializers import ModelSerializer, NodeSerializer, DeviceSerializer
 from django.conf.urls import url, include
 from django.shortcuts import get_object_or_404
 
@@ -77,5 +77,14 @@ class NodeViewSet(viewsets.ReadOnlyModelViewSet):
         model = get_object_or_404(Model.objects.all(), name=self.kwargs['model_name'])
         return Node.objects.filter(model=model)
 models_router.register(r'nodes', NodeViewSet, base_name='model-nodes')
+
+class DeviceViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Device.objects.all()
+    serializer_class = DeviceSerializer
+    lookup_field = 'device_number'
+    def get_queryset(self):
+        model = get_object_or_404(Model.objects.all(), name=self.kwargs['model_name'])
+        return Device.objects.filter(model=model)
+models_router.register(r'devices', DeviceViewSet, base_name='model-devices')
 
 urlpatterns.append(url(r'^', include(models_router.urls)))
