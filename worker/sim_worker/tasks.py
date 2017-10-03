@@ -9,9 +9,12 @@ def get_model(modelname):
     from . import cymdist
 
     cymdist.open_study(modelname + '.sxst')
+    cymdist.compute_loadflow()
 
+    model = cymdist.model_info()
     devices = cymdist.list_devices()
     nodes = cymdist.list_nodes()
+    nodes = cymdist.get_voltages(nodes)
     sections = cymdist.list_sections()
 
     # Remove cympy objects to be able to serialize
@@ -20,5 +23,5 @@ def get_model(modelname):
     sections = sections.drop('section_object', axis=1)
 
     # Return result and exit the worker to "free" cympy
-    app.backend.mark_as_done(get_model.request.id, (nodes,sections,devices))
+    app.backend.mark_as_done(get_model.request.id, (model, nodes,sections,devices))
     exit(0)

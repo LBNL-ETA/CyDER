@@ -2,6 +2,14 @@ import sim_worker.tasks
 import pandas
 from cyder.grid_models.models import Model, Device, Node, Section
 
+# Return a copy of dict, without the keys list in exclude_keys
+def exclude(dict, exclude_keys):
+    new_dict = {}
+    for key in dict.keys():
+        if key not in exclude_keys:
+            new_dict[key] = dict[key]
+    return new_dict
+
 def import_model(modelname):
     try:
         model = Model.objects.get(name=modelname)
@@ -10,28 +18,25 @@ def import_model(modelname):
 
     print("Get model from worker...")
     result = sim_worker.tasks.get_model.delay(modelname)
-    (nodes_df, sections_df, devices_df) = result.get()
+    (model_info, nodes_df, sections_df, devices_df) = result.get()
 
     if model != None:
         print("Updating model in DB...")
         Node.objects.filter(model=model).delete()
         Section.objects.filter(model=model).delete()
         Device.objects.filter(model=model).delete()
+        model = Model(id=model.id, name=modelname, **model_info)
+        model.save()
 
     else:
         print("Importing model in DB...")
-        model = Model()
-        model.name = modelname
+        model = Model(name=modelname, **model_info)
         model.save()
 
     lenght = len(nodes_df)
     for index in range(0, lenght):
         node_row = nodes_df.iloc[index]
-        node = Node()
-        node.model = model
-        node.node_id = node_row['node_id']
-        node.latitude = node_row['latitude']
-        node.longitude = node_row['longitude']
+        node = Node(model=model, **node_row)
         node.save()
         print("\rImported nodes: %d/%d" % (index+1, lenght), end="")
     print()
@@ -39,9 +44,8 @@ def import_model(modelname):
     lenght = len(sections_df)
     for index in range(0, lenght):
         section_row = sections_df.iloc[index]
-        section = Section()
-        section.model = model
-        section.section_id = section_row['section_id']
+
+        section = Section(model=model, **exclude(section_row, ['from_node_id', 'to_node_id']))
         section.from_node = Node.objects.get(model=model, node_id=section_row['from_node_id'])
         if section_row['to_node_id'] == section_row['section_id']:
             section.to_node = None
@@ -54,14 +58,9 @@ def import_model(modelname):
     lenght = len(devices_df)
     for index in range(0, lenght):
         device_row = devices_df.iloc[index]
-        device = Device()
+        device = Device(model=model, **exclude(device_row, ['section_id']))
         device.model = model
-        device.device_number = device_row['device_number']
-        device.device_type = device_row['device_type']
         device.section = Section.objects.get(model=model, section_id=device_row['section_id'])
-        device.distance = device_row['distance']
-        device.latitude = device_row['latitude']
-        device.longitude = device_row['longitude']
         device.save()
         print("\rImported devices: %d/%d" % (index+1, lenght), end="")
     print()

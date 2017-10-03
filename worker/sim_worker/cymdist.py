@@ -5,6 +5,15 @@ def open_study(modelfile):
     filename = "C:\\Users\\DRRC\\Desktop\\PGE_Models_DO_NOT_SHARE\\" + modelfile
     cympy.study.Open(filename)
 
+def compute_loadflow():
+    cympy.sim.LoadFlow().Run()
+
+def model_info():
+    model = {}
+    model['longitude'] = 0
+    model['latitude'] = 0
+    return model
+
 def list_nodes():
     nodes = cympy.study.ListNodes()
 
@@ -40,3 +49,17 @@ def list_devices(device_type=False):
     devices['distance'] = devices['device_object'].apply(lambda x: cympy.study.QueryInfoDevice("Distance", x.DeviceNumber, x.DeviceType))
 
     return devices
+
+def get_voltages(nodes, is_node=False):
+    # Require to call compute_loadflow() first
+    voltage = nodes.copy()
+
+    voltage['VA'] = nodes['node_object'].apply(lambda x: cympy.study.QueryInfoNode("VA", x.ID))
+    voltage['VB'] = nodes['node_object'].apply(lambda x: cympy.study.QueryInfoNode("VB", x.ID))
+    voltage['VC'] = nodes['node_object'].apply(lambda x: cympy.study.QueryInfoNode("VC", x.ID))
+
+    # Cast to float
+    for column in ['VA', 'VB', 'VC']:
+        voltage[column] = voltage[column].apply(lambda x: None if x is '' else float(x))
+
+    return voltage
