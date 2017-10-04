@@ -37,14 +37,13 @@ statelib.replaceState = function(url) {
     history.replaceState(currentstate, "", url);
 };
 statelib.registerStateClass = function(varclass) {
-    var obj = new varclass();
-    statetype[obj.constructor.name] = varclass;
+    statetype[varclass.name] = varclass;
 };
 statelib.currentstate = function () { return currentstate; }
 
 statelib.GenericState = class {
     constructor(parent = null, name = '') {
-        this._type = '/!\\reserved/!\\';
+        this._type = this.constructor.name;
         this._substates = {};
         this._parentstate = parent;
         this._substatename  = name;
@@ -67,10 +66,17 @@ statelib.GenericState = class {
         if(this._parentstate == null)
             currentstatedata = { _substates: {} };
         else
-            this._parentstate.data._substates[this._substatename] = {};
+            this._parentstate.data._substates[this._substatename] = { _substates: {} };
     }
     get parent() {
         return this._parentstate;
+    }
+    getsubstate(name) {
+        name
+        return this._substates[name];
+    }
+    get type() {
+        return this._type;
     }
 
     restore() {
@@ -89,12 +95,12 @@ statelib.GenericState = class {
                 var substate = this._parentstate._substates[this._substatename];
                 if(substate !== this) {
                     if(substate) substate.abolish();
-                    this._resetdata();
                     this._parentstate._substates[this._substatename] = this;
-                    this._onrestore();
-                    for (var statename in this._substates) {
-                        this._substates[statename].restore();
-                    }
+                }
+                this._resetdata();
+                this._onrestore();
+                for (var statename in this._substates) {
+                    this._substates[statename].restore();
                 }
             } else {
                 this._parentstate._substates[this._substatename] = this;
@@ -104,10 +110,9 @@ statelib.GenericState = class {
     }
     abolish() {
         if(!this.iscurrentstate()) {
-            console.error("Can't abolish a state wich is not the current state!");
-            return;
+            throw "statelib: Can't abolish a state wich is not the current state!";
         }
-        for(var namestate in this._substates) {
+        for(var statename in this._substates) {
             this._substates[statename].abolish();
         }
         this._onabolish();
@@ -123,6 +128,6 @@ statelib.GenericState = class {
 };
 statelib.registerStateClass(statelib.GenericState);
 
-currentstate = new statelib.GenericState();
+currentstate = null;
 
 })();

@@ -62,6 +62,7 @@ class ModelViewSet(viewsets.ReadOnlyModelViewSet):
                     "type": "Point",
                     "coordinates": [node.longitude,node.latitude]
                     },
+                "properties" : { "id" : node.node_id },
                 });
 
         return Response({"type": "FeatureCollection", "features": features })

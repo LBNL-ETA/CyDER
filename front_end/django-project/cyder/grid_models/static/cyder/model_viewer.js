@@ -64,6 +64,10 @@ class ModelState extends statelib.GenericState {
         getJSON("../api/models/" + this.modelname + "/geojson").then((json) => {
             var pointToLayer = (feature, latlng) => {
                 var circle = L.circle(latlng, {color: 'red', weight: 2, fillOpacity: 1, radius: 3});
+                circle._leaflet_id = feature.properties.id;
+                circle.on('click', (e) => {
+                    (new NodeInfoState(e.target._leaflet_id)).restore();
+                });
                 return circle;
             }
 
@@ -85,6 +89,34 @@ class ModelState extends statelib.GenericState {
     }
 }
 statelib.registerStateClass(ModelState);
+
+class NodeInfoState extends statelib.GenericState {
+    constructor(node_id, parent = statelib.currentstate()) {
+        if(!(parent instanceof ModelState)) throw "NodeInfoState can't be created is this context"
+        super(parent, '.select');
+
+        this.node_id = node_id;
+    }
+
+    _onrestore() {
+        console.log("Restore NodeInfoState:"+this.node_id);
+        var nodeLayer = this.parent.data.layerGeoJson.getLayer(this.node_id);
+        getJSON("../api/models/"+this.parent.modelname+"/nodes/"+this.node_id).then((node) => {
+            nodeLayer.bindPopup("Node "+this.node_id+"<br>VoltageA: "+node.VA+"<br>VoltageB: "+node.VB+"<br>VoltageC: "+node.VC);
+            nodeLayer.openPopup();
+        })
+        .catch((err) => {
+            if(err.constructor.name == "XMLHttpRequest")
+                alert("Error: " + errxhr.status);
+            else
+                throw err;
+        });
+    }
+    _onabolish() {
+        console.log("Abolish NodeInfoState:"+this.node_id);
+    }
+}
+statelib.registerStateClass(NodeInfoState);
 
 window.onpopstate = statelib.onpopstate;
 
