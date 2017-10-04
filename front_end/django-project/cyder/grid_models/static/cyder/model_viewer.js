@@ -1,29 +1,94 @@
-function getJSON(url, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.responseType = 'json';
-    xhr.onload = function() {
-        var status = xhr.status;
-        if (status === 200) {
-            callback(null, xhr.response);
-        } else {
-            callback(status, xhr.response);
-        }
-    };
-    try {
+function getJSON(url) {
+    return new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'json';
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                resolve(xhr.response);
+            } else {
+                reject(xhr);
+            }
+        };
         xhr.send();
-    }
-    catch(err) {
-        callback("Can't send request", null);
-    }
-};
+    });
+}
 
 var leaflet_map;
-var leaflet_toplayers = [];
 var html = {};
 
-window.onload = function () {
+class AllModelState extends statelib.GenericState {
+    constructor() {
+        super();
+    }
 
+    _onrestore() {
+        console.log("Restore AllModelState");
+        html.modelmenu.value = "";
+
+        getJSON("../api/models/geojson").then((json) => {
+            var onEachFeature = function(feature, layer) {
+                layer.bindPopup(feature.properties.modelname + "<br><button class='btn btn-primary btn-sm' onclick='popups_onclick(\"" + feature.properties.modelname + "\")'>Open</button>");
+            }
+
+            this.data.layerGeoJson = L.geoJson(json, {
+                onEachFeature: onEachFeature
+                }).addTo(leaflet_map);
+            leaflet_map.fitBounds(this.data.layerGeoJson.getBounds());
+        })
+        .catch((err) => {
+            if(err.constructor.name == "XMLHttpRequest")
+                alert("Error: " + errxhr.status);
+            else
+                throw err;
+        });
+    }
+    _onabolish() {
+        console.log("Abolish AllModelState");
+        this.data.layerGeoJson.remove();
+    }
+}
+statelib.registerStateClass(AllModelState);
+
+class ModelState extends statelib.GenericState {
+    constructor(modelname) {
+        super();
+
+        this.modelname = modelname;
+    }
+
+    _onrestore() {
+        console.log("Restore ModelState:" + this.modelname);
+        html.modelmenu.value = this.modelname;
+
+        getJSON("../api/models/" + this.modelname + "/geojson").then((json) => {
+            var pointToLayer = (feature, latlng) => {
+                var circle = L.circle(latlng, {color: 'red', weight: 2, fillOpacity: 1, radius: 3});
+                return circle;
+            }
+
+            this.data.layerGeoJson = L.geoJson(json, {
+                pointToLayer: pointToLayer,
+                }).addTo(leaflet_map);
+            leaflet_map.fitBounds(this.data.layerGeoJson.getBounds());
+        })
+        .catch((err) => {
+            if(err.constructor.name == "XMLHttpRequest")
+                alert("Error: " + errxhr.status);
+            else
+                throw err;
+        });
+    }
+    _onabolish() {
+        console.log("Abolish ModelState:" + this.modelname);
+        this.data.layerGeoJson.remove();
+    }
+}
+statelib.registerStateClass(ModelState);
+
+window.onpopstate = statelib.onpopstate;
+
+window.onload = function () {
     // Init map
     leaflet_map = L.map('map').setView([37.8,-122.0], 9);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -32,100 +97,45 @@ window.onload = function () {
     }).addTo(leaflet_map);
 
     // Get DOM element
-    html.modelmenu = document.getElementById('modelmenu')
+    html.modelmenu = document.getElementById('modelmenu');
 
     // Set events
-    html.modelmenu.addEventListener("change", modelmenu_onchange)
+    html.modelmenu.addEventListener("change", modelmenu_onchange);
 
-    // Trigger onpopstate to initialise the page in the asked context
-    history.replaceState(state, "", window.location.href);
-    window.onpopstate({state: state});
-};
-
-
-
-function change_state() {
-
-
-}
-
-window.onpopstate = function(e) {
-    state = e.state;
-    if(state.modelname == "")
-        display_models_list();
-    else
-        display_model(state.modelname);
-}
-
-function modelmenu_onchange() {
-    var href;
-    if(state.modelname == "")
-        href = "./" + html.modelmenu.value;
-    else
-        href = "./" + html.modelmenu.value;
-    state.modelname = html.modelmenu.value;
-
-    // Trigger onpopstate to update the page in the asked context
-    history.pushState(state, "", href);
-    window.onpopstate({state: state});
-}
-
-function display_models_list() {
-    for(layer of leaflet_toplayers)
-        layer.remove();
-    leaflet_toplayers = [];
-
-    getJSON("../api/models/geojson", function(err, json){
-        if(err != null) { alert("Erreur: " + err); return; }
-
-        var onEachFeature = function(feature, layer) {
-            layer.bindPopup(feature.properties.modelname + "<br><a onclick='popups_onclick(\"" + feature.properties.modelname + "\")'>Open</a>");
+    getJSON("../api/models").then(function(models) {
+        var newHtml = '<option value="">All</option>';
+        for(var model of models)
+            newHtml += '<option value="' + model.name + '">' + model.name + '</option>';
+        html.modelmenu.innerHTML = newHtml;
+    })
+    .then(() => {
+        if(djangoContext.modelname == '') {
+            (new AllModelState()).restore();
+        } else {
+            (new ModelState(djangoContext.modelname)).restore();
         }
 
-        var layerGeoJson = L.geoJson(json, {
-            onEachFeature: onEachFeature
-            }).addTo(leaflet_map);
-        leaflet_toplayers.push(layerGeoJson);
-        leaflet_map.fitBounds(layerGeoJson.getBounds());
-
-        var newHtml = '<option value=""></option>';
-        for(feature of json.features)
-            newHtml += '<option value="' + feature.properties.modelname + '">' + feature.properties.modelname + '</option>';
-        html.modelmenu.innerHTML = newHtml;
+        statelib.replaceState(window.location.href);
+    })
+    .catch((err) => {
+        if(err.constructor.name == "XMLHttpRequest")
+            alert("Error: " + errxhr.status);
+        else
+            throw err;
     });
+};
+
+function modelmenu_onchange() {
+    if(html.modelmenu.value == '') {
+        (new AllModelState()).restore();
+    } else {
+        (new ModelState(html.modelmenu.value)).restore();
+    }
+
+    statelib.pushState("./" + html.modelmenu.value);
 }
 
 function popups_onclick(modelname) {
-    state.modelname = modelname;
-
-    // Trigger onpopstate to update the page in the asked context
-    history.pushState(state, "", "./" + modelname);
-    window.onpopstate({state: state});
-}
-
-function display_model(modelname) {
-    for(layer of leaflet_toplayers)
-        layer.remove();
-    leaflet_toplayers = [];
-
-    getJSON("../api/models/" + modelname + "/geojson", function(err, json){
-        if(err != null) { alert("Erreur: " + err); return; }
-
-        var pointToLayer = function(feature, latlng) {
-            return L.circle(latlng, {
-                color: 'red',
-                weight: 2,
-                fillOpacity: 1,
-                radius: 3
-                });
-        }
-
-        var layerGeoJson = L.geoJson(json, {
-            pointToLayer: pointToLayer,
-            }).addTo(leaflet_map);
-        leaflet_toplayers.push(layerGeoJson);
-        leaflet_map.fitBounds(layerGeoJson.getBounds());
-
-        html.modelmenu.value = modelname;
-    });
+    (new ModelState(modelname)).restore();
+    statelib.pushState("./" + modelname);
 }

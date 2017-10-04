@@ -7,19 +7,21 @@
         integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
         crossorigin=""/>
     <style>
-        .card { height: 100%; }
+        .card {
+            height: 100%;
+        }
+        .col-md-4 {
+            margin-bottom: 1rem;
+        }
     </style>
 {% endblock css %}
 
 {% block content %}
-    Select a model to view:
-    <select class="custom-select" id="modelmenu">
-        <option value=""></option>
-    </select>
+    Select a model to display: <select class="custom-select" id="modelmenu"></select>
 
     <div id="map" style="height: 70vh; margin: 1rem 0 1rem 0"></div>
 
-    <div class="row" style="margin-bottom: 2rem">
+    <div class="row" style="margin-bottom: 1rem">
         <div class=col-md-4>
             <div class="card">
                 <div class="card-header">
@@ -62,9 +64,10 @@
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
         integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
         crossorigin=""></script>
+    <script src="{% static 'cyder/statelib.js' %}"></script>
     <script src="{% static 'cyder/model_viewer.js' %}"></script>
     <script>
         $(".navbar [data-name='model_viewer']").addClass("active");
-        var state = {modelname: "{{ modelname|escapequotes|safe }}"};
+        var djangoContext = {modelname: "{{ modelname|escapequotes|safe }}"};
     </script>
 {% endblock script %}
