@@ -14,9 +14,130 @@ function getJSON(url) {
     });
 }
 
+var url = "/model_viewer";
 var leaflet_map;
 var html = {};
 
+class View {
+    constructor(viewSet) {
+        if(this.constructor.name == "View") throw "View is an abstract class";
+        this._viewSet = viewSet;
+        this._isbuilt = false;
+    }
+
+    build() {
+        return new Promise(this._onbuild)
+        .then(() => { this._isbuilt = true;});
+    }
+    show() {
+        return Promise.resolve((() => {
+            if(!this._isbuilt)
+                return this.build();
+        })()).then(() => {
+            return new Promise(this._onshow);
+        });
+    }
+    hide() {
+        return new Promise(this._onhide);
+    }
+}
+
+class GenericView extends View {
+    constructor(viewSet, func) {
+        super(viewSet);
+        this._onbuild = func.onbuild;
+        this._onshow = func.onshow;
+        this._onhide = func.onhide;
+    }
+}
+
+class ViewSet {
+    constructor() {
+        this._currentView = null;
+        this._isshown = true;
+    }
+    get currentView() { return this._currentView; }
+
+    changeView(view) {
+        return Promise.resolve((() => {
+            if(this._isshown)
+                return this._currentView.hide();
+        })()).then(() => {
+            this._currentView = view;
+            if(this._isshown)
+                return this._currentView.show();
+        });
+    }
+    show() {
+        this._isshown = true;
+        if(this._currentView)
+            return this._currentView.show();
+        else
+            return Promise.resolve();
+    }
+    hide() {
+        this._isshown = false;
+        if(this._currentView)
+            return this._currentView.hide();
+        else
+            return Promise.resolve();
+    }
+}
+
+
+
+
+
+var mainViewSet = new ViewSet();
+var allModelView = new GenericView(mainViewSet, {
+    onbuild: function(done) {
+        setTimeout(() => {console.log('built!'); done();}, 1000);
+    },
+    onshow: function(done) {
+        setTimeout(() => {console.log('shown!'); done();}, 1000);
+    },
+    onhide: function(done) {
+        setTimeout(() => {console.log('hide!'); done();}, 1000);
+    }
+});
+var other = new GenericView(mainViewSet, {
+    onbuild: function(done) {
+        setTimeout(() => {console.log('built!'); done();}, 1000);
+    },
+    onshow: function(done) {
+        setTimeout(() => {console.log('shown!'); done();}, 1000);
+    },
+    onhide: function(done) {
+        setTimeout(() => {console.log('hide!'); done();}, 1000);
+    }
+});
+
+console.log("start");
+mainViewSet.hide().then(() => {
+    return mainViewSet.changeView(other);
+}).then(() => {
+    return mainViewSet.show();
+    // built!
+    // shown!
+}).then(() => {
+    return mainViewSet.changeView(allModelView);
+    // hide!
+    // built!
+    // shown!
+}).then(() => {
+    return mainViewSet.hide();
+    // hide!
+}).then(() => {
+    return mainViewSet.show();
+    // shown!
+}).then(() => {
+    console.log("end");
+});
+
+
+
+
+/*
 class AllModelState extends statelib.GenericState {
     constructor() {
         super();
@@ -171,3 +292,4 @@ function popups_onclick(modelname) {
     (new ModelState(modelname)).restore();
     statelib.pushState("./" + modelname);
 }
+*/
