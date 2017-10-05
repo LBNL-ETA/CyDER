@@ -96,7 +96,6 @@ class ModelView extends viewlib.View {
     }
 }
 
-mainViewSet.changeView(new AllModelView());
 
 /*
 class NodeInfoState extends statelib.GenericState {
