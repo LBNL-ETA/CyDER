@@ -18,199 +18,87 @@ var url = "/model_viewer";
 var leaflet_map;
 var html = {};
 
-class View {
-    constructor(viewSet) {
-        if(this.constructor.name == "View") throw "View is an abstract class";
-        this._viewSet = viewSet;
-        this._isbuilt = false;
-    }
+var mainViewSet = new viewlib.ViewSet();
 
-    build() {
-        return new Promise(this._onbuild)
-        .then(() => { this._isbuilt = true;});
-    }
-    show() {
-        return Promise.resolve((() => {
-            if(!this._isbuilt)
-                return this.build();
-        })()).then(() => {
-            return new Promise(this._onshow);
-        });
-    }
-    hide() {
-        return new Promise(this._onhide);
-    }
-}
-
-class GenericView extends View {
-    constructor(viewSet, func) {
-        super(viewSet);
-        this._onbuild = func.onbuild;
-        this._onshow = func.onshow;
-        this._onhide = func.onhide;
-    }
-}
-
-class ViewSet {
+class AllModelView extends viewlib.View {
     constructor() {
-        this._currentView = null;
-        this._isshown = true;
+        if(AllModelView._instance) return AllModelView._instance;
+        super(mainViewSet);
+        AllModelView._instance = this;
     }
-    get currentView() { return this._currentView; }
 
-    changeView(view) {
-        return Promise.resolve((() => {
-            if(this._isshown)
-                return this._currentView.hide();
-        })()).then(() => {
-            this._currentView = view;
-            if(this._isshown)
-                return this._currentView.show();
+    _onbuild(done) {
+        getJSON("/api/models/geojson").then(geojson => {
+            this.geojson = geojson;
+            done();
         });
     }
-    show() {
-        this._isshown = true;
-        if(this._currentView)
-            return this._currentView.show();
-        else
-            return Promise.resolve();
+
+    _onshow(done) {
+        var onEachFeature = function(feature, layer) {
+            layer.bindPopup(feature.properties.modelname + "<br><button class='btn btn-primary btn-sm' onclick='popups_onclick(\"" + feature.properties.modelname + "\")'>Open</button>");
+        }
+
+        this.layerGeoJson = L.geoJson(this.geojson, {
+            onEachFeature: onEachFeature
+            }).addTo(leaflet_map);
+        leaflet_map.fitBounds(this.layerGeoJson.getBounds());
+
+        done();
     }
-    hide() {
-        this._isshown = false;
-        if(this._currentView)
-            return this._currentView.hide();
-        else
-            return Promise.resolve();
+
+    _onhide(done) {
+        this.layerGeoJson.remove();
+        done();
     }
 }
 
-
-
-
-
-var mainViewSet = new ViewSet();
-var allModelView = new GenericView(mainViewSet, {
-    onbuild: function(done) {
-        setTimeout(() => {console.log('built!'); done();}, 1000);
-    },
-    onshow: function(done) {
-        setTimeout(() => {console.log('shown!'); done();}, 1000);
-    },
-    onhide: function(done) {
-        setTimeout(() => {console.log('hide!'); done();}, 1000);
-    }
-});
-var other = new GenericView(mainViewSet, {
-    onbuild: function(done) {
-        setTimeout(() => {console.log('built!'); done();}, 1000);
-    },
-    onshow: function(done) {
-        setTimeout(() => {console.log('shown!'); done();}, 1000);
-    },
-    onhide: function(done) {
-        setTimeout(() => {console.log('hide!'); done();}, 1000);
-    }
-});
-
-console.log("start");
-mainViewSet.hide().then(() => {
-    return mainViewSet.changeView(other);
-}).then(() => {
-    return mainViewSet.show();
-    // built!
-    // shown!
-}).then(() => {
-    return mainViewSet.changeView(allModelView);
-    // hide!
-    // built!
-    // shown!
-}).then(() => {
-    return mainViewSet.hide();
-    // hide!
-}).then(() => {
-    return mainViewSet.show();
-    // shown!
-}).then(() => {
-    console.log("end");
-});
-
-
-
-
-/*
-class AllModelState extends statelib.GenericState {
-    constructor() {
-        super();
-    }
-
-    _onrestore() {
-        console.log("Restore AllModelState");
-        html.modelmenu.value = "";
-
-        getJSON("../api/models/geojson").then((json) => {
-            var onEachFeature = function(feature, layer) {
-                layer.bindPopup(feature.properties.modelname + "<br><button class='btn btn-primary btn-sm' onclick='popups_onclick(\"" + feature.properties.modelname + "\")'>Open</button>");
-            }
-
-            this.data.layerGeoJson = L.geoJson(json, {
-                onEachFeature: onEachFeature
-                }).addTo(leaflet_map);
-            leaflet_map.fitBounds(this.data.layerGeoJson.getBounds());
-        })
-        .catch((err) => {
-            if(err.constructor.name == "XMLHttpRequest")
-                alert("Error: " + errxhr.status);
-            else
-                throw err;
-        });
-    }
-    _onabolish() {
-        console.log("Abolish AllModelState");
-        this.data.layerGeoJson.remove();
-    }
-}
-statelib.registerStateClass(AllModelState);
-
-class ModelState extends statelib.GenericState {
+class ModelView extends viewlib.View {
     constructor(modelname) {
-        super();
-
+        if(ModelView._instances && ModelView._instances[modelname]) return ModelView._instances[modelname];
+        super(mainViewSet);
         this.modelname = modelname;
+        if(!ModelView._instances)
+            ModelView._instances = {};
+        ModelView._instances[modelname] = this;
     }
 
-    _onrestore() {
-        console.log("Restore ModelState:" + this.modelname);
+    _onbuild(done) {
+        getJSON("/api/models/" + this.modelname + "/geojson").then(geojson => {
+            this.geojson = geojson;
+            done();
+        })
+    }
+
+    _onshow(done) {
         html.modelmenu.value = this.modelname;
 
-        getJSON("../api/models/" + this.modelname + "/geojson").then((json) => {
-            var pointToLayer = (feature, latlng) => {
-                var circle = L.circle(latlng, {color: 'red', weight: 2, fillOpacity: 1, radius: 3});
-                circle._leaflet_id = feature.properties.id;
-                circle.on('click', (e) => {
-                    (new NodeInfoState(e.target._leaflet_id)).restore();
-                });
-                return circle;
-            }
+        var pointToLayer = (feature, latlng) => {
+            var circle = L.circle(latlng, {color: 'red', weight: 2, fillOpacity: 1, radius: 3});
+            circle._leaflet_id = feature.properties.id;
+            circle.on('click', (e) => {
+                //(new NodeInfoState(e.target._leaflet_id)).restore();
+            });
+            return circle;
+        }
 
-            this.data.layerGeoJson = L.geoJson(json, {
-                pointToLayer: pointToLayer,
-                }).addTo(leaflet_map);
-            leaflet_map.fitBounds(this.data.layerGeoJson.getBounds());
-        })
-        .catch((err) => {
-            if(err.constructor.name == "XMLHttpRequest")
-                alert("Error: " + errxhr.status);
-            else
-                throw err;
-        });
+        this.layerGeoJson = L.geoJson(this.geojson, {
+            pointToLayer: pointToLayer,
+            }).addTo(leaflet_map);
+        leaflet_map.fitBounds(this.layerGeoJson.getBounds());
+
+        done();
     }
-    _onabolish() {
-        console.log("Abolish ModelState:" + this.modelname);
-        this.data.layerGeoJson.remove();
+
+    _onhide(done) {
+        this.layerGeoJson.remove();
+        done();
     }
 }
-statelib.registerStateClass(ModelState);
 
+mainViewSet.changeView(new AllModelView());
+
+/*
 class NodeInfoState extends statelib.GenericState {
     constructor(node_id, parent = statelib.currentstate()) {
         if(!(parent instanceof ModelState)) throw "NodeInfoState can't be created is this context"
@@ -240,7 +128,7 @@ class NodeInfoState extends statelib.GenericState {
 statelib.registerStateClass(NodeInfoState);
 
 window.onpopstate = statelib.onpopstate;
-
+*/
 window.onload = function () {
     // Init map
     leaflet_map = L.map('map').setView([37.8,-122.0], 9);
@@ -263,33 +151,26 @@ window.onload = function () {
     })
     .then(() => {
         if(djangoContext.modelname == '') {
-            (new AllModelState()).restore();
+            mainViewSet.changeView(new AllModelView());
         } else {
-            (new ModelState(djangoContext.modelname)).restore();
+            mainViewSet.changeView(new ModelView(djangoContext.modelname));
         }
 
-        statelib.replaceState(window.location.href);
-    })
-    .catch((err) => {
-        if(err.constructor.name == "XMLHttpRequest")
-            alert("Error: " + errxhr.status);
-        else
-            throw err;
+        //statelib.replaceState(window.location.href);
     });
 };
 
 function modelmenu_onchange() {
     if(html.modelmenu.value == '') {
-        (new AllModelState()).restore();
+        mainViewSet.changeView(new AllModelView());
     } else {
-        (new ModelState(html.modelmenu.value)).restore();
+        mainViewSet.changeView(new ModelView(html.modelmenu.value));
     }
 
-    statelib.pushState("./" + html.modelmenu.value);
+    //statelib.pushState("./" + html.modelmenu.value);
 }
 
 function popups_onclick(modelname) {
-    (new ModelState(modelname)).restore();
-    statelib.pushState("./" + modelname);
+    mainViewSet.changeView(new ModelView(modelname));
+    //statelib.pushState("./" + modelname);
 }
-*/
