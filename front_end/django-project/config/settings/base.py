@@ -100,3 +100,10 @@ STATIC_ROOT = '/var/www'
 
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    )
+}

@@ -6,12 +6,14 @@ from rest_framework import viewsets
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework_nested import routers
+from rest_framework.permissions import IsAuthenticated
 from .models import Model, Node, Device, Section
 from .serializers import ModelSerializer, NodeSerializer, DeviceSerializer
 from django.conf.urls import url, include
 from django.shortcuts import get_object_or_404
 
 class ModelViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = (IsAuthenticated,)
     queryset = Model.objects.all()
     serializer_class = ModelSerializer
     lookup_field = 'name'
@@ -71,6 +73,7 @@ apirouter.register(r'models', ModelViewSet)
 models_router = routers.NestedSimpleRouter(apirouter, r'models', lookup='model')
 
 class NodeViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = (IsAuthenticated,)
     queryset = Node.objects.all()
     serializer_class = NodeSerializer
     lookup_field = 'node_id'
@@ -80,6 +83,7 @@ class NodeViewSet(viewsets.ReadOnlyModelViewSet):
 models_router.register(r'nodes', NodeViewSet, base_name='model-nodes')
 
 class DeviceViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = (IsAuthenticated,)
     queryset = Device.objects.all()
     serializer_class = DeviceSerializer
     lookup_field = 'device_number'
