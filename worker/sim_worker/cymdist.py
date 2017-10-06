@@ -1,5 +1,6 @@
 import pandas
 import cympy
+import numpy as np
 
 def open_study(modelfile):
     filename = "C:\\Users\\DRRC\\Desktop\\PGE_Models_DO_NOT_SHARE\\" + modelfile
@@ -61,5 +62,7 @@ def get_voltages(nodes, is_node=False):
     # Cast to float
     for column in ['VA', 'VB', 'VC']:
         voltage[column] = voltage[column].apply(lambda x: None if x is '' else float(x))
+
+    voltage = voltage.replace([np.nan], [None])
 
     return voltage

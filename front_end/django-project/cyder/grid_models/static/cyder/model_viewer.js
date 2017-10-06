@@ -116,7 +116,8 @@ ModelView.NodeView = class NodeView extends viewlib.View {
 
     _onshow(done) {
         this.nodeLayer = this.parent.layerGeoJson.getLayer(this.node_id);
-        this.nodeLayer.bindPopup("Node "+this.node_id+"<br>VoltageA: "+this.node.VA+"<br>VoltageB: "+this.node.VB+"<br>VoltageC: "+this.node.VC);
+        var disp = (num) => (num == null) ? "NA" : num;
+        this.nodeLayer.bindPopup("Node "+this.node_id+"<br>VoltageA: "+disp(this.node.VA)+"<br>VoltageB: "+disp(this.node.VB)+"<br>VoltageC: "+disp(this.node.VC));
         this.nodeLayer.openPopup();
 
         done();
