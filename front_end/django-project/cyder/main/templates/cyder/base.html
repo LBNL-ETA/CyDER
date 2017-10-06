@@ -18,10 +18,22 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav">
+            <ul class="navbar-nav mr-auto">
                 <li class="nav-item" data-name="model_viewer"><a class="nav-link" href="{% url 'model_viewer' '' %}">Model Viewer</a></li>
                 <li class="nav-item" data-name="projects"><a class="nav-link" href="#">Projects</a></li>
             </ul>
+            {% if user.is_authenticated %}
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" id="userDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{ user.get_username }}
+                </button>
+                <div class="dropdown-menu" aria-labelledby="userDropdownMenu">
+                    <a class="dropdown-item" href="{% url 'logout' %}?next={{ request.get_full_path }}">Logout</a>
+                </div>
+            </div>
+            {% else %}
+            <button class="btn" onclick="location.href='{% url 'login' %}?next={{ request.get_full_path }}'" aria-haspopup="true" aria-expanded="false">Login</button>
+            {% endif %}
         </div>
     </nav>
     <div class="container">
