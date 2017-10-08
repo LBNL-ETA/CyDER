@@ -5,16 +5,21 @@ window.viewlib = {};
 viewlib.View = class View {
     constructor() {
         this._isbuilt = false;
-        this._parentView = null;
+        this._parentFrame = null;
     }
-    get parent() { return this._parentView; }
+    get parentView() {
+        if(this._parentFrame) return this._parentFrame.parentView;
+        else return null;
+    }
+    get isbuild() { return this._isbuilt; }
+    get isshown() { return this._parentFrame && this._parentFrame.isshow; }
 
     // Following functions can be override
     _onbuild(done) { done(); }
     _onshow(done) { done(); }
     _onhide(done) { done(); }
     _onactivate(done) { done(); }
-    _ondisactivate(done) { done(); }
+    _ondeactivate(done) { done(); }
 
     // Following functions must only be callel by ViewFrame (see this as a kind of c++ like friendship)
     _build() {
@@ -27,16 +32,18 @@ viewlib.View = class View {
     _hide() {
         return new Promise(resolve => this._onhide(resolve));
     }
-    _activate(parentView) {
-        this._parentView = parentView;
+    _activate(parentFrame) {
+        if(this._parentFrame)
+            throw "This view (" + this.constructor.name + ") is already in a frame. A view can't be in more than one frame at a time";
+        this._parentFrame = parentFrame;
         var prom = Promise.resolve();
         if(!this._isbuilt)
             prom = this._build();
         return prom.then(() => { return new Promise(resolve => this._onactivate(resolve))});
     }
-    _disactivate() {
-        this._parentView = null;
-        return new Promise(resolve => this._ondisactivate(resolve));
+    _deactivate() {
+        this._parentFrame = null;
+        return new Promise(resolve => this._ondeactivate(resolve));
     }
 }
 
@@ -47,6 +54,8 @@ viewlib.ViewFrame = class ViewFrame {
         this._parentView = parentView;
     }
     get currentView() { return this._currentView; }
+    get parentView() { return this._parentView; }
+    get isshown() { return this._isshown; }
 
     changeView(view) {
         var prom = Promise.resolve();
@@ -54,13 +63,13 @@ viewlib.ViewFrame = class ViewFrame {
             if(this._currentView) {
                 if(this._isshown)
                     prom = this._currentView._hide();
-                prom = prom.then(() => this._currentView._disactivate());
+                prom = prom.then(() => this._currentView._deactivate());
             }
             prom = prom.then(() => {
                 this._currentView = view;
                 var prom = Promise.resolve();
                 if(this._currentView) {
-                    prom = this._currentView._activate(this._parentView);
+                    prom = this._currentView._activate(this);
                     if(this._isshown)
                         prom = prom.then(() => this._currentView._show());
                 }
@@ -93,7 +102,7 @@ class TestView extends viewlib.View {
     _onshow(done) { setTimeout(() => { console.log("shown!"); done(); }, 1000); }
     _onhide(done) { setTimeout(() => { console.log("hidden!"); done(); }, 1000); }
     _onactivate(done) { setTimeout(() => { console.log("activated!"); done(); }, 1000); }
-    _ondisactivate(done) { setTimeout(() => { console.log("disactivated!"); done(); }, 1000); }
+    _ondeactivate(done) { setTimeout(() => { console.log("deactivated!"); done(); }, 1000); }
 }
 // Each line should appear one second after the precedent (except for the 'end' one)
 function test() {
@@ -113,7 +122,7 @@ function test() {
     }).then(() => {
         return viewFrame.changeView(b);
         // hidden!
-        // disactivated!
+        // deactivated!
         // built!
         // activated!
         // shown!
@@ -122,7 +131,7 @@ function test() {
         // hidden!
     }).then(() => {
         return viewFrame.changeView(a);
-        // disactivated!
+        // deactivated!
         // activated!
     }).then(() => {
         return viewFrame.show();

@@ -108,14 +108,14 @@ ModelView.NodeView = class NodeView extends viewlib.View {
     }
 
     _onbuild(done) {
-        getJSON("/api/models/" + this.parent.modelname + "/nodes/" + this.node_id).then(node => {
+        getJSON("/api/models/" + this.parentView.modelname + "/nodes/" + this.node_id).then(node => {
             this.node = node;
             done();
         })
     }
 
     _onshow(done) {
-        this.nodeLayer = this.parent.layerGeoJson.getLayer(this.node_id);
+        this.nodeLayer = this.parentView.layerGeoJson.getLayer(this.node_id);
         var disp = (num) => (num == null) ? "NA" : num;
         this.nodeLayer.bindPopup("Node "+this.node_id+"<br>VoltageA: "+disp(this.node.VA)+"<br>VoltageB: "+disp(this.node.VB)+"<br>VoltageC: "+disp(this.node.VC));
         this.nodeLayer.openPopup();
