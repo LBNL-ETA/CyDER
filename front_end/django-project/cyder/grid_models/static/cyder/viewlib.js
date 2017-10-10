@@ -24,7 +24,7 @@ viewlib.View = class View {
     // Following functions must only be callel by ViewFrame (see this as a kind of c++ like friendship)
     _build() {
         return new Promise(resolve => this._onbuild(resolve))
-        .then(() => { this._isbuilt = true;});
+        .then(() => { this._isbuilt = true; });
     }
     _show() {
         return new Promise(resolve => this._onshow(resolve));
@@ -34,12 +34,16 @@ viewlib.View = class View {
     }
     _activate(parentFrame) {
         if(this._parentFrame)
-            throw "This view (" + this.constructor.name + ") is already in a frame. A view can't be in more than one frame at a time";
+            throw `This view (${this.constructor.name}) is already in a frame. A view can't be in more than one frame at a time`;
         this._parentFrame = parentFrame;
-        var prom = Promise.resolve();
-        if(!this._isbuilt)
-            prom = this._build();
-        return prom.then(() => { return new Promise(resolve => this._onactivate(resolve))});
+
+        return (() => { // Build the view if needed
+            if(this._isbuilt)
+                return Promise.resolve();
+
+            return this._build();
+        })()
+        .then(() => { return new Promise(resolve => this._onactivate(resolve))});
     }
     _deactivate() {
         this._parentFrame = null;
@@ -58,25 +62,32 @@ viewlib.ViewFrame = class ViewFrame {
     get isshown() { return this._isshown; }
 
     changeView(view) {
-        var prom = Promise.resolve();
-        if(view !== this._currentView) {
-            if(this._currentView) {
-                if(this._isshown)
-                    prom = this._currentView._hide();
-                prom = prom.then(() => this._currentView._deactivate());
-            }
-            prom = prom.then(() => {
-                this._currentView = view;
-                var prom = Promise.resolve();
-                if(this._currentView) {
-                    prom = this._currentView._activate(this);
-                    if(this._isshown)
-                        prom = prom.then(() => this._currentView._show());
-                }
-                return prom;
+        if(view == this._currentView)
+            return Promise.resolve();
+
+        return (() => { // Hide and deactivate the current view if needed
+            if(!this._currentView)
+                return Promise.resolve();
+
+            return (() => { // Hide the current view if needed
+                if(!this._isshown)
+                    return Promise.resolve();
+                return this._currentView._hide();
+            })()
+            .then(() => { return this._currentView._deactivate(); });
+        })()
+        .then(() => { this._currentView = view; })
+        .then(() => { // Activate and show the new view if needed
+            if(!this._currentView)
+                return Promise.resolve();
+
+            return this._currentView._activate(this)
+            .then(() => { // Show the new view if needed
+                if(!this._isshown)
+                    return Promise.resolve();
+                return this._currentView._show();
             });
-        }
-        return prom;
+        });
     }
     show() {
         this._isshown = true;
