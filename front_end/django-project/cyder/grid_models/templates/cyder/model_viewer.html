@@ -17,47 +17,9 @@
 {% endblock css %}
 
 {% block content %}
-    Select a model to display: <select class="custom-select" id="modelmenu"></select>
 
-    <div id="map" style="height: 70vh; margin: 1rem 0 1rem 0"></div>
+    <div id="model-viewer"></div>
 
-    <div class="row" style="margin-bottom: 1rem">
-        <div class=col-md-4>
-            <div class="card">
-                <div class="card-header">
-                    Infos
-                </div>
-                <div class="card-body">
-                    Model name: <span id="modelname"></span><br>
-                    Nodes count: <span id="nodescount"></span><br>
-                    Devices count: <span id="devicescount"></span><br>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    Devices count detail
-                </div>
-                <div id="devicecountdetail" class="card-body">
-
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header input-group">
-                    <input class="form-control" placeholder="Search" name="srch-term" id="srch-term" type="text">
-                    <div class="input-group-btn">
-                        <button class="btn btn-default" type="submit">Search</button>
-                    </div>
-                </div>
-                <div id="searchresult" class="card-body">
-                    Search
-                </div>
-            </div>
-        </div>
-    </div>
 {% endblock content %}
 
 {% block script %}
@@ -68,6 +30,6 @@
     <script src="{% static 'cyder/model_viewer.js' %}"></script>
     <script>
         $(".navbar [data-name='model_viewer']").addClass("active");
-        var djangoContext = {modelname: "{{ modelname|escapequotes|safe }}"};
+        var djangoContext = {modelName: "{{ modelname|escapequotes|safe }}"};
     </script>
 {% endblock script %}

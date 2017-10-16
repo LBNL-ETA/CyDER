@@ -14,70 +14,155 @@ function getJSON(url) {
     });
 }
 
-var url = "/model_viewer";
-var leaflet_map;
-var html = {};
-
-class AllModelView extends viewlib.View {
-    constructor() {
-        if(AllModelView._instance)
-            return AllModelView._instance;
-
-        super();
-        AllModelView._instance = this;
-    }
-
-    _onbuild(done) {
-        getJSON("/api/models/geojson")
-        .then(geojson => {
-            var onEachFeature = function(feature, layer) {
-                layer.bindPopup(
-                    feature.properties.modelname +
-                    "<br><button class='btn btn-primary btn-sm' " +
-                        "onclick='popups_onclick(\"" + feature.properties.modelname + "\")'" +
-                    ">Open</button>"
-                );
-            }
-
-            this.layerGeoJson = L.geoJson(geojson, {
-                onEachFeature: onEachFeature
-            });
-
-            done();
+class SelectModel extends View {
+    constructor(parent) {
+        super('span', parent);
+        this.models = [];
+        this.getModels().then((models) => {
+            this.models = models;
+            this.render();
         });
+        this.render();
     }
-
-    _onshow(done) {
-        html.modelmenu.value = '';
-        history.replaceState(null, null, "./");
-        this.layerGeoJson.addTo(leaflet_map);
-        leaflet_map.fitBounds(this.layerGeoJson.getBounds());
-        done();
+    _onchange(e) {
+        this.parent.modelName = this._html.select.value;
     }
+    getModels() {
+        return this.parent.getModels();
+    }
+    get _template() {
+        return `
+        Select a model to display: <select data-name="select" data-on="change:_onchange" class="custom-select">
+            <option value="">All</option>
+            ${ FOREACH(this.models, (modelName) =>
+                `<option value"${modelName}">${modelName}</option>`
+            )}
+        </select>`;
+    }
+    set modelName(val) { this.getModels().then(() => this._html.select.value = val); }
+}
 
-    _onhide(done) {
-        this.layerGeoJson.remove();
-        done();
+class LeafletMap extends View {
+    constructor(el) {
+        super('div', el);
+        this.render();
+    }
+    render() {
+        super.render();
+        this.map = L.map(this._html.el).setView([37.8,-122.0], 9);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(this.map);
+    }
+    emplace(el) {
+        super.emplace(el);
+        this.map.invalidateSize();
     }
 }
 
-class ModelView extends viewlib.View {
-    constructor(modelname) {
-        if(ModelView._instances && ModelView._instances[modelname])
-            return ModelView._instances[modelname];
-
-        super();
-        this.modelname = modelname;
-        this.nodeViewFrame = new viewlib.ViewFrame(this);
-        if(!ModelView._instances)
-            ModelView._instances = {};
-        ModelView._instances[modelname] = this;
+class ModelPopup extends View {
+    constructor(parent, modelName) {
+        super('div', parent);
+        this.modelName = modelName;
+        this.render();
     }
+    _onclick(e) {
+        this.parent.modelName = this.modelName;
+    }
+    get _template() {
+        return `
+        ${this.modelName}<br>
+        <button class='btn btn-primary btn-sm' data-on="click:_onclick">Open</button>`;
+    }
+}
 
-    _onbuild(done) {
-        getJSON(`/api/models/${this.modelname}/geojson`)
-        .then(geojson => {
-            var pointToLayer = (feature, latlng) => {
+class ModelViewer extends View {
+    constructor(el) {
+        super('div',el);
+        this.getModels();
+        this._childs['select-model'] = new SelectModel(this);
+        this._childs['leaflet-map'] = new LeafletMap(this);
+        this._childs['model-info'] = new ModelInfo(this, this.child('leaflet-map').map);
+    }
+    get modelName() { return this._modelName; }
+    set modelName(newModelName) {
+        if(newModelName === this._modelName)
+            return;
+        if(this._modelName === '')
+            this._getAllModelsLayer().then((layer) => layer.remove());
+        this._modelName = newModelName;
+        if (this._modelName === '') {
+            this._getAllModelsLayer().then((layer) => {
+                layer.addTo(this.child('leaflet-map').map);
+                this.child('leaflet-map').map.fitBounds(layer.getBounds());
+            });
+            this.child('model-info').model = null;
+        } else {
+            this.getModels().then((models) =>
+                this.child('model-info').model = models[this._modelName]);
+        }
+        this.child('select-model').modelName = this._modelName;
+        history.replaceState(null, null, `./${this._modelName}`);
+    }
+    getModels() {
+        if(this._modelsProm)
+            return this._modelsProm;
+        return this._modelsProm = (async () => {
+            let models = await getJSON('/api/models');
+            models = models.reduce((obj, model) => {obj[model.name] = model; return obj;}, {});
+            for(let modelName in models)
+                models[modelName].nodes = {};
+            return models;
+        })();
+    }
+    _getAllModelsLayer() {
+        if (this._allModelsLayerProm)
+            return this._allModelsLayerProm;
+        return this._allModelsLayerProm = (async () => {
+            let geojson = await getJSON('/api/models/geojson');
+            let onEachFeature = (feature, layer) => {
+                let popup = new ModelPopup(this, feature.properties.modelname);
+                layer.bindPopup(popup.el);
+            }
+            return L.geoJson(geojson, {
+                onEachFeature: onEachFeature
+            });
+        })();
+    }
+    get _template() {
+        return `
+        <div data-childview="select-model"></div>
+        <div data-childview="leaflet-map" style="height: 70vh; margin: 1rem 0 1rem 0;"></div>
+        <div data-childview="model-info"></div>`;
+    }
+}
+
+class ModelInfo extends View {
+    constructor(parent, map) {
+        super('div', parent);
+        this._map = map;
+    }
+    get model() { return this._model; }
+    set model(model) {
+        if(this._model)
+            this._getModelLayer().then((layer) => layer.remove());
+        this._model = model;
+        if(this._model !== null)
+            this._getModelLayer().then((layer) => {
+                layer.addTo(this._map);
+                this._map.fitBounds(layer.getBounds());
+            });
+        this.render();
+    }
+    _getModelLayer() {
+        if(!this.model)
+            throw "Can't get the model layer: No model givem to ModelInfo";
+        if(this.model.layerProm)
+            return this.model.layerProm;
+        return this.model.layerProm = (async () => {
+            let geojson = await getJSON(`/api/models/${this.model.name}/geojson`);
+            let pointToLayer = (feature, latlng) => {
                 var circle = L.circle(latlng, {
                     color: 'red',
                     weight: 2,
@@ -85,106 +170,75 @@ class ModelView extends viewlib.View {
                     radius: 3
                 });
                 circle._leaflet_id = feature.properties.id;
-                circle.on('click', (e) => {
-                    this.nodeViewFrame.changeView(new ModelView.NodeView(e.target._leaflet_id));
-                });
+                circle.on('click', (e) => { this._onNodeClick(e); });
                 return circle;
             }
-
-            this.layerGeoJson = L.geoJson(geojson, {
+            return L.geoJson(geojson, {
                 pointToLayer: pointToLayer
             });
-
-            done();
-        });
+        })();
     }
-
-    _onshow(done) {
-        html.modelmenu.value = this.modelname;
-        history.replaceState(null, null, `./${this.modelname}`);
-        this.layerGeoJson.addTo(leaflet_map);
-        leaflet_map.fitBounds(this.layerGeoJson.getBounds());
-        done();
-    }
-
-    _onhide(done) {
-        this.layerGeoJson.remove();
-        done();
-    }
-}
-
-ModelView.NodeView = class NodeView extends viewlib.View {
-    constructor(node_id) {
-        if(NodeView._instances && NodeView._instances[node_id])
-            return NodeView._instances[node_id];
-
-        super();
-        this.node_id = node_id;
-        if(!NodeView._instances)
-            NodeView._instances = {};
-        NodeView._instances[node_id] = this;
-    }
-
-    _onbuild(done) {
-        this.nodeLayer = this.parentView.layerGeoJson.getLayer(this.node_id);
-        getJSON(`/api/models/${this.parentView.modelname}/nodes/${this.node_id}`)
-        .then(node => {
+    async _onNodeClick(e) {
+        let node = this.model.nodes[e.target._leaflet_id];
+        if(!node) {
+            node = await getJSON(`/api/models/${this.model.name}/nodes/${e.target._leaflet_id}`);
+            this.model.nodes[node.node_id] = node;
             var display = (num) => (num == null) ? "NA" : num;
-            this.nodeLayer.bindPopup(
-                `Node ${this.node_id}
-                <br>VoltageA: ${display(node.VA)}
-                <br>VoltageB: ${display(node.VB)}
-                <br>VoltageC: ${display(node.VC)}`
-            );
-            done();
-        });
-    }
-
-    _onshow(done) {
-        this.nodeLayer.openPopup();
-        done();
-    }
-
-    _onhide(done) {
-        this.nodeLayer.closePopup();
-        done();
-    }
-}
-
-var mainViewFrame = new viewlib.ViewFrame();
-
-window.onload = function () {
-    leaflet_map = L.map('map').setView([37.8,-122.0], 9);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(leaflet_map);
-
-    html.modelmenu = document.getElementById('modelmenu');
-
-    html.modelmenu.addEventListener("change", modelmenu_onchange);
-
-    getJSON("../api/models").then((models) => {
-        var newHtml = '<option value="">All</option>';
-        for(var model of models)
-            newHtml += `<option value="${model.name}">${model.name}</option>`;
-        html.modelmenu.innerHTML = newHtml;
-
-        if(djangoContext.modelname == '') {
-            return mainViewFrame.changeView(new AllModelView());
-        } else {
-            return mainViewFrame.changeView(new ModelView(djangoContext.modelname));
+            e.target.bindPopup(
+                `Node ${node.node_id}<br>
+                VoltageA: ${display(node.VA)}<br>
+                VoltageB: ${display(node.VB)}<br>
+                VoltageC: ${display(node.VC)}`);
+            e.target.openPopup();
         }
-    });
-};
+    }
+    get _template() {
+        return `${ IF(this.model, () =>
+            `<div class="row" style="margin-bottom: 1rem">
+                <div class=col-md-4>
+                    <div class="card">
+                        <div class="card-header">
+                            Infos
+                        </div>
+                        <div class="card-body">
+                            Model name: ${ this.model.name }<br>
+                            Nodes count: <span id="nodescount"></span><br>
+                            Devices count: <span id="devicescount"></span><br>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            Devices count detail
+                        </div>
+                        <div id="devicecountdetail" class="card-body">
 
-function modelmenu_onchange() {
-    if(html.modelmenu.value == '')
-        mainViewFrame.changeView(new AllModelView());
-    else
-        mainViewFrame.changeView(new ModelView(html.modelmenu.value));
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header input-group">
+                            <input class="form-control" placeholder="Search" name="srch-term" id="srch-term" type="text">
+                            <div class="input-group-btn">
+                                <button class="btn btn-default" type="submit">Search</button>
+                            </div>
+                        </div>
+                        <div id="searchresult" class="card-body">
+                            Search
+                        </div>
+                    </div>
+                </div>
+            </div>`
+        ) }`;
+    }
 }
 
-function popups_onclick(modelname) {
-    mainViewFrame.changeView(new ModelView(modelname));
+let modelViewer;
+window.onload = function() {
+    modelViewer = new ModelViewer();
+    modelViewer.emplace(document.querySelector('#model-viewer'));
+    modelViewer.render();
+    modelViewer.modelName = djangoContext.modelName;
 }

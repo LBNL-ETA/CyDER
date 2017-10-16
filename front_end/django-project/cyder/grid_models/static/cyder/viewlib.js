@@ -1,156 +1,64 @@
-(function() {
-
-window.viewlib = {};
-
-viewlib.View = class View {
-    constructor() {
-        this._isbuilt = false;
-        this._parentFrame = null;
+class View {
+    constructor(tag, parent = null) {
+        this._html = {};
+        this._html.el = document.createElement(tag);
+        this._childs = {};
+        this._parent = parent;
     }
-    get parentView() {
-        if(this._parentFrame) return this._parentFrame.parentView;
-        else return null;
-    }
-    get isbuild() { return this._isbuilt; }
-    get isshown() { return this._parentFrame && this._parentFrame.isshow; }
+    get el() { return this._html.el; }
+    child(name) { return this._childs[name]; }
+    get parent() { return this._parent; }
+    get _template() { return ''; }
+    render() {
+        this._html.el.innerHTML = this._template;
 
-    // Following functions can be override
-    _onbuild(done) { done(); }
-    _onshow(done) { done(); }
-    _onhide(done) { done(); }
-    _onactivate(done) { done(); }
-    _ondeactivate(done) { done(); }
+        for(let el of this._html.el.querySelectorAll('[data-name]'))
+            this._html[el.getAttribute('data-name')] = el;
 
-    // Following functions must only be callel by ViewFrame (see this as a kind of c++ like friendship)
-    _build() {
-        return new Promise(resolve => this._onbuild(resolve))
-        .then(() => { this._isbuilt = true; });
-    }
-    _show() {
-        return new Promise(resolve => this._onshow(resolve));
-    }
-    _hide() {
-        return new Promise(resolve => this._onhide(resolve));
-    }
-    _activate(parentFrame) {
-        if(this._parentFrame)
-            throw `This view (${this.constructor.name}) is already in a frame. A view can't be in more than one frame at a time`;
-        this._parentFrame = parentFrame;
+        for(let el of this._html.el.querySelectorAll('[data-on]')) {
+            for(let listner of el.getAttribute('data-on').split(';')) {
+                let evt, method;
+                [evt, method] = el.getAttribute('data-on').split(':');
+                el.addEventListener(evt, (...args) => this[method](...args));
+            }
+        }
 
-        return (() => { // Build the view if needed
-            if(this._isbuilt)
-                return Promise.resolve();
-
-            return this._build();
-        })()
-        .then(() => { return new Promise(resolve => this._onactivate(resolve))});
+        for(let el of this._html.el.querySelectorAll('[data-childview]'))
+            this._childs[el.getAttribute('data-childview')].emplace(el);
     }
-    _deactivate() {
-        this._parentFrame = null;
-        return new Promise(resolve => this._ondeactivate(resolve));
+    emplace(el) {
+        for (let i = 0; i < el.attributes.length; i++) {
+            let attr = el.attributes[i];
+            if (attr.name === 'style') {
+                for(let i = 0; i < el.style.length; i++) {
+                    let cssProp = el.style[i];
+                    this._html.el.style[cssProp] = el.style[cssProp];
+                }
+                continue;
+            }
+            this._html.el.setAttribute(attr.name, attr.value);
+        }
+        el.parentNode.replaceChild(this._html.el, el);
     }
 }
 
-viewlib.ViewFrame = class ViewFrame {
-    constructor(parentView = null) {
-        this._currentView = null;
-        this._isshown = true;
-        this._parentView = parentView;
+function FOREACH(array, func) {
+    if (array instanceof Array)
+        return array.map(func).join('');
+    else {
+        let res = '';
+        for (let key in array)
+            res += func(key, array[key]);
+        return res;
     }
-    get currentView() { return this._currentView; }
-    get parentView() { return this._parentView; }
-    get isshown() { return this._isshown; }
-
-    changeView(view) {
-        if(view == this._currentView)
-            return Promise.resolve();
-
-        return (() => { // Hide and deactivate the current view if needed
-            if(!this._currentView)
-                return Promise.resolve();
-
-            return (() => { // Hide the current view if needed
-                if(!this._isshown)
-                    return Promise.resolve();
-                return this._currentView._hide();
-            })()
-            .then(() => { return this._currentView._deactivate(); });
-        })()
-        .then(() => { this._currentView = view; })
-        .then(() => { // Activate and show the new view if needed
-            if(!this._currentView)
-                return Promise.resolve();
-
-            return this._currentView._activate(this)
-            .then(() => { // Show the new view if needed
-                if(!this._isshown)
-                    return Promise.resolve();
-                return this._currentView._show();
-            });
-        });
-    }
-    show() {
-        this._isshown = true;
-        if(this._currentView)
-            return this._currentView._show();
+}
+function IF(cond, ifTemplate, elseTemplate) {
+    if (cond)
+        return ifTemplate();
+    else {
+        if (elseTemplate)
+            return elseTemplate();
         else
-            return Promise.resolve();
-    }
-    hide() {
-        this._isshown = false;
-        if(this._currentView)
-            return this._currentView._hide();
-        else
-            return Promise.resolve();
+            return '';
     }
 }
-
-// Test
-class TestView extends viewlib.View {
-    constructor() { super(); }
-
-    _onbuild(done) { setTimeout(() => { console.log("built!"); done(); }, 1000); }
-    _onshow(done) { setTimeout(() => { console.log("shown!"); done(); }, 1000); }
-    _onhide(done) { setTimeout(() => { console.log("hidden!"); done(); }, 1000); }
-    _onactivate(done) { setTimeout(() => { console.log("activated!"); done(); }, 1000); }
-    _ondeactivate(done) { setTimeout(() => { console.log("deactivated!"); done(); }, 1000); }
-}
-// Each line should appear one second after the precedent (except for the 'end' one)
-function test() {
-    var viewFrame = new viewlib.ViewFrame();
-
-    var a = new TestView();
-    var b = new TestView();
-
-    console.log("start");
-    viewFrame.hide().then(() => {
-        return viewFrame.changeView(a);
-        // built!
-        // activated!
-    }).then(() => {
-        return viewFrame.show();
-        // shown!
-    }).then(() => {
-        return viewFrame.changeView(b);
-        // hidden!
-        // deactivated!
-        // built!
-        // activated!
-        // shown!
-    }).then(() => {
-        return viewFrame.hide();
-        // hidden!
-    }).then(() => {
-        return viewFrame.changeView(a);
-        // deactivated!
-        // activated!
-    }).then(() => {
-        return viewFrame.show();
-        // shown!
-    }).then(() => {
-        console.log("end");
-    });
-}
-//test();
-
-})();
