@@ -1,0 +1,23 @@
+{% extends 'cyder/base.html' %}
+
+{% block content %}
+    <h1 style="margin: 6rem 0 2rem 0; text-align: center">Login</h1>
+
+    <form method="post" class="mx-auto">
+        {% csrf_token %}
+
+        <div class="text-center">
+            {{ form.as_p }}
+            <button class="btn btn-primary" type="submit">Login</button>
+        </div>
+
+        <!--<div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" required class="form-control" name="username" id="username" placeholder="Username">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" required class="form-control" name="password" id="Password" placeholder="Password">
+        </div>-->
+    </form>
+{% endblock content %}
