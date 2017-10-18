@@ -43,10 +43,10 @@ class PVForecast(object):
         self._update_configuration(pv_forecast)
 
         # Read power demand and plot
-        (pv_forecast).plot()
-        plt.ylabel('Normalized PV forecast')
-        plt.xlabel('Time')
-        plt.show()
+        # (pv_forecast).plot()
+        # plt.ylabel('Normalized PV forecast')
+        # plt.xlabel('Time')
+        # plt.show()
         return pv_forecast, self.configuration
 
     def _update_configuration(self, pv_forecast):
