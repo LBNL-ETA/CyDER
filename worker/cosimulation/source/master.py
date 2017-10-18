@@ -199,5 +199,4 @@ class Master(object):
         self.transmission.terminate()
 
         # Close any plot
-        import pdb; pdb.set_trace()
-        plt.close()
+        # plt.close()
