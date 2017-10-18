@@ -36,8 +36,8 @@ class PVForecast(object):
     def forecast(self):
         """Forecast PV demand and return configuration file for CyDER"""
         # Save normalized generation with the right format
-        # pv_forecast = self._load_forecast()
-        pv_forecast = self.normalized_pv_generation()
+        pv_forecast = self._load_forecast()
+        # pv_forecast = self.normalized_pv_generation()
 
         # Update the configuration file
         self._update_configuration(pv_forecast)
