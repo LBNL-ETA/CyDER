@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'cyder.main',
     'cyder.api',
     'cyder.grid_models',
+    'cyder.projects',
 ]
 
 MIDDLEWARE = [

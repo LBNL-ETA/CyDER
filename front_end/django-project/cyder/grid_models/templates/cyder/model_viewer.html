@@ -29,7 +29,7 @@
     <script src="{% static 'cyder/viewlib.js' %}"></script>
     <script src="{% static 'cyder/model_viewer.js' %}"></script>
     <script>
-        $(".navbar [data-name='model_viewer']").addClass("active");
+        document.querySelector(".navbar [data-name='model_viewer']").className += " active";
         var djangoContext = {modelName: "{{ modelname|escapequotes|safe }}"};
     </script>
 {% endblock script %}
