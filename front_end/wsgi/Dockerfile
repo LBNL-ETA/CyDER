@@ -12,6 +12,7 @@ RUN systemctl enable supervisor.service
 COPY ./celery_beat.conf /etc/supervisor/conf.d/celery_beat.conf
 COPY ./celery_worker.conf /etc/supervisor/conf.d/celery_worker.conf
 
-WORKDIR /usr/src/init/
 COPY ./init.sh init.sh
-CMD ["./init.sh"]
+
+WORKDIR /usr/src/app/
+CMD ["/usr/src/at-build/init.sh"]
