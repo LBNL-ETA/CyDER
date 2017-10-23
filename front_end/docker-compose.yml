@@ -1,27 +1,3 @@
-http:
-        image: nginx
-        ports:
-                - "80:80"
-                - "443:443"
-        volumes:
-                - ./http/nginx_conf.d:/etc/nginx/conf.d
-                - ./http/ssl:/etc/nginx/ssl
-                - ./http/static:/var/www/
-        links:
-                - wsgi
-
-wsgi:
-        build: wsgi
-        ports:
-                - "8080:8080" # Use for the dev server
-        volumes:
-                - ./wsgi/init:/usr/src/at-build/init
-                - ./django-project:/usr/src/app
-                - ./http/static:/var/www/
-        links:
-                - redis
-                - db
-
 db:
         image: postgres
         volumes:
@@ -38,3 +14,25 @@ redis:
 #                - ./redis/data:/data
         ports:
                 - "6379:6379"
+wsgi:
+        build: wsgi
+        ports:
+                - "8080:8080" # Use for the dev server
+        volumes:
+                - ./wsgi/log:/var/log/cyder/
+                - ./django-project:/usr/src/app
+                - ./http/static:/var/www/
+        links:
+                - redis
+                - db
+http:
+        image: nginx
+        ports:
+                - "80:80"
+                - "443:443"
+        volumes:
+                - ./http/nginx_conf.d:/etc/nginx/conf.d
+                - ./http/ssl:/etc/nginx/ssl
+                - ./http/static:/var/www/
+        links:
+                - wsgi
