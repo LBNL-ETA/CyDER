@@ -10,7 +10,7 @@ app = Celery('celery_beat',
 
 # Optional configuration, see the application user guide.
 app.conf.update(
-    CELERY_TASK_RESULT_EXPIRES=3600,
+    CELERY_TASK_RESULT_EXPIRES=1,
     CELERY_TRACK_STARTED=True,
     CELERY_ACCEPT_CONTENT = ['json'],
     CELERY_RESULT_SERIALIZER = 'json',
