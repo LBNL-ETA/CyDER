@@ -6,6 +6,7 @@ class Project(models.Model):
     name = models.CharField(max_length=50)
     task_id = models.CharField(max_length=70, blank=True)
     model = models.ForeignKey(Model, null=True, blank=True)
-    status = models.CharField(max_length=10)
+    status = models.CharField(max_length=10, default="NeedSim")
+    result = models.TextField(blank=True)
     def __str__(self):
         return self.name
