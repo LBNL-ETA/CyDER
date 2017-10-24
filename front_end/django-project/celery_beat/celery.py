@@ -21,7 +21,7 @@ app.conf.update(
     CELERYBEAT_SCHEDULE = {
         'retrieve_projects_result': {
             'task': 'cyder.projects.tasks.retrieve_projects_result',
-            'schedule': timedelta(seconds=1),
+            'schedule': timedelta(seconds=2),
         },
     },
 )
