@@ -1,19 +1,3 @@
-function getJSON(url) {
-    return new Promise(function(resolve, reject) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.responseType = 'json';
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                resolve(xhr.response);
-            } else {
-                reject(xhr);
-            }
-        };
-        xhr.send();
-    });
-}
-
 class SelectModel extends View {
     constructor(parent) {
         super('span', parent);
@@ -109,7 +93,7 @@ class ModelViewer extends View {
         if(this._modelsProm)
             return this._modelsProm;
         return this._modelsProm = (async () => {
-            let models = await getJSON('/api/models');
+            let models = await CyderAPI.rest('GET', '/api/models');
             models = models.reduce((obj, model) => {obj[model.name] = model; return obj;}, {});
             for(let modelName in models)
                 models[modelName].nodes = {};
@@ -120,7 +104,7 @@ class ModelViewer extends View {
         if (this._allModelsLayerProm)
             return this._allModelsLayerProm;
         return this._allModelsLayerProm = (async () => {
-            let geojson = await getJSON('/api/models/geojson');
+            let geojson = await CyderAPI.rest('GET', '/api/models/geojson');
             let onEachFeature = (feature, layer) => {
                 let popup = new ModelPopup(this, feature.properties.modelname);
                 layer.bindPopup(popup.el);
@@ -161,7 +145,7 @@ class ModelInfo extends View {
         if(this.model.layerProm)
             return this.model.layerProm;
         return this.model.layerProm = (async () => {
-            let geojson = await getJSON(`/api/models/${this.model.name}/geojson`);
+            let geojson = await CyderAPI.rest('GET', `/api/models/${this.model.name}/geojson`);
             let pointToLayer = (feature, latlng) => {
                 var circle = L.circle(latlng, {
                     color: 'red',
@@ -181,7 +165,7 @@ class ModelInfo extends View {
     async _onNodeClick(e) {
         let node = this.model.nodes[e.target._leaflet_id];
         if(!node) {
-            node = await getJSON(`/api/models/${this.model.name}/nodes/${e.target._leaflet_id}`);
+            node = await CyderAPI.rest('GET', `/api/models/${this.model.name}/nodes/${e.target._leaflet_id}`);
             this.model.nodes[node.node_id] = node;
             var display = (num) => (num == null) ? "NA" : num;
             e.target.bindPopup(
@@ -237,6 +221,7 @@ class ModelInfo extends View {
 
 let modelViewer;
 window.onload = function() {
+    CyderAPI.auth();
     modelViewer = new ModelViewer();
     modelViewer.emplace(document.querySelector('#model-viewer'));
     modelViewer.render();
