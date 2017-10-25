@@ -6,6 +6,7 @@ Project folders
 
 - config: the Django project config (settings, wsgi.py, urls.py...)  
 - sim_worker: the celery module which allow sending task to the worker  
+- celery_beat: the celery module used to schedule tasks in the wsgi container  
 - cyder: the Django apps
 - tools: Django module containing tool script
 
@@ -46,6 +47,6 @@ Import/Update CYME models indo the postgres DB
 Run
 ```
 import tools.db_models
-tools.db_models.import_model(modelfile)
+tools.db_models.import_model(modelname)
 ```
-`modelfile` being the name of the file of the model (for example `BU0001.sxst`)
+`modelname` being the name of the file of the model (for example `BU0001`)

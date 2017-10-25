@@ -5,7 +5,7 @@ Containers
 -------
 
 - http: run nginx, entry point of the project
-- wsgi: run Django the project accessible through gunicorn, use celery to send task to worker
+- wsgi: run the Django project accessible through gunicorn, use celery to send task to worker
 - redis: run redis used as broker for celery
 - db: run the db postgres (called cyder_django) used by the Django project
 

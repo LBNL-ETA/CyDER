@@ -6,10 +6,9 @@ Apps
 
 Each app focus on implementing a part of the CyDER:
 - api: api entry point  
-- main: implement the main frame of the website (login/logout, homepage) and resources
+- main: implement the main frame of the website (login/logout, homepage) and resources used site wide  
 - grid_models: implement the db model for the grid models, api to access them, tools to visualize them...  
-- projects (TODO): implement the the project manager, tools and api  
- used site wide  
+- projects: implement the the project manager, tools and api  
 - ...
 
 API
