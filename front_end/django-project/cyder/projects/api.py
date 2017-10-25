@@ -45,6 +45,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         project = self.get_object()
         app.control.revoke(project.task_id)
         project.status = "NeedSim"
+        project.save();
         return Response({ "status": "Project simulation revoked" })
 
 apirouter.register(r'projects', ProjectViewSet)
