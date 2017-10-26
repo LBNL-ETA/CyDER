@@ -1,7 +1,10 @@
 # Every task defined in this file should be declared in /front-end/django-project/sim_worker/task.py
 
 from .celery import app
-import pandas
+
+def drop_column(table, column):
+    for row in table:
+        del row[column]
 
 @app.task
 def get_model(modelname):
@@ -14,13 +17,13 @@ def get_model(modelname):
     model = cymdist.model_info()
     devices = cymdist.list_devices()
     nodes = cymdist.list_nodes()
-    nodes = cymdist.get_voltages(nodes)
+    cymdist.get_voltages(nodes)
     sections = cymdist.list_sections()
 
     # Remove cympy objects to be able to serialize
-    devices = devices.drop('device_object', axis=1)
-    nodes = nodes.drop('node_object', axis=1)
-    sections = sections.drop('section_object', axis=1)
+    drop_column(devices, 'device_object')
+    drop_column(nodes, 'node_object')
+    drop_column(sections, 'section_object')
 
     # Return result and exit the worker to "free" cympy
     app.backend.mark_as_done(get_model.request.id, (model, nodes,sections,devices))

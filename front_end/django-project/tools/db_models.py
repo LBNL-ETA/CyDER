@@ -1,5 +1,4 @@
 import sim_worker.tasks
-import pandas
 from cyder.grid_models.models import Model, Device, Node, Section
 
 # Return a copy of dict, without the keys list in exclude_keys
@@ -18,7 +17,7 @@ def import_model(modelname):
 
     print("Get model from worker...")
     result = sim_worker.tasks.get_model.delay(modelname)
-    (model_info, nodes_df, sections_df, devices_df) = result.get()
+    (model_info, nodes, sections, devices) = result.get()
 
     if model != None:
         print("Updating model in DB...")
@@ -33,17 +32,17 @@ def import_model(modelname):
         model = Model(name=modelname, **model_info)
         model.save()
 
-    lenght = len(nodes_df)
+    lenght = len(nodes)
     for index in range(0, lenght):
-        node_row = nodes_df.iloc[index]
+        node_row = nodes[index]
         node = Node(model=model, **node_row)
         node.save()
         print("\rImported nodes: %d/%d" % (index+1, lenght), end="")
     print()
 
-    lenght = len(sections_df)
+    lenght = len(sections)
     for index in range(0, lenght):
-        section_row = sections_df.iloc[index]
+        section_row = sections[index]
 
         section = Section(model=model, **exclude(section_row, ['from_node_id', 'to_node_id']))
         section.from_node = Node.objects.get(model=model, node_id=section_row['from_node_id'])
@@ -55,9 +54,9 @@ def import_model(modelname):
         print("\rImported sections: %d/%d" % (index+1, lenght), end="")
     print()
 
-    lenght = len(devices_df)
+    lenght = len(devices)
     for index in range(0, lenght):
-        device_row = devices_df.iloc[index]
+        device_row = devices[index]
         device = Device(model=model, **exclude(device_row, ['section_id']))
         device.model = model
         device.section = Section.objects.get(model=model, section_id=device_row['section_id'])

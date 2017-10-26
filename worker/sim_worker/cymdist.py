@@ -1,6 +1,4 @@
-import pandas
 import cympy
-import numpy as np
 
 def open_study(modelfile):
     filename = "C:\\Users\\DRRC\\Desktop\\PGE_Models_DO_NOT_SHARE\\" + modelfile
@@ -16,53 +14,53 @@ def model_info():
     return model
 
 def list_nodes():
-    nodes = cympy.study.ListNodes()
-
-    nodes = pandas.DataFrame(nodes, columns=['node_object'])
-    nodes['node_id'] = nodes['node_object'].apply(lambda x: x.ID)
-    nodes['longitude'] = nodes['node_object'].apply(lambda x: x.X / 100000)
-    nodes['latitude'] = nodes['node_object'].apply(lambda x: x.Y / (1.26 * 100000))
-
+    list_nodes = cympy.study.ListNodes()
+    nodes = []
+    for node_object in list_nodes:
+        node = {}
+        node['node_object'] = node_object
+        node['node_id'] = node_object.ID
+        node['longitude'] = node_object.X / 100000
+        node['latitude'] = node_object.Y / (1.26 * 100000)
+        nodes.append(node)
     return nodes
 
 def list_sections():
-    sections = cympy.study.ListSections()
-
-    sections = pandas.DataFrame(sections, columns=['section_object'])
-    sections['section_id'] = sections['section_object'].apply(lambda x: x.ID)
-    sections['from_node_id'] = sections['section_object'].apply(lambda x: x.FromNode.ID)
-    sections['to_node_id'] = sections['section_object'].apply(lambda x: x.ToNode.ID)
-
+    list_sections = cympy.study.ListSections()
+    sections = []
+    for section_object in list_sections:
+        section = {}
+        section['section_object'] = section_object
+        section['section_id'] = section_object.ID
+        section['from_node_id'] = section_object.FromNode.ID
+        section['to_node_id'] = section_object.ToNode.ID
+        sections.append(section)
     return sections
 
 def list_devices(device_type=False):
     if device_type:
-        devices = cympy.study.ListDevices(device_type)
+        list_devices = cympy.study.ListDevices(device_type)
     else:
-        devices = cympy.study.ListDevices()
-
-    devices = pandas.DataFrame(devices, columns=['device_object'])
-    devices['device_type'] = devices['device_object'].apply(lambda x: x.DeviceType)
-    devices['device_number'] = devices['device_object'].apply(lambda x: x.DeviceNumber)
-    devices['section_id'] = devices['device_object'].apply(lambda x: x.SectionID)
-    devices['longitude'] = devices['device_object'].apply(lambda x: float(cympy.study.QueryInfoDevice("CoordX", x.DeviceNumber, x.DeviceType)) / 100000)
-    devices['latitude'] = devices['device_object'].apply(lambda x: float(cympy.study.QueryInfoDevice("CoordY", x.DeviceNumber, x.DeviceType)) / (1.26 * 100000))
-    devices['distance'] = devices['device_object'].apply(lambda x: cympy.study.QueryInfoDevice("Distance", x.DeviceNumber, x.DeviceType))
+        list_devices = cympy.study.ListDevices()
+    devices = []
+    for device_object in list_devices:
+        device = {}
+        device['device_object'] = device_object
+        device['device_type'] = device_object.DeviceType
+        device['device_number'] = device_object.DeviceNumber
+        device['section_id'] = device_object.SectionID
+        device['longitude'] = float(cympy.study.QueryInfoDevice("CoordX", device_object.DeviceNumber, device_object.DeviceType)) / 100000
+        device['latitude'] = float(cympy.study.QueryInfoDevice("CoordY", device_object.DeviceNumber, device_object.DeviceType)) / (1.26 * 100000)
+        device['distance'] = cympy.study.QueryInfoDevice("Distance", device_object.DeviceNumber, device_object.DeviceType)
+        devices.append(device)
 
     return devices
 
-def get_voltages(nodes, is_node=False):
+def get_voltages(nodes):
     # Require to call compute_loadflow() first
-    voltage = nodes.copy()
-
-    voltage['VA'] = nodes['node_object'].apply(lambda x: cympy.study.QueryInfoNode("VA", x.ID))
-    voltage['VB'] = nodes['node_object'].apply(lambda x: cympy.study.QueryInfoNode("VB", x.ID))
-    voltage['VC'] = nodes['node_object'].apply(lambda x: cympy.study.QueryInfoNode("VC", x.ID))
-
-    # Cast to float
-    for column in ['VA', 'VB', 'VC']:
-        voltage[column] = voltage[column].apply(lambda x: None if x is '' else float(x))
-
-    voltage = voltage.replace([np.nan], [None])
-
-    return voltage
+    for node in nodes:
+        node_object = node['node_object']
+        for prop in ['VA', 'VB', 'VC']:
+            x = cympy.study.QueryInfoNode(prop, node_object.ID)
+            node[prop] = None if x is '' else float(x)
+    return nodes

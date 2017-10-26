@@ -13,6 +13,9 @@ app = Celery('sim_worker',
 app.conf.update(
     CELERY_TASK_RESULT_EXPIRES=3600,
     CELERY_TRACK_STARTED=True,
+    CELERY_ACCEPT_CONTENT = ['json'],
+    CELERY_RESULT_SERIALIZER = 'json',
+    CELERY_TASK_SERIALIZER = 'json',
     CELERY_DEFAULT_QUEUE = 'sim_worker',
     CELERY_QUEUES = (
         Queue('sim_worker', Exchange('sim_worker'), routing_key='sim_worker'),
