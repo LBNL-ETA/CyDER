@@ -34,9 +34,10 @@ import shutil
 
 @app.task
 def run_simulation(project):
+    if os.path.exists("./simulation_project/sim"):
+        shutil.rmtree("./simulation_project/sim")
     subprocess.call(["python", "./cosimulation/runsimulation.py", "../simulation_project"])
     result_file = open('./simulation_project/sim/0/0.json')
     result = json.load(result_file)
     result_file.close()
-    shutil.rmtree("./simulation_project/sim")
     return result
