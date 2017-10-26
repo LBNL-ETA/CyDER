@@ -28,7 +28,7 @@
         return token;
     }
 
-    function rest(method, url, content) {
+    function rest(method, url, content, contentType) {
         return new Promise(async function(resolve, reject) {
             if(!token)
                 throw "auth() have to be call first to use the API";
@@ -38,7 +38,7 @@
             var xhr = new XMLHttpRequest();
             xhr.open(method, url, true);
             xhr.responseType = 'json';
-            xhr.setRequestHeader("Authorization", `Token ${ token }`);
+            xhr.setRequestHeader('Authorization', `Token ${ token }`);
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     resolve(xhr.response);
@@ -46,7 +46,16 @@
                     reject(xhr);
                 }
             };
-            xhr.send(content);
+            if(contentType) {
+                xhr.setRequestHeader('Content-type', contentType);
+                xhr.send(content);
+            }
+            else if(content) {
+                xhr.setRequestHeader('Content-type', 'application/json');
+                xhr.send(JSON.stringify(content));
+            }
+            else
+                xhr.send();
         });
     }
 
