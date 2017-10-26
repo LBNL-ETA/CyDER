@@ -4,21 +4,23 @@ from celery.states import PENDING, STARTED, SUCCESS, FAILURE
 from .models import *
 from django.db.models import Q
 
+import sim_worker.celery
+
 @app.task
 def retrieve_projects_result():
     projectsInSim = Project.objects.filter(Q(status="Pending") | Q(status="Started"))
     for project in projectsInSim:
-        result = AsyncResult(project.task_id)
-        if result.status == PENDING:
+        task = AsyncResult(project.task_id, app=sim_worker.celery.app)
+        if task.status == PENDING:
             project.status = "Pending"
-        elif result.status == STARTED:
+        elif task.status == STARTED:
             project.status = "Started"
-        elif result.status == SUCCESS:
-            project.status = "Success"
-            project.result = result.get()
-        elif result.status == FAILURE:
+        elif task.status == SUCCESS:
+            project.status = "Succeed"
+            project.result = task.result
+        elif task.status == FAILURE:
             project.status = "Failed"
         else:
             project.status = "NeedSim"
-    project.save()
+        project.save()
     return
