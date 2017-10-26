@@ -5,3 +5,7 @@ from .celery import app
 @app.task
 def get_model(modelname):
     return
+
+@app.task
+def run_simulation(project):
+    return

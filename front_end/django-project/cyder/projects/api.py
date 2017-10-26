@@ -8,7 +8,9 @@ from rest_framework.decorators import detail_route, list_route
 from .models import Project
 from .serializers import ProjectSerializer
 from django.shortcuts import get_object_or_404
-from sim_worker.celery import app
+from celery.result import AsyncResult
+import sim_worker.celery
+import sim_worker.tasks
 
 class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
@@ -20,7 +22,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         if instance.status == "Started" or instance.status == "Pending":
-            return Response({ "error" : "Can't update a project when it is currently in simulation" }, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({ "detail" : "Can't update a project when it is currently in simulation" }, status=status.HTTP_401_UNAUTHORIZED)
         instance.status = "NeedSim"
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
@@ -36,16 +38,29 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.status == "Started" or instance.status == "Pending":
-            return Response({ "error" : "Can't delete a project when it is currently in simulation" }, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({ "detail" : "Can't delete a project when it is currently in simulation" }, status=status.HTTP_401_UNAUTHORIZED)
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @detail_route(methods=['post'])
     def revoke(self, request, *args, **kwargs):
         project = self.get_object()
-        app.control.revoke(project.task_id)
+        task = AsyncResult(project.task_id, app=sim_worker.celery.app)
+        task.revoke(terminate=True)
+        task.forget()
         project.status = "NeedSim"
-        project.save();
-        return Response({ "status": "Project simulation revoked" })
+        project.save()
+        return Response({ "detail": "Project simulation revoked" })
+
+    @detail_route(methods=['post'])
+    def run(self, request, *args, **kwargs):
+        project = self.get_object()
+        if project.status == "Started" or project.status == "Pending":
+            return Response({ "detail" : "Can't run a simulation on a project when it is currently in simulation" }, status=status.HTTP_401_UNAUTHORIZED)
+        task = sim_worker.tasks.run_simulation.delay(None)
+        project.task_id = task.id
+        project.status = "Pending"
+        project.save()
+        return Response({ "detail": "Simulation requested for this project" })
 
 apirouter.register(r'projects', ProjectViewSet)
