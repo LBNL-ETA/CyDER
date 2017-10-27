@@ -17,7 +17,7 @@ def retrieve_projects_result():
             project.status = "Started"
         elif task.status == SUCCESS:
             project.status = "Succeed"
-            project.result = task.result
+            project.results = task.result
         elif task.status == FAILURE:
             project.status = "Failed"
         else:

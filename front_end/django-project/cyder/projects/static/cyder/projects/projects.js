@@ -33,7 +33,6 @@ class ProjectList extends View {
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Name</th>
-                    <th scope="col">Model</th>
                     <th scope="col">Status</th>
                     <th scope="col" class="text-right">Action</th>
                 </tr>
@@ -62,7 +61,10 @@ class ProjectItem extends View {
         this.parent.update();
     }
     _onResults(e) {
-        alert(this.project.result);
+        alert(this.project.results);
+    }
+    _onEdit(e) {
+        alert(this.project.settings);
     }
     async _onDelete(e) {
         await CyderAPI.rest('DELETE', `/api/projects/${this.project.id}/`);
@@ -89,7 +91,6 @@ class ProjectItem extends View {
         return `
         <th scope="row">${this.project.id}</th>
         <td>${this.project.name}</td>
-        <td>${this.project.model}</td>
         <td>${this.project.status}</td>
         <td class="text-right">
             <div class="btn-group" >

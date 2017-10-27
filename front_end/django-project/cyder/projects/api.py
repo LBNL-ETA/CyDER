@@ -23,7 +23,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         if instance.status == "Started" or instance.status == "Pending":
             return Response({ "detail" : "Can't update a project when it is currently in simulation" }, status=status.HTTP_401_UNAUTHORIZED)
-        instance.status = "NeedSim"
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
