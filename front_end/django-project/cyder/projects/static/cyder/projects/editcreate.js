@@ -21,7 +21,7 @@ class ProjectEdit extends View {
     newProject() {
         this.project = {
             name: '',
-            settings: '{}',
+            settings: {},
         }
         this.isNew = true;
         this.render();
@@ -29,9 +29,13 @@ class ProjectEdit extends View {
     render() {
         super.render();
         this._html.name.value = this.project.name;
+        this._html.model.value = this.project.settings.model;
     }
     _writeProject() {
         this.project.name = this._html.name.value;
+        this.project.settings = {
+            model: this._html.model.value,
+        }
     }
     async _save(e) {
         this._writeProject();
@@ -53,7 +57,10 @@ class ProjectEdit extends View {
         return `
         <div class="input-group input-group-lg">
             <input data-name="name" type="text" class="form-control" placeholder="Name" aria-label="Name">
-        </div> <br>
+        </div><br>
+        <div class="input-group input-group-lg">
+            <input data-name="model" type="text" class="form-control" placeholder="Model" aria-label="Model">
+        </div><br>
         ${ IF(this.isNew, () =>
             `<button type="button" data-on="click:_create" class="btn btn-primary">Create</button>`
         , () =>

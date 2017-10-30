@@ -1,5 +1,6 @@
 from django.db import models
 from ..grid_models.models import Model
+import json
 
 # Create your models here.
 class Project(models.Model):
@@ -14,8 +15,17 @@ class Project(models.Model):
     def __init__(self, *args, **kwargs):
         super(Project, self).__init__(*args, **kwargs)
         self.old_settings = self.settings
+        self.settings = json.loads(self.settings)
+        self.results = json.loads(self.results)
 
     def save(self, *args, **kwargs):
+        settings = self.settings
+        self.settings = json.dumps(self.settings, separators=(',',':'))
+        results = self.results
+        self.results = json.dumps(self.results, separators=(',',':'))
         if self.old_settings != self.settings:
+            self.old_settings = self.settings
             self.status = "NeedSim"
         super(Project, self).save(*args, **kwargs)
+        self.settings = settings
+        self.results = results
