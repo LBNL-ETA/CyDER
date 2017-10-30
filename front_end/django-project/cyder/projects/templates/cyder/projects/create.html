@@ -1,0 +1,30 @@
+{% extends 'cyder/base.html' %}
+{% load static %}
+{% load escapequotes %} {# Cf. cyder/main/templatetags/escapedoublequote.py #}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'cyder/animate.css' %}">
+{% endblock css %}
+
+{% block content %}
+
+    <div id="project-edit"></div>
+
+{% endblock content %}
+
+{% block script %}
+    <script>
+        document.querySelector(".navbar [data-name='projects']").className += " active";
+        let projectEdit;
+        window.onload = function() {
+            CyderAPI.auth();
+            projectEdit = new ProjectEdit();
+            projectEdit.newProject();
+            projectEdit.emplace(document.querySelector('#project-edit'));
+        }
+    </script>
+    <script src="{% static 'cyder/api.js' %}"></script>
+    <script src="{% static 'cyder/viewlib.js' %}"></script>
+    <script src="{% static 'cyder/bootstrap-notify.min.js' %}"></script>
+    <script src="{% static 'cyder/projects/editcreate.js' %}"></script>
+{% endblock script %}

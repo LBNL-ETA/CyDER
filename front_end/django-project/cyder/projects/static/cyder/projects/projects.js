@@ -13,7 +13,7 @@ class ProjectList extends View {
         if(this._projectsProm)
             return this._projectsProm;
         return this._projectsProm = (async () => {
-            this.projects = await CyderAPI.rest('GET', `/api/projects/`);
+            this.projects = await CyderAPI.smartRest('GET', `/api/projects/`);
             return this.projects;
         })();
     }
@@ -53,21 +53,21 @@ class ProjectItem extends View {
         this.render();
     }
     async _onRun(e) {
-        await CyderAPI.rest('POST', `/api/projects/${this.project.id}/run/`);
+        await CyderAPI.smartRest('POST', `/api/projects/${this.project.id}/run/`);
         this.parent.update();
     }
     async _onRevoke(e) {
-        await CyderAPI.rest('POST', `/api/projects/${this.project.id}/revoke/`);
+        await CyderAPI.smartRest('POST', `/api/projects/${this.project.id}/revoke/`);
         this.parent.update();
     }
     _onResults(e) {
         alert(this.project.results);
     }
     _onEdit(e) {
-        alert(this.project.settings);
+        window.location.href = `/projects/edit/${this.project.id}`
     }
     async _onDelete(e) {
-        await CyderAPI.rest('DELETE', `/api/projects/${this.project.id}/`);
+        await CyderAPI.smartRest('DELETE', `/api/projects/${this.project.id}/`);
         this.parent.update();
     }
     get _template() {
