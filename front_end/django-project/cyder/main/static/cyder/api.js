@@ -40,7 +40,7 @@
             xhr.responseType = 'json';
             xhr.setRequestHeader('Authorization', `Token ${ token }`);
             xhr.onload = function() {
-                if (xhr.status === 200) {
+                if (xhr.status >= 200 && xhr.status < 300) {
                     resolve(xhr.response);
                 } else {
                     reject(xhr);
@@ -59,8 +59,34 @@
         });
     }
 
+    async function smartRest(...args) {
+        try {
+            return await rest(...args);
+        } catch(e) {
+            notifyError(e);
+            throw e;
+        }
+    }
+
+    function notifyError(errXHR) {
+        switch(errXHR.status) {
+        case 400:
+            for(let field in errXHR.response) {
+                let msg = '';
+                for(let hint of errXHR.response[field])
+                    msg += '<br>' + hint;
+                $.notify({title: `<strong>${field}:</strong>`, message: msg},{type: 'danger'});
+            }
+            break;
+        case 404:
+            $.notify({message: 'Not found'},{type: 'danger'});
+        }
+    }
+
     window.CyderAPI = {
         auth,
-        rest
+        rest,
+        notifyError,
+        smartRest,
     };
 })();
