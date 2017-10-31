@@ -13,6 +13,7 @@
 {% endblock content %}
 
 {% block script %}
+    <script src="{% static 'cyder/projects/editcreate.js' %}"></script>
     <script>
         document.querySelector(".navbar [data-name='projects']").className += " active";
         let projectEdit;
@@ -23,8 +24,4 @@
             projectEdit.emplace(document.querySelector('#project-edit'));
         }
     </script>
-    <script src="{% static 'cyder/api.js' %}"></script>
-    <script src="{% static 'cyder/viewlib.js' %}"></script>
-    <script src="{% static 'cyder/bootstrap-notify.min.js' %}"></script>
-    <script src="{% static 'cyder/projects/editcreate.js' %}"></script>
 {% endblock script %}

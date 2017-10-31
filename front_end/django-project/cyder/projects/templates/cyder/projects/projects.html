@@ -17,10 +17,8 @@
 {% endblock content %}
 
 {% block script %}
+    <script src="{% static 'cyder/projects/projects.js' %}"></script>
     <script>
         document.querySelector(".navbar [data-name='projects']").className += " active";
     </script>
-    <script src="{% static 'cyder/api.js' %}"></script>
-    <script src="{% static 'cyder/viewlib.js' %}"></script>
-    <script src="{% static 'cyder/projects/projects.js' %}"></script>
 {% endblock script %}
