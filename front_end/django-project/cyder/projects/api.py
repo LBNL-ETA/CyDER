@@ -56,7 +56,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         project = self.get_object()
         if project.status == "Started" or project.status == "Pending":
             return Response({ "detail" : "Can't run a simulation on a project when it is currently in simulation" }, status=status.HTTP_401_UNAUTHORIZED)
-        task = sim_worker.tasks.run_simulation.delay(None)
+        task = sim_worker.tasks.run_simulation.delay(project.settings)
         project.task_id = task.id
         project.status = "Pending"
         project.save()

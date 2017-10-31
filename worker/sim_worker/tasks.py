@@ -34,11 +34,20 @@ import subprocess
 import os
 import json
 import shutil
+import pandas
 
 @app.task
 def run_simulation(project):
     if os.path.exists("./simulation_project/sim"):
         shutil.rmtree("./simulation_project/sim")
+
+    cyder_inputs = pandas.read_excel("./simulation_project/cyder_inputs.xlsx")
+    cyder_inputs.loc[0, 'feeder_name'] = project['model'] + ".sxst"
+    cyder_inputs.to_excel("./simulation_project/cyder_inputs.xlsx", index=False)
+
+    add_pv = pandas.DataFrame(project['addPv'])
+    add_pv.to_excel("./simulation_project/add_pv.xlsx", index=False, header=["device_number", "added_power_kw"])
+
     subprocess.call(["python", "./cosimulation/runsimulation.py", "../simulation_project"])
     result_file = open('./simulation_project/sim/0/0.json')
     result = json.load(result_file)
