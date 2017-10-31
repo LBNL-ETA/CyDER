@@ -1,0 +1,25 @@
+{% extends 'cyder/base.html' %}
+{% load static %}
+{% load escapequotes %} {# Cf. cyder/main/templatetags/escapedoublequote.py #}
+
+{% block css %}
+
+{% endblock css %}
+
+{% block content %}
+    <div id="project-results"></div>
+{% endblock content %}
+
+{% block script %}
+    <script src="{% static 'cyder/projects/results.js' %}"></script>
+    <script>
+        document.querySelector(".navbar [data-name='projects']").className += " active";
+        let projectResults;
+        window.onload = function() {
+            CyderAPI.auth();
+            projectResults = new ProjectResults();
+            projectResults.emplace(document.querySelector('#project-results'));
+            projectResults.loadProject("{{ project_id|escapequotes|safe }}");
+        }
+    </script>
+{% endblock script %}

@@ -13,3 +13,7 @@ def edit(request, project_id):
 @login_required
 def create(request):
     return render(request, 'cyder/projects/create.html')
+
+@login_required
+def results(request, project_id):
+    return render(request, 'cyder/projects/results.html', { 'project_id': project_id })

@@ -61,7 +61,7 @@ class ProjectItem extends View {
         this.parent.update();
     }
     _onResults(e) {
-        alert(this.project.results);
+        window.location.href = `/projects/results/${this.project.id}`
     }
     _onEdit(e) {
         window.location.href = `/projects/edit/${this.project.id}`
