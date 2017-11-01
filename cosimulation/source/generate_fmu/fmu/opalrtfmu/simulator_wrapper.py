@@ -193,6 +193,10 @@ def compileAndInstantiate(projectPath):
 
         ## Load the current model
         realTimeMode = RtlabApi.SIM_MODE  # Also possible to use SIM_MODE, SOFT_SIM_MODE, SIM_W_NO_DATA_LOSS_MODE or SIM_W_LOW_PRIO_MODE
+        # realTimeMode are HARD_SYNC_MODE for hardware synchronization. An I/O board is required
+        # on the target. SIM_MODE for simulation as fast as possible, SOFT_SIM_MODE for
+        # soft synchronization mode. Other modes ae not relevant but can be found in Enumeration and defined
+        # under OP_REALTIME_MODE 
         timeFactor   = 1
         RtlabApi.Load(realTimeMode, timeFactor)
         ## Wait until the model is loaded
