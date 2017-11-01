@@ -1,12 +1,8 @@
 class ProjectList extends View {
-    constructor(parent) {
-        super('div', parent);
+    constructor(el) {
+        super(el, 'div');
         this.projects = [];
-        this._getProjects().then((projects) => {
-            for(let project of projects)
-                this._childs[`project-${project.id}`] = new ProjectItem(this, project);
-            this.render();
-        });
+        this.update();
         this.render();
     }
     _getProjects() {
@@ -22,7 +18,7 @@ class ProjectList extends View {
         this._childs = {};
         return this._getProjects().then((projects) => {
             for(let project of projects)
-                this._childs[`project-${project.id}`] = new ProjectItem(this, project);
+                this._childs[`project-${project.id}`] = new ProjectItem(project);
             this.render();
         });
     }
@@ -47,8 +43,8 @@ class ProjectList extends View {
 }
 
 class ProjectItem extends View {
-    constructor(parent, project) {
-        super('tr', parent);
+    constructor(project, el) {
+        super(el, 'tr');
         this.project = project;
         this.render();
     }
@@ -61,10 +57,10 @@ class ProjectItem extends View {
         this.parent.update();
     }
     _onResults(e) {
-        window.location.href = `/projects/results/${this.project.id}`
+        window.location.href = `./results/${this.project.id}/`
     }
     _onEdit(e) {
-        window.location.href = `/projects/edit/${this.project.id}`
+        window.location.href = `./edit/${this.project.id}/`
     }
     async _onDelete(e) {
         await CyderAPI.smartRest('DELETE', `/api/projects/${this.project.id}/`);
@@ -111,13 +107,4 @@ class ProjectItem extends View {
             </div>
         </td>`;
     }
-}
-
-let projectList;
-window.onload = function() {
-    CyderAPI.auth();
-    projectList = new ProjectList();
-    projectList.emplace(document.querySelector('#project-list'));
-    let update = () => { projectList.update(); setTimeout(update, 5000); }
-    setTimeout(update, 5000);
 }

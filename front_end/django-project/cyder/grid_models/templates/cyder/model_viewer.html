@@ -29,6 +29,12 @@
     <script src="{% static 'cyder/model_viewer.js' %}"></script>
     <script>
         document.querySelector(".navbar [data-name='model_viewer']").className += " active";
-        var djangoContext = {modelName: "{{ modelname|escapequotes|safe }}"};
+        let modelViewer;
+        window.onload = function() {
+            CyderAPI.auth();
+            modelViewer = new ModelViewer("{% url 'model_viewer' %}", document.querySelector('#model-viewer'));
+            modelViewer.render();
+            modelViewer.modelName = "{{ modelname|escapequotes|safe }}";
+        }
     </script>
 {% endblock script %}

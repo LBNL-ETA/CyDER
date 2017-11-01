@@ -1,6 +1,6 @@
 class ProjectResults extends View {
-    constructor(parent) {
-        super('div', parent);
+    constructor(el) {
+        super(el, 'div');
         this.project = null;
     }
     _getProject() {

@@ -1,6 +1,6 @@
 class ProjectEdit extends View {
-    constructor(parent) {
-        super('div', parent);
+    constructor(el) {
+        super(el, 'div');
         this.project = null;
         this.isNew = null;
     }
@@ -33,9 +33,7 @@ class ProjectEdit extends View {
     }
     _writeProject() {
         this.project.name = this._html.name.value;
-        this.project.settings = {
-            model: this._html.model.value,
-        }
+        this.project.settings.model = this._html.model.value;
     }
     async _save(e) {
         this._writeProject();
@@ -69,15 +67,3 @@ class ProjectEdit extends View {
         `;
     }
 }
-
-$.notifyDefaults({
-    placement: {
-		from: 'bottom',
-		align: 'right'
-	},
-    animate:{
-		enter: "animated fadeInDown",
-		exit: "animated fadeOutRight"
-	},
-    type: 'info'
-});

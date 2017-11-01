@@ -10,8 +10,8 @@
 {% endblock css %}
 
 {% block content %}
-    <h1>Projects</h1>
-
+    <h1>Projects <a href="{% url 'createproject' %}" style="margin-left: 4rem;" class="btn btn-primary">New</a></h1>
+    <br>
     <div id="project-list"></div>
 
 {% endblock content %}
@@ -20,5 +20,13 @@
     <script src="{% static 'cyder/projects/projects.js' %}"></script>
     <script>
         document.querySelector(".navbar [data-name='projects']").className += " active";
+        let projectList;
+        window.onload = function() {
+            CyderAPI.auth();
+            projectList = new ProjectList();
+            projectList.emplace(document.querySelector('#project-list'));
+            let update = () => { projectList.update(); setTimeout(update, 5000); }
+            setTimeout(update, 5000);
+        }
     </script>
 {% endblock script %}

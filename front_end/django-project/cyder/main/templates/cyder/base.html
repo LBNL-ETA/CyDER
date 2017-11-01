@@ -20,7 +20,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item" data-name="model_viewer"><a class="nav-link" href="{% url 'model_viewer' '' %}">Model Viewer</a></li>
+                <li class="nav-item" data-name="model_viewer"><a class="nav-link" href="{% url 'model_viewer' %}">Model Viewer</a></li>
                 <li class="nav-item" data-name="projects"><a class="nav-link" href="{% url 'projects' %}">Projects</a></li>
             </ul>
             {% if user.is_authenticated %}

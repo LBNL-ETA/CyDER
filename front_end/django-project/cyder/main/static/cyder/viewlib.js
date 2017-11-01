@@ -1,13 +1,14 @@
 class View {
-    constructor(tag, parent = null) {
+    constructor(el, tag = 'div') {
         this._html = {};
-        this._html.el = document.createElement(tag);
+        if(el)
+            this._html.el = el;
+        else
+            this._html.el = document.createElement(tag);
         this._childs = {};
-        this._parent = parent;
     }
     get el() { return this._html.el; }
     child(name) { return this._childs[name]; }
-    get parent() { return this._parent; }
     get _template() { return ''; }
     render() {
         this._html.el.innerHTML = this._template;
@@ -19,6 +20,9 @@ class View {
             for(let listner of el.getAttribute('data-on').split(';')) {
                 let evt, method;
                 [evt, method] = el.getAttribute('data-on').split(':');
+                if(!(this[method] instanceof Function))
+                    throw new Error(`${this.constructor.name} have no method called ${method}
+                        Check your data-on arguments`);
                 el.addEventListener(evt, (...args) => this[method](...args));
             }
         }
