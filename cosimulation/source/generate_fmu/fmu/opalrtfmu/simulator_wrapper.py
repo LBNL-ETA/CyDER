@@ -79,24 +79,24 @@ def compileAndInstantiate(projectPath):
     # Start the MetaController
     tasklist = subprocess.check_output('tasklist', shell=True)
     if not "MetaController.exe" in tasklist:
-        log.info("=====compileAndInstantiate: Starting the MetaController.")
+        log.info("=====compileAndInstantiate(): Starting the MetaController.")
         try:
             subprocess.Popen("MetaController")
         except:
-            log.error("=====compileAndInstantiate: MetaController.exe couldn't be started. ")
-            log.error("=====compileAndInstantiate: Check that the \\common\\bin folder of RT-Lab is on the system PATH.")
+            log.error("=====compileAndInstantiate(): MetaController.exe couldn't be started. ")
+            log.error("=====compileAndInstantiate(): Check that the \\common\\bin folder of RT-Lab is on the system PATH.")
             raise
 
-        log.info("=====compileAndInstantiate: MetaController is successfully started.")
+        log.info("=====compileAndInstantiate(): MetaController is successfully started.")
 
     # Wait to give time to the MetaController to start
     sleep(TIMEOUT)
     projectName = os.path.abspath(projectPath)
-    log.info("=====compileAndInstantiate: Path to the project={!s}".format(projectName))
+    log.info("=====compileAndInstantiate(): Path to the project={!s}".format(projectName))
 
     ## Open a model using its name.
     RtlabApi.OpenProject(projectName)
-    log.info ("=====compileAndInstantiate: The connection with {!s} is completed.".format(projectName))
+    log.info ("=====compileAndInstantiate(): The connection with {!s} is completed.".format(projectName))
 
     log.info ("The model Stoptime={!s}".format(RtlabApi.GetStopTime()))
     # Check if model was already compiled and is already running
@@ -104,7 +104,7 @@ def compileAndInstantiate(projectPath):
         ## Get the model state and the real time mode
         modelState, realTimeMode = RtlabApi.GetModelState()
         ## Print the model state
-        log.info ("=====compileAndInstantiate: The model state is {!s}.".format(RtlabApi.OP_MODEL_STATE(modelState)))
+        log.info ("=====compileAndInstantiate(): The model state is {!s}.".format(RtlabApi.OP_MODEL_STATE(modelState)))
 
         # If the model is paused, execute it
         if modelState == RtlabApi.MODEL_PAUSED:
@@ -119,7 +119,7 @@ def compileAndInstantiate(projectPath):
         if modelState == RtlabApi.MODEL_RUNNING:
             #print("This is the output value={!s}".format(RtlabApi.GetSignalsByName('sm_computation.reference_out')))
             ## Pause the model
-            log.info ("=====compileAndInstantiate: The model is running and won't be recompiled.")
+            log.info ("=====compileAndInstantiate(): The model is running and won't be recompiled.")
             # Return an internal defined code to avoid recompilation.
             RtlabApi.Disconnect()
             return -1111
@@ -130,7 +130,7 @@ def compileAndInstantiate(projectPath):
         info = sys.exc_info()
         if info[1][0] != 11:  # 'There is currently no data waiting.'
             ## If a exception occur: stop waiting
-            log.error ("=====compileAndInstantiate: An error occured during compilation.")
+            log.error ("=====compileAndInstantiate(): An error occured during compilation.")
             #raise
     start = datetime.now()
     mdlFolder, mdlName = RtlabApi.GetCurrentModel()
@@ -148,7 +148,7 @@ def compileAndInstantiate(projectPath):
         ## Launch compilation
         compilationSteps = RtlabApi.OP_COMPIL_ALL_NT | RtlabApi.OP_COMPIL_ALL_LINUX
         RtlabApi.StartCompile2((("", compilationSteps), ), )
-        log.info ("=====compileAndInstantiate: Compilation started.")
+        log.info ("=====compileAndInstantiate(): Compilation started.")
 
         ## Wait until the end of the compilation
         status = RtlabApi.MODEL_COMPILING
@@ -176,7 +176,7 @@ def compileAndInstantiate(projectPath):
                 info = sys.exc_info()
                 if info[1][0] != 11:  # 'There is currently no data waiting.'
                     ## If a exception occur: stop waiting
-                    log.error ("=====compileAndInstantiate: An error occured during compilation.")
+                    log.error ("=====compileAndInstantiate(): An error occured during compilation.")
                     raise
 
         ## Because we use a comma after print when forward compilation log into
@@ -187,9 +187,9 @@ def compileAndInstantiate(projectPath):
         ## Get project status to check is compilation succeed
         status, _ = RtlabApi.GetModelState()
         if status == RtlabApi.MODEL_LOADABLE:
-            log.info ("=====compileAndInstantiate: Compilation success.")
+            log.info ("=====compileAndInstantiate(): Compilation success.")
         else:
-            log.error ("=====compileAndInstantiate: Compilation failed.")
+            log.error ("=====compileAndInstantiate(): Compilation failed.")
 
         ## Load the current model
         realTimeMode = RtlabApi.SIM_MODE  # Also possible to use SIM_MODE, SOFT_SIM_MODE, SIM_W_NO_DATA_LOSS_MODE or SIM_W_LOW_PRIO_MODE
@@ -211,9 +211,9 @@ def compileAndInstantiate(projectPath):
 
             ## Execute the model
             RtlabApi.Execute(timeFactor)
-            log.info ("=====compileAndInstantiate: The model has executed.")
+            log.info ("=====compileAndInstantiate(): The model has executed.")
             status, _ = RtlabApi.GetModelState()
-            log.info ("=====compileAndInstantiate: The model state is {!s}.".format(RtlabApi.OP_MODEL_STATE(modelState)))
+            log.info ("=====compileAndInstantiate(): The model state is {!s}.".format(RtlabApi.OP_MODEL_STATE(modelState)))
 
         except Exception:
             ## Ignore error 11 which is raised when
@@ -222,19 +222,19 @@ def compileAndInstantiate(projectPath):
             info = sys.exc_info()
             if info[1][0] != 11:  # 'There is currently no data waiting.'
                 ## If a exception occur: stop waiting
-                log.error ("compileAndInstantiate: An error occured during execution.")
+                log.error ("compileAndInstantiate(): An error occured during execution.")
                 raise
 
         end = datetime.now()
         log.info(
-            '=====compileAndInstantiate: Compiled, loaded and executed the model for the first time in {!s} seconds.'.format(
+            '=====compileAndInstantiate(): Compiled, loaded and executed the model for the first time in {!s} seconds.'.format(
                 (end - start).total_seconds()))
     finally:
         ## Always disconnect from the model when the connection is completed
-        log.info ("=====compileAndInstantiate: The model has been successfully compiled and is now running.")
+        log.info ("=====compileAndInstantiate(): The model has been successfully compiled and is now running.")
         #fixme It seems like I shouldn't disconnect when used with ephasorsim
         status, _ = RtlabApi.GetModelState()
-        log.info ("=====compileAndInstantiate: The final model state is {!s}.".format(RtlabApi.OP_MODEL_STATE(modelState)))
+        log.info ("=====compileAndInstantiate(): The final model state is {!s}.".format(RtlabApi.OP_MODEL_STATE(modelState)))
         RtlabApi.Disconnect()
 
 def setData(projectPath, inputNames, inputValues, simulationTime):
@@ -276,7 +276,6 @@ def setData(projectPath, inputNames, inputValues, simulationTime):
                     #log.info ("=====The signal control is acquired.")
                     RtlabApi.Pause()
                     #log.info ("=====The model is paused.")
-                    log.info("Signalnames={!s}, signalvalues={!s}".format(inputNames, inputValues))
                     RtlabApi.SetSignalsByName(inputNames, inputValues)
                     #log.info ("=====The signals are set.")
                     timeFactor   = 1
@@ -295,24 +294,24 @@ def setData(projectPath, inputNames, inputValues, simulationTime):
                     info = sys.exc_info()
                     if info[1][0] != 11:  # 'There is currently no data waiting.'
                         ## If a exception occur: stop waiting
-                        log.error ("=====setData: An error occured at simulationTime={!s} while setting the " \
+                        log.error ("=====setData(): An error occured at simulationTime={!s} while setting the " \
                                "input values for the input names={!s}.".format(simulationTime, inputNames))
                         raise
             ## if the model is not running
             else:
                 ## Print the model state
-                log.error ("=====setData: The model state is not running. Simulation will be terminated.")
+                log.error ("=====setData(): The model state is not running. Simulation will be terminated.")
                 raise
             end = datetime.now()
             log.info(
-                '==========setData: Send values={!s} of inputs with names={!s} in {!s} seconds.'.format(inputValues,
+                '==========setData(): Send values={!s} of inputs with names={!s} in {!s} seconds.'.format(inputValues,
                 inputNames, (end - start).total_seconds()))
         finally:
             ## Always disconnect from the model when the connection
             RtlabApi.Disconnect()
     else:
         RtlabApi.Disconnect()
-        log.info ("=====setData: The simulation stoptime={!s} is reached. "\
+        log.info ("=====setData(): The simulation stoptime={!s} is reached. "\
                " the connection is closed.".format(RtlabApi.GetStopTime()))
 
 
@@ -342,7 +341,7 @@ def getData(projectPath, outputNames, simulationTime):
             ## Get the model state and the real simulationTime mode
             modelState, realTimeMode = RtlabApi.GetModelState()
             ## Print the model state
-            log.info ("=====The model state is {!s}.".format(RtlabApi.OP_MODEL_STATE(modelState)))
+            log.info ("=====getData(): The model state is {!s}.".format(RtlabApi.OP_MODEL_STATE(modelState)))
 
             ## If the model is running
             if modelState == RtlabApi.MODEL_RUNNING:
@@ -353,13 +352,13 @@ def getData(projectPath, outputNames, simulationTime):
                     #log.info ("=====The system control is acquired.")
                     RtlabApi.Pause()
                     #log.info ("=====The model is paused.")
-                    s = "getData: outputs to be get are={!s}".format(outputNames)
+                    s = "=====getData(): outputs to be get are={!s}".format(outputNames)
                     log.info(s)
                     #RtlabApi.GetSignalControl(True)
                     outputValues = RtlabApi.GetSignalsByName(outputNames)
                     timeFactor   = 1
                     RtlabApi.Execute(timeFactor)
-                    log.info ("=====The model is executed.")
+                    log.info ("=====getData(): The model is executed.")
                     ## Release signal control after changing values
                     ctlr = False
                     RtlabApi.GetSystemControl (ctlr)
@@ -371,19 +370,19 @@ def getData(projectPath, outputNames, simulationTime):
                     info = sys.exc_info()
                     if info[1][0] != 11:  # 'There is currently no data waiting.'
                         ## If a exception occur: stop waiting
-                        log.error ("=====getData: An error occured at simulationTime={!s} while getting the " \
+                        log.error ("=====getData(): An error occured at simulationTime={!s} while getting the " \
                                "output values for the output names={!s}.".format(simulationTime, outputNames))
                         raise
 
             ## if the model is not running
             else:
                 ## Print the model state
-                log.error ("=====getData: The model is not running. Simulation will be terminated.")
+                log.error ("=====getData(): The model is not running. Simulation will be terminated.")
                 raise
 
             end = datetime.now()
             log.info(
-                '=====getData: Get values={!s} of outputs with names={!s} in {!s} seconds.'.format(outputValues,
+                '=====getData(): Get values={!s} of outputs with names={!s} in {!s} seconds.'.format(outputValues,
                 outputNames, (end - start).total_seconds()))
         finally:
             ## Always disconnect from the model when the connection
@@ -397,7 +396,7 @@ def getData(projectPath, outputNames, simulationTime):
         ctlr = False
         #RtlabApi.GetSystemControl (ctlr)
         RtlabApi.Disconnect()
-        log.info ("=====getData: The simulation stoptime={!s} is reached. "\
+        log.info ("=====getData(): The simulation stoptime={!s} is reached. "\
                "The model is reset and the connection is closed.".format(RtlabApi.GetStopTime()))
         return zeroOutputValues (outputNames)
 
@@ -455,18 +454,16 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
 
      # Convert the unicode string to a string
      projectPath = convertUnicodeString(projectPath)
-     print("output names={!s}".format(outputNames))
-     print("input names={!s}".format(inputNames))
      #return 0.0
      # This is just for testing and will be retrieved from the project path
      # The section below will be removed in production code
      # 1 will reset the model on the target machine
      # 0 will run the model in normal mode.
      ######################################################
-     reset = 0
-     retVal = resetModel (projectPath, reset)
-     if retVal == -2222:
-       return zeroOutputValues(outputNames)
+     #reset = 0
+     #retVal = resetModel (projectPath, reset)
+     #if retVal == -2222:
+     #  return zeroOutputValues(outputNames)
      # Convert the input and output names to be strings that can be set in Opal-RT models
      #inputNames = 'LBNL_test1/sc_console/port1'
      #inputNames = None
@@ -478,42 +475,41 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
      if (outputNames is not None):
         outputNames=convertUnicodeString(outputNames)
 
-     log.info ("=====Ready to compile, load, or execute the model.")
+     log.info ("=====exchange(): Ready to compile, load, or execute the model.")
      # Compile and Run the model for the first time
      retVal = compileAndInstantiate(projectPath)
      if (retVal is None):
-        log.info ("=====The model hasn't been compiled yet.")
+        log.info ("=====exchange(): The model hasn't been compiled yet.")
         return zeroOutputValues (outputNames)
 
      #simulationTime = 0.0
-     log.info ("=====Ready to exchange data with the OPAL-RT running model.")
+     log.info ("=====exchange(): Ready to exchange data with the OPAL-RT running model.")
      # Handle the case when inputNames is None
 
      if(inputNames is not None):
-         log.info ("=====Ready to set the input variables={!s} with values={!s} at time={!s}.".format(inputNames, inputValues, simulationTime))
+         log.info ("=====exchange(): Ready to set the input variables={!s} with values={!s} at time={!s}.".format(inputNames, inputValues, simulationTime))
          if (isinstance(inputNames, list)):
              len_inputNames = len(inputNames)
              len_inputValues = len(inputValues)
              if(len_inputNames<>len_inputValues):
-                 log.error ("=====An error occured at simulationTime={!s}. "\
+                 log.error ("=====exchange(): An error occured at simulationTime={!s}. "\
                          "Length of inputNames={!s} ({!s}) does not match " \
                          "length of input values={!s} ({!s}).".format(simulationTime, inputNames,
                          len_inputNames, inputValues, len_inputValues))
                  raise
              setData(projectPath, tuple(inputNames), tuple(inputValues), simulationTime)
          else:
-             print("")
              setData(projectPath, inputNames, inputValues, simulationTime)
-         log.info("=====The input variables={!s} were successfully set.".format(inputNames))
+         log.info("=====exchange(): The input variables={!s} were successfully set.".format(inputNames))
 
      if (outputNames is not None):
-         log.info ("=====Ready to get the output variables={!s} at time={!s}.".format(outputNames, simulationTime))
+         log.info ("=====exchange(): Ready to get the output variables={!s} at time={!s}.".format(outputNames, simulationTime))
          if (isinstance(outputNames, list)):
              outputValues = getData(projectPath, tuple(outputNames), simulationTime)
              len_outputNames = len(outputNames)
              len_outputValues = len(outputValues)
              if(len_outputNames<>len_outputValues):
-                 log.error ("=====An error occured at simulationTime={!s}. "\
+                 log.error ("=====exchange(): An error occured at simulationTime={!s}. "\
                          "Length of outputNames={!s} ({!s}) does not match " \
                          "length of output values={!s} ({!s}).".format(simulationTime, outputNames,
                          len_outputNames, outputValues, len_outputValues))
@@ -521,13 +517,13 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
              outputValues = getData(projectPath, tuple(outputNames), simulationTime)
          else:
              outputValues = getData(projectPath, outputNames, simulationTime)
-         log.info("=====The output variables={!s} were successfully retrieved.".format(outputNames))
+         log.info("=====exchange(): The output variables={!s} were successfully retrieved.".format(outputNames))
 
          if(outputValues is None):
-             log.error ("=====The output values for outputNames={!=} is empty at time={!s}.".
+             log.error ("=====exchange(): The output values for outputNames={!=} is empty at time={!s}.".
                     format(outputNames, simulationTime))
              raise
-         log.info ("=====The values of the output variables:{!s} are equal {!s} at time={!s}.".format(outputNames,
+         log.info ("=====exchange(): The values of the output variables:{!s} are equal {!s} at time={!s}.".format(outputNames,
                  outputValues, simulationTime))
      # Convert the output values to float so they can be used on the receiver side.
      retOutputValues = []
