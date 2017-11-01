@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3. OPAL-RT FMU &#8212; FMU Export of the Opal-RT Simulator User Guide</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="4. Help" href="help.html" />
+    <link rel="prev" title="2. Requirements" href="installation.html" /> 
+  </head>
+  <body role="document">
+<div class="headerStyle">
+<img src="_static/lbl-logo.png" alt="LBL logo" />
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="help.html" title="4. Help"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="2. Requirements"
+             accesskey="P">previous</a> |</li>
+    <a href="index.html">User Guide</a></li>
+    </br>
+<!--    
+        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of the Opal-RT Simulator User Guide</a> &#187;</li> -->
+ 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">2. Requirements</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="help.html"
+                        title="next chapter">4. Help</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/bestPractice.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="opal-rt-fmu">
+<span id="bestpractice"></span><h1>3. OPAL-RT FMU<a class="headerlink" href="#opal-rt-fmu" title="Permalink to this headline">¶</a></h1>
+<p>This section explains how to export the RT-LAB API of OPAL-RT as an FMU.</p>
+<p>To export the Python RT-LAB API,</p>
+<ol class="arabic">
+<li><p class="first">edit the XML template <code class="docutils literal"><span class="pre">SimulatorModeldescritpion.xml</span></code> provided
+in the <code class="docutils literal"><span class="pre">utilities</span></code> of the distribution of <code class="docutils literal"><span class="pre">SimulatorToFMU</span></code></p>
+<blockquote>
+<div><p>to specify the inputs, and outputs of the FMU.</p>
+</div></blockquote>
+</li>
+<li><p class="first">run <code class="docutils literal"><span class="pre">SimulatorToFMU.py</span></code> to create the RT-LAB API FMU with</p>
+</li>
+</ol>
+<blockquote>
+<div><div class="highlight-none"><div class="highlight"><pre># Windows:
+&gt; python parser\\SimulatorToFMU.py -s opalrtfmu\\utilities\\simulator_wrapper.py
+</pre></div>
+</div>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>To use the FMU, the path to the configuration file of OPAL-RT will be set in the FMU.
+This file has the extension <code class="docutils literal"><span class="pre">.llp</span></code> and specifies the location of the
+OPAL-RT simulink grid model. Examples of such files can be found in the xamples folders
+of RT-LAB.
+The path to the configuration file will be either set by the master algorithm which imports the
+RT-LAB API FMU, or provided as <code class="docutils literal"><span class="pre">-c</span></code> argument for SimulatorToFMU.py. See the user guide of SimulatorToFMU
+for a list of arguments of SimulatorToFMU.</p>
+<p class="last">To use the FMU, the content of the <code class="docutils literal"><span class="pre">.binaries.zip</span></code> and the <code class="docutils literal"><span class="pre">.scripts.zip</span></code> folders need to be
+added to the PATH and the PYTHONPATH as described in the SimulatorToFMU user guide.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="help.html" title="4. Help"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="2. Requirements"
+             >previous</a> |</li>
+    <a href="index.html">User Guide</a></li>
+    </br>
+<!--    
+        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of the Opal-RT Simulator User Guide</a> &#187;</li> -->
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>
