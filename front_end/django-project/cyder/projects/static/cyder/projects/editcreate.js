@@ -96,9 +96,11 @@ class ProjectEdit extends View {
         <div class="form-group">
             <input data-name="name" type="text" class="form-control" placeholder="Name" aria-label="Name">
         </div>
-        <div class="form-group">
-            <span data-childview="select-model"></span>
-        </div>
+        ${ IF(this._isNew, () =>
+            `<div class="form-group">
+                <span data-childview="select-model"></span>
+            </div>`
+        )}
         <div data-childview="leaflet-map" style="height: 70vh; margin: 1rem 0 1rem 0;"></div>
         <div class="form-group">
             ${ IF(this._isNew, () =>
