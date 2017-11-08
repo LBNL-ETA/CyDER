@@ -109,8 +109,8 @@
             this._lookup = lookup;
 
             this._areAllLoaded = false;
-            this._res = {};
-            this._resProm = {};
+            this._res = new Map();
+            this._resProm = new Map();
         }
         _getLookupUrl(lookup) {
             return `${this._url}${lookup}/`;
@@ -121,41 +121,44 @@
             if(!(this._resProm instanceof Promise)) {
                 this._resProm = CyderAPI.rest('GET', this._url).then((resArray) => {
                     this._areAllLoaded = true;
-                    this._resProm = {};
-                    return this._res = resArray.reduce((obj, res) => {obj[res[this._lookup]] = res; return obj;}, {});
+                    this._resProm = new Map();
+                    return this._res = new Map(resArray.map((res) => [res[this._lookup], res]));
                     });
             }
             return this._resProm;
         }
         get(lookup, force = false) {
-            let res = this._res[lookup];
+            let res = this._res.get(lookup);
             if(res && !force)
                 return res;
             if(this._resProm instanceof Promise)
-                return this._resProm.then((resArray) => resArray[lookup]);
-            if(!(this._resProm[lookup] instanceof Promise)) {
-                this._resProm[lookup] = CyderAPI.rest('GET', this._getLookupUrl(lookup)).then((res) => {
-                    delete this._resProm[lookup];
-                    return this._res[lookup] = res;
-                    });
+                return this._resProm.then((resMap) => resMap.get(lookup));
+            if(!(this._resProm.get(lookup) instanceof Promise)) {
+                this._resProm.set(lookup, CyderAPI.rest('GET', this._getLookupUrl(lookup)).then((res) => {
+                    this._resProm.delete(lookup);
+                    this._res.set(lookup, res)
+                    return res;
+                }));
             }
-            return this._resProm[lookup];
+            return this._resProm.get(lookup);
         }
     };
     Res.WriteMixin = (superclass) => class extends superclass {
         async create(res) {
             let newRes = await CyderAPI.rest('POST', this._url, res);
-            return this._res[newRes[this._lookup]] = newRes;
+            this._res.set(newRes[this._lookup], newRes)
+            return newRes;
         }
         async update(lookup, res) {
             let newRes = await CyderAPI.rest('PATCH', this._getLookupUrl(lookup), res);
-            return this._res[lookup] = newRes;
+            this._res.set(lookup, newRes)
+            return newRes;
         }
     };
     Res.DeleteMixin = (superclass) => class extends superclass {
         async delete(lookup) {
             await CyderAPI.rest('DELETE', this._getLookupUrl(lookup));
-            delete this._res[lookup];
+            this._res.delete(lookup);
         }
     };
     class NestedRes {
@@ -169,14 +172,16 @@
             this._lookup = lookup;
             this._ResClass = ResClass;
 
-            this._nestedRes = {};
+            this._nestedRes = new Map();
             return new Proxy(this, NestedRes.handler);
         }
         _getResObject(...args) {
             let url = this._parent._getLookupUrl(...args);
-            let nestedRes = this._nestedRes[url];
-            if(!nestedRes)
-                return this._nestedRes[url] = new this._ResClass(url + this._subURL, this._lookup);
+            let nestedRes = this._nestedRes.get(url);
+            if(!nestedRes) {
+                nestedRes = new this._ResClass(url + this._subURL, this._lookup);
+                this._nestedRes.set(url, nestedRes);
+            }
             return nestedRes;
         }
         _getLookupUrl(...args) {

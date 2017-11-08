@@ -21,8 +21,8 @@ class SelectModel extends View {
         <select data-name="select" data-on="change:onchange" class="custom-select">
             ${ IF(this.allowEmpty, () => `<option value=""></option>` )}
             ${ IF(!(models instanceof Promise), () =>
-                FOREACH(models, (model) =>
-                    `<option value"${model}">${model}</option>`
+                FOREACH(models.keys(), (modelName) =>
+                    `<option value"${modelName}">${modelName}</option>`
                 )
             )}
         </select>`;
@@ -163,7 +163,7 @@ class ModelViewer extends View {
             history.replaceState(null, null, this.url);
         } else {
             Promise.resolve(CyderAPI.Model.getAll()).then((models) =>
-                this.child('model-info').model = models[this._modelName]);
+                this.child('model-info').model = models.get(this._modelName));
             history.replaceState(null, null, `${this.url}${this._modelName}/`);
         }
         this.child('select-model').modelName = this._modelName;

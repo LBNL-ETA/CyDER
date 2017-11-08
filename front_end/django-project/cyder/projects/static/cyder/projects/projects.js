@@ -7,8 +7,8 @@ class ProjectList extends View {
     async update() {
         let projects = await CyderAPI.Project.getAll(true);
         this._childs = {};
-        for(let projectId in projects)
-            this._childs[`project-${projectId}`] = new ProjectItem(projects[projectId], this);
+        for(let [projectId, project] of projects)
+            this._childs[`project-${projectId}`] = new ProjectItem(project, this);
         this.render();
     }
     get _template() {
@@ -27,7 +27,7 @@ class ProjectList extends View {
                 ${ IF(projects instanceof Promise, () =>
                     `<tr><th></th><td>Loading...</td></tr>`
                 , () =>
-                    FOREACH(projects, (projectId) =>
+                    FOREACH(projects.keys(), (projectId) =>
                         `<tr data-childview="project-${projectId}"></tr>`
                     )
                 )}
