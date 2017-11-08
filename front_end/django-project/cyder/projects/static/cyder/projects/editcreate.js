@@ -69,6 +69,9 @@ class ProjectEdit extends View {
         }
         e.target.classList.remove('disabled');
     }
+    _cancel(e) {
+        this.loadProject(this._project.id);
+    }
     render() {
         super.render();
         if(this._isNew)
@@ -88,7 +91,8 @@ class ProjectEdit extends View {
         ${ IF(this._isNew, () =>
             `<button type="button" data-on="click:_create" class="btn btn-primary">Create</button>`
         , () =>
-            `<button type="button" data-on="click:_save" class="btn btn-primary">Save</button>`
+            `<button type="button" data-on="click:_save" class="btn btn-primary">Save</button>
+            <button type="button" data-on="click:_cancel" class="btn btn-primary">Cancel</button>`
         )}
         `;
     }
