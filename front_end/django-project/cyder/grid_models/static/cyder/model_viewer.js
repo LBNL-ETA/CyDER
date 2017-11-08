@@ -291,10 +291,14 @@ async function createModelLayer(modelName, onEachFeature = ()=>{}) {
         onEachFeature
     });
 }
-/*async function createPVLayer(modelName, onEachFeature = ()=>{}) {
-    let pvs = await CyderAPI.Device.getAll(modelName)
+async function createPVLayer(modelName, onEach = ()=>{}) {
+    let pvs = Array.from((await CyderAPI.Device.getAll(modelName)).values())
         .filter((device) => device.device_type == 39);
     let layer = L.layerGroup([]);
-    for(device)
+    for(let pv of pvs) {
+        let marker = L.circleMarker([pv.latitude, pv.longitude]);
+        onEach(pv, marker);
+        layer.addLayer(marker);
+    }
     return layer;
-}*/
+}

@@ -23,12 +23,16 @@ class ProjectEdit extends View {
             settings: {},
         };
         this._isNew = true;
-        this.child('select-model').ready.then();
+        this.child('select-model').ready.then(() =>
+            this._loadMapLayers(this.child('select-model').modelName));
         this.render();
     }
-    _loadMapLayers(modelName) {
+    async _loadMapLayers(modelName) {
         this.child('leaflet-map').removeLayers();
-        this.child('leaflet-map').addLayer(createModelLayer(modelName), 'base');
+        let modelLayer = createModelLayer(modelName);
+        let pvLayer = createPVLayer(modelName);
+        await this.child('leaflet-map').addLayer(modelLayer, 'base');
+        this.child('leaflet-map').addLayer(pvLayer, 'pvs');
         this.child('leaflet-map').fitBounds('base');
     }
     _writeProject() {
