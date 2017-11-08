@@ -3,15 +3,18 @@ class ProjectEdit extends View {
         super(el, 'div');
         this._childs['select-model'] = new SelectModel(null, false);
         this.child('select-model').onchange = (e) => {
+            this._addPvMap = new Map();
             this._loadMapLayers(e.target.value);
         };
         this._childs['leaflet-map'] = new LeafletMap();
         this._project = null;
+        this._addPvMap;
         this._isNew = null;
         this.child('select-model').ready.then()
     }
     async loadProject(projectId) {
         this._project = await CyderAPI.Project.get(projectId);
+        this._addPvMap = new Map(this._project.settings.addPv.map(obj => [obj.device, obj.power]));
         this._isNew = false;
         this._loadMapLayers(this._project.settings.model);
         this.render();
@@ -22,6 +25,7 @@ class ProjectEdit extends View {
             name: '',
             settings: {},
         };
+        this._addPvMap = new Map();
         this._isNew = true;
         this.child('select-model').ready.then(() =>
             this._loadMapLayers(this.child('select-model').modelName));
@@ -30,7 +34,10 @@ class ProjectEdit extends View {
     async _loadMapLayers(modelName) {
         this.child('leaflet-map').removeLayers();
         let modelLayer = createModelLayer(modelName);
-        let pvLayer = createPVLayer(modelName);
+        let addPVPopup = (pv, marker) => {
+            marker.bindPopup((new PVPopup(pv.device_number, marker, this._addPvMap)).el);
+        };
+        let pvLayer = createPVLayer(modelName, addPVPopup);
         await this.child('leaflet-map').addLayer(modelLayer, 'base');
         this.child('leaflet-map').addLayer(pvLayer, 'pvs');
         this.child('leaflet-map').fitBounds('base');
@@ -38,6 +45,7 @@ class ProjectEdit extends View {
     _writeProject() {
         this._project.name = this._html.name.value;
         this._project.settings.model = this.child('select-model').modelName;
+        this._project.settings.addPv = Array.from(this._addPvMap).map(([device, power]) => ({device, power}));
     }
     async _save(e) {
         if(e.target.classList.contains('disabled'))
@@ -92,12 +100,56 @@ class ProjectEdit extends View {
             <span data-childview="select-model"></span>
         </div>
         <div data-childview="leaflet-map" style="height: 70vh; margin: 1rem 0 1rem 0;"></div>
-        ${ IF(this._isNew, () =>
-            `<button type="button" data-on="click:_create" class="btn btn-primary">Create</button>`
-        , () =>
-            `<button type="button" data-on="click:_save" class="btn btn-primary">Save</button>
-            <button type="button" data-on="click:_cancel" class="btn btn-primary">Cancel</button>`
-        )}
+        <div class="form-group">
+            ${ IF(this._isNew, () =>
+                `<button type="button" data-on="click:_create" class="btn btn-primary">Create</button>`
+            , () =>
+                `<button type="button" data-on="click:_save" class="btn btn-primary">Save</button>
+                <button type="button" data-on="click:_cancel" class="btn btn-primary">Cancel</button>`
+            )}
+        </div>
         `;
+    }
+}
+
+class PVPopup extends View {
+    constructor(pvNumber, marker, addPvMap) {
+        super(null, 'div');
+        this._pvNumber = pvNumber;
+        this._marker = marker;
+        this._addPvMap = addPvMap;
+        this.render();
+    }
+    _set(e) {
+        let power = Number(this._html.power.value);
+        if(Number.isNaN(power) || this._html.power.value === '') {
+            $.notify({ message: 'Power must be a number'}, {type: 'danger'});
+            return;
+        }
+        this._addPvMap.set(this._pvNumber, power);
+        this.render();
+    }
+    _remove(e) {
+        this._addPvMap.delete(this._pvNumber);
+        this.render();
+    }
+    render() {
+        super.render();
+        if(this._addPvMap.has(this._pvNumber)) {
+            this._marker.setStyle({color: 'green'});
+            this._html.power.value = this._addPvMap.get(this._pvNumber);
+        }
+        else
+            this._marker.setStyle({color: '#3388ff'});
+    }
+    get _template() {
+        return `
+        <div class="form-group" style="width:200px;">
+            <input data-name="power" type="number" class="form-control form-control-sm" placeholder="Power" aria-label="Power">
+        </div>
+        <button type="button" data-on="click:_set" class="btn btn-primary btn-sm">Set</button>
+        ${ IF(this._addPvMap.has(this._pvNumber), () =>
+            `<button type="button" data-on="click:_remove" class="btn btn-primary btn-sm">Remove</button>`
+        )}`;
     }
 }
