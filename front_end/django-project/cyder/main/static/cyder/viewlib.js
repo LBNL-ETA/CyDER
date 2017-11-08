@@ -46,15 +46,20 @@ class View {
     }
 }
 
-function FOREACH(array, func) {
-    if (array instanceof Array)
-        return array.map(func).join('');
-    else {
-        let res = '';
-        for (let key in array)
-            res += func(key, array[key]);
-        return res;
+function FOREACH(object, func) {
+    if(object instanceof Array)
+        return object.map(func).join('');
+    if (typeof object[Symbol.iterator] === 'function') {
+        let result = '';
+        for (let obj of object)
+            result += func(obj);
+        return result;
     }
+
+    let result = '';
+    for (let key in object)
+        result += func(key, object[key]);
+    return result;
 }
 function IF(cond, ifTemplate, elseTemplate) {
     if (cond)
