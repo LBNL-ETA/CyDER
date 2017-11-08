@@ -35,7 +35,7 @@ class LeafletMap extends View {
     constructor(el) {
         super(el, 'div');
         LeafletMap.addStyle();
-        this._layers = {};
+        this._layers = new Map();
         this._loadingLayers = 0;
         this.render();
     }
@@ -64,37 +64,37 @@ class LeafletMap extends View {
     }
     get map() { return this._map; }
     async addLayer(layer, name) {
-        this._layers[name] = layer;
+        this._layers.set(name, layer);
         if(layer instanceof Promise) {
             let layerProm = layer;
             this._updateLoadingLayers(+1);
             layer = await layerProm;
-            if(this._layers[name] !== layerProm)
+            if(this._layers.get(name) !== layerProm)
                 return false; // The layer have been removed while loading
-            this._layers[name] = layer;
+            this._layers.set(name, layer);
             this._updateLoadingLayers(-1);
         }
         layer.addTo(this._map);
         return true;
     }
     removeLayer(name) {
-        let layer = this._layers[name];
-        delete this._layers[name];
+        let layer = this._layers.get(name);
+        this._layers.delete(name);
         if(layer instanceof Promise)
             this._updateLoadingLayers(-1);
         else
             layer.remove();
     }
     removeLayers() {
-        for(let layerName in this._layers)
+        for(let layerName of this._layers.keys())
             this.removeLayer(layerName);
     }
     async fitBounds(name) {
-        let layer = this._layers[name];
+        let layer = this._layers.get(name);
         if(layer instanceof Promise) {
             let layerProm = layer;
             layer = await layerProm;
-            if(layer !== this._layers[name])
+            if(layer !== this._layers.get(name))
                 return false; // The layer have been removed while loading
         }
         this._map.fitBounds(layer.getBounds());
