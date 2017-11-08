@@ -1,41 +1,44 @@
 class ProjectResults extends View {
-    constructor(el) {
+    constructor(projectId, el) {
         super(el, 'div');
-        this.project = null;
+        this.loadProject(projectId);
     }
-    _getProject() {
-        if(this._projectProm)
-            return this._projectProm;
+    loadProject(projectId, force = false) {
+        this._projectId = projectId;
+        let prom = CyderAPI.Project.get(this._projectId, force);
+        if(prom instanceof Promise)
+            this._ready = prom.then(() => { this.render() });
         else
-            return Promise.resolve(this.project);
-    }
-    loadProject(projectId) {
-        this._projectProm = (async () => {
-            this.project = await CyderAPI.smartRest('GET', `/api/projects/${projectId}/`);
-            this._projectProm = null;
-        })();
-        return this._getProject().then(() => { this.render() });
+            this._ready = Promise.resolve();
+        this.render();
     }
     get _template() {
+        let project = CyderAPI.Project.get(this._projectId);
         return `
         <h1>Results</h1>
-        <h4>Project: ${this.project.name}</h4>
-        <br>
-        <table class="table">
-            <thead>
-                <tr>
-                  <th scope="col">Property</th>
-                  <th scope="col">Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${ FOREACH(this.project.results, (prop, value) =>
-                    `<tr>
-                        <td>${prop}</td>
-                        <td>${value}</td>
-                    </tr>`
-                )}
-            </tbody>
-        </table>`;
+        ${ IF(project instanceof Promise, () =>
+            `<br>
+            Loading...`
+        , () =>
+            `<h4>Project: ${project.name}</h4>
+            <br>
+            <table class="table">
+                <thead>
+                    <tr>
+                      <th scope="col">Property</th>
+                      <th scope="col">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${ FOREACH(project.results, (prop, value) =>
+                        `<tr>
+                            <td>${prop}</td>
+                            <td>${value}</td>
+                        </tr>`
+                    )}
+                </tbody>
+            </table>`
+        )}
+        `;
     }
 }

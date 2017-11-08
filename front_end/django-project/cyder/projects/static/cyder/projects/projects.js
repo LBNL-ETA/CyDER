@@ -1,28 +1,18 @@
 class ProjectList extends View {
     constructor(el) {
         super(el, 'div');
-        this.projects = [];
         this.update();
         this.render();
     }
-    _getProjects() {
-        if(this._projectsProm)
-            return this._projectsProm;
-        return this._projectsProm = (async () => {
-            this.projects = await CyderAPI.smartRest('GET', `/api/projects/`);
-            return this.projects;
-        })();
-    }
-    update() {
-        this._projectsProm = null;
+    async update() {
+        let projects = await CyderAPI.Project.getAll(true);
         this._childs = {};
-        return this._getProjects().then((projects) => {
-            for(let project of projects)
-                this._childs[`project-${project.id}`] = new ProjectItem(project);
-            this.render();
-        });
+        for(let projectId in projects)
+            this._childs[`project-${projectId}`] = new ProjectItem(projects[projectId], this);
+        this.render();
     }
     get _template() {
+        let projects = CyderAPI.Project.getAll();
         return `
         <table class="table table-hover">
             <thead>
@@ -34,8 +24,12 @@ class ProjectList extends View {
                 </tr>
             </thead>
             <tbody>
-                ${ FOREACH(this.projects, (project) =>
-                    `<tr data-childview="project-${project.id}"></tr>`
+                ${ IF(projects instanceof Promise, () =>
+                    `<tr><th></th><td>Loading...</td></tr>`
+                , () =>
+                    FOREACH(projects, (projectId) =>
+                        `<tr data-childview="project-${projectId}"></tr>`
+                    )
                 )}
             </tbody>
         </table>`;
@@ -43,18 +37,19 @@ class ProjectList extends View {
 }
 
 class ProjectItem extends View {
-    constructor(project, el) {
+    constructor(project, parentList, el) {
         super(el, 'tr');
         this.project = project;
+        this.parentList = parentList;
         this.render();
     }
     async _onRun(e) {
-        await CyderAPI.smartRest('POST', `/api/projects/${this.project.id}/run/`);
-        this.parent.update();
+        await CyderAPI.Project.run(this.project.id);
+        this.parentList.update();
     }
     async _onRevoke(e) {
-        await CyderAPI.smartRest('POST', `/api/projects/${this.project.id}/revoke/`);
-        this.parent.update();
+        await CyderAPI.Project.revoke(this.project.id);
+        this.parentList.update();
     }
     _onResults(e) {
         window.location.href = `./results/${this.project.id}/`
@@ -63,10 +58,11 @@ class ProjectItem extends View {
         window.location.href = `./edit/${this.project.id}/`
     }
     async _onDelete(e) {
-        await CyderAPI.smartRest('DELETE', `/api/projects/${this.project.id}/`);
-        this.parent.update();
+        await CyderAPI.Project.delete(this.project.id);
+        this.parentList.update();
     }
-    get _template() {
+    render() {
+        super.render();
         let rowclass = '';
         switch(this.project.status) {
             case 'Succeed':
@@ -83,7 +79,8 @@ class ProjectItem extends View {
                 break;
         }
         this._html.el.className = rowclass;
-
+    }
+    get _template() {
         return `
         <th scope="row">${this.project.id}</th>
         <td>${this.project.name}</td>

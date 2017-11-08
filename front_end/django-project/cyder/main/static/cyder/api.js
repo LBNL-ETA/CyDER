@@ -17,7 +17,7 @@
                     token = xhr.response.token;
                     resolve();
                 } else {
-                    reject(xhr);
+                    reject(new CyderAPI.Error(xhr));
                 }
             };
 
@@ -60,16 +60,6 @@
         });
     };
 
-    /* Deprecated */ CyderAPI.smartRest = async function(...args) {
-        try {
-            return await CyderAPI.rest(...args);
-        } catch(e) {
-            if(e instanceof CyderAPI.Error)
-                e.notify();
-            throw e;
-        }
-    };
-
     CyderAPI.Error = class extends Error {
         constructor(xhr) {
             super();
@@ -104,7 +94,7 @@
                 }
                 break;
             case 500:
-                $.notify({title: `<strong>The server is in trouble :'(</strong><br>`, message: `It sounds really bad but some really devoted<br>people are working hard on it !`},{type: 'danger'});
+                $.notify({title: `<strong>The server is in trouble :'(</strong><br>`, message: `It sounds really bad but a really devoted dude is working hard on it !`},{type: 'danger'});
                 break;
             default:
                 $.notify({title: `<strong>${this.xhr.statusText}:</strong>`, message: this.xhr.response.detail},{type: 'danger'});
@@ -113,16 +103,111 @@
         }
     }
 
-    let modelsProm;
-    CyderAPI.getModels = function(force = false) {
-        if(this.modelsProm && !force)
-            return this.modelsProm;
-        return this.modelsProm = CyderAPI.rest('GET', '/api/models/');
+    class Res {
+        constructor(url, lookup) {
+            this._url = url;
+            this._lookup = lookup;
+
+            this._areAllLoaded = false;
+            this._res = {};
+            this._resProm = {};
+        }
+        _getLookupUrl(lookup) {
+            return `${this._url}${lookup}/`;
+        }
+        getAll(force = false) {
+            if(this._areAllLoaded === true && !force)
+                return this._res;
+            if(!(this._resProm instanceof Promise)) {
+                this._resProm = CyderAPI.rest('GET', this._url).then((resArray) => {
+                    this._areAllLoaded = true;
+                    this._resProm = {};
+                    return this._res = resArray.reduce((obj, res) => {obj[res[this._lookup]] = res; return obj;}, {});
+                    });
+            }
+            return this._resProm;
+        }
+        get(lookup, force = false) {
+            let res = this._res[lookup];
+            if(res && !force)
+                return res;
+            if(this._resProm instanceof Promise)
+                return this._resProm.then((resArray) => resArray[lookup]);
+            if(!(this._resProm[lookup] instanceof Promise)) {
+                this._resProm[lookup] = CyderAPI.rest('GET', this._getLookupUrl(lookup)).then((res) => {
+                    delete this._resProm[lookup];
+                    return this._res[lookup] = res;
+                    });
+            }
+            return this._resProm[lookup];
+        }
     };
-    CyderAPI.getModelsDict = function(force = false) {
-        return CyderAPI.getModels(force).then((models) =>
-            models.reduce((obj, model) => {obj[model.name] = model; return obj;}, {})
-        );
+    Res.WriteMixin = (superclass) => class extends superclass {
+        async create(res) {
+            let newRes = await CyderAPI.rest('POST', this._url, res);
+            return this._res[newRes[this._lookup]] = newRes;
+        }
+        async update(lookup, res) {
+            let newRes = await CyderAPI.rest('PATCH', this._getLookupUrl(lookup), res);
+            return this._res[lookup] = newRes;
+        }
+    };
+    Res.DeleteMixin = (superclass) => class extends superclass {
+        async delete(lookup) {
+            await CyderAPI.rest('DELETE', this._getLookupUrl(lookup));
+            delete this._res[lookup];
+        }
+    };
+    class NestedRes {
+        constructor(parent, subURL, lookup, ResClass = Res) {
+            this._parent = parent; // Instance of Res or NestedRes
+            if(this._parent instanceof Res)
+                this._depth = 1;
+            else if(this._parent instanceof NestedRes)
+                this._depth = this._parent._depth + 1;
+            this._subURL = subURL;
+            this._lookup = lookup;
+            this._ResClass = ResClass;
+
+            this._nestedRes = {};
+            return new Proxy(this, NestedRes.handler);
+        }
+        _getResObject(...args) {
+            let url = this._parent._getLookupUrl(...args);
+            let nestedRes = this._nestedRes[url];
+            if(!nestedRes)
+                return this._nestedRes[url] = new this._ResClass(url + this._subURL, this._lookup);
+            return nestedRes;
+        }
+        _getLookupUrl(...args) {
+            let lookup = args.pop();
+            return `${this._parent._getLookupUrl(...args)}${this._subURL}${lookup}/`;
+        }
+    }
+    NestedRes.handler = {
+        get: function(target, prop) {
+            if(prop[0] === '_')
+                return target[prop];
+            return function(...args) {
+                nestedResArgs = args.slice(0, target._depth)
+                targetArgs = args.slice(target._depth);
+                return target._getResObject(...nestedResArgs)[prop](...targetArgs);
+            };
+        },
+        getPrototypeOf: target => NestedRes.prototype,
     };
 
+    class ProjectRes extends Res.DeleteMixin(Res.WriteMixin(Res)) {
+        run(lookup) {
+            return CyderAPI.rest('POST', `${this._getLookupUrl(lookup)}run/`);
+        }
+        revoke(lookup) {
+            return CyderAPI.rest('POST', `${this._getLookupUrl(lookup)}revoke/`);
+        }
+    }
+
+    CyderAPI.Model = new Res('/api/models/', 'name');
+    CyderAPI.Node = new NestedRes(CyderAPI.Model, 'nodes/', 'node_id');
+    CyderAPI.Device = new NestedRes(CyderAPI.Model, 'devices/', 'device_number');
+    CyderAPI.Project = new ProjectRes('/api/projects/', 'id');
 })();

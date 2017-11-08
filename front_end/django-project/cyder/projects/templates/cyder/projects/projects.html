@@ -23,8 +23,7 @@
         let projectList;
         window.onload = function() {
             CyderAPI.auth();
-            projectList = new ProjectList();
-            projectList.emplace(document.querySelector('#project-list'));
+            projectList = new ProjectList(document.querySelector('#project-list'));
             let update = () => { projectList.update(); setTimeout(update, 5000); }
             setTimeout(update, 5000);
         }

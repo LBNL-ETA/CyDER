@@ -17,9 +17,9 @@
         let projectResults;
         window.onload = function() {
             CyderAPI.auth();
-            projectResults = new ProjectResults();
-            projectResults.emplace(document.querySelector('#project-results'));
-            projectResults.loadProject("{{ project_id|escapequotes|safe }}");
+            projectResults = new ProjectResults(
+                "{{ project_id|escapequotes|safe }}",
+                document.querySelector('#project-results'));
         }
     </script>
 {% endblock script %}
