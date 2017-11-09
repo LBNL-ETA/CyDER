@@ -2,32 +2,19 @@
 {% load static %}
 {% load escapequotes %} {# Cf. cyder/main/templatetags/escapedoublequote.py #}
 
-{% block css %}
-    <link rel="stylesheet" href="{% static 'cyder/animate.css' %}">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
-        integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
-        crossorigin=""/>
-{% endblock css %}
-
 {% block content %}
-
-    <div id="project-edit"></div>
-
+    <div id="project-creator"></div>
 {% endblock content %}
 
 {% block script %}
-    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
-        integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
-        crossorigin=""></script>
     <script src="{% static 'cyder/model_viewer.js' %}"></script>
-    <script src="{% static 'cyder/projects/editcreate.js' %}"></script>
+    <script src="{% static 'cyder/projects/create.js' %}"></script>
     <script>
         document.querySelector(".navbar [data-name='projects']").className += " active";
-        let projectEdit;
+        let projectCreator;
         window.onload = function() {
             CyderAPI.auth();
-            projectEdit = new ProjectEdit(document.querySelector('#project-edit'));
-            projectEdit.newProject();
+            projectCreator = new ProjectCreator(document.querySelector('#project-creator'));
         }
     </script>
 {% endblock script %}
