@@ -31,15 +31,15 @@ class ProjectEdit extends View {
             this._loadMapLayers(this.child('select-model').modelName));
         this.render();
     }
-    async _loadMapLayers(modelName) {
+    _loadMapLayers(modelName) {
         this.child('leaflet-map').removeLayers();
         let modelLayer = createModelLayer(modelName);
         let addPVPopup = (pv, marker) => {
             marker.bindPopup((new PVPopup(pv.device_number, marker, this._addPvMap)).el);
         };
         let pvLayer = createPVLayer(modelName, addPVPopup);
-        await this.child('leaflet-map').addLayer(modelLayer, 'base');
-        this.child('leaflet-map').addLayer(pvLayer, 'pvs');
+        this.child('leaflet-map').addLayer(modelLayer, 'base');
+        this.child('leaflet-map').addLayer(pvLayer, 'pvs', true);
         this.child('leaflet-map').fitBounds('base');
     }
     _writeProject() {

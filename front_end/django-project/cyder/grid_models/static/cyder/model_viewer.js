@@ -37,6 +37,7 @@ class LeafletMap extends View {
         LeafletMap.addStyle();
         this._layers = new Map();
         this._loadingLayers = 0;
+        this._lastLayer = null;
         this.render();
     }
     _updateLoadingLayers(val) {
@@ -63,23 +64,35 @@ class LeafletMap extends View {
         this._map.invalidateSize();
     }
     get map() { return this._map; }
-    async addLayer(layer, name) {
-        this._layers.set(name, layer);
-        if(layer instanceof Promise) {
-            let layerProm = layer;
+    addLayer(layer, name, keepOrder = false) {
+        if(this._layers.has(name))
+            throw new Error("A layer with this name already ");
+
+        let isAddedProm = (async () => {
             this._updateLoadingLayers(+1);
-            layer = await layerProm;
-            if(this._layers.get(name) !== layerProm)
+            if(keepOrder && this._lastLayer !== null)
+                await this._layers.get(this._lastLayer);
+            layer = await layer;
+            if(isAddedProm !== undefined && this._layers.get(name) !== isAddedProm)
                 return false; // The layer have been removed while loading
+            layer.addTo(this._map);
             this._layers.set(name, layer);
             this._updateLoadingLayers(-1);
-        }
-        layer.addTo(this._map);
-        return true;
+            return true;
+        })();
+        this._lastLayer = name;
+        if(this._layers.has(name))
+            return true;
+        this._layers.set(name, isAddedProm);
+        return isAddedProm;
     }
     removeLayer(name) {
         let layer = this._layers.get(name);
         this._layers.delete(name);
+        if(this._lastLayer === name) {
+            this._lastLayer = null;
+            for(let name of this._layers.keys()) this._lastLayer = name;
+        }
         if(layer instanceof Promise)
             this._updateLoadingLayers(-1);
         else
@@ -92,10 +105,10 @@ class LeafletMap extends View {
     async fitBounds(name) {
         let layer = this._layers.get(name);
         if(layer instanceof Promise) {
-            let layerProm = layer;
-            layer = await layerProm;
-            if(layer !== this._layers.get(name))
+            let isAddedProm = layer;
+            if((await isAddedProm) === false)
                 return false; // The layer have been removed while loading
+            layer = this._layers.get(name);
         }
         this._map.fitBounds(layer.getBounds());
         return true;
