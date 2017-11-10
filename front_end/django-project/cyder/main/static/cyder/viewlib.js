@@ -1,3 +1,5 @@
+'use strict';
+
 class View {
     constructor(el, tag = 'div') {
         this._html = {};

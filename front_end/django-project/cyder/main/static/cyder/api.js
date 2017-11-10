@@ -1,3 +1,5 @@
+'use strict';
+
 (function() {
     window.CyderAPI = {};
 
@@ -196,8 +198,8 @@
             if(prop[0] === '_')
                 return target[prop];
             return function(...args) {
-                nestedResArgs = args.slice(0, target._depth)
-                targetArgs = args.slice(target._depth);
+                let nestedResArgs = args.slice(0, target._depth)
+                let targetArgs = args.slice(target._depth);
                 return target._getResObject(...nestedResArgs)[prop](...targetArgs);
             };
         },

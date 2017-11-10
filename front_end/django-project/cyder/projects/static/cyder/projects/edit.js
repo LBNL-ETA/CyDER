@@ -1,3 +1,5 @@
+'use strict';
+
 class ProjectEditor extends View {
     constructor(el) {
         super(el, 'div');

@@ -1,3 +1,5 @@
+'use strict';
+
 class SelectModel extends View {
     constructor(el, allowEmpty = true) {
         super(el, 'span');

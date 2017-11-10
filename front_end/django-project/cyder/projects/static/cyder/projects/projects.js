@@ -1,3 +1,5 @@
+'use strict';
+
 class ProjectList extends View {
     constructor(el) {
         super(el, 'div');
