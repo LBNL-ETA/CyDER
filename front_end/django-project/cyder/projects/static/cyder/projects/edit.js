@@ -59,7 +59,7 @@ class ProjectEditor extends View {
         <div class="form-group">
             <input data-name="name" type="text" class="form-control" placeholder="Name" aria-label="Name">
         </div>
-        Model: ${this._project.settings.model}<br>
+        Model: ${escapeHtml(this._project.settings.model)}<br>
         <div data-childview="leaflet-map" style="height: 70vh; margin: 1rem 0 1rem 0;"></div>
         <div class="form-group">
             <button type="button" data-on="click:_save" class="btn btn-primary">Save</button>
@@ -93,7 +93,7 @@ class PVPopup extends View {
     render() {
         super.render();
         if(this._addPvMap.has(this._pvNumber)) {
-            this._marker.setStyle({color: 'green'});
+            this._marker.setStyle({color: '#14e54c'});
             this._html.power.value = this._addPvMap.get(this._pvNumber);
         }
         else

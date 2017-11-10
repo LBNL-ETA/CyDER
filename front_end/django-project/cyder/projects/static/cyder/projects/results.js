@@ -20,7 +20,7 @@ class ProjectResults extends View {
             `<br>
             Loading...`
         , () =>
-            `<h4>Project: ${project.name}</h4>
+            `<h4>Project: ${escapeHtml(project.name)}</h4>
             <br>
             <table class="table">
                 <thead>
@@ -32,8 +32,8 @@ class ProjectResults extends View {
                 <tbody>
                     ${ FOREACH(project.results, (prop, value) =>
                         `<tr>
-                            <td>${prop}</td>
-                            <td>${value}</td>
+                            <td>${escapeHtml(prop)}</td>
+                            <td>${escapeHtml(value)}</td>
                         </tr>`
                     )}
                 </tbody>

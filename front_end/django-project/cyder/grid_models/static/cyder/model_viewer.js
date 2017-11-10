@@ -22,7 +22,7 @@ class SelectModel extends View {
             ${ IF(this.allowEmpty, () => `<option value=""></option>` )}
             ${ IF(!(models instanceof Promise), () =>
                 FOREACH(models.keys(), (modelName) =>
-                    `<option value"${modelName}">${modelName}</option>`
+                    `<option value"${escapeHtml(modelName)}">${escapeHtml(modelName)}</option>`
                 )
             )}
         </select>`;
@@ -146,7 +146,7 @@ class OpenModelPopup extends View {
     }
     get _template() {
         return `
-        ${this.modelName}<br>
+        ${escapeHtml(this.modelName)}<br>
         <button class='btn btn-primary btn-sm' data-on="click:onopen">Open</button>`;
     }
 }
@@ -230,9 +230,9 @@ class ModelInfo extends View {
     async _onNodeClick(e) {
         if(!e.target.getPopup()) {
             let node = await CyderAPI.Node.get(this.model.name, e.target._leaflet_id);
-            var display = (num) => (num == null) ? "NA" : num;
+            var display = (num) => (num == null) ? "NA" : escapeHtml(num);
             e.target.bindPopup(
-                `Node ${node.node_id}<br>
+                `Node ${escapeHtml(node.node_id)}<br>
                 VoltageA: ${display(node.VA)}<br>
                 VoltageB: ${display(node.VB)}<br>
                 VoltageC: ${display(node.VC)}`);
@@ -248,7 +248,7 @@ class ModelInfo extends View {
                             Infos
                         </div>
                         <div class="card-body">
-                            Model name: ${ this.model.name }<br>
+                            Model name: ${ escapeHtml(this.model.name) }<br>
                             Nodes count: <span id="nodescount"></span><br>
                             Devices count: <span id="devicescount"></span><br>
                         </div>
@@ -289,7 +289,7 @@ async function createAllModelsLayer(onEachFeature = ()=>{}) {
     });
 }
 async function createModelLayer(modelName, onEachFeature = ()=>{}) {
-    let geojson = await CyderAPI.rest('GET', `/api/models/${modelName}/geojson/`);
+    let geojson = await CyderAPI.rest('GET', `/api/models/${encodeURI(modelName)}/geojson/`);
     let pointToLayer = (feature, latlng) => {
         var circle = L.circle(latlng, {
             color: 'red',

@@ -8,7 +8,7 @@ class ProjectList extends View {
         let projects = await CyderAPI.Project.getAll(true);
         this._childs = {};
         for(let [projectId, project] of projects)
-            this._childs[`project-${projectId}`] = new ProjectItem(project, this);
+            this._childs[`project-${escapeHtml(projectId)}`] = new ProjectItem(project, this);
         this.render();
     }
     get _template() {
@@ -28,7 +28,7 @@ class ProjectList extends View {
                     `<tr><th></th><td>Loading...</td></tr>`
                 , () =>
                     FOREACH(projects.keys(), (projectId) =>
-                        `<tr data-childview="project-${projectId}"></tr>`
+                        `<tr data-childview="project-${escapeHtml(projectId)}"></tr>`
                     )
                 )}
             </tbody>
@@ -52,10 +52,10 @@ class ProjectItem extends View {
         this.parentList.update();
     }
     _onResults(e) {
-        window.location.href = `./results/${this.project.id}/`
+        window.location.href = `./results/${encodeURI(this.project.id)}/`
     }
     _onEdit(e) {
-        window.location.href = `./edit/${this.project.id}/`
+        window.location.href = `./edit/${encodeURI(this.project.id)}/`
     }
     async _onDelete(e) {
         await CyderAPI.Project.delete(this.project.id);
@@ -82,9 +82,9 @@ class ProjectItem extends View {
     }
     get _template() {
         return `
-        <th scope="row">${this.project.id}</th>
-        <td>${this.project.name}</td>
-        <td>${this.project.status}</td>
+        <th scope="row">${escapeHtml(this.project.id)}</th>
+        <td>${escapeHtml(this.project.name)}</td>
+        <td>${escapeHtml(this.project.status)}</td>
         <td class="text-right">
             <div class="btn-group" >
                 ${IF(this.project.status === 'Pending' || this.project.status === 'Started', () =>

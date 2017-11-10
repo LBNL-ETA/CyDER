@@ -60,21 +60,23 @@
         });
     };
 
+
+
     CyderAPI.Error = class extends Error {
         constructor(xhr) {
             super();
             this.xhr = xhr;
             this.name = 'CyderAPI Error';
-            this.notify();
+            this.notify(); // DEBUG
         }
         get message() {
             switch(this.xhr.status) {
             case 400:
                 let msg = '';
                 for(let field in this.xhr.response) {
-                    msg += '${field}\n'
+                    msg += `${field}\n`
                     for(let hint of this.xhr.response[field])
-                        msg += '    \n${hint}';
+                        msg += `    \n${hint}`;
                 }
                 return msg;
                 break;
@@ -89,8 +91,8 @@
                 for(let field in this.xhr.response) {
                     let msg = '';
                     for(let hint of this.xhr.response[field])
-                        msg += '<br>' + hint;
-                    $.notify({title: `<strong>${field}:</strong>`, message: msg},{type: 'danger'});
+                        msg += '<br>' + escapeHtml(hint);
+                    $.notify({title: `<strong>${escapeHtml(field)}:</strong>`, message: msg},{type: 'danger'});
                 }
                 break;
             case 500:
@@ -113,7 +115,7 @@
             this._resProm = new Map();
         }
         _getLookupUrl(lookup) {
-            return `${this._url}${lookup}/`;
+            return `${this._url}${encodeURI(lookup)}/`;
         }
         getAll(force = false) {
             if(this._areAllLoaded === true && !force)
@@ -186,7 +188,7 @@
         }
         _getLookupUrl(...args) {
             let lookup = args.pop();
-            return `${this._parent._getLookupUrl(...args)}${this._subURL}${lookup}/`;
+            return `${this._parent._getLookupUrl(...args)}${this._subURL}${encodeURI(lookup)}/`;
         }
     }
     NestedRes.handler = {

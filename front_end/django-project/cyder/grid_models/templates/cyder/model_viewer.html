@@ -28,7 +28,7 @@
         crossorigin=""></script>
     <script src="{% static 'cyder/model_viewer.js' %}"></script>
     <script>
-        document.querySelector(".navbar [data-name='model_viewer']").className += " active";
+        document.querySelector(".navbar [data-name='model_viewer']").classList.add('active');
         let modelViewer;
         window.onload = function() {
             CyderAPI.auth();

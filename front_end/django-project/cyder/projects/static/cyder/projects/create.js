@@ -21,7 +21,7 @@ class ProjectCreator extends View {
             this._writeProject();
             this._project = await CyderAPI.Project.create(this._project);
             $.notify({message: 'Project created !'},{type: 'success'});
-            window.location.href = `./edit/${this._project.id}/`;
+            window.location.href = `../edit/${encodeURI(this._project.id)}/`;
         } catch (error) {
             if(!(error instanceof CyderAPI.Error))
                 throw(error);

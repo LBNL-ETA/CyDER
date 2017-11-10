@@ -13,7 +13,7 @@
 {% block script %}
     <script src="{% static 'cyder/projects/results.js' %}"></script>
     <script>
-        document.querySelector(".navbar [data-name='projects']").className += " active";
+        document.querySelector(".navbar [data-name='projects']").classList.add('active');
         let projectResults;
         window.onload = function() {
             CyderAPI.auth();
