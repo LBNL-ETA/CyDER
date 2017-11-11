@@ -90,6 +90,8 @@ class LeafletMap extends View {
     }
     removeLayer(name) {
         let layer = this._layers.get(name);
+        if(!layer)
+            return false;
         this._layers.delete(name);
         if(this._lastLayer === name) {
             this._lastLayer = null;
@@ -99,6 +101,7 @@ class LeafletMap extends View {
             this._updateLoadingLayers(-1);
         else
             layer.remove();
+        return true;
     }
     removeLayers() {
         for(let layerName of this._layers.keys())

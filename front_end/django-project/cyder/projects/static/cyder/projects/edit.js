@@ -1,40 +1,43 @@
 'use strict';
 
+class CanceledByUser extends Error {}
+
 class ProjectEditor extends View {
     constructor(el) {
         super(el, 'div');
-        this._childs['leaflet-map'] = new LeafletMap();
         this._project = null;
-        this._addPvMap;
     }
     async loadProject(projectId) {
+        this.closeProject();
         this._project = await CyderAPI.Project.get(projectId);
-        this._addPvMap = new Map(this._project.settings.addPv.map(obj => [obj.device, obj.power]));
+        this._childs['map-editor'] = new ProjectMapEditor(this._project.settings.model);
+        this.child('map-editor').addPv = this._project.settings.addPv;
         this._isNew = false;
         this.render();
-        this._loadMapLayers(this._project.settings.model);
     }
-    _loadMapLayers(modelName) {
-        this.child('leaflet-map').removeLayers();
-        let modelLayer = createModelLayer(modelName);
-        let addPVPopup = (pv, marker) => {
-            marker.bindPopup((new PVPopup(pv.device_number, marker, this._addPvMap)).el);
-        };
-        let pvLayer = createPVLayer(modelName, addPVPopup);
-        this.child('leaflet-map').addLayer(modelLayer, 'base');
-        this.child('leaflet-map').addLayer(pvLayer, 'pvs', true);
-        this.child('leaflet-map').fitBounds('base');
+    closeProject() {
+        if(this._project !== null && this.hasChanges()) {
+            if(!confirm('You have unsaved changes. Continue without saving?'))
+                throw new CanceledByUser('User canceled closing the project');
+        }
+        this._project = null;
     }
-    _writeProject() {
-        this._project.name = this._html.name.value;
-        this._project.settings.addPv = Array.from(this._addPvMap).map(([device, power]) => ({device, power}));
+    hasChanges() {
+        if(this._project.name !== this._html.name.value)
+            return true;
+        if(this.child('map-editor').addPvIsDirty)
+            return true;
+        return false;
     }
     async _save(e) {
         if(e.target.classList.contains('disabled'))
             return;
         e.target.classList.add('disabled');
         try {
-            this._writeProject();
+            if(this._project.name !== this._html.name.value)
+                this._project.name = this._html.name.value;
+            if(this.child('map-editor').addPvIsDirty)
+                this._project.settings.addPv = this.child('map-editor').addPv;
             this._project = await CyderAPI.Project.update(this._project.id, this._project);
             $.notify({message: 'Project saved !'},{type: 'success'});
             this.render();
@@ -62,7 +65,7 @@ class ProjectEditor extends View {
             <input data-name="name" type="text" class="form-control" placeholder="Name" aria-label="Name">
         </div>
         Model: ${escapeHtml(this._project.settings.model)}<br>
-        <div data-childview="leaflet-map" style="height: 70vh; margin: 1rem 0 1rem 0;"></div>
+        <div data-childview="map-editor"></div>
         <div class="form-group">
             <button type="button" data-on="click:_save" class="btn btn-primary">Save</button>
             <button type="button" data-on="click:_cancel" class="btn btn-primary">Cancel</button>
@@ -71,12 +74,50 @@ class ProjectEditor extends View {
     }
 }
 
-class PVPopup extends View {
-    constructor(pvNumber, marker, addPvMap) {
+class ProjectMapEditor extends View {
+    constructor(modelName, el) {
+        super(el, 'div');
+        this._childs['leaflet-map'] = new LeafletMap();
+        this._addPvMap;
+        this._modelName = modelName;
+        this.child('leaflet-map').addLayer(createModelLayer(modelName), 'model');
+        this.child('leaflet-map').fitBounds('model');
+        this.render();
+    }
+    set addPv(val) {
+        this._addPvMap = new Map(val.map(obj => [obj.device, obj.power]));
+        this._addPvMap.isDirty = false;
+        this.child('leaflet-map').removeLayer('pvs');
+        this.child('leaflet-map').addLayer(this._createPvLayer(this._modelName), 'pvs', true);
+    }
+    get addPv() {
+        return Array.from(this._addPvMap).map(([device, power]) => ({device, power}));
+    }
+    get addPvIsDirty() { return this._addPvMap.isDirty; }
+    _createPvLayer(modelName) {
+        let addPvPopup = (pv, marker) => {
+            marker.bindPopup((new DevicePopup(pv.device_number, marker, this._addPvMap)).el);
+        };
+        return createPVLayer(modelName, addPvPopup);
+    }
+
+    get _template() {
+        return `
+        <div data-childview="leaflet-map" style="height: 70vh; margin: 1rem 0 1rem 0;"></div>
+        `;
+    }
+    emplace(el) {
+        super.emplace(el);
+        this.child('leaflet-map').map.invalidateSize();
+    }
+}
+
+class DevicePopup extends View {
+    constructor(number, marker, map) {
         super(null, 'div');
-        this._pvNumber = pvNumber;
+        this._number = number;
         this._marker = marker;
-        this._addPvMap = addPvMap;
+        this._map = map;
         this.render();
     }
     _set(e) {
@@ -85,18 +126,20 @@ class PVPopup extends View {
             $.notify({ message: 'Power must be a number'}, {type: 'danger'});
             return;
         }
-        this._addPvMap.set(this._pvNumber, power);
+        this._map.set(this._number, power);
+        this._map.isDirty = true;
         this.render();
     }
     _remove(e) {
-        this._addPvMap.delete(this._pvNumber);
+        this._map.delete(this._number);
+        this._map.isDirty = true;
         this.render();
     }
     render() {
         super.render();
-        if(this._addPvMap.has(this._pvNumber)) {
+        if(this._map.has(this._number)) {
             this._marker.setStyle({color: '#14e54c'});
-            this._html.power.value = this._addPvMap.get(this._pvNumber);
+            this._html.power.value = this._map.get(this._number);
         }
         else
             this._marker.setStyle({color: '#3388ff'});
@@ -107,7 +150,7 @@ class PVPopup extends View {
             <input data-name="power" type="number" class="form-control form-control-sm" placeholder="Power" aria-label="Power">
         </div>
         <button type="button" data-on="click:_set" class="btn btn-primary btn-sm">Set</button>
-        ${ IF(this._addPvMap.has(this._pvNumber), () =>
+        ${ IF(this._map.has(this._number), () =>
             `<button type="button" data-on="click:_remove" class="btn btn-primary btn-sm">Remove</button>`
         )}`;
     }

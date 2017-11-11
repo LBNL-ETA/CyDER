@@ -25,6 +25,16 @@
             CyderAPI.auth();
             projectEditor = new ProjectEditor(document.querySelector('#project-editor'));
             projectEditor.loadProject("{{ project_id|escapequotes|safe }}");
-        }
+        };
+        window.onbeforeunload = function(evt) {
+            let message = 'You have unsaved changes. Leave without saving?'
+            if(projectEditor && projectEditor.hasChanges()) {
+                if (typeof evt == 'undefined')
+                    evt = window.event;
+                if (evt)
+                    evt.returnValue = message;
+                return message;
+            }
+        };
     </script>
 {% endblock script %}
