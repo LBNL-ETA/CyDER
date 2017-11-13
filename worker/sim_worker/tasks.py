@@ -43,10 +43,14 @@ def run_simulation(project):
 
     cyder_inputs = pandas.read_excel("./simulation_project/cyder_inputs.xlsx")
     cyder_inputs.loc[0, 'feeder_name'] = project['model'] + ".sxst"
-    cyder_inputs.to_excel("./simulation_project/cyder_inputs.xlsx", index=False)
+    if len(project['addPv']) > 0:
+        add_pv = pandas.DataFrame(project['addPv'])
+        add_pv.to_excel("./simulation_project/add_pv.xlsx", index=False, header=["device_number", "added_power_kw"])
+        cyder_inputs.loc[0, 'add_pv'] = '../simulation_project/add_pv.xlsx'
+    else:
+        cyder_inputs.loc[0, 'add_pv'] = 'FALSE'
 
-    add_pv = pandas.DataFrame(project['addPv'])
-    add_pv.to_excel("./simulation_project/add_pv.xlsx", index=False, header=["device_number", "added_power_kw"])
+    cyder_inputs.to_excel("./simulation_project/cyder_inputs.xlsx", index=False)
 
     subprocess.call(["python", "./cosimulation/runsimulation.py", "../simulation_project"])
     result_file = open('./simulation_project/sim/0/0.json')
