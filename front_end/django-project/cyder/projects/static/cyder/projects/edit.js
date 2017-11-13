@@ -11,21 +11,23 @@ class ProjectEditor extends View {
         this.closeProject();
         this._project = await CyderAPI.Project.get(projectId);
         this._childs['map-editor'] = new ProjectMapEditor(this._project.settings.model);
-        this.child('map-editor').addPv = this._project.settings.addPv;
+        this.child('map-editor').addDataLayer('PVs', this._project.settings.addPv, createPVLayer);
+        this.child('map-editor').addDataLayer('Loads', this._project.settings.addLoad, createLoadLayer);
+        this.child('map-editor').render();
         this._isNew = false;
         this.render();
     }
     closeProject() {
-        if(this._project !== null && this.hasChanges()) {
+        if(this._project !== null && this.wasModified()) {
             if(!confirm('You have unsaved changes. Continue without saving?'))
                 throw new CanceledByUser('User canceled closing the project');
         }
         this._project = null;
     }
-    hasChanges() {
-        if(this._project.name !== this._html.name.value)
-            return true;
-        if(this.child('map-editor').addPvIsDirty)
+    wasModified() {
+        if(this._project.name !== this._html.name.value ||
+            this.child('map-editor').dataWasModified('PVs') ||
+            this.child('map-editor').dataWasModified('Loads'))
             return true;
         return false;
     }
@@ -34,10 +36,11 @@ class ProjectEditor extends View {
             return;
         e.target.classList.add('disabled');
         try {
-            if(this._project.name !== this._html.name.value)
-                this._project.name = this._html.name.value;
-            if(this.child('map-editor').addPvIsDirty)
-                this._project.settings.addPv = this.child('map-editor').addPv;
+            this._project.name = this._html.name.value;
+            this._project.settings.addPv = this.child('map-editor').getData('PVs');
+            this.child('map-editor').resetDataLayer('PVs');
+            this._project.settings.addLoad = this.child('map-editor').getData('Loads');
+            this.child('map-editor').resetDataLayer('Loads');
             this._project = await CyderAPI.Project.update(this._project.id, this._project);
             $.notify({message: 'Project saved !'},{type: 'success'});
             this.render();
@@ -52,7 +55,12 @@ class ProjectEditor extends View {
         if(e.target.classList.contains('disabled'))
             return;
         e.target.classList.add('disabled');
-        await this.loadProject(this._project.id);
+        try {
+            await this.loadProject(this._project.id);
+        } catch(error) {
+            if(!(error instanceof CanceledByUser))
+                throw error;
+        }
         e.target.classList.remove('disabled');
     }
     render() {
@@ -78,32 +86,53 @@ class ProjectMapEditor extends View {
     constructor(modelName, el) {
         super(el, 'div');
         this._childs['leaflet-map'] = new LeafletMap();
-        this._addPvMap;
+        this._dataLayers = {};
+        this._currentDataLayer = null;
         this._modelName = modelName;
         this.child('leaflet-map').addLayer(createModelLayer(modelName), 'model');
         this.child('leaflet-map').fitBounds('model');
         this.render();
     }
-    set addPv(val) {
-        this._addPvMap = new Map(val.map(obj => [obj.device, obj.power]));
-        this._addPvMap.isDirty = false;
-        this.child('leaflet-map').removeLayer('pvs');
-        this.child('leaflet-map').addLayer(this._createPvLayer(this._modelName), 'pvs', true);
-    }
-    get addPv() {
-        return Array.from(this._addPvMap).map(([device, power]) => ({device, power}));
-    }
-    get addPvIsDirty() { return this._addPvMap.isDirty; }
-    _createPvLayer(modelName) {
-        let addPvPopup = (pv, marker) => {
-            marker.bindPopup((new DevicePopup(pv.device_number, marker, this._addPvMap)).el);
+    addDataLayer(name, data, createLayerFunc) {
+        let dataLayer = {};
+        dataLayer.map = new Map(data.map(obj => [obj.device, obj.power]));
+        dataLayer.map.wasModified = false;
+        let bindDevicePopup = (device, marker) => {
+            marker.bindPopup((new DevicePopup(device.device_number, marker, dataLayer.map)).el);
         };
-        return createPVLayer(modelName, addPvPopup);
+        dataLayer.layer = createLayerFunc(this._modelName, bindDevicePopup);
+        this._dataLayers[name] = dataLayer;
     }
-
+    resetDataLayer(name) {
+        this._dataLayers[name].map.wasModified = false;
+    }
+    dataWasModified(name) {
+        return this._dataLayers[name].map.wasModified;
+    }
+    getData(name) {
+        let map = this._dataLayers[name].map;
+        return Array.from(map).map(([device, power]) => ({device, power}));
+    }
+    _onShowDataLayer(e) {
+        let name = e.target.innerHTML;
+        let layer = this._dataLayers[name].layer;
+        this.child('leaflet-map').removeLayer('dataLayer');
+        this.child('leaflet-map').addLayer(this._dataLayers[name].layer, 'dataLayer');
+        this._currentDataLayer = name;
+        this.render();
+    }
     get _template() {
         return `
-        <div data-childview="leaflet-map" style="height: 70vh; margin: 1rem 0 1rem 0;"></div>
+        <div class="btn-group" role="group">
+            ${ FOREACH(this._dataLayers, (name, dataLayer) =>
+                IF(name === this._currentDataLayer, () =>
+                    `<button type="button" class="btn btn-secondary disabled" data-on="click:_onShowDataLayer">${escapeHtml(name)}</button>`
+                , () =>
+                    `<button type="button" class="btn btn-secondary" data-on="click:_onShowDataLayer">${escapeHtml(name)}</button>`
+                )
+            )}
+        </div>
+        <div data-childview="leaflet-map" style="height: 70vh; margin: 0.1rem 0 1rem 0;"></div>
         `;
     }
     emplace(el) {
@@ -127,12 +156,12 @@ class DevicePopup extends View {
             return;
         }
         this._map.set(this._number, power);
-        this._map.isDirty = true;
+        this._map.wasModified = true;
         this.render();
     }
     _remove(e) {
         this._map.delete(this._number);
-        this._map.isDirty = true;
+        this._map.wasModified = true;
         this.render();
     }
     render() {

@@ -320,3 +320,14 @@ async function createPVLayer(modelName, onEach = ()=>{}) {
     }
     return layer;
 }
+async function createLoadLayer(modelName, onEach = ()=>{}) {
+    let loads = Array.from((await CyderAPI.Device.getAll(modelName)).values())
+        .filter((device) => device.device_type == 14);
+    let layer = L.layerGroup([]);
+    for(let load of loads) {
+        let marker = L.circleMarker([load.latitude, load.longitude]);
+        onEach(load, marker);
+        layer.addLayer(marker);
+    }
+    return layer;
+}

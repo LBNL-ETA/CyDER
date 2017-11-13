@@ -28,7 +28,7 @@
         };
         window.onbeforeunload = function(evt) {
             let message = 'You have unsaved changes. Leave without saving?'
-            if(projectEditor && projectEditor.hasChanges()) {
+            if(projectEditor && projectEditor.wasModified()) {
                 if (typeof evt == 'undefined')
                     evt = window.event;
                 if (evt)

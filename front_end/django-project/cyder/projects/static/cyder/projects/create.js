@@ -12,6 +12,7 @@ class ProjectCreator extends View {
             settings: {
                 model: this.child('select-model').modelName,
                 addPv: [],
+                addLoad: [],
             },
         };
     }
