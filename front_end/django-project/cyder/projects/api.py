@@ -14,7 +14,7 @@ import sim_worker.tasks
 
 class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
-    queryset = Project.objects.all()
+    queryset = Project.objects.all().order_by('-id')
     serializer_class = ProjectSerializer
     lookup_field = 'id'
 
