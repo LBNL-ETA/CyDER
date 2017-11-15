@@ -9,9 +9,6 @@ db:
 
 redis:
         image: redis
-# Uncomment if need of persistence
-#        volumes:
-#                - ./redis/data:/data
         ports:
                 - "6379:6379"
 wsgi:
@@ -21,7 +18,7 @@ wsgi:
         volumes:
                 - ./wsgi/log:/var/log/cyder/
                 - ./django-project:/usr/src/app
-                - ./http/static:/var/www/
+                - ./http/static:/var/www/ # Where static files are collected to be served
         links:
                 - redis
                 - db
@@ -33,6 +30,6 @@ http:
         volumes:
                 - ./http/nginx_conf.d:/etc/nginx/conf.d
                 - ./http/ssl:/etc/nginx/ssl
-                - ./http/static:/var/www/
+                - ./http/static:/var/www/ # Where static files are collected to be served
         links:
                 - wsgi

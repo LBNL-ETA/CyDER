@@ -6,18 +6,20 @@ Project folders
 
 - config: the Django project config (settings, wsgi.py, urls.py...)  
 - sim_worker: the celery module which allow sending task to the worker  
-- celery_beat: the celery module used to schedule tasks in the wsgi container  
+- celery_beat: the celery module used to schedule and run tasks in the wsgi container (the worker for this module run on wsgi)  
 - cyder: the Django apps
 - tools: Django module containing tool script
 
 -------
 
-The following commands should be run inside the wsgi container using for example `sudo docker-compose exec wsgi bash` to open a terminal or `sudo docker-compose exec wsgi [your commands]`
+All the following commands should be run inside the wsgi container using for example `sudo docker-compose exec wsgi bash` to open a terminal or `sudo docker-compose exec wsgi [your commands]`
 
 Update Django models
 ------
 
-Run
+When the db models of a Django app are modified, a migration is needed.  
+
+To perform it (for exemple on the grid_models app), run
 ```
 python manage.py makemigrations grid_models
 python manage.py migrate`
@@ -26,7 +28,9 @@ python manage.py migrate`
 Update static files
 --------
 
-Run
+Static files are originally in the static folder of the django app. To be served by nginx they have to be collected in /var/www on the http container. This location is common to the http and wsgi containers (cf docker-compose.yml).
+
+To collect static files, run
 ```
 python manage.py collectstatic --clear
 ```
@@ -34,7 +38,7 @@ python manage.py collectstatic --clear
 Use the Django debug server
 -------
 
-You can start the debug server by typing `python manage.py runserver 0.0.0.0:8080`. You can the access it by http://127.0.0.1:8080/  
+You can start the debug server by running `python manage.py runserver 0.0.0.0:8080`. You can the access it by http://127.0.0.1:8080/  
 This can be useful when working on static files (to prevent running collectstatic all the time)
 
 -------
@@ -49,4 +53,4 @@ Run
 import tools.db_models
 tools.db_models.import_model(modelname)
 ```
-`modelname` being the name of the file of the model (for example `BU0001`)
+`modelname` being the name of the file of the model (for example `"BU0001"`)

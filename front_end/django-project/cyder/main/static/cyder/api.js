@@ -87,7 +87,7 @@
                 break;
             }
         }
-        notify() {
+        notify() { // Require bootstrap-notify and escape-html
             switch(this.xhr.status) {
             case 400:
                 for(let field in this.xhr.response) {

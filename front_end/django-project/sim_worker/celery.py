@@ -20,6 +20,8 @@ app.conf.update(
     CELERY_QUEUES = (
         Queue('sim_worker', Exchange('sim_worker'), routing_key='sim_worker'),
     )
+    # The default queue is changed to sim_woker to be sure those task are execute by the simulation worker
+    # (and note the worker that run the celery_beat on the wsgi container)
 )
 
 if __name__ == '__main__':
