@@ -34,7 +34,7 @@ class Section(models.Model):
 class Device(models.Model):
     model = models.ForeignKey(Model, null=True, blank=True)
     device_number = models.CharField(max_length=50, null=True, blank=True)
-    device_type = models.CharField(max_length=50, null=True, blank=True)
+    device_type = models.IntegerField()
     section = models.ForeignKey(Section, null=True, blank=True)
     distance = models.FloatField(null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)
