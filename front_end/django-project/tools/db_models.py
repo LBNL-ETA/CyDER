@@ -1,5 +1,5 @@
 import sim_worker.tasks
-from cyder.grid_models.models import Model, Device, Node, Section
+from cyder.grid_models.models import *
 
 # Return a copy of dict, without the keys list in exclude_keys
 def exclude(dict, exclude_keys):
@@ -57,9 +57,14 @@ def import_model(modelname):
     lenght = len(devices)
     for index in range(0, lenght):
         device_row = devices[index]
-        device = Device(model=model, **exclude(device_row, ['section_id']))
+        device = Device(model=model, **exclude(device_row, ['section_id', 'detail']))
         device.model = model
         device.section = Section.objects.get(model=model, section_id=device_row['section_id'])
         device.save()
+
+        if device.device_type == 14: # Spot loads
+            load = Load(device=device, **(device_row['detail']))
+            load.save()
+
         print("\rImported devices: %d/%d" % (index+1, lenght), end="")
     print()

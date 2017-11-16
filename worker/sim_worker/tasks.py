@@ -16,6 +16,7 @@ def get_model(modelname):
 
     model = cymdist.model_info()
     devices = cymdist.list_devices()
+    cymdist.get_devices_details(devices)
     nodes = cymdist.list_nodes()
     cymdist.get_voltages(nodes)
     sections = cymdist.list_sections()

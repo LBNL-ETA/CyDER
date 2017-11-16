@@ -25,7 +25,7 @@ class Section(models.Model):
     model = models.ForeignKey(Model, null=True, blank=True)
     section_id = models.CharField(max_length=50, null=True, blank=True)
     from_node = models.ForeignKey(Node, null=True, blank=True, related_name='origin_sections')
-    to_node = models.ForeignKey(Node, null=True, blank=True,related_name='end_sections')
+    to_node = models.ForeignKey(Node, null=True, blank=True, related_name='end_sections')
     class Meta:
         unique_together = ('model', 'section_id',)
     def __str__(self):
@@ -43,3 +43,9 @@ class Device(models.Model):
         unique_together = ('model', 'device_number',)
     def __str__(self):
         return self.device_number
+
+class Load(models.Model):
+    device = models.ForeignKey(Device)
+    SpotKWA = models.FloatField(null=True, blank=True)
+    SpotKWB = models.FloatField(null=True, blank=True)
+    SpotKWC = models.FloatField(null=True, blank=True)

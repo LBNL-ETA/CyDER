@@ -56,6 +56,16 @@ def list_devices(device_type=False):
 
     return devices
 
+def get_devices_details(devices):
+    for device in devices:
+        device_object = device['device_object']
+        if device_object.DeviceType == 14: # Spot loads
+            device['detail'] = {}
+            for prop in ['SpotKWA', 'SpotKWB', 'SpotKWC']:
+                x = cympy.study.QueryInfoDevice(prop, device_object.DeviceNumber, device_object.DeviceType)
+                device['detail'][prop] = None if x is '' else float(x)
+    return devices
+
 def get_voltages(nodes):
     # Require to call compute_loadflow() first
     for node in nodes:
