@@ -210,14 +210,10 @@ class ModelInfo extends View {
     }
     get model() { return this._model; }
     set model(model) {
-        if(this._model) {
-            this._leafletMap.removeLayer('heat');
-            this._leafletMap.removeLayer('model');
-        }
         this._model = model;
         if(this._model !== null) {
-            this._leafletMap.addLayer(createLoadHeatLayer(model.name, 'A'), 'heat') // DEBUG
-            this._leafletMap.addLayer(this._getModelLayer(), 'model');
+            this._leafletMap.removeLayers();
+            this._leafletMap.addLayer(this._getModelLayer(), 'model', true);
             this._leafletMap.fitBounds('model');
         }
         this.render();
@@ -247,6 +243,20 @@ class ModelInfo extends View {
             e.target.openPopup();
         }
     }
+    _onToogleLayerButton(e) {
+        if(e.target.classList.contains('disabled')) {
+            this._leafletMap.removeLayer(e.target.dataset.layer);
+            e.target.classList.remove('disabled');
+        } else {
+            let layer;
+            let layerName = e.target.dataset.layer;
+            if(layerName.startsWith('loads')) {
+                layer = createLoadHeatLayer(this._model.name, layerName.charAt(5))
+            }
+            this._leafletMap.addLayer(layer , layerName, true);
+            e.target.classList.add('disabled');
+        }
+    }
     get _template() {
         return `${ IF(this.model, () =>
             `<div class="row" style="margin-bottom: 1rem">
@@ -265,10 +275,14 @@ class ModelInfo extends View {
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-header">
-                            Devices count detail
+                            Loads
                         </div>
-                        <div id="devicecountdetail" class="card-body">
-
+                        <div id="" class="card-body">
+                            <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-secondary" data-on="click:_onToogleLayerButton" data-layer="loadsA">Phase A</button>
+                            <button type="button" class="btn btn-secondary" data-on="click:_onToogleLayerButton" data-layer="loadsB">Phase B</button>
+                            <button type="button" class="btn btn-secondary" data-on="click:_onToogleLayerButton" data-layer="loadsC">Phase C</button>
+                            </div>
                         </div>
                     </div>
                 </div>
