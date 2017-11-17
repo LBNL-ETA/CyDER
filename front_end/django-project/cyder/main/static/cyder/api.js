@@ -218,5 +218,6 @@
     CyderAPI.Model = new Res('/api/models/', 'name');
     CyderAPI.Node = new NestedRes(CyderAPI.Model, 'nodes/', 'node_id');
     CyderAPI.Device = new NestedRes(CyderAPI.Model, 'devices/', 'device_number');
+    CyderAPI.Load = new NestedRes(CyderAPI.Model, 'loads/', 'device_number');
     CyderAPI.Project = new ProjectRes('/api/projects/', 'id');
 })();

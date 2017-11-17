@@ -7,8 +7,8 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework_nested import routers
 from rest_framework.permissions import IsAuthenticated
-from .models import Model, Node, Device, Section
-from .serializers import ModelSerializer, NodeSerializer, DeviceSerializer
+from .models import *
+from .serializers import *
 from django.conf.urls import url, include
 from django.shortcuts import get_object_or_404
 
@@ -91,5 +91,15 @@ class DeviceViewSet(viewsets.ReadOnlyModelViewSet):
         model = get_object_or_404(Model.objects.all(), name=self.kwargs['model_name'])
         return Device.objects.filter(model=model)
 models_router.register(r'devices', DeviceViewSet, base_name='model-devices')
+
+class LoadViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    queryset = Load.objects.all().select_related('device')
+    serializer_class = LoadSerializer
+    lookup_field = 'device__device_number'
+    def get_queryset(self):
+        model = get_object_or_404(Model.objects.all(), name=self.kwargs['model_name'])
+        return Load.objects.select_related('device').filter(device__model=model)
+models_router.register(r'loads', LoadViewSet, base_name='model-loads')
 
 urlpatterns.append(url(r'^', include(models_router.urls)))
