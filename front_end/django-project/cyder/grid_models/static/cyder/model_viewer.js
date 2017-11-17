@@ -210,10 +210,13 @@ class ModelInfo extends View {
     }
     get model() { return this._model; }
     set model(model) {
-        if(this._model)
+        if(this._model) {
+            this._leafletMap.removeLayer('heat');
             this._leafletMap.removeLayer('model');
+        }
         this._model = model;
         if(this._model !== null) {
+            this._leafletMap.addLayer(createLoadHeatLayer(model.name, 'A'), 'heat') // DEBUG
             this._leafletMap.addLayer(this._getModelLayer(), 'model');
             this._leafletMap.fitBounds('model');
         }
@@ -330,4 +333,21 @@ async function createLoadLayer(modelName, onEach = ()=>{}) {
         layer.addLayer(marker);
     }
     return layer;
+}
+async function createLoadHeatLayer(modelName, phase) {
+    let devices = CyderAPI.Device.getAll(modelName);
+    let loads = CyderAPI.Load.getAll(modelName);
+    devices = await devices;
+    loads = await loads;
+
+    let maxLoad = 0;
+    let data = Array.from(loads.values()).map((load) => {
+        let device = devices.get(load.device_number);
+        let loadValue = load['SpotKW'+phase];
+        if(loadValue > maxLoad) maxLoad = loadValue;
+        return [device.latitude, device.longitude , load['SpotKW'+phase]];
+    })
+
+    let heatLayer = L.heatLayer(data, {max: maxLoad, maxZoom: 1, radius: 10, blur:5});
+    return heatLayer;
 }
