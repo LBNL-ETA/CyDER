@@ -24,8 +24,10 @@ except:
 os.chdir(CURRENT_PATH)
 
 cyder_inputs = pandas.read_excel(os.path.join(project_folder, 'cyder_inputs.xlsx'))
+start = cyder_inputs.loc[0, 'start']
+end = cyder_inputs.loc[0, 'end']
 timestep = cyder_inputs.loc[0, 'timestep']
-times = [0]
+times = [x for x in range(0, int((end - start).total_seconds()), int(timestep))]
 
 # Get token (job id)
 directory = os.path.join(project_folder, 'sim/')

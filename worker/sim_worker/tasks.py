@@ -62,7 +62,17 @@ def run_simulation(project):
     cyder_inputs.to_excel("./simulation_project/cyder_inputs.xlsx", index=False)
 
     subprocess.call(["python", "./cosimulation/runsimulation.py", "../simulation_project"])
-    result_file = open('./simulation_project/sim/0/0.json')
-    result = json.load(result_file)
-    result_file.close()
-    return result
+
+    start = cyder_inputs.loc[0, 'start']
+    end = cyder_inputs.loc[0, 'end']
+    timestep = cyder_inputs.loc[0, 'timestep']
+    times = [x for x in range(0, int((end - start).total_seconds()), int(timestep))]
+
+    results = []
+    for time in times:
+        result_file = open('./simulation_project/sim/0/' + str(time) + '.json')
+        result = json.load(result_file)
+        result['time'] = time
+        results.append(result)
+        result_file.close()
+    return results

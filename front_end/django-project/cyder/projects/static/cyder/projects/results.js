@@ -27,15 +27,15 @@ class ProjectResults extends View {
             <table class="table">
                 <thead>
                     <tr>
-                      <th scope="col">Property</th>
-                      <th scope="col">Value</th>
+                      <th scope="col">Time</th>
+                      <th scope="col">DwHighVoltWorstA</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${ FOREACH(project.results, (prop, value) =>
+                    ${ FOREACH(project.results, (result) =>
                         `<tr>
-                            <td>${escapeHtml(prop)}</td>
-                            <td>${escapeHtml(value)}</td>
+                            <td>${escapeHtml(result.time)}</td>
+                            <td>${escapeHtml(result.DwHighVoltWorstA)}</td>
                         </tr>`
                     )}
                 </tbody>
