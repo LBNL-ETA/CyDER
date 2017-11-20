@@ -11,6 +11,7 @@
 {% endblock content %}
 
 {% block script %}
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="{% static 'cyder/projects/results.js' %}"></script>
     <script>
         document.querySelector(".navbar [data-name='projects']").classList.add('active');
