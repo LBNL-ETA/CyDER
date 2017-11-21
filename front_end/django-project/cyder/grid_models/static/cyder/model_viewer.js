@@ -175,9 +175,9 @@ class ModelViewer extends View {
             this.child('leaflet-map').removeLayer('allModel');
         this._modelName = newModelName;
         if (this._modelName === '') {
+            this.child('model-info').model = null;
             this.child('leaflet-map').addLayer(this._getAllModelsLayer(), 'allModel');
             this.child('leaflet-map').fitBounds('allModel');
-            this.child('model-info').model = null;
             history.replaceState(null, null, this.url);
         } else {
             Promise.resolve(CyderAPI.Model.getAll()).then((models) =>
@@ -211,8 +211,8 @@ class ModelInfo extends View {
     get model() { return this._model; }
     set model(model) {
         this._model = model;
+        this._leafletMap.removeLayers();
         if(this._model !== null) {
-            this._leafletMap.removeLayers();
             this._leafletMap.addLayer(this._getModelLayer(), 'model', true);
             this._leafletMap.fitBounds('model');
         }
