@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SimulatorModelDescription
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  fmiVersion="2.0"
+  modelName="uPMU"
+  description="Input data for a Simulator FMU"
+  generationTool="SimulatorToFMU">
+  <ModelVariables>
+    <ScalarVariable
+      name="_dummy"
+      description="Dummy inputs"
+      causality="input">
+      <Real
+        unit="1"/>
+    </ScalarVariable>
+    <!-- Specify host, port and uuid -->
+    <ScalarVariable
+      name="http://yourhost:yourport;youruuid"
+      description="uPMU voltage"
+      causality="output">
+      <Real
+        unit="V"/>
+    </ScalarVariable>
+  </ModelVariables>
+</SimulatorModelDescription>
