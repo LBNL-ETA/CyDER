@@ -36,6 +36,8 @@ import os
 import json
 import shutil
 import pandas
+import datetime
+import dateutil.parser
 
 @app.task
 def run_simulation(project):
@@ -44,6 +46,9 @@ def run_simulation(project):
 
     cyder_inputs = pandas.read_excel("./simulation_project/cyder_inputs.xlsx")
     cyder_inputs.loc[0, 'feeder_name'] = project['model'] + ".sxst"
+    cyder_inputs.loc[0, 'start'] = dateutil.parser.parse(project['start'])
+    cyder_inputs.loc[0, 'end'] = dateutil.parser.parse(project['end'])
+    cyder_inputs.loc[0, 'timestep'] = project['timestep']
 
     if len(project['addPv']) > 0:
         add_pv = pandas.DataFrame(project['addPv'])

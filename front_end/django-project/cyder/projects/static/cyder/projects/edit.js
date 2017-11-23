@@ -26,6 +26,9 @@ class ProjectEditor extends View {
     }
     wasModified() {
         if(this._project.name !== this._html.name.value ||
+            this._project.settings.start !== this._html.start.value ||
+            this._project.settings.end !== this._html.end.value ||
+            this._project.settings.timestep !== this._html.timestep.value ||
             this.child('map-editor').dataWasModified('PVs') ||
             this.child('map-editor').dataWasModified('Loads'))
             return true;
@@ -37,6 +40,9 @@ class ProjectEditor extends View {
         e.target.classList.add('disabled');
         try {
             this._project.name = this._html.name.value;
+            this._project.settings.start = this._html.start.value;
+            this._project.settings.end = this._html.end.value;
+            this._project.settings.timestep = this._html.timestep.value;
             this._project.settings.addPv = this.child('map-editor').getData('PVs');
             this.child('map-editor').resetDataLayer('PVs');
             this._project.settings.addLoad = this.child('map-editor').getData('Loads');
@@ -66,11 +72,34 @@ class ProjectEditor extends View {
     render() {
         super.render();
         this._html.name.value = this._project.name;
+        this._html.start.value = this._project.settings.start;
+        this._html.end.value = this._project.settings.end;
+        this._html.timestep.value = this._project.settings.timestep;
     }
     get _template() {
         return `
         <div class="form-group">
             <input data-name="name" type="text" class="form-control" placeholder="Name" aria-label="Name">
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <label>Start: </label>
+                <div class="form-group">
+                    <input data-name="start" type="datetime-local" class="form-control" placeholder="Start" aria-label="Start">
+                </div>
+            </div>
+            <div class="col-md-5">
+                <label>Stop: </label>
+                <div class="form-group">
+                    <input data-name="end" type="datetime-local" class="form-control" placeholder="End" aria-label="End">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label>Timestep:</label>
+                <div class="form-group">
+                    <input data-name="timestep" type="number" class="form-control">
+                </div>
+            </div>
         </div>
         Model: ${escapeHtml(this._project.settings.model)}<br>
         <div data-childview="map-editor"></div>
