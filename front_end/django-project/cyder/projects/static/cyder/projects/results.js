@@ -17,6 +17,7 @@ class ProjectResults extends View {
     _plot() {
         let project = CyderAPI.Project.get(this._projectId);
 
+        let startTime = Date.parse(project.settings.start);
         let times = [];
 
         let traceHighA = {x: times, y: [], mode: 'lines', name: 'Phase A'};
@@ -27,7 +28,7 @@ class ProjectResults extends View {
         let traceLowC = {x: times, y: [], mode: 'lines', name: 'Phase C'};
 
         for(let i = 0; i < project.results.length; i++) {
-            times.push(project.results[i].time);
+            times.push(new Date(startTime+project.results[i].time*1000));
             traceHighA.y.push(project.results[i].DwHighVoltWorstA);
             traceHighB.y.push(project.results[i].DwHighVoltWorstB);
             traceHighC.y.push(project.results[i].DwHighVoltWorstC);
