@@ -9,15 +9,12 @@ from datetime import datetime
 
 pat_to_lib=sys.argv[1]
 nam_cla=sys.argv[2]
-
-
-CYDER_LIB=os.path.join(pat_to_lib, "CyDER.mo")
-
+api=sys.argv[3]
 
 def translate(with_plots=False):
 
     print "-------------- starting JModelica"
-    print("This is CyDER_LIB={!s}".format(CYDER_LIB))
+    print("This is CyDER_LIB={!s}".format(pat_to_lib))
 
     #class_names = [  "Annex60.Utilities.Math.SmoothMaxInline"   ]
     #class_names = [ "CyDER.HIL.Examples.Validate_VoltVarControl"]
@@ -29,7 +26,8 @@ def translate(with_plots=False):
         print "=================================================================="
         print "=== Compiling {}".format(class_name)
 #        fmu_name = compile_fmu(class_name)
-        fmu_name = compile_fmu(class_name, CYDER_LIB, compiler_log_level = 'd', version = '2.0')
+        fmu_name = compile_fmu(class_name, pat_to_lib, compiler_log_level = 'd',
+                version = '2.0', target=api)
         #fmu_name = compile_fmu(class_name, compiler_options={'extra_lib_dirs':[ANNEX60_LIB, BUILDINGS_LIB]})
 
 def simulate(with_plots=True):
@@ -43,7 +41,7 @@ def simulate(with_plots=True):
         print "=================================================================="
         print "=== Compiling {}".format(class_name)
 #        fmu_name = compile_fmu(class_name)
-        fmu_name = compile_fmu(class_name, compiler_log_level = 'd', compiler_options={'extra_lib_dirs':[CYDER_LIB]})
+        fmu_name = compile_fmu(class_name, compiler_log_level = 'd', compiler_options={'extra_lib_dirs':[pat_to_lib]})
 
         model = load_fmu(fmu_name)
         opts = model.simulate_options() #Retrieve the default options
