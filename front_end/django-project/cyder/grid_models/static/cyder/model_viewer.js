@@ -260,7 +260,7 @@ class ModelInfo extends View {
     get _template() {
         return `${ IF(this.model, () =>
             `<div class="row" style="margin-bottom: 1rem">
-                <div class=col-md-4>
+                <div class=col-lg-4>
                     <div class="card">
                         <div class="card-header">
                             Infos
@@ -272,7 +272,7 @@ class ModelInfo extends View {
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4">
                     <div class="card">
                         <div class="card-header">
                             Loads
@@ -286,7 +286,7 @@ class ModelInfo extends View {
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4">
                     <div class="card">
                         <div class="card-header input-group">
                             <input class="form-control" placeholder="Search" name="srch-term" id="srch-term" type="text">
