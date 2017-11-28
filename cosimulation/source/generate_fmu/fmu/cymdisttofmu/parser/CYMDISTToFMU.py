@@ -1239,7 +1239,7 @@ class CYMDISTToFMU(object):
             for arch in ['win32', 'win64']:
                 zip_path = os.path.join(dir_name, arch)
                 os.makedirs(zip_path)
-                for libr in ['CYMDISTToFMUPython27.dll', 'python27.dll']:
+                for libr in ['CYMDISTToFMUPython34.dll', 'python34.dll']:
                     lib_path = os.path.join(fil_path, arch, libr)
                     if (os.path.isfile(lib_path)):
                         s = '{!s} will be copied to the binaries folder {!s}.' \
@@ -1254,7 +1254,7 @@ class CYMDISTToFMU(object):
             for arch in ['linux32', 'linux64']:
                 zip_path = os.path.join(dir_name, arch)
                 os.makedirs(zip_path)
-                for libr in ['libCYMDISTToFMUPython27.so', 'libpython27.so']:
+                for libr in ['libCYMDISTToFMUPython34.so', 'libpython34.so']:
                     lib_path = os.path.join(fil_path, arch, libr)
                     if (os.path.isfile(lib_path)):
                         s = '{!s} will be copied to the binaries folder {!s}.' \
