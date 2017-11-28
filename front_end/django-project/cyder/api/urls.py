@@ -19,7 +19,9 @@ for app in apps:
     if regex.match(app.name):
         try:
             importlib.import_module(app.name + '.api')
-        except ModuleNotFoundError:
+        except ModuleNotFoundError as e:
+            if e.name != app.name + '.api':
+                raise
             pass
 
 urlpatterns.append(url(r'^', include(apirouter.urls)))
