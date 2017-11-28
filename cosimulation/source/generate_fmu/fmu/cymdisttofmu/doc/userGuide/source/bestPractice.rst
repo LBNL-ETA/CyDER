@@ -40,6 +40,13 @@ To parametrize the ``ScalarVariable`` as an output variable, the user needs to
   - give a brief description of the variable (Line 59)
   - give the causality of the variable (``input`` for inputs, ``output`` for outputs) (Line 60)
   - define the type of variable (Currently only ``Real`` variables are supported) (Line 61)
-  - give the unit of the variable (Currently only valid Modelica units are supported) (Line 62)
+  - give the unit of the variable (Currently only valid :term:`Modelica` units are supported) (Line 62)
    
- 
+
+.. note:: 
+
+   If valid :term:`Modelica` units can't be used (e.g. Line 14), then remove the `unit` field from the input file
+   when defining new ``ScalarVariable``. 
+
+
+  
