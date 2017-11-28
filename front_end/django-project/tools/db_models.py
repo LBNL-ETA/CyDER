@@ -1,5 +1,5 @@
 import sim_worker.tasks
-from cyder.grid_models.models import *
+from cyder.models.models import *
 
 # Return a copy of dict, without the keys list in exclude_keys
 def exclude(dict, exclude_keys):

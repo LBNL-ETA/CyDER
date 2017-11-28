@@ -129,7 +129,7 @@ LeafletMap.addStyle = function() {
             position:relative;
             opacity: 0.7;
             background-color: #FFF;
-            background-image: url("/static/cyder/loading.gif");
+            background-image: url("/static/cyder/models/loading.gif");
             background-repeat: no-repeat;
             width: 55px;
             height: 55px;

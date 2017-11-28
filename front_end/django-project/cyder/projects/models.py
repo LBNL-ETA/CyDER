@@ -1,5 +1,5 @@
 from django.db import models
-from ..grid_models.models import Model
+from cyder.models.models import Model
 import json
 
 # Create your models here.

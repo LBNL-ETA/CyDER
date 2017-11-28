@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'cyder.main',
     'cyder.api',
-    'cyder.grid_models',
+    'cyder.models',
     'cyder.projects',
 ]
 

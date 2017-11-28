@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from cyder.grid_models.models import *
+from .models import *
 
 class ModelSerializer(serializers.ModelSerializer):
     class Meta:
