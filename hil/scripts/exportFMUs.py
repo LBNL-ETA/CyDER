@@ -17,6 +17,9 @@ The Python script requires following arguments:
 7. Path to xml input file for opal-rt
 8  Path to script file for opal-rt
 9. Path to configuration file for opal-rt
+fixme: A number of input variables of the
+volt-var controller need to be changed to
+parameters as they do not change during simulation.
 
 python exportFMUs.py "jmodelica" "C:\JModelica.org-2.1" "Z:\Ubuntu\proj\cyder_repo\git\hil\controls\CyDER.mo" "CyDER.HIL.Controls.voltvar" "Z:\Ubuntu\proj\simulatortofmu\SimulatorToFMU\simulatortofmu\parser" "Z:\Ubuntu\proj\cyder_repo\git\hil\sensors\uPMU.xml" "Z:\Ubuntu\proj\cyder_repo\git\hil\sensors\simulator_wrapper.py"
 python exportFMUs.py "dymola" "C:\JModelica.org-2.1" "Z:\Ubuntu\proj\cyder_repo\git\hil\controls\CyDER.mo" "CyDER.HIL.Controls.voltvar" "Z:\Ubuntu\proj\simulatortofmu\SimulatorToFMU\simulatortofmu\parser" "Z:\Ubuntu\proj\cyder_repo\git\hil\sensors\uPMU.xml" "Z:\Ubuntu\proj\cyder_repo\git\hil\sensors\simulator_wrapper.py"
@@ -27,8 +30,8 @@ import os
 import subprocess as sp
 from datetime import datetime
 from jinja2 import Template
-script_path = os.path.dirname(os.path.realpath(__file__))
-controls_lib_base_path = os.path.join("..", "controls")
+#script_path = os.path.dirname(os.path.realpath(__file__))
+#controls_lib_base_path = os.path.join("..", "controls")
 api="cs"
 MOS_Template="""
 openModel("{{path_lib}}");
