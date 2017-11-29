@@ -1,14 +1,20 @@
 CyDER - Django project
 ======
 
-Project folders
+Folders
 --------
 
 - config: the Django project config (settings, wsgi.py, urls.py...)  
-- sim_worker: the celery module which allow sending task to the worker  
-- celery_beat: the celery module used to schedule and run tasks in the wsgi container (the worker for this module run on wsgi)  
+- sim_worker: the celery module which allow sending task to the simulation worker  
+- celery_beat: the celery module used to schedule and run tasks in the wsgi container (the celery worker for this module run on wsgi)  
 - cyder: the Django apps
-- tools: Django module containing tool script
+- tools: Django module containing tool functions
+
+Files
+------
+
+- manage.py: the Django script to manage the project
+- tools.py: a script to perform admin action on CyDER as import new models from the simulation worker
 
 -------
 
@@ -19,9 +25,9 @@ Update Django models
 
 When the db models of a Django app are modified, a migration is needed.  
 
-To perform it (for exemple on the grid_models app), run
+To perform it (for exemple on the models app), run
 ```
-python manage.py makemigrations grid_models
+python manage.py makemigrations models
 python manage.py migrate`
 ```
 
@@ -41,16 +47,11 @@ Use the Django debug server
 You can start the debug server by running `python manage.py runserver 0.0.0.0:8080`. You can the access it by http://127.0.0.1:8080/  
 This can be useful when working on static files (to prevent running collectstatic all the time)
 
--------
-
-The following commands should be run inside the Django context, using the shell `sudo docker-compose exec wsgi python manage.py shell` or exporting the Django setting file of the project.
-
-Import/Update CYME models indo the postgres DB
+Import/Update CYME models into the Postgres DB
 -------
 
 Run
 ```
-import tools.db_models
-tools.db_models.import_model(modelname)
+python tools.py import_models [models_names]
 ```
-`modelname` being the name of the file of the model (for example `"BU0001"`)
+`models_names` being the list of the names of the models (for example `"BU0001" "AT" "OC0001"`)

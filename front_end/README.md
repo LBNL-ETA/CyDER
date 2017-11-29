@@ -14,6 +14,8 @@ How to use
 
 Require docker and docker-compose (and root privilege to be able to use docker)
 
-If it's the first time you use the project, run `sudo ./install.sh` (it will create database, collect the static files for nginx...). In django-project/sim_worker/celery.py change the address of the redis db to the address of the pc that run the containers  
+If it's the first time you use the project, run `sudo ./install.sh` (it will create database, collect the static files for nginx, create the Django superuser...). In django-project/sim_worker/celery.py change the address of the redis db to the address of the pc that run the containers  
 
 Then start containers using `sudo docker-compose up`  
+
+Now you should install and start the worker (cf /woker/README.md) and import models into the front end DB (cf /front_end/django_project/README.md)

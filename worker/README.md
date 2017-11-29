@@ -11,6 +11,11 @@ In sym_worker/celery.py change the address of the redis db to the address of the
 
 Then run `start_worker.bat` to start the worker
 
+Celery on Windows
+-------
+
+Celery dropped the support for Windows since version 4. That's why Celery 3.1.25 is used here as the last version to officially support windows
+
 Cympy and Celery
 -----
 
