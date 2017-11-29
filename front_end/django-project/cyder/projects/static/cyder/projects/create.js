@@ -1,5 +1,6 @@
 'use strict';
 import { SelectModel } from '../models/viewer.js';
+import { View } from '../viewlib.js';
 
 export class ProjectCreator extends View {
     constructor(el) {

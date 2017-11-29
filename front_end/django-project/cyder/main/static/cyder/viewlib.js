@@ -1,6 +1,7 @@
 'use strict';
+import { escapeHtml } from './escape-html.js';
 
-class View {
+export class View {
     constructor(el, tag = 'div') {
         this._html = {};
         if(el)
@@ -48,7 +49,8 @@ class View {
     }
 }
 
-function FOREACH(object, func) {
+export function ESCHTML(str) { return escapeHtml(str); }
+export function FOREACH(object, func) {
     if(object instanceof Array)
         return object.map(func).join('');
     if (typeof object[Symbol.iterator] === 'function') {
@@ -63,7 +65,7 @@ function FOREACH(object, func) {
         result += func(key, object[key]);
     return result;
 }
-function IF(cond, ifTemplate, elseTemplate) {
+export function IF(cond, ifTemplate, elseTemplate) {
     if (cond)
         return ifTemplate();
     else {

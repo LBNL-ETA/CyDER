@@ -1,5 +1,6 @@
 'use strict';
 import { createAllModelsLayer, createModelLayer, createLoadHeatLayer } from './layers.js';
+import { View, FOREACH, IF, ESCHTML } from '../viewlib.js'; 
 
 export class SelectModel extends View {
     constructor(el, allowEmpty = true) {
@@ -25,7 +26,7 @@ export class SelectModel extends View {
             ${ IF(this.allowEmpty, () => `<option value=""></option>` )}
             ${ IF(!(models instanceof Promise), () =>
                 FOREACH(models.keys(), (modelName) =>
-                    `<option value"${escapeHtml(modelName)}">${escapeHtml(modelName)}</option>`
+                    `<option value"${ESCHTML(modelName)}">${ESCHTML(modelName)}</option>`
                 )
             )}
         </select>`;
@@ -200,7 +201,7 @@ class OpenModelPopup extends View {
     }
     get _template() {
         return `
-        ${escapeHtml(this.modelName)}<br>
+        ${ESCHTML(this.modelName)}<br>
         <button class='btn btn-primary btn-sm' data-on="click:onopen">Open</button>`;
     }
 }
@@ -236,9 +237,9 @@ class ModelInfo extends View {
     async _onNodeClick(e) {
         if(!e.target.getPopup()) {
             let node = await CyderAPI.Node.get(this.model.name, e.target._leaflet_id);
-            var display = (num) => (num == null) ? "NA" : escapeHtml(num);
+            var display = (num) => (num == null) ? "NA" : ESCHTML(num);
             e.target.bindPopup(
-                `Node ${escapeHtml(node.node_id)}<br>
+                `Node ${ESCHTML(node.node_id)}<br>
                 VoltageA: ${display(node.VA)}<br>
                 VoltageB: ${display(node.VB)}<br>
                 VoltageC: ${display(node.VC)}`);
@@ -268,7 +269,7 @@ class ModelInfo extends View {
                             Infos
                         </div>
                         <div class="card-body">
-                            Model name: ${ escapeHtml(this.model.name) }<br>
+                            Model name: ${ ESCHTML(this.model.name) }<br>
                             Nodes count: <span id="nodescount"></span><br>
                             Devices count: <span id="devicescount"></span><br>
                         </div>

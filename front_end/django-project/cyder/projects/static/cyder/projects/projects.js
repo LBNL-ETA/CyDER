@@ -1,4 +1,5 @@
 'use strict';
+import { View, FOREACH, IF, ESCHTML } from '../viewlib.js';
 
 export class ProjectList extends View {
     constructor(el) {
@@ -10,7 +11,7 @@ export class ProjectList extends View {
         let projects = await CyderAPI.Project.getAll(true);
         this._childs = {};
         for(let [projectId, project] of projects)
-            this._childs[`project-${escapeHtml(projectId)}`] = new ProjectItem(project, this);
+            this._childs[`project-${ESCHTML(projectId)}`] = new ProjectItem(project, this);
         this.render();
     }
     get _template() {
@@ -30,7 +31,7 @@ export class ProjectList extends View {
                     `<tr><th></th><td>Loading...</td></tr>`
                 , () =>
                     FOREACH(projects.keys(), (projectId) =>
-                        `<tr data-childview="project-${escapeHtml(projectId)}"></tr>`
+                        `<tr data-childview="project-${ESCHTML(projectId)}"></tr>`
                     )
                 )}
             </tbody>
@@ -84,9 +85,9 @@ class ProjectItem extends View {
     }
     get _template() {
         return `
-        <th scope="row">${escapeHtml(this.project.id)}</th>
-        <td>${escapeHtml(this.project.name)}</td>
-        <td>${escapeHtml(this.project.status)}</td>
+        <th scope="row">${ESCHTML(this.project.id)}</th>
+        <td>${ESCHTML(this.project.name)}</td>
+        <td>${ESCHTML(this.project.status)}</td>
         <td class="text-right">
             <div class="btn-group" >
                 ${IF(this.project.status === 'Pending' || this.project.status === 'Started', () =>

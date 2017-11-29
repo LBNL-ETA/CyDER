@@ -8,20 +8,12 @@
 
 'use strict';
 
-(function() {
 /**
  * Module variables.
  * @private
  */
 
 var matchHtmlRegExp = /["'&<>]/;
-
-/**
- * Module exports.
- * @public
- */
-
-window.escapeHtml = escapeHtml;
 
 /**
  * Escape special characters in the given string of html.
@@ -31,7 +23,7 @@ window.escapeHtml = escapeHtml;
  * @public
  */
 
-function escapeHtml(string) {
+export function escapeHtml(string) {
   var str = '' + string;
   var match = matchHtmlRegExp.exec(str);
 
@@ -77,5 +69,3 @@ function escapeHtml(string) {
     ? html + str.substring(lastIndex, index)
     : html;
 }
-
-})();

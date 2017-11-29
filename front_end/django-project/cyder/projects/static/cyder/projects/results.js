@@ -1,4 +1,5 @@
 'use strict';
+import { View, FOREACH, IF, ESCHTML } from '../viewlib.js';
 
 export class ProjectResults extends View {
     constructor(projectId, el) {
@@ -57,7 +58,7 @@ export class ProjectResults extends View {
             `<br>
             Loading...`
         , () =>
-            `<h4>Project: ${escapeHtml(project.name)}</h4>
+            `<h4>Project: ${ESCHTML(project.name)}</h4>
             <br>
             <div data-name="plotHigh" style="height:300px;"></div>
             <div data-name="plotLow" style="height:300px;"></div>`

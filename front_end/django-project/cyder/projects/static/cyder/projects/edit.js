@@ -1,6 +1,7 @@
 'use strict';
 import { LeafletMap } from '../models/viewer.js';
 import { createModelLayer, createPVLayer, createLoadLayer } from '../models/layers.js';
+import { View, FOREACH, IF, ESCHTML } from '../viewlib.js';
 
 
 export class CanceledByUser extends Error {}
@@ -104,7 +105,7 @@ export class ProjectEditor extends View {
                 </div>
             </div>
         </div>
-        Model: ${escapeHtml(this._project.settings.model)}<br>
+        Model: ${ESCHTML(this._project.settings.model)}<br>
         <div data-childview="map-editor"></div>
         <div class="form-group">
             <button type="button" data-on="click:_save" class="btn btn-primary">Save</button>
@@ -158,9 +159,9 @@ export class ProjectMapEditor extends View {
         <div class="btn-group" role="group">
             ${ FOREACH(this._dataLayers, (name, dataLayer) =>
                 IF(name === this._currentDataLayer, () =>
-                    `<button type="button" class="btn btn-secondary disabled" data-on="click:_onShowDataLayer">${escapeHtml(name)}</button>`
+                    `<button type="button" class="btn btn-secondary disabled" data-on="click:_onShowDataLayer">${ESCHTML(name)}</button>`
                 , () =>
-                    `<button type="button" class="btn btn-secondary" data-on="click:_onShowDataLayer">${escapeHtml(name)}</button>`
+                    `<button type="button" class="btn btn-secondary" data-on="click:_onShowDataLayer">${ESCHTML(name)}</button>`
                 )
             )}
         </div>
