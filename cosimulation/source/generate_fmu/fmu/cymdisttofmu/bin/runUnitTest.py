@@ -189,9 +189,9 @@ class Tester(unittest.TestCase):
             start_time=start_time, stop_time=stop_time)
 
         # Define the inputs
-        cymdist_input_names = ['v']
+        cymdist_input_names = ['VANG_A']
         cymdist_input_values = [220.0]
-        cymdist_output_names = ['i']
+        cymdist_output_names = ['IA']
 
         # Get the value references of cymdist inputs
         for elem in cymdist_input_names:
@@ -226,7 +226,7 @@ class Tester(unittest.TestCase):
             # PyFMI fails to get the output of an OpenModelica FMU 
             self.assertEqual(
                 sim_mod.get_real(
-                    sim_mod.get_variable_valueref('i')),
+                    sim_mod.get_variable_valueref('IA')),
                 1.0,
                 'Values are not matching.')
             
