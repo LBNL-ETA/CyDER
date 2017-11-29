@@ -1,6 +1,5 @@
 {% extends 'cyder/base.html' %}
 {% load static %}
-{% load escapequotes %} {# Cf. cyder/main/templatetags/escapedoublequote.py #}
 
 {% block css %}
 
@@ -20,7 +19,7 @@
         window.onload = function() {
             CyderAPI.auth();
             projectResults = new ProjectResults(
-                "{{ project_id|escapequotes|safe }}",
+                "{{ project_id|escapejs }}",
                 document.querySelector('#project-results'));
         }
     </script>

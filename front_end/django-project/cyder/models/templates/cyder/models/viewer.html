@@ -1,5 +1,4 @@
 {% extends 'cyder/base.html' %}
-{% load escapequotes %} {# Cf. cyder/main/templatetags/escapedoublequote.py #}
 {% load static %}
 
 {% block css %}
@@ -34,7 +33,7 @@
             CyderAPI.auth();
             modelViewer = new ModelViewer("{% url 'model_viewer' %}", document.querySelector('#model-viewer'));
             modelViewer.render();
-            modelViewer.modelName = "{{ modelname|escapequotes|safe }}";
+            modelViewer.modelName = "{{ modelname|escapejs }}";
         }
     </script>
 {% endblock script %}
