@@ -13,12 +13,13 @@
     <h1>Projects <a href="{% url 'createproject' %}" style="margin-left: 4rem;" class="btn btn-primary">New</a></h1>
     <br>
     <div id="project-list"></div>
-
 {% endblock content %}
 
 {% block script %}
-    <script src="{% static 'cyder/projects/projects.js' %}"></script>
-    <script>
+    <script src=""></script>
+    <script type="module">
+        import { ProjectList } from '{% static 'cyder/projects/projects.js' %}';
+
         document.querySelector(".navbar [data-name='projects']").classList.add('active');
         let projectList;
         window.onload = function() {

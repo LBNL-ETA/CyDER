@@ -1,8 +1,11 @@
 'use strict';
+import { LeafletMap } from '../models/viewer.js';
+import { createModelLayer, createPVLayer, createLoadLayer } from '../models/layers.js';
 
-class CanceledByUser extends Error {}
 
-class ProjectEditor extends View {
+export class CanceledByUser extends Error {}
+
+export class ProjectEditor extends View {
     constructor(el) {
         super(el, 'div');
         this._project = null;
@@ -111,7 +114,7 @@ class ProjectEditor extends View {
     }
 }
 
-class ProjectMapEditor extends View {
+export class ProjectMapEditor extends View {
     constructor(modelName, el) {
         super(el, 'div');
         this._childs['leaflet-map'] = new LeafletMap();

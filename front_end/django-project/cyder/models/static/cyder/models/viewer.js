@@ -1,6 +1,7 @@
 'use strict';
+import { createAllModelsLayer, createModelLayer, createLoadHeatLayer } from './layers.js';
 
-class SelectModel extends View {
+export class SelectModel extends View {
     constructor(el, allowEmpty = true) {
         super(el, 'span');
         this.allowEmpty = allowEmpty;
@@ -33,10 +34,10 @@ class SelectModel extends View {
     set modelName(val) { this.ready.then(() => this._html.select.value = val); }
 }
 
-class LeafletMap extends View {
+export class LeafletMap extends View {
     constructor(el) {
         super(el, 'div');
-        LeafletMap.addStyle();
+        leafletMapAddStyle();
         this._layers = new Map();
         this._loadingLayers = 0;
         this._lastLayer = null;
@@ -119,11 +120,12 @@ class LeafletMap extends View {
         return true;
     }
 }
-LeafletMap.addStyle = function() {
-    if(LeafletMap._style)
+let leafletMapStyle;
+function leafletMapAddStyle() {
+    if(leafletMapStyle)
         return;
-    LeafletMap._style = document.createElement('style');
-    LeafletMap._style.appendChild(document.createTextNode(`
+    leafletMapStyle = document.createElement('style');
+    leafletMapStyle.appendChild(document.createTextNode(`
         .leaflet-loading {
             float: right;
             position:relative;
@@ -136,27 +138,10 @@ LeafletMap.addStyle = function() {
             z-index: 500;
         }
         `));
-    document.getElementsByTagName('head')[0].appendChild(LeafletMap._style);
+    document.getElementsByTagName('head')[0].appendChild(leafletMapStyle);
 }
 
-class OpenModelPopup extends View {
-    constructor(modelName, modelViewer) {
-        super(null, 'div');
-        this.modelName = modelName;
-        this.modelViewer = modelViewer;
-        this.render();
-    }
-    onopen(e) {
-        this.modelViewer.modelName = this.modelName;
-    }
-    get _template() {
-        return `
-        ${escapeHtml(this.modelName)}<br>
-        <button class='btn btn-primary btn-sm' data-on="click:onopen">Open</button>`;
-    }
-}
-
-class ModelViewer extends View {
+export class ModelViewer extends View {
     constructor(url, el) {
         super(el, 'div');
         this.url = url;
@@ -200,6 +185,23 @@ class ModelViewer extends View {
         Select a model to display: <span data-childview="select-model"></span>
         <div data-childview="leaflet-map" style="height: 70vh; margin: 1rem 0 1rem 0;"></div>
         <div data-childview="model-info"></div>`;
+    }
+}
+
+class OpenModelPopup extends View {
+    constructor(modelName, modelViewer) {
+        super(null, 'div');
+        this.modelName = modelName;
+        this.modelViewer = modelViewer;
+        this.render();
+    }
+    onopen(e) {
+        this.modelViewer.modelName = this.modelName;
+    }
+    get _template() {
+        return `
+        ${escapeHtml(this.modelName)}<br>
+        <button class='btn btn-primary btn-sm' data-on="click:onopen">Open</button>`;
     }
 }
 
@@ -302,66 +304,4 @@ class ModelInfo extends View {
             </div>`
         ) }`;
     }
-}
-
-async function createAllModelsLayer(onEachFeature = ()=>{}) {
-    let geojson = await CyderAPI.rest('GET', '/api/models/geojson/');
-    return L.geoJson(geojson, {
-        onEachFeature
-    });
-}
-async function createModelLayer(modelName, onEachFeature = ()=>{}) {
-    let geojson = await CyderAPI.rest('GET', `/api/models/${encodeURI(modelName)}/geojson/`);
-    let pointToLayer = (feature, latlng) => {
-        var circle = L.circle(latlng, {
-            color: 'red',
-            weight: 2,
-            fillOpacity: 1,
-            radius: 3
-        });
-        return circle;
-    }
-    return L.geoJson(geojson, {
-        pointToLayer,
-        onEachFeature
-    });
-}
-async function createPVLayer(modelName, onEach = ()=>{}) {
-    let pvs = Array.from((await CyderAPI.Device.getAll(modelName)).values())
-        .filter((device) => device.device_type == 39);
-    let layer = L.layerGroup([]);
-    for(let pv of pvs) {
-        let marker = L.circleMarker([pv.latitude, pv.longitude]);
-        onEach(pv, marker);
-        layer.addLayer(marker);
-    }
-    return layer;
-}
-async function createLoadLayer(modelName, onEach = ()=>{}) {
-    let loads = Array.from((await CyderAPI.Device.getAll(modelName)).values())
-        .filter((device) => device.device_type == 14);
-    let layer = L.layerGroup([]);
-    for(let load of loads) {
-        let marker = L.circleMarker([load.latitude, load.longitude]);
-        onEach(load, marker);
-        layer.addLayer(marker);
-    }
-    return layer;
-}
-async function createLoadHeatLayer(modelName, phase) {
-    let devices = CyderAPI.Device.getAll(modelName);
-    let loads = CyderAPI.Load.getAll(modelName);
-    devices = await devices;
-    loads = await loads;
-
-    let maxLoad = 0;
-    let data = Array.from(loads.values()).map((load) => {
-        let device = devices.get(load.device_number);
-        let loadValue = load['SpotKW'+phase];
-        if(loadValue > maxLoad) maxLoad = loadValue;
-        return [device.latitude, device.longitude , load['SpotKW'+phase]];
-    })
-
-    let heatLayer = L.heatLayer(data, {max: maxLoad, maxZoom: 1, radius: 10, blur:5});
-    return heatLayer;
 }

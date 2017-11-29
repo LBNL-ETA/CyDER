@@ -17,9 +17,7 @@
 {% endblock css %}
 
 {% block content %}
-
     <div id="model-viewer"></div>
-
 {% endblock content %}
 
 {% block script %}
@@ -27,8 +25,9 @@
         integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
         crossorigin=""></script>
     <script src="{% static 'cyder/models/leaflet-heat.js' %}"></script>
-    <script src="{% static 'cyder/models/viewer.js' %}"></script>
-    <script>
+    <script type="module">
+        import { ModelViewer } from '{% static 'cyder/models/viewer.js' %}';
+
         document.querySelector(".navbar [data-name='model_viewer']").classList.add('active');
         let modelViewer;
         window.onload = function() {

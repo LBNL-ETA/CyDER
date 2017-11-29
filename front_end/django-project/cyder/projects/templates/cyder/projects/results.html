@@ -12,8 +12,9 @@
 
 {% block script %}
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="{% static 'cyder/projects/results.js' %}"></script>
-    <script>
+    <script type="module">
+        import { ProjectResults } from '{% static 'cyder/projects/results.js' %}';
+
         document.querySelector(".navbar [data-name='projects']").classList.add('active');
         let projectResults;
         window.onload = function() {

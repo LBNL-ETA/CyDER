@@ -1,6 +1,7 @@
 'use strict';
+import { SelectModel } from '../models/viewer.js';
 
-class ProjectCreator extends View {
+export class ProjectCreator extends View {
     constructor(el) {
         super(el, 'div');
         this._childs['select-model'] = new SelectModel(null, false);

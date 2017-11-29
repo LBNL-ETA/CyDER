@@ -7,9 +7,9 @@
 {% endblock content %}
 
 {% block script %}
-    <script src="{% static 'cyder/models/viewer.js' %}"></script>
-    <script src="{% static 'cyder/projects/create.js' %}"></script>
-    <script>
+    <script type="module">
+        import { ProjectCreator } from '{% static 'cyder/projects/create.js' %}';
+
         document.querySelector(".navbar [data-name='projects']").classList.add('active');
         let projectCreator;
         window.onload = function() {

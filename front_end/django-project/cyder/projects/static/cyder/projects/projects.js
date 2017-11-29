@@ -1,6 +1,6 @@
 'use strict';
 
-class ProjectList extends View {
+export class ProjectList extends View {
     constructor(el) {
         super(el, 'div');
         this.update();

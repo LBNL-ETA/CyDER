@@ -16,9 +16,9 @@
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
         integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
         crossorigin=""></script>
-    <script src="{% static 'cyder/models/viewer.js' %}"></script>
-    <script src="{% static 'cyder/projects/edit.js' %}"></script>
-    <script>
+    <script type="module">
+        import { ProjectEditor } from '{% static 'cyder/projects/edit.js' %}';
+
         document.querySelector(".navbar [data-name='projects']").classList.add('active');
         let projectEditor;
         window.onload = function() {
