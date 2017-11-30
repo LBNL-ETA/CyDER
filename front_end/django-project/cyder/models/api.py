@@ -14,7 +14,7 @@ from django.shortcuts import get_object_or_404
 
 class ModelViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (IsAuthenticated,)
-    queryset = Model.objects.all()
+    queryset = Model.objects.all().order_by('name')
     serializer_class = ModelSerializer
     lookup_field = 'name'
 
