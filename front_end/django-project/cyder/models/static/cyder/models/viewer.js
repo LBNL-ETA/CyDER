@@ -1,6 +1,6 @@
 'use strict';
 import { createAllModelsLayer, createModelLayer, createLoadHeatLayer } from './layers.js';
-import { View, FOREACH, IF, ESCHTML } from '../viewlib.js'; 
+import { View, FOREACH, IF, ESCHTML } from '../viewlib.js';
 
 export class SelectModel extends View {
     constructor(el, allowEmpty = true) {
@@ -218,6 +218,9 @@ class ModelInfo extends View {
         if(this._model !== null) {
             this._leafletMap.addLayer(this._getModelLayer(), 'model', true);
             this._leafletMap.fitBounds('model');
+            this._childs['switchLoadA'] = new HeatMapSwitch('PhaseA', 'loadA', this._leafletMap, () => createLoadHeatLayer(this._model.name, 'A'));
+            this._childs['switchLoadB'] = new HeatMapSwitch('PhaseB', 'loadB', this._leafletMap, () => createLoadHeatLayer(this._model.name, 'B'));
+            this._childs['switchLoadC'] = new HeatMapSwitch('PhaseC', 'loadC', this._leafletMap, () => createLoadHeatLayer(this._model.name, 'C'));
         }
         this.render();
     }
@@ -246,20 +249,7 @@ class ModelInfo extends View {
             e.target.openPopup();
         }
     }
-    _onToogleLayerButton(e) {
-        if(e.target.classList.contains('disabled')) {
-            this._leafletMap.removeLayer(e.target.dataset.layer);
-            e.target.classList.remove('disabled');
-        } else {
-            let layer;
-            let layerName = e.target.dataset.layer;
-            if(layerName.startsWith('loads')) {
-                layer = createLoadHeatLayer(this._model.name, layerName.charAt(5))
-            }
-            this._leafletMap.addLayer(layer , layerName, true);
-            e.target.classList.add('disabled');
-        }
-    }
+
     get _template() {
         return `${ IF(this.model, () =>
             `<div class="row" style="margin-bottom: 1rem">
@@ -278,14 +268,12 @@ class ModelInfo extends View {
                 <div class="col-lg-4">
                     <div class="card">
                         <div class="card-header">
-                            Loads
+                            Loads (kW)
                         </div>
                         <div id="" class="card-body">
-                            <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-secondary" data-on="click:_onToogleLayerButton" data-layer="loadsA">Phase A</button>
-                            <button type="button" class="btn btn-secondary" data-on="click:_onToogleLayerButton" data-layer="loadsB">Phase B</button>
-                            <button type="button" class="btn btn-secondary" data-on="click:_onToogleLayerButton" data-layer="loadsC">Phase C</button>
-                            </div>
+                            <div data-childview="switchLoadA"></div>
+                            <div data-childview="switchLoadB"></div>
+                            <div data-childview="switchLoadC"></div>
                         </div>
                     </div>
                 </div>
@@ -304,5 +292,43 @@ class ModelInfo extends View {
                 </div>
             </div>`
         ) }`;
+    }
+}
+
+class HeatMapSwitch extends View {
+    constructor(name, layerName, leafletMap, layerFunc, el) {
+        super(el, 'div');
+        this._name = name;
+        this._layerName = layerName;
+        this._leafletMap = leafletMap;
+        this._layerFunc = layerFunc;
+        this._layer = null;
+        this.render();
+    }
+    async _ontoogle(e) {
+        if(this._layer) {
+            this._leafletMap.removeLayer(this._layerName);
+            this._layer = null;
+        } else {
+            this._layer = this._layerFunc();
+            this._leafletMap.addLayer(this._layer , this._layerName, true);
+            e.target.classList.add('disabled');
+            this._layer = await this._layer;
+
+        }
+        this.render();
+    }
+    _onMaxChange(e) {
+        this._layer.setOptions({max: e.target.value});
+    }
+    get _template() {
+        return `
+        <div class="form-group">
+            <button type="button" class="btn btn-secondary${ IF(this._layer, () => ` disabled`) }" data-on="click:_ontoogle" >${ ESCHTML(this._name) }</button>
+            ${ IF(this._layer, () => `
+                0 <div style="display: inline-block; width: 70px; height: 1em; background: linear-gradient(to right, rgba(0,0,255,0.1), rgba(0,0,255,0.5), lime, yellow, red);"></div>
+                <input style="width:65px" data-on="change:_onMaxChange" type="number" value="${ this._layer.options.max }">
+            `)}
+        </div>`;
     }
 }
