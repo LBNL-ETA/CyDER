@@ -46,10 +46,10 @@ def import_model(modelname):
 
         section = Section(model=model, **exclude(section_row, ['from_node_id', 'to_node_id']))
         section.from_node = Node.objects.get(model=model, node_id=section_row['from_node_id'])
-        if section_row['to_node_id'] == section_row['section_id']:
-            section.to_node = None
-        else:
+        try:
             section.to_node = Node.objects.get(model=model, node_id=section_row['to_node_id'])
+        except:
+            section.to_node = None
         section.save()
         print("\rImported sections: %d/%d" % (index+1, lenght), end="")
     print()
