@@ -40,6 +40,10 @@ import datetime
 import dateutil.parser
 
 @app.task
+def run_configuration(project):
+    return
+
+@app.task
 def run_simulation(project):
     if os.path.exists("./simulation_project/sim"):
         shutil.rmtree("./simulation_project/sim")

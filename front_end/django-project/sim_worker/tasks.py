@@ -7,5 +7,9 @@ def get_model(modelname):
     return
 
 @app.task
+def run_configuration(project):
+    return
+
+@app.task
 def run_simulation(project):
     return

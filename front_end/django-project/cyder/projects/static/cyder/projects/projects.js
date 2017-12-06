@@ -22,6 +22,7 @@ export class ProjectList extends View {
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Name</th>
+                    <th scope="col">Stage</th>
                     <th scope="col">Status</th>
                     <th scope="col" class="text-right">Action</th>
                 </tr>
@@ -46,13 +47,20 @@ class ProjectItem extends View {
         this.parentList = parentList;
         this.render();
     }
-    async _onRun(e) {
-        await CyderAPI.Project.run(this.project.id);
+    async _onRunConfig(e) {
+        await CyderAPI.Project.runConfig(this.project.id);
+        this.parentList.update();
+    }
+    async _onRunSim(e) {
+        await CyderAPI.Project.runSim(this.project.id);
         this.parentList.update();
     }
     async _onRevoke(e) {
         await CyderAPI.Project.revoke(this.project.id);
         this.parentList.update();
+    }
+    _onConfig(e) {
+        //window.location.href = `./results/${encodeURI(this.project.id)}/`
     }
     _onResults(e) {
         window.location.href = `./results/${encodeURI(this.project.id)}/`
@@ -68,10 +76,10 @@ class ProjectItem extends View {
         super.render();
         let rowclass = '';
         switch(this.project.status) {
-            case 'Succeed':
+            case 'Success':
                 rowclass = 'table-success';
                 break;
-            case 'Failed':
+            case 'Failure':
                 rowclass = 'table-danger';
                 break;
             case 'Started':
@@ -87,20 +95,27 @@ class ProjectItem extends View {
         return `
         <th scope="row">${ESCHTML(this.project.id)}</th>
         <td>${ESCHTML(this.project.name)}</td>
+        <td>${ESCHTML(this.project.stage)}</td>
         <td>${ESCHTML(this.project.status)}</td>
         <td class="text-right">
             <div class="btn-group" >
                 ${IF(this.project.status === 'Pending' || this.project.status === 'Started', () =>
                     `<button type="button" class="btn btn-sm btn-primary" data-on="click:_onRevoke">Revoke</button>`
-                , () => IF(this.project.status === 'Succeed', () =>
+                , () => IF(this.project.stage === 'Simulation' && this.project.status === 'Success', () =>
                     `<button type="button" class="btn btn-sm btn-primary" data-on="click:_onResults">Results</button>`
+                , () => IF(this.project.stage === 'Simulation' || (this.project.stage === 'Configuration' && this.project.status === 'Success'), () =>
+                    `<button type="button" class="btn btn-sm btn-primary" data-on="click:_onRunSim">Run simulation</button>`
                 , () =>
-                    `<button type="button" class="btn btn-sm btn-primary" data-on="click:_onRun">Run simulation</button>`
-                ))}
+                    `<button type="button" class="btn btn-sm btn-primary" data-on="click:_onRunConfig">Run configuration</button>`
+                )))}
                 <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <div class="dropdown-menu dropdown-menu-right">
+                    ${ IF(this.project.stage === 'Simulation' || (this.project.stage === 'Configuration' && this.project.status === 'Success'), () =>
+                        `<button class="dropdown-item" data-on="click:_onConfig">See configuration</button>
+                        <button class="dropdown-item" data-on="click:_onRunConfig">Re-run configuration</button>`
+                    )}
                     <button class="dropdown-item" data-on="click:_onEdit">Edit</button>
                     <button class="dropdown-item" data-on="click:_onDelete">Delete</button>
                 </div>

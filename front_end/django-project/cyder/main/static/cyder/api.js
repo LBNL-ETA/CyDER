@@ -207,8 +207,11 @@
     };
 
     class ProjectRes extends Res.DeleteMixin(Res.WriteMixin(Res)) {
-        run(lookup) {
-            return CyderAPI.rest('POST', `${this._getLookupUrl(lookup)}run/`);
+        runConfig(lookup) {
+            return CyderAPI.rest('POST', `${this._getLookupUrl(lookup)}run_config/`);
+        }
+        runSim(lookup) {
+            return CyderAPI.rest('POST', `${this._getLookupUrl(lookup)}run_sim/`);
         }
         revoke(lookup) {
             return CyderAPI.rest('POST', `${this._getLookupUrl(lookup)}revoke/`);
