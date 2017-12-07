@@ -32,7 +32,7 @@ export class ProjectEditor extends View {
         if(this._project.name !== this._html.name.value ||
             this._project.settings.start !== this._html.start.value ||
             this._project.settings.end !== this._html.end.value ||
-            this._project.settings.timestep !== this._html.timestep.value ||
+            this._project.settings.timestep !== Number(this._html.timestep.value) ||
             this.child('map-editor').dataWasModified('PVs') ||
             this.child('map-editor').dataWasModified('Loads'))
             return true;
@@ -46,7 +46,7 @@ export class ProjectEditor extends View {
             this._project.name = this._html.name.value;
             this._project.settings.start = this._html.start.value;
             this._project.settings.end = this._html.end.value;
-            this._project.settings.timestep = this._html.timestep.value;
+            this._project.settings.timestep = Number(this._html.timestep.value);
             this._project.settings.addPv = this.child('map-editor').getData('PVs');
             this.child('map-editor').resetDataLayer('PVs');
             this._project.settings.addLoad = this.child('map-editor').getData('Loads');

@@ -1,0 +1,26 @@
+{% extends 'cyder/base.html' %}
+{% load static %}
+
+{% block css %}
+
+{% endblock css %}
+
+{% block content %}
+    <div id="project-config"></div>
+{% endblock content %}
+
+{% block script %}
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="module">
+        import { ProjectConfig } from '{% static 'cyder/projects/config.js' %}';
+
+        document.querySelector(".navbar [data-name='projects']").classList.add('active');
+        let projectConfig;
+        window.onload = function() {
+            CyderAPI.auth();
+            projectConfig = new ProjectConfig(
+                "{{ project_id|escapejs }}",
+                document.querySelector('#project-config'));
+        }
+    </script>
+{% endblock script %}

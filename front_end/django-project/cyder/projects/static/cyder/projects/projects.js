@@ -60,13 +60,13 @@ class ProjectItem extends View {
         this.parentList.update();
     }
     _onConfig(e) {
-        //window.location.href = `./results/${encodeURI(this.project.id)}/`
+        window.location.href = `./config/${encodeURI(this.project.id)}/`;
     }
     _onResults(e) {
-        window.location.href = `./results/${encodeURI(this.project.id)}/`
+        window.location.href = `./results/${encodeURI(this.project.id)}/`;
     }
     _onEdit(e) {
-        window.location.href = `./edit/${encodeURI(this.project.id)}/`
+        window.location.href = `./edit/${encodeURI(this.project.id)}/`;
     }
     async _onDelete(e) {
         await CyderAPI.Project.delete(this.project.id);
