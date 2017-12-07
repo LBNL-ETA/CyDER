@@ -72,36 +72,36 @@ class Tester(unittest.TestCase):
     Class that runs all regression tests.
 
     '''
-    
+
     def find_executable(self, tool):
-        
+
         '''
         Function for checking if Dymola, JModelica, or OpenModelica is installed.
 
         '''
-        
+
         if tool == 'jmodelica' and platform.system().lower() == "windows":
             tool = 'pylab'
         if tool == 'jmodelica' and platform.system().lower() == "linux":
             tool = 'jm_python.sh'
-            
+
         if tool == 'openmodelica' and platform.system().lower() == "windows":
             tool = 'omc'
-            
+
         cmd = "where" if platform.system() == "Windows" else "which"
-        try: 
+        try:
             return subprocess.call([cmd, tool])
-        except: 
+        except:
             print ("No executable for tool={!s}".format(tool))
             return 1
 
     def run_cymdist (self, tool):
-        
+
         '''
         Function for running FMUs exported from Dymola, JModelica, and OpenModelica with PyFMI.
 
         '''
-        
+
         try:
             from pyfmi import load_fmu
         except BaseException:
@@ -110,7 +110,7 @@ class Tester(unittest.TestCase):
         if (tool=='openmodelica' and platform.system().lower() == 'linux'):
                 print ('tool={!s} is not supported on Linux'.format(tool))
                 return
-            
+
         else:
         # Export FMUs which are needed to run the cases.
             if tool == 'openmodelica':
@@ -157,26 +157,26 @@ class Tester(unittest.TestCase):
                             'Export the cymdist with tool={!s}, FMI version={!s}, FMI API={!s}'.format(
                                 tool, version, api))
                         start = datetime.now()
-                        CYMDIST_Test.print_mo()
-                        CYMDIST_Test.generate_fmu()
-                        CYMDIST_Test.clean_temporary()
-                        CYMDIST_Test.rewrite_fmu()
+                        # CYMDIST_Test.print_mo()
+                        # CYMDIST_Test.generate_fmu()
+                        # CYMDIST_Test.clean_temporary()
+                        # CYMDIST_Test.rewrite_fmu()
                         end = datetime.now()
                         print(
                             'Export CYMDIST as an FMU in {!s} seconds.'.format(
                                 (end - start).total_seconds()))
-                        
+
                         fmu_path = os.path.join(
                         script_path, '..', 'fmus', tool, platform.system().lower())
                         print(
                             'Copy CYMDIST.fmu to {!s}.'.format(fmu_path))
                         shutil.copy2('CYMDIST.fmu', fmu_path)
-    
+
         fmu_path = os.path.join(
                 script_path, '..', 'fmus', tool, platform.system().lower(), 'CYMDIST.fmu')
         # Parameters which will be arguments of the function
         start_time = 0.0
-        stop_time = 5.0
+        stop_time = 0.1
 
         print ('Starting the simulation with {!s}'.format(tool))
         start = datetime.now()
@@ -188,10 +188,15 @@ class Tester(unittest.TestCase):
         sim_mod.setup_experiment(
             start_time=start_time, stop_time=stop_time)
 
+        cymdist_con_val_str=os.path.abspath('Z:\\thierry\\proj\\cyder_repo\\NO_SHARING\\CYMDIST\\config.json')
+        if sys.version_info.major>2:
+            cymdist_con_val_str=bytes(cymdist_con_val_str,'utf-8')
+        cymdist_con_val_ref=sim_mod.get_variable_valueref('_configurationFileName')
+
         # Define the inputs
-        cymdist_input_names = ['VANG_A']
-        cymdist_input_values = [220.0]
-        cymdist_output_names = ['IA']
+        cymdist_input_names = ['VMAG_A', 'VMAG_B', 'VMAG_C', 'VANG_A', 'VANG_B', 'VANG_C']
+        cymdist_input_values = [2520, 2520, 2520, 0, -120, 120]
+        cymdist_output_names = ['IA', 'IAngleA', 'IB', 'IAngleB', 'IC', 'IAngleC']
 
         # Get the value references of cymdist inputs
         for elem in cymdist_input_names:
@@ -206,6 +211,9 @@ class Tester(unittest.TestCase):
         # Set the flag to save the results
         sim_mod.set('_saveToFile', 0)
 
+        if not (tool=="jmodelica"):
+            sim_mod.set_string([cymdist_con_val_ref], [cymdist_con_val_str])
+
         # Initialize the FMUs
         sim_mod.initialize()
 
@@ -216,20 +224,17 @@ class Tester(unittest.TestCase):
         sim_mod.enter_continuous_time_mode()
 
         sim_mod.set_real(cymdist_input_valref, cymdist_input_values)
-        
+
         end = datetime.now()
 
         print(
             'Ran a single CYMDIST simulation with {!s} FMU={!s} in {!s} seconds.'.format(
                 tool, fmu_path, (end - start).total_seconds()))
         if not (tool=='openmodelica'):
-            # PyFMI fails to get the output of an OpenModelica FMU 
-            self.assertEqual(
-                sim_mod.get_real(
-                    sim_mod.get_variable_valueref('IA')),
-                1.0,
-                'Values are not matching.')
-            
+            #print(sim_mod.get_real(cymdist_output_valref))
+            # PyFMI fails to get the output of an OpenModelica FMU
+            if(abs(sum(sim_mod.get_real(cymdist_output_valref))-618.57)>1e-3):
+                raise ValueError('Values are not matching.')
         # Terminate FMUs
         sim_mod.terminate()
 
@@ -292,7 +297,7 @@ class Tester(unittest.TestCase):
 
         '''
 
-        for tool in  ['dymola', 'jmodelica', 'openmodelica']:       
+        for tool in  ['dymola', 'jmodelica', 'openmodelica']:
             retVal=self.find_executable(tool)
             if ((retVal is not None) and retVal!=1):
                 print("======tool={!s} was found. Unit Test will be run".format(tool))
@@ -353,20 +358,20 @@ class Tester(unittest.TestCase):
                         print(
                             'Export CYMDIST as an FMU in {!s} seconds.'.format(
                                 (end - start).total_seconds()))
-                              
+
     def test_updates_fmu(self):
         '''
         Test the export and updates of FMUs.
 
         '''
 
-        for tool in  ['dymola', 'jmodelica', 'openmodelica']:       
+        for tool in  ['dymola', 'jmodelica', 'openmodelica']:
             retVal=self.find_executable(tool)
             if ((retVal is not None) and retVal!=1):
                 print("======tool={!s} was found. Unit Test will be run".format(tool))
             else:
                 continue
-            
+
             if (platform.system().lower() == 'linux' and tool == 'openmodelica'):
                 print ('tool={!s} is not supported on Linux.'.format(tool))
                 continue
@@ -426,7 +431,7 @@ class Tester(unittest.TestCase):
                         print(
                             'Copy CYMDIST.fmu to {!s}.'.format(fmu_path))
                         shutil.copy2('CYMDIST.fmu', fmu_path)
-                        
+
     def test_run_cymdist_all(self):
         '''
         Test the execution of one CYMDIST FMU.
@@ -434,7 +439,7 @@ class Tester(unittest.TestCase):
         '''
 
         # Export FMUs which are needed to run the cases.
-        for tool in  ['dymola', 'jmodelica', 'openmodelica']:       
+        for tool in  ['dymola', 'jmodelica', 'openmodelica']:
             retVal=self.find_executable(tool)
             if ((retVal is not None) and retVal!=1):
                 print("======tool={!s} was found. Unit Test will be run.".format(tool))
@@ -448,7 +453,7 @@ class Tester(unittest.TestCase):
         Test the execution of one CYMDIST FMU.
 
         '''
-        
+
         retVal=self.find_executable('dymola')
         if ((retVal is not None) and retVal!=1):
             print("======tool=dymola was found. Unit Test will be run.")
@@ -458,13 +463,13 @@ class Tester(unittest.TestCase):
             self.run_cymdist ('dymola')
         else:
             return
-    
+
     def test_run_cymdist_jmodelica(self):
         '''
         Test the execution of one CYMDIST FMU.
 
         '''
-        
+
         retVal=self.find_executable('jmodelica')
         if ((retVal is not None) and retVal!=1):
             print("======tool=jmodelica was found. Unit Test will be run.")
@@ -474,13 +479,13 @@ class Tester(unittest.TestCase):
             self.run_cymdist ('jmodelica')
         else:
             return
-        
+
     def test_run_cymdist_openmodelica(self):
         '''
         Test the execution of one CYMDIST FMU.
 
         '''
-        
+
         retVal=self.find_executable('openmodelica')
         if ((retVal is not None) and retVal!=1):
             print("======tool=openmodelica was found. Unit Test will be run.")
@@ -490,7 +495,7 @@ class Tester(unittest.TestCase):
             self.run_cymdist ('openmodelica')
         else:
             return
-                                    
+
 if __name__ == "__main__":
         # Check command line options
     if (platform.system().lower() in ['windows']):
