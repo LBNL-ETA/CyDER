@@ -18,32 +18,24 @@ export class ProjectResults extends View {
     _plot() {
         let project = CyderAPI.Project.get(this._projectId);
 
-        let startTime = Date.parse(project.settings.start);
-        let times = [];
+        let startDate = Date.parse(project.settings.start);
+        let endDate = Date.parse(project.settings.end);
+        let dates = [];
+        for(let date = startDate; date < endDate; date+=project.settings.timestep*1000)
+            dates.push(new Date(date));
 
-        let traceHighA = {x: times, y: [], mode: 'lines', name: 'Phase A'};
-        let traceHighB = {x: times, y: [], mode: 'lines', name: 'Phase B'};
-        let traceHighC = {x: times, y: [], mode: 'lines', name: 'Phase C'};
-        let traceLowA = {x: times, y: [], mode: 'lines', name: 'Phase A'};
-        let traceLowB = {x: times, y: [], mode: 'lines', name: 'Phase B'};
-        let traceLowC = {x: times, y: [], mode: 'lines', name: 'Phase C'};
-
-        for(let i = 0; i < project.results.length; i++) {
-            times.push(new Date(startTime+project.results[i].time*1000));
-            traceHighA.y.push(project.results[i].DwHighVoltWorstA);
-            traceHighB.y.push(project.results[i].DwHighVoltWorstB);
-            traceHighC.y.push(project.results[i].DwHighVoltWorstC);
-            traceLowA.y.push(project.results[i].DwLowVoltWorstA);
-            traceLowB.y.push(project.results[i].DwLowVoltWorstB);
-            traceLowC.y.push(project.results[i].DwLowVoltWorstC);
-        }
-
+        let traceHighA = {x: dates, y: project.results.DwHighVoltWorstA, mode: 'lines', name: 'Phase A'};
+        let traceHighB = {x: dates, y: project.results.DwHighVoltWorstB, mode: 'lines', name: 'Phase B'};
+        let traceHighC = {x: dates, y: project.results.DwHighVoltWorstC, mode: 'lines', name: 'Phase C'};
         let dataHigh = [traceHighA, traceHighB, traceHighC];
         let layoutHigh = {
             title:'DwHighVoltWorst'
         };
         Plotly.newPlot(this._html.plotHigh, dataHigh, layoutHigh);
 
+        let traceLowA = {x: dates, y: project.results.DwLowVoltWorstA, mode: 'lines', name: 'Phase A'};
+        let traceLowB = {x: dates, y: project.results.DwLowVoltWorstB, mode: 'lines', name: 'Phase B'};
+        let traceLowC = {x: dates, y: project.results.DwLowVoltWorstC, mode: 'lines', name: 'Phase C'};
         let dataLow = [traceLowA, traceLowB, traceLowC];
         let layoutLow = {
             title:'DwLowVoltWorst'
