@@ -117,6 +117,8 @@ def compileAndInstantiate(projectPath):
             RtlabApi.GetSystemControl (ctlr)
         ## If the model is running
         if modelState == RtlabApi.MODEL_RUNNING:
+            #log.info("=====The signal description of the model={!s}".format(RtlabApi.GetSignalsDescription()))
+
             #print("This is the output value={!s}".format(RtlabApi.GetSignalsByName('sm_computation.reference_out')))
             ## Pause the model
             log.info ("=====compileAndInstantiate(): The model is running and won't be recompiled.")

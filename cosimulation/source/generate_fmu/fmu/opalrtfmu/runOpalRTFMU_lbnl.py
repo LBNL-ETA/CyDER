@@ -11,6 +11,7 @@ import subprocess
 import shutil
 from datetime import datetime
 from time import sleep
+import matplotlib.pyplot as plt
 
 # Appending parser_path to the system path os required to be able
 # to find the SimulatorToFMU model from this directory
@@ -34,9 +35,17 @@ def run_simulator ():
 
     fmu_path = 'Simulator.fmu'
     # Parameters which will be arguments of the function
-    start_time = 0.0
-    stop_time = 2.0
-    step_size = 1.0
+
+    #step_size = 1.0
+	
+    sim_tim=[]
+    sim_res=[]
+	# Create the simulation grid
+    time_grid=[0,1,2,3,4]
+    start_time = time_grid[0]
+    stop_time = time_grid[-1]
+	# Create the on/off control sequence
+    con_sig=[0,1,0,1,0]
 
     print ('Starting the simulation')
     start = datetime.now()
@@ -80,7 +89,6 @@ def run_simulator ():
     #sim_mod.set_string([config_con_val_ref], [config_file])
 
     # Initialize the FMUs
-
     sim_mod.initialize()
     print ("===========Initialization is completed")
 
@@ -88,25 +96,18 @@ def run_simulator ():
     #sim_mod.event_update()
     #sim_mod.enter_continuous_time_mode()
 
-    # sim_mod.time = 0.0
-    # sim_mod.set_real(simulator_input_valref, [1.0])
-    # sim_mod.get_real(sim_mod.get_variable_valueref('demo_sm_computation_port3'))
-    # sleep(10)
-    #
-    # sim_mod.time = 1.0
-    # sim_mod.set_real(simulator_input_valref, [1.0])
-    # sim_mod.get_real(sim_mod.get_variable_valueref('demo_sm_computation_port3'))
-    # end = datetime.now()
-
     import numpy as np
-    for tim in np.arange(start_time, stop_time, step_size):
+    for c, val in enumerate(time_grid, 1):
+    #for tim in np.arange(start_time, stop_time, step_size):
         # Enter continuous time mode
-        print ("Set values at time={!s}".format(tim))
-        sim_mod.time = tim
-        sim_mod.set_real(simulator_input_valref, [tim])
-        LBNL_test1_Sm_master_port1_1_=sim_mod.get_real([sim_mod.get_variable_valueref('LBNL_test1_Sm_master_port1_1_')])
+        print ("Set values at time={!s}".format(val))
+        sim_mod.time = val
+        sim_tim.append(val)
+        sim_mod.set_real(simulator_input_valref, [con_sig[c-1]])
+        LBNL_test1_Sm_master_port1_9_=sim_mod.get_real([sim_mod.get_variable_valueref('LBNL_test1_Sm_master_port1_9_')])
 
-        print ("The value of the signal='LBNL_test1_Sm_master_port1_1' is ={!s}".format(LBNL_test1_Sm_master_port1_1_))
+        print ("The value of the signal='LBNL_test1_Sm_master_port1_9' is ={!s}".format(LBNL_test1_Sm_master_port1_9_))
+        sim_res.append(LBNL_test1_Sm_master_port1_9_[0])
     end = datetime.now()
     print(
         'Ran a single Opal-RT simulation with FMU={!s} in {!s} seconds.'.format(
@@ -114,6 +115,12 @@ def run_simulator ():
 
     # Terminate FMUs
     sim_mod.terminate()
+    print ("These are the output results={!s} for simulation time={!s}".format(sim_res, sim_tim))
+    fil=open("simResults.txt", "w")
+    fil.write(str(sim_res))
+    fil.close()
+    plt.plot(sim_tim, sim_res)
+    plt.show()
 
 if __name__ == "__main__":
     # Check command line options
