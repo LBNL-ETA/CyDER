@@ -17,17 +17,25 @@ to see why the complation has failed.
 Compilation failed with OpenModelica
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If the export of CYMDIST failed when compiling the model with OpenModelica, 
+If the export of the CYMDIST failed when compiling the model with OpenModelica, 
 check if the variable ``OPENMODELICALIBRARY`` is defined in the Windows ``Environment Variables``.
 
-``OPENMODELICALIBRARY`` is the path to the libraries which are required by OpenModelica to compile Modelica models.
+.. note::
 
-Simulation failed in OpenModelica and Dymola FMUs
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  ``OPENMODELICALIBRARY`` is the path to the libraries which are required by OpenModelica to compile Modelica models.
 
-If the simulation failed with the exported FMU, check if the ``"modelname"`` + ``".scripts.zip"``
-was added to the ``PYTHONPATH`` as described in :ref:`build_output`. Please note that any software
-which is required to run the exported FMU will need to be installed on the target machine where the FMU is run.
+Simulation failed when running ``CYMDIST.fmu``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If the simulation failed with the exported FMU, check if 
+the unzipped ``"modelname"`` + ``".scripts.zip"``, and  the subdirectories of ``"modelname"`` + ``".binaries.zip"``
+were added to the ``PYTHONPATH``, and the system ``PATH`` as described in :ref:`build_output`. 
+
+.. note::
+
+  Any software or Python 3.4 module which is required to run the exported FMU will need to 
+  be installed on the target machine where the FMU is run.
+
 
 Simulation failed with Dymola FMUs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

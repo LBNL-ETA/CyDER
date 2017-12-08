@@ -2,7 +2,7 @@
 <CYMDISTModelDescription
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   fmiVersion="2.0"
-  modelName="CYMDIST"
+  modelName="cymdist"
   description="Input data for a CYMDIST FMU"
   generationTool="CYMDISTToFMU">
   <ModelVariables>
