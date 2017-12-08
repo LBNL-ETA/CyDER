@@ -46,7 +46,7 @@ export async function createLoadLayer(modelName, onEach = ()=>{}) {
     return layer;
 }
 
-export async function createLoadHeatLayer(modelName, phase) {
+export async function createLoadHeatLayer(modelName, phases) {
     let devices = CyderAPI.Device.getAll(modelName);
     let loads = CyderAPI.Load.getAll(modelName);
     devices = await devices;
@@ -55,9 +55,11 @@ export async function createLoadHeatLayer(modelName, phase) {
     let maxLoad = 0;
     let data = Array.from(loads.values()).map((load) => {
         let device = devices.get(load.device_number);
-        let loadValue = load['SpotKW'+phase];
+        let loadValue = 0;
+        for(let phase of phases)
+            loadValue += load['SpotKW'+phase]===null ? 0 : load['SpotKW'+phase];
         if(loadValue > maxLoad) maxLoad = loadValue;
-        return [device.latitude, device.longitude , load['SpotKW'+phase]];
+        return [device.latitude, device.longitude , loadValue];
     })
 
     let heatLayer = L.heatLayer(data, {max: maxLoad, maxZoom: 1, radius: 10, blur:5});

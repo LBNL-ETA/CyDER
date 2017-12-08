@@ -218,9 +218,7 @@ class ModelInfo extends View {
         if(this._model !== null) {
             this._leafletMap.addLayer(this._getModelLayer(), 'model', true);
             this._leafletMap.fitBounds('model');
-            this._childs['switchLoadA'] = new HeatMapSwitch('PhaseA', 'loadA', this._leafletMap, () => createLoadHeatLayer(this._model.name, 'A'));
-            this._childs['switchLoadB'] = new HeatMapSwitch('PhaseB', 'loadB', this._leafletMap, () => createLoadHeatLayer(this._model.name, 'B'));
-            this._childs['switchLoadC'] = new HeatMapSwitch('PhaseC', 'loadC', this._leafletMap, () => createLoadHeatLayer(this._model.name, 'C'));
+            this._childs['loadHeatMapControl'] = new LoadHeatMapControl(this._leafletMap, this._model.name);
         }
         this.render();
     }
@@ -271,9 +269,7 @@ class ModelInfo extends View {
                             Loads (kW)
                         </div>
                         <div id="" class="card-body">
-                            <div data-childview="switchLoadA"></div>
-                            <div data-childview="switchLoadB"></div>
-                            <div data-childview="switchLoadC"></div>
+                            <div data-childview="loadHeatMapControl"></div>
                         </div>
                     </div>
                 </div>
@@ -295,27 +291,53 @@ class ModelInfo extends View {
     }
 }
 
-class HeatMapSwitch extends View {
-    constructor(name, layerName, leafletMap, layerFunc, el) {
+class LoadHeatMapControl extends View {
+    constructor(leafletMap, modelname, el) {
         super(el, 'div');
-        this._name = name;
-        this._layerName = layerName;
         this._leafletMap = leafletMap;
-        this._layerFunc = layerFunc;
+        this._modelName = modelname;
+        this._phases = new Set();
         this._layer = null;
         this.render();
     }
-    async _ontoogle(e) {
-        if(this._layer) {
-            this._leafletMap.removeLayer(this._layerName);
-            this._layer = null;
-        } else {
-            this._layer = this._layerFunc();
-            this._leafletMap.addLayer(this._layer , this._layerName, true);
+    async _onTooglePhase(e) {
+        if(this._phases.has(e.target.dataset.phase)) {
+            this._phases.delete(e.target.dataset.phase);
             e.target.classList.add('disabled');
-            this._layer = await this._layer;
-
         }
+        else {
+            this._phases.add(e.target.dataset.phase);
+            e.target.classList.remove('disabled');
+        }
+        this._leafletMap.removeLayer("load");
+        if(this._phases.size > 0) {
+            this._layer = createLoadHeatLayer(this._modelName, this._phases);
+            this._leafletMap.addLayer(this._layer, "load");
+            this._layer = await this._layer;
+            this._childs['scale'] = new HeatMapScale(this._layer);
+        }
+        else {
+            this._layer = null;
+            this._childs['scale'] = null;
+        }
+        this.render();
+    }
+    get _template() {
+        return `
+        <div class="btn-group btn-group-sm" role="group" style="display: flex; margin-bottom: 1em;">
+            <button type="button" class="btn btn-secondary${IF(this._phases.has('A'), ()=> ' disabled')}" data-on="click:_onTooglePhase" data-phase="A" style="width: 33.3%;">Phase A</button>
+            <button type="button" class="btn btn-secondary${IF(this._phases.has('B'), ()=> ' disabled')}" data-on="click:_onTooglePhase" data-phase="B" style="width: 33.3%;">Phase B</button>
+            <button type="button" class="btn btn-secondary${IF(this._phases.has('C'), ()=> ' disabled')}" data-on="click:_onTooglePhase" data-phase="C" style="width: 33.3%;">Phase C</button>
+        </div>
+        ${ IF(this._layer !== null, () => `<div data-childview="scale"></div>`)}
+        `;
+    }
+}
+
+class HeatMapScale extends View {
+    constructor(layer, el) {
+        super(el, 'div');
+        this._layer = layer;
         this.render();
     }
     _onMaxChange(e) {
@@ -323,12 +345,10 @@ class HeatMapSwitch extends View {
     }
     get _template() {
         return `
-        <div class="form-group">
-            <button type="button" class="btn btn-secondary${ IF(this._layer, () => ` disabled`) }" data-on="click:_ontoogle" >${ ESCHTML(this._name) }</button>
-            ${ IF(this._layer, () => `
-                0 <div style="display: inline-block; width: 70px; height: 1em; background: linear-gradient(to right, rgba(0,0,255,0.1), rgba(0,0,255,0.5), lime, yellow, red);"></div>
-                <input style="width:65px" data-on="change:_onMaxChange" type="number" value="${ this._layer.options.max }">
-            `)}
-        </div>`;
+        <div style="display: table;">
+            <div>0 </div>
+            <div style="display: table-cell; width: 100%; height: 1em; background: linear-gradient(to right, rgba(0,0,255,0.1), rgba(0,0,255,0.5), lime, yellow, red);"></div>
+            <input style="display: table-cell; width:65px" data-on="change:_onMaxChange" type="number" value="${ this._layer.options.max }">
+        </table>`;
     }
 }
