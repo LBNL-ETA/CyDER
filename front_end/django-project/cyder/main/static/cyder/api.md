@@ -1,7 +1,7 @@
 CyderAPI
 ======
 
-Javascript lib to interact with the CyDER REST API.
+Javascript module to interact with the CyDER REST API.
 
 It is asynchronous and use promises to be used easily with await.  
 An authorization token is needed to use the API. It can be requested with `auth()`. `auth()` should be call before any other request to the API but no need to await for it before using the API: if `auth()` is called and a request is made before the token arrive, the request will wait for the token.
@@ -18,7 +18,7 @@ Return a promise that resolve when the token is received.
 `url`: string, URL of the request  
 `content`: optional, content of the request  
 `contentType`: optional string, mime type of the content of the request. If omitted, `application/json` is used and content is stringified to json.  
-Make a request to the REST API. More specific methods of the lib should be preferred to this one.
+Make a request to the REST API. More specific methods of the module should be preferred to this one.
 
 `class Res` is a class to be used in mirror of Models&ModelViewSet&Routers in Django&DjangoRestFramework. Provide methods `getAll()` (mirror for a list view) and `get()` (mirror for a detail view). The data are cached: when unknown it return a promise which resolve with the data requested, otherwise it return directly the data. Because data are cached you should be careful when modifying data return by one of those get values: an other get could return the modified values (example: `let map = Res.getAll(); map.delete(somekey);` this change the cached value. The next `getAll()` will return a map with the entry of `somekey` deleted. The use of `getAll(true)` will restore it if the value is still on the server)
 

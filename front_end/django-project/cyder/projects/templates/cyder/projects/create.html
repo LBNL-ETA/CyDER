@@ -8,6 +8,7 @@
 {% block script %}
     <script type="module">
         import { ProjectCreator } from '{% static 'cyder/projects/create.js' %}';
+        import CyderAPI from '{% static 'cyder/api.js' %}';
 
         document.querySelector(".navbar [data-name='projects']").classList.add('active');
         let projectCreator;

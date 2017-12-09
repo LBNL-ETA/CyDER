@@ -2,7 +2,8 @@
 import { LeafletMap } from '../models/viewer.js';
 import { createModelLayer, createPVLayer, createLoadLayer } from '../models/layers.js';
 import { View, FOREACH, IF, ESCHTML } from '../viewlib.js';
-
+import CyderAPI from '../api.js';
+import notifyRESTError from '../api-notify-error.js';
 
 export class CanceledByUser extends Error {}
 
@@ -13,13 +14,19 @@ export class ProjectEditor extends View {
     }
     async loadProject(projectId) {
         this.closeProject();
-        this._project = await CyderAPI.Project.get(projectId);
-        this._childs['map-editor'] = new ProjectMapEditor(this._project.settings.model);
-        this.child('map-editor').addDataLayer('PVs', this._project.settings.addPv, createPVLayer);
-        this.child('map-editor').addDataLayer('Loads', this._project.settings.addLoad, createLoadLayer);
-        this.child('map-editor').render();
-        this._isNew = false;
-        this.render();
+        try {
+            this._project = await CyderAPI.Project.get(projectId);
+            this._childs['map-editor'] = new ProjectMapEditor(this._project.settings.model);
+            this.child('map-editor').addDataLayer('PVs', this._project.settings.addPv, createPVLayer);
+            this.child('map-editor').addDataLayer('Loads', this._project.settings.addLoad, createLoadLayer);
+            this.child('map-editor').render();
+            this._isNew = false;
+            this.render();
+        } catch(error) {
+            if(!(error instanceof CyderAPI.RESTError))
+                throw(error);
+            notifyRESTError(error);
+        }
     }
     closeProject() {
         if(this._project !== null && this.wasModified()) {
@@ -55,9 +62,9 @@ export class ProjectEditor extends View {
             $.notify({message: 'Project saved !'},{type: 'success'});
             this.render();
         } catch(error) {
-            if(!(error instanceof CyderAPI.Error))
+            if(!(error instanceof CyderAPI.RESTError))
                 throw(error);
-            error.notify();
+            notifyRESTError(error);
         }
         e.target.classList.remove('disabled');
     }

@@ -1,5 +1,7 @@
 'use strict';
 import { View, FOREACH, IF, ESCHTML } from '../viewlib.js';
+import CyderAPI from '../api.js';
+import notifyRESTError from '../api-notify-error.js';
 
 export class ProjectList extends View {
     constructor(el) {
@@ -47,17 +49,15 @@ class ProjectItem extends View {
         this.parentList = parentList;
         this.render();
     }
-    async _onRunConfig(e) {
-        await CyderAPI.Project.runConfig(this.project.id);
-        this.parentList.update();
-    }
-    async _onRunSim(e) {
-        await CyderAPI.Project.runSim(this.project.id);
-        this.parentList.update();
-    }
-    async _onRevoke(e) {
-        await CyderAPI.Project.revoke(this.project.id);
-        this.parentList.update();
+    async _onAction(e) {
+        try {
+            await CyderAPI.Project[e.target.dataset.action](this.project.id);
+            this.parentList.update();
+        } catch(error) {
+            if(!(error instanceof CyderAPI.RESTError))
+                throw(error);
+            notifyRESTError(error);
+        }
     }
     _onConfig(e) {
         window.location.href = `./config/${encodeURI(this.project.id)}/`;
@@ -67,10 +67,6 @@ class ProjectItem extends View {
     }
     _onEdit(e) {
         window.location.href = `./edit/${encodeURI(this.project.id)}/`;
-    }
-    async _onDelete(e) {
-        await CyderAPI.Project.delete(this.project.id);
-        this.parentList.update();
     }
     render() {
         super.render();
@@ -100,13 +96,13 @@ class ProjectItem extends View {
         <td class="text-right">
             <div class="btn-group" >
                 ${IF(this.project.status === 'Pending' || this.project.status === 'Started', () =>
-                    `<button type="button" class="btn btn-sm btn-primary" data-on="click:_onRevoke">Revoke</button>`
+                    `<button type="button" class="btn btn-sm btn-primary" data-on="click:_onAction" data-action="revoke">Revoke</button>`
                 , () => IF(this.project.stage === 'Simulation' && this.project.status === 'Success', () =>
                     `<button type="button" class="btn btn-sm btn-primary" data-on="click:_onResults">Results</button>`
                 , () => IF(this.project.stage === 'Simulation' || (this.project.stage === 'Configuration' && this.project.status === 'Success'), () =>
-                    `<button type="button" class="btn btn-sm btn-primary" data-on="click:_onRunSim">Run simulation</button>`
+                    `<button type="button" class="btn btn-sm btn-primary" data-on="click:_onAction" data-action="runSim">Run simulation</button>`
                 , () =>
-                    `<button type="button" class="btn btn-sm btn-primary" data-on="click:_onRunConfig">Run configuration</button>`
+                    `<button type="button" class="btn btn-sm btn-primary" data-on="click:_onAction" data-action="runConfig">Run configuration</button>`
                 )))}
                 <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="sr-only">Toggle Dropdown</span>
@@ -114,10 +110,10 @@ class ProjectItem extends View {
                 <div class="dropdown-menu dropdown-menu-right">
                     ${ IF(this.project.stage === 'Simulation' || (this.project.stage === 'Configuration' && this.project.status === 'Success'), () =>
                         `<button class="dropdown-item" data-on="click:_onConfig">See configuration</button>
-                        <button class="dropdown-item" data-on="click:_onRunConfig">Re-run configuration</button>`
+                        <button class="dropdown-item" data-on="click:_onAction" data-action="runConfig">Re-run configuration</button>`
                     )}
                     <button class="dropdown-item" data-on="click:_onEdit">Edit</button>
-                    <button class="dropdown-item" data-on="click:_onDelete">Delete</button>
+                    <button class="dropdown-item" data-on="click:_onAction" data-action="delete">Delete</button>
                 </div>
             </div>
         </td>`;

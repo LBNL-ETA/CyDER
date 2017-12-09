@@ -1,6 +1,7 @@
 'use strict';
 import { createAllModelsLayer, createModelLayer, createLoadHeatLayer } from './layers.js';
 import { View, FOREACH, IF, ESCHTML } from '../viewlib.js';
+import CyderAPI from '../api.js';
 
 export class SelectModel extends View {
     constructor(el, allowEmpty = true) {

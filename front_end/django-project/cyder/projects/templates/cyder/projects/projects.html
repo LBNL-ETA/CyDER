@@ -18,6 +18,7 @@
 {% block script %}
     <script type="module">
         import { ProjectList } from '{% static 'cyder/projects/projects.js' %}';
+        import CyderAPI from '{% static 'cyder/api.js' %}';
 
         document.querySelector(".navbar [data-name='projects']").classList.add('active');
         let projectList;

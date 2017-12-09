@@ -17,6 +17,7 @@
         crossorigin=""></script>
     <script type="module">
         import { ProjectEditor } from '{% static 'cyder/projects/edit.js' %}';
+        import CyderAPI from '{% static 'cyder/api.js' %}';
 
         document.querySelector(".navbar [data-name='projects']").classList.add('active');
         let projectEditor;

@@ -1,6 +1,8 @@
 'use strict';
 import { SelectModel } from '../models/viewer.js';
 import { View } from '../viewlib.js';
+import CyderAPI from '../api.js';
+import notifyRESTError from '../api-notify-error.js';
 
 export class ProjectCreator extends View {
     constructor(el) {
@@ -28,9 +30,9 @@ export class ProjectCreator extends View {
             $.notify({message: 'Project created !'},{type: 'success'});
             window.location.href = `../edit/${encodeURI(this._project.id)}/`;
         } catch (error) {
-            if(!(error instanceof CyderAPI.Error))
+            if(!(error instanceof CyderAPI.RESTError))
                 throw(error);
-            error.notify();
+            notifyRESTError(error);
             e.target.classList.remove('disabled');
         }
     }

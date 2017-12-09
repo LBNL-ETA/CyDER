@@ -13,6 +13,7 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script type="module">
         import { ProjectConfig } from '{% static 'cyder/projects/config.js' %}';
+        import CyderAPI from '{% static 'cyder/api.js' %}';
 
         document.querySelector(".navbar [data-name='projects']").classList.add('active');
         let projectConfig;

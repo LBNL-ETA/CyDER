@@ -1,3 +1,5 @@
+import CyderAPI from '../api.js';
+
 export async function createAllModelsLayer(onEachFeature = ()=>{}) {
     let geojson = await CyderAPI.rest('GET', '/api/models/geojson/');
     return L.geoJson(geojson, {

@@ -1,5 +1,7 @@
 'use strict';
 import { View, FOREACH, IF, ESCHTML } from '../viewlib.js';
+import CyderAPI from '../api.js';
+import notifyRESTError from '../api-notify-error.js';
 
 export class ProjectResults extends View {
     constructor(projectId, el) {
@@ -9,10 +11,13 @@ export class ProjectResults extends View {
     loadProject(projectId, force = false) {
         this._projectId = projectId;
         let prom = CyderAPI.Project.get(this._projectId, force);
-        if(prom instanceof Promise)
+        if(prom instanceof Promise) {
+            prom.catch((error) => notifyRESTError(error));
             this._ready = prom.then(() => { this.render(); this._plot(); });
-        else
+        }
+        else {
             this._ready = Promise.resolve();
+        }
         this.render();
     }
     _plot() {
