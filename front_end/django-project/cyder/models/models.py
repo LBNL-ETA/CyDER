@@ -40,7 +40,7 @@ class Device(models.Model):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     class Meta:
-        unique_together = ('model', 'device_number',)
+        unique_together = ('model', 'device_number', 'device_type',)
     def __str__(self):
         return self.device_number
 

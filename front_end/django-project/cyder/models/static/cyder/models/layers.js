@@ -56,7 +56,7 @@ export async function createLoadHeatLayer(modelName, phases) {
 
     let maxLoad = 0;
     let data = Array.from(loads.values()).map((load) => {
-        let device = devices.get(load.device_number);
+        let device = devices.get(load.device);
         let loadValue = 0;
         for(let phase of phases)
             loadValue += load['SpotKW'+phase]===null ? 0 : load['SpotKW'+phase];

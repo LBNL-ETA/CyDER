@@ -135,7 +135,7 @@ export class ProjectMapEditor extends View {
     }
     addDataLayer(name, data, createLayerFunc) {
         let dataLayer = {};
-        dataLayer.map = new Map(data.map(obj => [obj.device, obj.power]));
+        dataLayer.map = new Map(data.map(obj => [obj.device_number, obj.power]));
         dataLayer.map.wasModified = false;
         let bindDevicePopup = (device, marker) => {
             marker.bindPopup((new DevicePopup(device.device_number, marker, dataLayer.map)).el);
@@ -151,7 +151,7 @@ export class ProjectMapEditor extends View {
     }
     getData(name) {
         let map = this._dataLayers[name].map;
-        return Array.from(map).map(([device, power]) => ({device, power}));
+        return Array.from(map).map(([device_number, power]) => ({device_number, power}));
     }
     _onShowDataLayer(e) {
         let name = e.target.innerHTML;
@@ -182,9 +182,9 @@ export class ProjectMapEditor extends View {
 }
 
 class DevicePopup extends View {
-    constructor(number, marker, map) {
+    constructor(device_number, marker, map) {
         super(null, 'div');
-        this._number = number;
+        this._device_number = device_number;
         this._marker = marker;
         this._map = map;
         this.render();
@@ -195,20 +195,20 @@ class DevicePopup extends View {
             $.notify({ message: 'Power must be a number'}, {type: 'danger'});
             return;
         }
-        this._map.set(this._number, power);
+        this._map.set(this._device_number, power);
         this._map.wasModified = true;
         this.render();
     }
     _remove(e) {
-        this._map.delete(this._number);
+        this._map.delete(this._device_number);
         this._map.wasModified = true;
         this.render();
     }
     render() {
         super.render();
-        if(this._map.has(this._number)) {
+        if(this._map.has(this._device_number)) {
             this._marker.setStyle({color: '#14e54c'});
-            this._html.power.value = this._map.get(this._number);
+            this._html.power.value = this._map.get(this._device_number);
         }
         else
             this._marker.setStyle({color: '#3388ff'});
@@ -219,7 +219,7 @@ class DevicePopup extends View {
             <input data-name="power" type="number" class="form-control form-control-sm" placeholder="Power" aria-label="Power">
         </div>
         <button type="button" data-on="click:_set" class="btn btn-primary btn-sm">Set</button>
-        ${ IF(this._map.has(this._number), () =>
+        ${ IF(this._map.has(this._device_number), () =>
             `<button type="button" data-on="click:_remove" class="btn btn-primary btn-sm">Remove</button>`
         )}`;
     }

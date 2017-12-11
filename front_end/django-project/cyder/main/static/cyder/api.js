@@ -196,8 +196,8 @@ class ProjectRes extends Res.DeleteMixin(Res.WriteMixin(Res)) {
 
 let Model = new Res('/api/models/', 'name');
 let Node = new NestedRes(Model, 'nodes/', 'node_id');
-let Device = new NestedRes(Model, 'devices/', 'device_number');
-let Load = new NestedRes(Model, 'loads/', 'device_number');
+let Device = new NestedRes(Model, 'devices/', 'id');
+let Load = new NestedRes(Model, 'loads/', 'device');
 let Project = new ProjectRes('/api/projects/', 'id');
 
 export { auth, rest, RESTError, Model, Device, Load, Project };

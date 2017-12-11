@@ -86,7 +86,7 @@ class DeviceViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = Device.objects.all()
     serializer_class = DeviceSerializer
-    lookup_field = 'device_number'
+    lookup_field = 'id'
     def get_queryset(self):
         model = get_object_or_404(Model.objects.all(), name=self.kwargs['model_name'])
         return Device.objects.filter(model=model)
@@ -96,7 +96,7 @@ class LoadViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = Load.objects.all().select_related('device')
     serializer_class = LoadSerializer
-    lookup_field = 'device__device_number'
+    lookup_field = 'device'
     def get_queryset(self):
         model = get_object_or_404(Model.objects.all(), name=self.kwargs['model_name'])
         return Load.objects.select_related('device').filter(device__model=model)

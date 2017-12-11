@@ -14,10 +14,11 @@ class NodeSerializer(serializers.ModelSerializer):
 class DeviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Device
-        exclude = ['id', 'model']
+        exclude = ['model']
 
 class LoadSerializer(serializers.ModelSerializer):
-    device_number = serializers.CharField(source='device.device_number', read_only=True)
+    # device_number = serializers.CharField(source='device.device_number', read_only=True)
+    # Removed because unecessary...
     class Meta:
         model = Load
-        exclude = ['id', 'device']
+        exclude = ['id']
