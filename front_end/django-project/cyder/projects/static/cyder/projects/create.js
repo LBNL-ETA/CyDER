@@ -7,14 +7,14 @@ import notifyRESTError from '../api-notify-error.js';
 export class ProjectCreator extends View {
     constructor(el) {
         super(el, 'div');
-        this._childs['select-model'] = new SelectModel(null, false);
+        this._childviews['select-model'] = new SelectModel(null, false);
         this.render();
     }
     _writeProject() {
         this._project = {
             name: this._html.name.value,
             settings: {
-                model: this.child('select-model').modelName,
+                model: this.childview('select-model').modelName,
                 addPv: [],
                 addLoad: [],
             },

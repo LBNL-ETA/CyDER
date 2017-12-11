@@ -11,9 +11,9 @@ export class ProjectList extends View {
     }
     async update() {
         let projects = await CyderAPI.Project.getAll(true);
-        this._childs = {};
+        this._childviews = {};
         for(let [projectId, project] of projects)
-            this._childs[`project-${ESCHTML(projectId)}`] = new ProjectItem(project, this);
+            this._childviews[`project-${ESCHTML(projectId)}`] = new ProjectItem(project, this);
         this.render();
     }
     get _template() {

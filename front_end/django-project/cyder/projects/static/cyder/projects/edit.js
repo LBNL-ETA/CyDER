@@ -16,10 +16,10 @@ export class ProjectEditor extends View {
         this.closeProject();
         try {
             this._project = await CyderAPI.Project.get(projectId);
-            this._childs['map-editor'] = new ProjectMapEditor(this._project.settings.model);
-            this.child('map-editor').addDataLayer('PVs', this._project.settings.addPv, createPVLayer);
-            this.child('map-editor').addDataLayer('Loads', this._project.settings.addLoad, createLoadLayer);
-            this.child('map-editor').render();
+            this._childviews['map-editor'] = new ProjectMapEditor(this._project.settings.model);
+            this.childview('map-editor').addDataLayer('PVs', this._project.settings.addPv, createPVLayer);
+            this.childview('map-editor').addDataLayer('Loads', this._project.settings.addLoad, createLoadLayer);
+            this.childview('map-editor').render();
             this._isNew = false;
             this.render();
         } catch(error) {
@@ -40,8 +40,8 @@ export class ProjectEditor extends View {
             this._project.settings.start !== this._html.start.value ||
             this._project.settings.end !== this._html.end.value ||
             this._project.settings.timestep !== Number(this._html.timestep.value) ||
-            this.child('map-editor').dataWasModified('PVs') ||
-            this.child('map-editor').dataWasModified('Loads'))
+            this.childview('map-editor').dataWasModified('PVs') ||
+            this.childview('map-editor').dataWasModified('Loads'))
             return true;
         return false;
     }
@@ -54,10 +54,10 @@ export class ProjectEditor extends View {
             this._project.settings.start = this._html.start.value;
             this._project.settings.end = this._html.end.value;
             this._project.settings.timestep = Number(this._html.timestep.value);
-            this._project.settings.addPv = this.child('map-editor').getData('PVs');
-            this.child('map-editor').resetDataLayer('PVs');
-            this._project.settings.addLoad = this.child('map-editor').getData('Loads');
-            this.child('map-editor').resetDataLayer('Loads');
+            this._project.settings.addPv = this.childview('map-editor').getData('PVs');
+            this.childview('map-editor').resetDataLayer('PVs');
+            this._project.settings.addLoad = this.childview('map-editor').getData('Loads');
+            this.childview('map-editor').resetDataLayer('Loads');
             this._project = await CyderAPI.Project.update(this._project.id, this._project);
             $.notify({message: 'Project saved !'},{type: 'success'});
             this.render();
@@ -125,12 +125,12 @@ export class ProjectEditor extends View {
 export class ProjectMapEditor extends View {
     constructor(modelName, el) {
         super(el, 'div');
-        this._childs['leaflet-map'] = new LeafletMap();
+        this._childviews['leaflet-map'] = new LeafletMap();
         this._dataLayers = {};
         this._currentDataLayer = null;
         this._modelName = modelName;
-        this.child('leaflet-map').addLayer(createModelLayer(modelName), 'model');
-        this.child('leaflet-map').fitBounds('model');
+        this.childview('leaflet-map').addLayer(createModelLayer(modelName), 'model');
+        this.childview('leaflet-map').fitBounds('model');
         this.render();
     }
     addDataLayer(name, data, createLayerFunc) {
@@ -156,8 +156,8 @@ export class ProjectMapEditor extends View {
     _onShowDataLayer(e) {
         let name = e.target.innerHTML;
         let layer = this._dataLayers[name].layer;
-        this.child('leaflet-map').removeLayer('dataLayer');
-        this.child('leaflet-map').addLayer(this._dataLayers[name].layer, 'dataLayer');
+        this.childview('leaflet-map').removeLayer('dataLayer');
+        this.childview('leaflet-map').addLayer(this._dataLayers[name].layer, 'dataLayer');
         this._currentDataLayer = name;
         this.render();
     }
@@ -177,7 +177,7 @@ export class ProjectMapEditor extends View {
     }
     emplace(el) {
         super.emplace(el);
-        this.child('leaflet-map').map.invalidateSize();
+        this.childview('leaflet-map').map.invalidateSize();
     }
 }
 

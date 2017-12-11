@@ -8,10 +8,10 @@ export class View {
             this._html.el = el;
         else
             this._html.el = document.createElement(tag);
-        this._childs = {};
+        this._childviews = {};
     }
     get el() { return this._html.el; }
-    child(name) { return this._childs[name]; }
+    childview(name) { return this._childviews[name]; }
     get _template() { return ''; }
     render() {
         this._html.el.innerHTML = this._template;
@@ -31,7 +31,7 @@ export class View {
         }
 
         for(let el of this._html.el.querySelectorAll('[data-childview]'))
-            this._childs[el.getAttribute('data-childview')].emplace(el);
+            this._childviews[el.getAttribute('data-childview')].emplace(el);
     }
     emplace(el) {
         for (let i = 0; i < el.attributes.length; i++) {

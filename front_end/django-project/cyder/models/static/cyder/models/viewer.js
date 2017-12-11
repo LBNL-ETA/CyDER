@@ -147,31 +147,31 @@ export class ModelViewer extends View {
     constructor(url, el) {
         super(el, 'div');
         this.url = url;
-        this._childs['select-model'] = new SelectModel();
-        this.child('select-model').onchange = (e) => {
-            this.modelName = this.child('select-model').modelName;
+        this._childviews['select-model'] = new SelectModel();
+        this.childview('select-model').onchange = (e) => {
+            this.modelName = this.childview('select-model').modelName;
         };
-        this._childs['leaflet-map'] = new LeafletMap();
-        this._childs['model-info'] = new ModelInfo(this.child('leaflet-map'));
+        this._childviews['leaflet-map'] = new LeafletMap();
+        this._childviews['model-info'] = new ModelInfo(this.childview('leaflet-map'));
     }
     get modelName() { return this._modelName; }
     set modelName(newModelName) {
         if(newModelName === this._modelName)
             return;
         if(this._modelName !== undefined && this._modelName === '')
-            this.child('leaflet-map').removeLayer('allModel');
+            this.childview('leaflet-map').removeLayer('allModel');
         this._modelName = newModelName;
         if (this._modelName === '') {
-            this.child('model-info').model = null;
-            this.child('leaflet-map').addLayer(this._getAllModelsLayer(), 'allModel');
-            this.child('leaflet-map').fitBounds('allModel');
+            this.childview('model-info').model = null;
+            this.childview('leaflet-map').addLayer(this._getAllModelsLayer(), 'allModel');
+            this.childview('leaflet-map').fitBounds('allModel');
             history.replaceState(null, null, this.url);
         } else {
             Promise.resolve(CyderAPI.Model.getAll()).then((models) =>
-                this.child('model-info').model = models.get(this._modelName));
+                this.childview('model-info').model = models.get(this._modelName));
             history.replaceState(null, null, `${this.url}${this._modelName}/`);
         }
-        this.child('select-model').modelName = this._modelName;
+        this.childview('select-model').modelName = this._modelName;
     }
     _getAllModelsLayer() {
         if (this._allModelsLayerProm)
@@ -219,7 +219,7 @@ class ModelInfo extends View {
         if(this._model !== null) {
             this._leafletMap.addLayer(this._getModelLayer(), 'model', true);
             this._leafletMap.fitBounds('model');
-            this._childs['loadHeatMapControl'] = new LoadHeatMapControl(this._leafletMap, this._model.name);
+            this._childviews['loadHeatMapControl'] = new LoadHeatMapControl(this._leafletMap, this._model.name);
         }
         this.render();
     }
@@ -315,11 +315,11 @@ class LoadHeatMapControl extends View {
             this._layer = createLoadHeatLayer(this._modelName, this._phases);
             this._leafletMap.addLayer(this._layer, "load");
             this._layer = await this._layer;
-            this._childs['scale'] = new HeatMapScale(this._layer);
+            this._childviews['scale'] = new HeatMapScale(this._layer);
         }
         else {
             this._layer = null;
-            this._childs['scale'] = null;
+            this._childviews['scale'] = null;
         }
         this.render();
     }
