@@ -49,3 +49,7 @@ class Load(models.Model):
     SpotKWA = models.FloatField(null=True, blank=True)
     SpotKWB = models.FloatField(null=True, blank=True)
     SpotKWC = models.FloatField(null=True, blank=True)
+
+class PV(models.Model):
+    device = models.ForeignKey(Device)
+    PVActiveGeneration = models.FloatField(null=True, blank=True)

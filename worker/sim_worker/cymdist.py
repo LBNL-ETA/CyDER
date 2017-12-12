@@ -64,6 +64,11 @@ def get_devices_details(devices):
             for prop in ['SpotKWA', 'SpotKWB', 'SpotKWC']:
                 x = cympy.study.QueryInfoDevice(prop, device_object.DeviceNumber, device_object.DeviceType)
                 device['detail'][prop] = None if x is '' else float(x)
+        elif device_object.DeviceType == 39: # PVs
+            device['detail'] = {}
+            for prop in ['PVActiveGeneration']:
+                x = cympy.study.QueryInfoDevice(prop, device_object.DeviceNumber, device_object.DeviceType)
+                device['detail'][prop] = None if x is '' else float(x)
     return devices
 
 def get_voltages(nodes):

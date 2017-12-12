@@ -65,6 +65,9 @@ def import_model(modelname):
         if device.device_type == 14: # Spot loads
             load = Load(device=device, **(device_row['detail']))
             load.save()
+        elif device.device_type == 39: # PVs
+            pv = PV(device=device, **(device_row['detail']))
+            pv.save()
 
         print("\rImported devices: %d/%d" % (index+1, lenght), end="")
     print()
