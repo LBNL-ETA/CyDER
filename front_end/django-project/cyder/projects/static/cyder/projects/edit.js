@@ -137,11 +137,12 @@ export class ProjectMapEditor extends View {
         let dataLayer = {};
         dataLayer.map = new Map(data.map(obj => [obj.device_number, obj.power]));
         dataLayer.map.wasModified = false;
-        if(name === "PVs")
-            var bindDevicePopup = (device, marker) => {
-                marker.bindPopup((new DevicePopup(device.device_number, 0, marker, dataLayer.map)).el);
+        if(name === 'PVs')
+            var bindDevicePopup = (pv, device, marker) => {
+                let pvValue = pv.PVActiveGeneration ? pv.PVActiveGeneration : 0;
+                marker.bindPopup((new DevicePopup(device.device_number, pvValue, marker, dataLayer.map)).el);
             };
-        else
+        else if(name === 'Loads')
             var bindDevicePopup = (load, device, marker) => {
                 let loadValue = (load.SpotKWA ? load.SpotKWA : 0) + (load.SpotKWB ? load.SpotKWB : 0) + (load.SpotKWC ? load.SpotKWC : 0);
                 marker.bindPopup((new DevicePopup(device.device_number, loadValue, marker, dataLayer.map)).el);

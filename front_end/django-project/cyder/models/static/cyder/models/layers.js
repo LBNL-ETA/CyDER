@@ -25,12 +25,15 @@ export async function createModelLayer(modelName, onEachFeature = ()=>{}) {
 }
 
 export async function createPVLayer(modelName, onEach = ()=>{}) {
-    let pvs = Array.from((await CyderAPI.Device.getAll(modelName)).values())
-        .filter((device) => device.device_type == 39);
+    let devices = CyderAPI.Device.getAll(modelName);
+    let pvs = CyderAPI.PV.getAll(modelName);
+    devices = await devices;
+    pvs = await pvs;
     let layer = L.layerGroup([]);
-    for(let pv of pvs) {
-        let marker = L.circleMarker([pv.latitude, pv.longitude]);
-        onEach(pv, marker);
+    for(let pv of pvs.values()) {
+        let device = devices.get(pv.device);
+        let marker = L.circleMarker([device.latitude, device.longitude]);
+        onEach(pv, device, marker);
         layer.addLayer(marker);
     }
     return layer;
