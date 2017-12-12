@@ -102,4 +102,14 @@ class LoadViewSet(viewsets.ReadOnlyModelViewSet):
         return Load.objects.select_related('device').filter(device__model=model)
 models_router.register(r'loads', LoadViewSet, base_name='model-loads')
 
+class PVViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    queryset = PV.objects.all().select_related('device')
+    serializer_class = PVSerializer
+    lookup_field = 'device'
+    def get_queryset(self):
+        model = get_object_or_404(Model.objects.all(), name=self.kwargs['model_name'])
+        return PV.objects.select_related('device').filter(device__model=model)
+models_router.register(r'pvs', PVViewSet, base_name='model-pvs')
+
 urlpatterns.append(url(r'^', include(models_router.urls)))

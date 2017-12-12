@@ -22,3 +22,8 @@ class LoadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Load
         exclude = ['id']
+
+class PVSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PV
+        exclude = ['id']

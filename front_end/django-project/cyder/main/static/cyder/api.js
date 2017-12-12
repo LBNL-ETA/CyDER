@@ -198,8 +198,9 @@ let Model = new Res('/api/models/', 'name');
 let Node = new NestedRes(Model, 'nodes/', 'node_id');
 let Device = new NestedRes(Model, 'devices/', 'id');
 let Load = new NestedRes(Model, 'loads/', 'device');
+let PV = new NestedRes(Model, 'pvs/', 'device');
 let Project = new ProjectRes('/api/projects/', 'id');
 
-export { auth, rest, RESTError, Model, Node, Device, Load, Project };
-let CyderAPI = { auth, rest, RESTError, Model, Node, Device, Load, Project };
+export { auth, rest, RESTError, Model, Node, Device, Load, PV, Project };
+let CyderAPI = { auth, rest, RESTError, Model, Node, Device, Load, PV, Project };
 export default CyderAPI;
