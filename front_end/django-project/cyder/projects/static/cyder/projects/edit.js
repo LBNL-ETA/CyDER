@@ -137,9 +137,15 @@ export class ProjectMapEditor extends View {
         let dataLayer = {};
         dataLayer.map = new Map(data.map(obj => [obj.device_number, obj.power]));
         dataLayer.map.wasModified = false;
-        let bindDevicePopup = (device, marker) => {
-            marker.bindPopup((new DevicePopup(device.device_number, marker, dataLayer.map)).el);
-        };
+        if(name === "PVs")
+            var bindDevicePopup = (device, marker) => {
+                marker.bindPopup((new DevicePopup(device.device_number, 0, marker, dataLayer.map)).el);
+            };
+        else
+            var bindDevicePopup = (load, device, marker) => {
+                let loadValue = (load.SpotKWA ? load.SpotKWA : 0) + (load.SpotKWB ? load.SpotKWB : 0) + (load.SpotKWC ? load.SpotKWC : 0);
+                marker.bindPopup((new DevicePopup(device.device_number, loadValue, marker, dataLayer.map)).el);
+            };
         dataLayer.layer = createLayerFunc(this._modelName, bindDevicePopup);
         this._dataLayers[name] = dataLayer;
     }
@@ -182,15 +188,16 @@ export class ProjectMapEditor extends View {
 }
 
 class DevicePopup extends View {
-    constructor(device_number, marker, map) {
+    constructor(device_number, original_value, marker, map) {
         super(null, 'div');
         this._device_number = device_number;
         this._marker = marker;
         this._map = map;
+        this._original_value = original_value;
         this.render();
     }
     _set(e) {
-        let power = Number(this._html.power.value);
+        let power = Number(this._html.power.value) - this._original_value;
         if(Number.isNaN(power) || this._html.power.value === '') {
             $.notify({ message: 'Power must be a number'}, {type: 'danger'});
             return;
@@ -199,7 +206,7 @@ class DevicePopup extends View {
         this._map.wasModified = true;
         this.render();
     }
-    _remove(e) {
+    _reset(e) {
         this._map.delete(this._device_number);
         this._map.wasModified = true;
         this.render();
@@ -208,19 +215,22 @@ class DevicePopup extends View {
         super.render();
         if(this._map.has(this._device_number)) {
             this._marker.setStyle({color: '#14e54c'});
-            this._html.power.value = this._map.get(this._device_number);
+            this._html.power.value = this._map.get(this._device_number) + this._original_value;
         }
-        else
+        else {
             this._marker.setStyle({color: '#3388ff'});
+            this._html.power.value = this._original_value;
+        }
     }
     get _template() {
         return `
-        <div class="form-group" style="width:200px;">
+        <div class="form-group">
+            Power (kW):
             <input data-name="power" type="number" class="form-control form-control-sm" placeholder="Power" aria-label="Power">
         </div>
         <button type="button" data-on="click:_set" class="btn btn-primary btn-sm">Set</button>
         ${ IF(this._map.has(this._device_number), () =>
-            `<button type="button" data-on="click:_remove" class="btn btn-primary btn-sm">Remove</button>`
+            `<button type="button" data-on="click:_reset" class="btn btn-primary btn-sm">Reset</button>`
         )}`;
     }
 }
