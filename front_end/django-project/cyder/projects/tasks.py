@@ -3,6 +3,7 @@ from celery.result import AsyncResult
 from celery.states import PENDING, STARTED, SUCCESS, FAILURE
 from .models import *
 from django.db.models import Q
+import json
 
 import sim_worker.celery
 
@@ -18,9 +19,9 @@ def retrieve_projects_result():
         elif task.status == SUCCESS:
             project.status = "Success"
             if project.stage == "Configuration":
-                project.config = task.result
+                project.config = json.dumps(task.result, separators=(',',':'))
             elif project.stage == "Simulation":
-                project.results = task.result
+                project.results = json.dumps(task.result, separators=(',',':'))
         elif task.status == FAILURE:
             project.status = "Failure"
         project.save()

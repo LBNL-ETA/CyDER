@@ -21,33 +21,15 @@ class Project(models.Model):
         return self.name
 
     def __init__(self, *args, **kwargs):
-        if 'settings' in kwargs:
-            kwargs['settings'] = json.dumps(kwargs['settings'])
-        if 'config' in kwargs:
-            kwargs['config'] = json.dumps(kwargs['config'])
-        if 'results' in kwargs:
-            kwargs['results'] = json.dumps(kwargs['results'])
         super(Project, self).__init__(*args, **kwargs)
         self.old_settings = self.settings
-        self.settings = json.loads(self.settings)
-        self.config = json.loads(self.config)
-        self.results = json.loads(self.results)
 
     def save(self, *args, **kwargs):
-        settings = self.settings
-        self.settings = json.dumps(self.settings, separators=(',',':'))
-        config = self.config
-        self.config = json.dumps(self.config, separators=(',',':'))
-        results = self.results
-        self.results = json.dumps(self.results, separators=(',',':'))
         if self.old_settings != self.settings:
             self.old_settings = self.settings
             self.stage = "Modification"
             self.status = "NA"
         super(Project, self).save(*args, **kwargs)
-        self.settings = settings
-        self.config = config
-        self.results = results
 
     def revoke(self):
         task = AsyncResult(self.task_id, app=sim_worker.celery.app)
@@ -64,7 +46,7 @@ class Project(models.Model):
     def run_config(self):
         if self.status == "Started" or self.status == "Pending":
             raise ProjectException("Can't configure a project when it is currently in " + self.stage)
-        task = sim_worker.tasks.run_configuration.delay(self.id, self.settings)
+        task = sim_worker.tasks.run_configuration.delay(self.id, json.loads(self.settings))
         self.task_id = task.id
         self.stage = "Configuration"
         self.status = "Pending"
