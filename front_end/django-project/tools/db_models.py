@@ -59,7 +59,8 @@ def import_model(modelname):
         device_row = devices[index]
         device = Device(model=model, **exclude(device_row, ['section_id', 'detail']))
         device.model = model
-        device.section = Section.objects.get(model=model, section_id=device_row['section_id'])
+        if device.device_type != 35: # Source
+            device.section = Section.objects.get(model=model, section_id=device_row['section_id'])
         device.save()
 
         if device.device_type == 14: # Spot loads
