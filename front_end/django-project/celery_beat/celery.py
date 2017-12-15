@@ -5,8 +5,8 @@ from celery import Celery
 from datetime import timedelta
 
 app = Celery('celery_beat',
-             broker='redis://128.3.144.76:6379/0',
-             backend='redis://128.3.144.76:6379/0',
+             broker='redis://redis:6379/0',
+             backend='redis://redis:6379/0',
              include=[
                 'cyder.projects.tasks',
              ])
@@ -21,7 +21,7 @@ app.conf.update(
     CELERYBEAT_SCHEDULE = {
         'retrieve_projects_result': {
             'task': 'cyder.projects.tasks.retrieve_projects_result',
-            'schedule': timedelta(seconds=2),
+            'schedule': timedelta(seconds=5),
         },
     },
 )
