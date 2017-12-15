@@ -11,6 +11,24 @@ In sym_worker/celery.py set the ip address of the redis db to the ip address of 
 
 Then run `start_worker.bat` to start the worker
 
+How it works
+------
+
+cosimulation/runconfiguration.py and cosimulation/runsimulation.py are python scripts which take a path (which have to be relative to the script) to a project folder.
+
+A project folder looks like this:
+```
+project_folder:
+    cyder_inputs.xlsx <- Describe the project, file names in it have to be relative to the runsimulation.py and runconfiguration.py scripts
+    optional_files.xlsx <- Additional files referred in cyder_inputs.xlsx
+    sim:
+        project_config.json <- Configuration file created by runconfiguration.py
+        0:
+            some_number.json <- Result files created by runsimulation.py
+```
+
+The celery worker sim_worker create those project folders with the information sent by the front end in the simulation_projects folder and call runconfiguration.py and runsimulation.py on those projects and then return the results to the front end.
+
 Celery on Windows
 -------
 
