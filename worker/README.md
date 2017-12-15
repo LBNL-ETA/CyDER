@@ -7,7 +7,7 @@ How to use
 Require python
 
 If it's the first time you use the project, run `install.bat` (it will install celery)  
-In sym_worker/celery.py change the address of the redis db to the address of the pc that run the containers
+In sym_worker/celery.py set the ip address of the redis db to the ip address of the pc that run the containers
 
 Then run `start_worker.bat` to start the worker
 

@@ -21,7 +21,7 @@ Any other name will generate a medium size model (about 500 nodes)
 Add the dummy worker to the docker-compose.yml du front end
 -----------------
 
-Do this if you just want to run and test locally.
+Do this if you just want to run every thing locally.
 
 Add this add the end of /front_end/docker-compose.yml:
 ```
@@ -30,7 +30,7 @@ dummy_worker:
         links:
                 - redis
 ```
-And in /dummy_worker/sim_worker/celery.py and /front_end/django-project/sim_worker/celery.py change the redis IP address with `redis` :
+And in /dummy_worker/sim_worker/celery.py change the redis IP address with `redis` :
 ```
 broker='redis://redis:6379/0',
 backend='redis://redis:6379/0',
