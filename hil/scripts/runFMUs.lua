@@ -1,5 +1,5 @@
 local omsimulator=require"OMSimulatorLua"
-
+-- Change the output name of the sensor
 --setLogFile("omslog.txt")
 model = newModel()
 setTempDirectory(".")
