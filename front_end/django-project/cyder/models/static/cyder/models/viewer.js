@@ -231,14 +231,14 @@ class ModelInfo extends View {
         let addNodePopup = (feature, layer) => {
             if(feature.geometry.type !== 'Point')
                 return;
-            layer._leaflet_id = feature.properties.id;
+            layer.cyder_node_id = feature.properties.id;
             layer.on('click', (e) => { this._onNodeClick(e); });
         }
         return this.model.layerProm = createModelLayer(this.model.name, addNodePopup);
     }
     async _onNodeClick(e) {
         if(!e.target.getPopup()) {
-            let node = await CyderAPI.Node.get(this.model.name, e.target._leaflet_id);
+            let node = await CyderAPI.Node.get(this.model.name, e.target.cyder_node_id);
             var display = (num) => (num == null) ? "NA" : ESCHTML(num);
             e.target.bindPopup(
                 `Node ${ESCHTML(node.node_id)}<br>
