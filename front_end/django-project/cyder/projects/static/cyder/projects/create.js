@@ -17,6 +17,9 @@ export class ProjectCreator extends View {
                 model: this.childview('select-model').modelName,
                 addPv: [],
                 addLoad: [],
+                start: "2017-05-19T06:00",
+                end: "2017-05-19T22:00",
+                timestep: 1800,
             },
         };
     }
