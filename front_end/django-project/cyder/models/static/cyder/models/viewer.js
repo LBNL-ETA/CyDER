@@ -167,8 +167,13 @@ export class ModelViewer extends View {
             this.childview('leaflet-map').fitBounds('allModel');
             history.replaceState(null, null, this.url);
         } else {
-            Promise.resolve(CyderAPI.Model.getAll()).then((models) =>
-                this.childview('model-info').model = models.get(this._modelName));
+            Promise.resolve(CyderAPI.Model.getAll()).then((models) => {
+                let model = models.get(this._modelName);
+                if(model === undefined)
+                    $.notify({title: `<strong>Not Found:</strong>`, message: "Not Found"},{type: 'danger'});
+                else
+                    this.childview('model-info').model = model;
+            });
             history.replaceState(null, null, `${this.url}${this._modelName}/`);
         }
         this.childview('select-model').modelName = this._modelName;
