@@ -1,12 +1,14 @@
-from django.conf.urls import url, include
+from django.urls import path, include
 from rest_framework import routers
 from rest_framework.authtoken import views as token_views
 from . import views
 
+app_name = 'api'
+
 apirouter = routers.DefaultRouter()
 urlpatterns = [
-    url(r'^token-auth/$', token_views.obtain_auth_token),
-    url(r'^token-session/$', views.token_from_session),
+    path('token-auth/', token_views.obtain_auth_token),
+    path('token-session/', views.token_from_session),
 ]
 
 # Import the api.py from each cyder.* app installed
@@ -24,4 +26,4 @@ for app in apps:
                 raise
             pass
 
-urlpatterns.append(url(r'^', include(apirouter.urls)))
+urlpatterns.append(path('', include(apirouter.urls)))

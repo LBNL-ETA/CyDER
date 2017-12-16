@@ -1,10 +1,10 @@
-from django.conf.urls import url
+from django.urls import path
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.projects, name='projects'),
-    url(r'^create/$', views.create, name='createproject'),
-    url(r'^edit/(?P<project_id>[0-9]*)/$', views.edit, name='editproject'),
-    url(r'^results/(?P<project_id>[0-9]*)/$', views.results, name='projectresults'),
-    url(r'^config/(?P<project_id>[0-9]*)/$', views.config, name='projectconfig'),
+    path('', views.projects, name='projects'),
+    path('create/', views.create, name='createproject'),
+    path('edit/<int:project_id>/', views.edit, name='editproject'),
+    path('results/<int:project_id>/', views.results, name='projectresults'),
+    path('config/<int:project_id>/', views.config, name='projectconfig'),
 ]

@@ -1,8 +1,8 @@
-from django.conf.urls import url, include
+from django.urls import path, include
 
 urlpatterns = [
-    url(r'^model_viewer/', include('cyder.models.urls')),
-    url(r'^projects/', include('cyder.projects.urls')),
-    url(r'^api/', include('cyder.api.urls', namespace='api')),
-    url(r'^', include('cyder.main.urls')),
+    path('model_viewer/', include('cyder.models.urls')),
+    path('projects/', include('cyder.projects.urls')),
+    path('api/', include('cyder.api.urls', namespace='api')),
+    path('', include('cyder.main.urls')),
 ]
