@@ -161,11 +161,16 @@ export class ProjectMapEditor extends View {
         return Array.from(map).map(([device_number, power]) => ({device_number, power}));
     }
     _onShowDataLayer(e) {
-        let name = e.target.innerHTML;
-        let layer = this._dataLayers[name].layer;
         this.childview('leaflet-map').removeLayer('dataLayer');
-        this.childview('leaflet-map').addLayer(this._dataLayers[name].layer, 'dataLayer');
-        this._currentDataLayer = name;
+        if(e.target.classList.contains('disabled')) {
+            this._currentDataLayer = null;
+        }
+        else {
+            let name = e.target.innerHTML;
+            let layer = this._dataLayers[name].layer;
+            this.childview('leaflet-map').addLayer(this._dataLayers[name].layer, 'dataLayer');
+            this._currentDataLayer = name;
+        }
         this.render();
     }
     get _template() {
@@ -227,7 +232,7 @@ class DevicePopup extends View {
         return `
         <div class="form-group">
             Power (kW):
-            <input data-name="power" type="number" class="form-control form-control-sm" placeholder="Power" aria-label="Power">
+            <input data-name="power" type="number" class="form-control form-control-sm" style="width: 100px" placeholder="Power" aria-label="Power">
         </div>
         <button type="button" data-on="click:_set" class="btn btn-primary btn-sm">Set</button>
         ${ IF(this._map.has(this._device_number), () =>
