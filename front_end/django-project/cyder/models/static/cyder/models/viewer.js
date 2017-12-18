@@ -36,21 +36,23 @@ export class SelectModel extends View {
     set modelName(val) { this.ready.then(() => this._html.select.value = val); }
 }
 
+
+import {Spinner} from './spin.js';
 export class LeafletMap extends View {
     constructor(el) {
         super(el, 'div');
-        leafletMapAddStyle();
         this._layers = new Map();
         this._loadingLayers = 0;
         this._lastLayer = null;
+        this._loadingSpinner = new Spinner();
         this.render();
     }
     _updateLoadingLayers(val) {
         this._loadingLayers += val;
         if(this._loadingLayers > 0)
-            this._html.loading.style.display = "block";
+            this._loadingSpinner.spin(this._html.el);
         else
-            this._html.loading.style.display = "none";
+            this._loadingSpinner.stop();
     }
     render() {
         super.render();
@@ -59,10 +61,6 @@ export class LeafletMap extends View {
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(this._map);
-    }
-    get _template() {
-        return `
-        <div data-name="loading" class="leaflet-loading" style="display: none"></div>`
     }
     emplace(el) {
         super.emplace(el);
@@ -121,26 +119,6 @@ export class LeafletMap extends View {
         this._map.fitBounds(layer.getBounds());
         return true;
     }
-}
-let leafletMapStyle;
-function leafletMapAddStyle() {
-    if(leafletMapStyle)
-        return;
-    leafletMapStyle = document.createElement('style');
-    leafletMapStyle.appendChild(document.createTextNode(`
-        .leaflet-loading {
-            float: right;
-            position:relative;
-            opacity: 0.7;
-            background-color: #FFF;
-            background-image: url("/static/cyder/models/loading.gif");
-            background-repeat: no-repeat;
-            width: 55px;
-            height: 55px;
-            z-index: 500;
-        }
-        `));
-    document.getElementsByTagName('head')[0].appendChild(leafletMapStyle);
 }
 
 export class ModelViewer extends View {
