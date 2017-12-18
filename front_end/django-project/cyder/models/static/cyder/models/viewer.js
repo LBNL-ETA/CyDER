@@ -54,7 +54,7 @@ export class LeafletMap extends View {
     }
     render() {
         super.render();
-        this._map = L.map(this._html.el).setView([37.8,-122.0], 9);
+        this._map = L.map(this._html.el, {preferCanvas: true}).setView([37.8,-122.0], 9);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
