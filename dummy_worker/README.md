@@ -16,6 +16,7 @@ If you change the source in sim_worker you will have to rebuild the worker with 
 You can then use this worker to import dummy models in the front end using the method describe in /front_end/README.md "Import/Update CYME models into the Postgres DB".  
 Use model name `SMALL_DUMMY` to generate a small dummy (about 50 nodes)  
 Use model name `BIG_DUMMY` to generate a big model (about 2500 nodes)  
+Use model name `HUGE_DUMMY` to generate a huge model (about 6500 nodes)  
 Any other name will generate a medium size model (about 500 nodes)
 
 Add the dummy worker to the docker-compose.yml du front end
