@@ -1,5 +1,5 @@
 local omsimulator=require"OMSimulatorLua"
--- Change the output name of the sensor
+
 --setLogFile("omslog.txt")
 model = newModel()
 setTempDirectory(".")
@@ -11,7 +11,7 @@ instantiateFMU(model, "uPMU.fmu", "sensor")
 instantiateFMU(model, "CyDER_HIL_Controls_voltvar.fmu", "control")
 -- add connections
 -- connect sensor FMu with inverter control algorithm
-addConnection(model, "sensor.y_out", "control.v_pu")
+addConnection(model, "sensor.http___upmu_lbl_gov_9000_beea4c9c_c5a7_47c3_afb8_8afa956b5553", "control.v_pu")
 -- connect inverter output to a dummy input.
 addConnection(model, "control.q_control", "sensor._dummy")
 -- output of control should be sent to input of OPAL-RT FMU
@@ -43,12 +43,22 @@ input_voltage_values = {2520.0, 2520.0, 2520.0, 0.0, -120.0, 120.0}
 -- end
 --doSteps(model, 1)
 simulate(model)
--- output_voltage_names={"cymdist.IA", "cymdist.IAngleA", "cymdist.IB", "cymdist.IAngleB", "cymdist.IC", "cymdist.IAngleC"}
+--description="uPMU voltage phase A" name="http___upmu_lbl_gov_9000_50e545ba_e969_4e12_8bdb_a4f44ed5b26e"
+--description="uPMU voltage angle phase A" name="http___upmu_lbl_gov_9000_a5b4ec54_4951_49a6_a03f_fd820d4f8eeb"
+--description="uPMU voltage phase B" name="http___upmu_lbl_gov_9000_0eb398f9_0247_41ef_909b_539ad1791cbc"
+--description="uPMU voltage angle phase B" name="http___upmu_lbl_gov_9000_5e01ad0a_be51_4f25_8eb5_55cf8f822f3b"
+--description="uPMU voltage phase C" name="http___upmu_lbl_gov_9000_5c59f52a_e4e5_4b4d_b0a6_c464818d469a"
+--description="uPMU voltage angle phase C" name="http___upmu_lbl_gov_9000_de122777_c60e_40a2_abaf_b54feea3ab9e"
+
+output_voltage_names={"sensor.http___upmu_lbl_gov_9000_50e545ba_e969_4e12_8bdb_a4f44ed5b26e",
+"sensor.http___upmu_lbl_gov_9000_a5b4ec54_4951_49a6_a03f_fd820d4f8eeb", "sensor.http___upmu_lbl_gov_9000_0eb398f9_0247_41ef_909b_539ad1791cbc",
+"sensor.http___upmu_lbl_gov_9000_5e01ad0a_be51_4f25_8eb5_55cf8f822f3b", "sensor.http___upmu_lbl_gov_9000_5c59f52a_e4e5_4b4d_b0a6_c464818d469a",
+"sensor.http___upmu_lbl_gov_9000_de122777_c60e_40a2_abaf_b54feea3ab9e"}
 -- tcur = getCurrentTime(model)
 -- for _,var in ipairs(output_voltage_names) do
 --   print(var .. " at " .. tcur .. ": " .. getReal(model, var))
 -- end
-print("uPMU_out=" .. getReal(model, "sensor.y_out"))
+print("uPMU_out=" .. getReal(model, "sensor.http___upmu_lbl_gov_9000_beea4c9c_c5a7_47c3_afb8_8afa956b5553"))
 print("control_q=" .. getReal(model, "control.q_control"))
 terminate(model)
 -- unloading the model causes the simulation to fail
