@@ -1,0 +1,7 @@
+FMUs exported by SimulatorToFMU
+are exported for a a specific version of Python 2.7
+(The binaries which exist on GitHub were compiled with Python 2.7.13 ).
+If the FMU requires external Python librariesto run, make sure to 
+install the libraries on the target machine.
+The Python version of the libraries must 
+match the version used to compile the FMUs libraries
