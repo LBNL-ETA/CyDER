@@ -550,5 +550,7 @@ if __name__ == "__main__":
      ## Connect to a running model using its name.
      projectName = os.path.abspath(os.path.join('lbnl_test1.llp'))
      # Run this command to extract the signal names
+	 # Set reset to zero when compiling the model for the first time to extract signal information
+	 # set reset to one when trying to reset the model so it can be recompiled next time
      reset = 0
      compileAndInstantiate(projectName, reset)
