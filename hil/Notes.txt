@@ -8,4 +8,5 @@ match the version used to compile the FMUs libraries
 
 The realtime folder contains scripts which allow reinitializing
 a running opal-rt FMU. Instructions on how to reinitialize are in 
-the script itself.
+the script itself. The folder also contains scripts for extracting
+input names of an ePhasorSim model which will be compiled as an FMU.
