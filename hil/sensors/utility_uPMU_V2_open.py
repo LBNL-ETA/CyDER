@@ -35,7 +35,7 @@ def get_range(uuid, t_start, t_end, server, fmu=True):
 	else:
 		return -1
 		
-def get_latest_avg(uuid, server, avg, fmu=True):
+def get_latest_avg(uuid, server, avg, fmu=True, scale=120.0):
 	#uuid from database
 	#server inclusive port: http://[server]:[port] (standard BTrDB port is 9000)
 	#fmu oprtion: print only value for FMU, or timestep and value if False
@@ -45,7 +45,10 @@ def get_latest_avg(uuid, server, avg, fmu=True):
 		if fmu:
 			latest = loads(r.text.encode('ascii','ignore'))[0]
 			range = get_range(uuid, latest-avg*10**9, latest, server, True)
-			return sum(range)/len(range)
+			if scale == None:
+				return sum(range)/len(range)
+			else:
+				return sum(range)/(len(range)*scale) 			
 		else:
 			return -1				 
 	else:
