@@ -2,8 +2,7 @@ within ;
 package CyDER
   package HIL
     package Controls
-      model voltvar
-
+      model voltVar
         Modelica.Blocks.Interfaces.RealInput v_pu "Voltage [p.u.]"
           annotation (Placement(transformation(extent={{-140,-20},{-100,20}})));
         Modelica.Blocks.Interfaces.RealOutput q_control "Q control signal"
@@ -35,12 +34,35 @@ package CyDER
           elseif v_pu < v_min then q_max
           elseif v_pu < v_mindead then (v_mindead - v_pu)/abs(v_min - v_mindead) * q_min * (-1)
           else 0);
+      end voltVar;
 
-      end voltvar;
+      model voltVar2
+        Modelica.Blocks.Interfaces.RealInput v(unit="1") "Voltage [p.u]"
+          annotation (Placement(transformation(extent={{-140,-20},{-100,20}})));
+        Modelica.Blocks.Interfaces.RealOutput QCon(unit="kvar") "Q control signal"
+          annotation (Placement(transformation(extent={{100,-10},{120,10}})));
+        parameter Real thr(start=0.05) "over/undervoltage threshold";
+        parameter Real hys(start=0.01) "Hysteresis";
+        final parameter Modelica.SIunits.PerUnit vMaxDea=1 + hys "Upper bound of deaband [p.u.]";
+        final parameter Modelica.SIunits.PerUnit vMax=1 + thr "Voltage maximum [p.u.]";
+        final parameter Modelica.SIunits.PerUnit vMinDea=1 - hys "Upper bound of deaband [p.u.]";
+        final parameter Modelica.SIunits.PerUnit vMin=1 - thr "Voltage minimum [p.u.]";
+        parameter Real QMax(start=1.0, unit="kvar") "Q control minimum (centered zero)";
+        parameter Real QMin(start=-1.0, unit="kvar") "Q control maximum (centered zero)";
+      equation
+        QCon = smooth(0, if v > vMax then QMin elseif v > vMaxDea then (vMaxDea - v)/
+          abs(vMax - vMaxDea)*QMax elseif v < vMin then QMax elseif v < vMinDea then (
+          vMinDea - v)/abs(vMin - vMinDea)*QMin*(-1) else 0);
+        annotation (Documentation(info="<html>
+This model is similar to <a href=\"modelica://CyDER.HIL.Controls.voltVar\">
+CyDER.HIL.Controls.voltVar</a> 
+with the only differences that input variables have been 
+changed to parameters.
+</html>"));
+      end voltVar2;
     end Controls;
 
     package uPMU
-
       model uPMU_API
         Buildings.Utilities.IO.Python27.Real_Real Placeholder
           annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
@@ -51,7 +73,6 @@ package CyDER
 
     package Examples
       model Validate_VoltVarControl
-
         Modelica.Blocks.Sources.Ramp ramp(
           duration=1,
           startTime=0,
@@ -62,7 +83,7 @@ package CyDER
           annotation (Placement(transformation(extent={{-60,50},{-40,70}})));
         Modelica.Blocks.Sources.Constant lower_voltage(k=0.95)
           annotation (Placement(transformation(extent={{-60,-70},{-40,-50}})));
-        Controls.voltvar voltvar
+        Controls.voltVar voltvar
           annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
         Modelica.Blocks.Sources.Constant upper_deadband_voltage(k=1.01)
           annotation (Placement(transformation(extent={{-60,10},{-40,30}})));
@@ -101,7 +122,6 @@ package CyDER
 
   package Optimization
     package Examples
-
       model Test_voltage
       protected
         parameter Modelica.SIunits.Impedance Z11_601[2] = {0.3465, 1.0179};
