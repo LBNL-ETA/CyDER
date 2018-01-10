@@ -2,10 +2,21 @@
 {% load static %}
 
 {% block css %}
+    <!-- Style for LeafletMap componenet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
         integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
         crossorigin=""/>
-    <style>
+    <style>/* Style for LeafletMap componenet */
+        .leaflet-popup-content {
+            /* Override the fact that leaflet.js set the width in the style attribute of the popup
+            to enforce the min and max width option in leaflet.
+            This default behavior can be a problem when vuejs rewrite a popup (the size is calutaed for the old content).
+            If a max size is needed for a popup it should be enforce inside the popup itself
+            (ex: put the content inside a div with a set width and use this div for the popup) */
+            width: auto !important;
+        }
+    </style>
+    <style>/* Style for ModelViewer componenet */
         .card {
             height: 100%;
         }
