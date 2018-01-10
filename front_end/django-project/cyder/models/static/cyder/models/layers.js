@@ -1,10 +1,70 @@
 import CyderAPI from '../api.js';
 
+const Layer = {
+    props: {
+        fit: Boolean,
+    },
+    data() { return {
+        map: null,
+    };},
+    mounted() {
+        if(this.$parent.getLeafletMap instanceof Function)
+            this.map = this.$parent.getLeafletMap();
+    },
+    destroyed() {
+        if(this.map !== null)
+            this.map.removeLayer(this);
+    },
+    watch: {
+        fit: {
+            immediate: true,
+            handler(val) {
+                if(this.map !== null)
+                    this.$parent.fitBounds(this);
+            },
+        },
+        map: {
+            handler(newMap, oldMap) {
+                if(oldMap !== null)
+                    oldMap.removeLayer(this);
+                if(newMap !== null) {
+                    newMap.addLayer(this.getLayer(), this);
+                    if(this.fit)
+                        newMap.fitBounds(this);
+                }
+            },
+        },
+    },
+    template: '<div></div>',
+}
+
 export async function createAllModelsLayer(onEachFeature = ()=>{}) {
     let geojson = await CyderAPI.rest('GET', '/api/models/geojson/');
     return L.geoJson(geojson, {
         onEachFeature
     });
+}
+
+export const OpenModelLayer = {
+    mixins: [Layer],
+    data() { return {
+        selectedModel: '',
+    };},
+    methods: {
+        getLayer() {
+            let addPopup = (feature, layer) => {
+                layer.bindPopup(this.$refs.popup);
+                layer.on('click', () => { this.selectedModel = feature.properties.modelname; });
+            };
+            return createAllModelsLayer(addPopup);
+        },
+    },
+    template: `<div style="display: none;">
+        <div ref="popup">
+            {{ selectedModel }}<br>
+            <button class='btn btn-primary btn-sm' @click="$emit('open', {modelName: selectedModel})">Open</button>
+        </div>
+    </div>`,
 }
 
 export async function createModelLayer(modelName, onEachFeature = ()=>{}) {

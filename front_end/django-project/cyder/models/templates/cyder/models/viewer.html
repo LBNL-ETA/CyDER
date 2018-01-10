@@ -18,6 +18,9 @@
 {% block content %}
     <div id="app">
         Select a model to display: <model-selector v-model="modelName" allow-empty></model-selector>
+        <leaflet-map style="height: 70vh; margin: 1rem 0 1rem 0;">
+            <open-model-layer v-if="modelName === ''" fit @open="modelName=$event.modelName"></open-model-layer>
+        </leaflet-map>
     </div>
 {% endblock content %}
 
@@ -27,7 +30,8 @@
         crossorigin=""></script>
     <script src="{% static 'cyder/models/leaflet-heat.js' %}"></script>
     <script type="module">
-        import { ModelSelector } from '{% static 'cyder/models/viewer.js' %}';
+        import { ModelSelector, LeafletMap } from '{% static 'cyder/models/viewer.js' %}';
+        import { OpenModelLayer } from '{% static 'cyder/models/layers.js' %}';
         import CyderAPI from '{% static 'cyder/api.js' %}';
 
         document.querySelector(".navbar [data-name='model_viewer']").classList.add('active');
@@ -37,7 +41,7 @@
 
             window.app = new Vue({
                 el: '#app',
-                components: { ModelSelector },
+                components: { ModelSelector, LeafletMap, OpenModelLayer },
                 data() { return {
                     modelName: '{{ modelname|escapejs }}',
                 };},
