@@ -1,5 +1,7 @@
 'use strict';
 import CyderAPI from '../api.js';
+import { ModelLayer } from './layers.js';
+import notifyRESTError from '../api-notify-error.js';
 
 export const ModelSelector = {
     model: { prop: 'value', event: 'change' },
@@ -126,5 +128,93 @@ export const LeafletMap = {
     },
     computed: {
         map() { return this.$data._map; },
+    },
+};
+
+export const RemoteLeafletMap = {
+    props: {
+        map: {required: true},
+    },
+    template: `<div><slot></slot></div>`,
+    methods: {
+        getLeafletMap() { return this.map; }
+    },
+    watch: {
+        map(val) {
+            for(let child of this.$children)
+                child.map = val;
+        },
+    }
+};
+
+export const ModelViewer = {
+    props: {
+        modelName: null,
+        map: null,
+    },
+    data() { return {
+        model: null,
+    };},
+    components: { RemoteLeafletMap, ModelLayer },
+    template: `<div>
+        <remote-leaflet-map :map="map">
+            <model-layer :model-name="modelName" fit></model-layer>
+        </remote-leaflet-map>
+        <div v-if="model !== null" class="row" style="margin-bottom: 1rem">
+            <div class=col-lg-4>
+                <div class="card">
+                    <div class="card-header">
+                        Infos
+                    </div>
+                    <div class="card-body">
+                        Model name: {{ this.model.name }}<br>
+                        Nodes count: <span id="nodescount"></span><br>
+                        Devices count: <span id="devicescount"></span><br>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        Loads (kW)
+                    </div>
+                    <div id="" class="card-body">
+                        <div data-childview="loadHeatMapControl"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header input-group">
+                        <input class="form-control" placeholder="Search" name="srch-term" id="srch-term" type="text">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" type="submit">Search</button>
+                        </div>
+                    </div>
+                    <div id="searchresult" class="card-body">
+                        Search
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`,
+    watch: {
+        modelName: {
+            immediate: true,
+            async handler(val) {
+                try {
+                    let model = await CyderAPI.Model.get(this.modelName);
+                    if(model === undefined) {
+                        $.notify({title: `<strong>Not Found:</strong>`, message: "Not Found"},{type: 'danger'});
+                        return;
+                    }
+                    this.model = model;
+                } catch(error) {
+                    if(!(error instanceof CyderAPI.RESTError))
+                        throw(error);
+                    notifyRESTError(error);
+                }
+            },
+        },
     },
 };

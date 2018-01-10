@@ -84,6 +84,26 @@ export async function createModelLayer(modelName, onEachFeature = ()=>{}) {
     });
 }
 
+export const ModelLayer = {
+    mixins: [Layer],
+    props: {
+        modelName: null,
+    },
+    methods: {
+        getLayer() {
+            return createModelLayer(this.modelName);
+        },
+    },
+    watch: {
+        modelName(val) {
+            // Redraw the layer by forcing a call to the map watcher
+            let map = this.map;
+            this.map = null;
+            this.map = map;
+        }
+    },
+}
+
 export async function createPVLayer(modelName, onEach = ()=>{}) {
     let devices = CyderAPI.Device.getAll(modelName);
     let pvs = CyderAPI.PV.getAll(modelName);
