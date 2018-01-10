@@ -1,5 +1,5 @@
 'use strict';
-import { LeafletMap } from '../models/viewer.js';
+import { LeafletMap } from '../models/viewer-legacy.js';
 import { createModelLayer, createPVLayer, createLoadLayer } from '../models/layers.js';
 import { View, FOREACH, IF, ESCHTML } from '../viewlib.js';
 import CyderAPI from '../api.js';

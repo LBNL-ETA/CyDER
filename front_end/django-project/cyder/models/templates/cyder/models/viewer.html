@@ -16,7 +16,9 @@
 {% endblock css %}
 
 {% block content %}
-    <div id="model-viewer"></div>
+    <div id="app">
+        Model Viewer
+    </div>
 {% endblock content %}
 
 {% block script %}
@@ -25,16 +27,17 @@
         crossorigin=""></script>
     <script src="{% static 'cyder/models/leaflet-heat.js' %}"></script>
     <script type="module">
-        import { ModelViewer } from '{% static 'cyder/models/viewer.js' %}';
+        import { } from '{% static 'cyder/models/viewer.js' %}';
         import CyderAPI from '{% static 'cyder/api.js' %}';
 
         document.querySelector(".navbar [data-name='model_viewer']").classList.add('active');
-        let modelViewer;
+
         window.onload = function() {
             CyderAPI.auth();
-            modelViewer = new ModelViewer("{% url 'model_viewer' %}", document.querySelector('#model-viewer'));
-            modelViewer.render();
-            modelViewer.modelName = "{{ modelname|escapejs }}";
+
+            window.app = new Vue({
+                el: '#app',
+            });
         }
     </script>
 {% endblock script %}

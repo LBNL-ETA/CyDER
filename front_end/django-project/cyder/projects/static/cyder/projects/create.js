@@ -1,5 +1,5 @@
 'use strict';
-import { SelectModel } from '../models/viewer.js';
+import { SelectModel } from '../models/viewer-legacy.js';
 import { View } from '../viewlib.js';
 import CyderAPI from '../api.js';
 import notifyRESTError from '../api-notify-error.js';
