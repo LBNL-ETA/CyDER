@@ -21,8 +21,8 @@ fixme: A number of input variables of the
 volt-var controller need to be changed to
 parameters as they do not change during simulation.
 
-C:\ProgramData\Anaconda2\python.exe exportFMUs.py "jmodelica" "C:\JModelica.org-2.0" "D:\Users\emma\Documents\GitHub\CyDER\hil\controls\CyDER.mo" "CyDER.HIL.Controls.voltvar" "D:\Users\emma\Documents\GitHub\SimulatorToFMU\simulatortofmu\parser" "D:\Users\emma\Documents\GitHub\CyDER\hil\sensors\uPMU.xml.ignore" "D:\Users\emma\Documents\GitHub\CyDER\hil\sensors\uPMU_wrapper.py" "D:\Users\emma\Documents\GitHub\CyDER\hil\realtime\models\BU0001_timeserie_pv\opalrt.xml" "D:\Users\emma\Documents\GitHub\CyDER\hil\realtime\scripts\opalrt_wrapper.py" "D:\Users\emma\Documents\GitHub\CyDER\hil\realtime\models\BU0001_timeserie_pv\lbnl_test1.llp"
-#python exportFMUs.py "dymola" "C:\JModelica.org-2.0" "D:\Users\emma\Documents\GitHub\CyDER\hil\controls\CyDER.mo" "CyDER.HIL.Controls.voltvar" "D:\Users\emma\Documents\GitHub\SimulatorToFMU\simulatortofmu\parser" "D:\Users\emma\Documents\GitHub\CyDER\hil\sensors\uPMU.xml" "D:\Users\emma\Documents\GitHub\CyDER\hil\realtime\upmu_wrapper.py"
+C:\ProgramData\Anaconda2\python.exe exportFMUs.py "jmodelica" "C:\JModelica.org-2.0" "D:\Users\emma\Documents\GitHub\CyDER\hil\controls\CyDER.mo" "CyDER.HIL.Controls.voltVar2" "D:\Users\emma\Documents\GitHub\SimulatorToFMU\simulatortofmu\parser" "D:\Users\emma\Documents\GitHub\CyDER\hil\sensors\uPMU.xml.ignore" "D:\Users\emma\Documents\GitHub\CyDER\hil\sensors\uPMU_wrapper.py" "D:\Users\emma\Documents\GitHub\CyDER\hil\realtime\models\BU0001_timeserie_pv\opalrt.xml" "D:\Users\emma\Documents\GitHub\CyDER\hil\realtime\scripts\opalrt_wrapper.py" "D:\Users\emma\Documents\GitHub\CyDER\hil\realtime\models\BU0001_timeserie_pv\lbnl_test1.llp"
+#python exportFMUs.py "dymola" "C:\JModelica.org-2.0" "D:\Users\emma\Documents\GitHub\CyDER\hil\controls\CyDER.mo" "CyDER.HIL.Controls.voltVar2" "D:\Users\emma\Documents\GitHub\SimulatorToFMU\simulatortofmu\parser" "D:\Users\emma\Documents\GitHub\CyDER\hil\sensors\uPMU.xml" "D:\Users\emma\Documents\GitHub\CyDER\hil\realtime\upmu_wrapper.py"
 
 """
 import sys

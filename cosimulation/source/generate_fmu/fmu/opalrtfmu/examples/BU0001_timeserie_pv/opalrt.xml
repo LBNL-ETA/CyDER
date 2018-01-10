@@ -8,10 +8,24 @@
   <ModelVariables>
       <ScalarVariable
       name="LBNL_test1/sc_console/port1"
-      description="Input port"
+      description="Input port Q"
       causality="input">
       <Real
-        unit="A"/>
+        unit="kvar"/>
+    </ScalarVariable>
+	<ScalarVariable
+      name="LBNL_test1/sc_console/port2"
+      description="Input port Q"
+      causality="input">
+      <Real
+        unit="kvar"/>
+    </ScalarVariable>
+	<ScalarVariable
+      name="LBNL_test1/sc_console/port3"
+      description="Input port Q"
+      causality="input">
+      <Real
+        unit="kvar"/>
     </ScalarVariable>
     <ScalarVariable
       name="LBNL_test1/Sm_master/port1(1)"
