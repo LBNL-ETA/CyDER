@@ -134,7 +134,7 @@ export async function createLoadLayer(modelName, onEach = ()=>{}) {
     return layer;
 }
 
-export async function createLoadHeatLayer(modelName, phases) {
+export async function createLoadHeatmapLayer(modelName, phases) {
     let devices = CyderAPI.Device.getAll(modelName);
     let loads = CyderAPI.Load.getAll(modelName);
     devices = await devices;
@@ -152,4 +152,43 @@ export async function createLoadHeatLayer(modelName, phases) {
 
     let heatLayer = L.heatLayer(data, {max: maxLoad, maxZoom: 1, radius: 10, blur:5});
     return heatLayer;
+}
+
+export const LoadHeatmapLayer = {
+    mixins: [Layer],
+    props: {
+        modelName: String,
+        phases: null,
+        setMaxScale: null,
+    },
+    methods: {
+        getLayer() {
+            this.$data._layer = createLoadHeatmapLayer(this.modelName, this.phases);
+            this.$data._layer.then(layer => {
+                this.$data._layer = layer;
+                this.$emit('maxScaleChange', layer.options.max);
+            });
+            return this.$data._layer;
+        },
+    },
+    watch: {
+        phases() {
+            if(this.map === null)
+                return;
+            this.map.removeLayer(this);
+            this.map.addLayer(this.getLayer(), this);
+        },
+        setMaxScale(val) {
+            if(this.$data._layer !== undefined && !(this.$data._layer instanceof Promise)) {
+                this.$data._layer.setOptions({max: val});
+                this.$emit('maxScaleChange', val);
+            }
+        },
+        modelName(val) {
+            // Redraw the layer by forcing a call to the map watcher
+            let map = this.map;
+            this.map = null;
+            this.map = map;
+        },
+    }
 }

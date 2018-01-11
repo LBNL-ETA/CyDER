@@ -1,6 +1,6 @@
 'use strict';
 import CyderAPI from '../api.js';
-import { ModelLayer } from './layers.js';
+import { ModelLayer, LoadHeatmapLayer } from './layers.js';
 import notifyRESTError from '../api-notify-error.js';
 
 export const ModelSelector = {
@@ -147,15 +147,51 @@ export const RemoteLeafletMap = {
     }
 };
 
+export const LoadHeatmapControl = {
+    props: {
+        map: null,
+        modelName: String,
+    },
+    data() { return {
+        phases: [],
+        maxScale: null,
+    };},
+    components: { RemoteLeafletMap, LoadHeatmapLayer },
+    template: `<div>
+        <remote-leaflet-map :map="map">
+            <load-heatmap-layer v-if="phases.length != 0" :model-name="modelName" :phases="phases" :set-max-scale="maxScale" @maxScaleChange="maxScale=$event"></load-heatmap-layer>
+        </remote-leaflet-map>
+        <div class="btn-group btn-group-sm" role="group" style="display: flex; margin-bottom: 1em;">
+            <button type="button" :class="{btn:true, 'btn-secondary':true, disabled:phases.indexOf('A')>=0}" @click="tooglePhase('A')" style="width: 33.3%;">Phase A</button>
+            <button type="button" :class="{btn:true, 'btn-secondary':true, disabled:phases.indexOf('B')>=0}" @click="tooglePhase('B')" style="width: 33.3%;">Phase B</button>
+            <button type="button" :class="{btn:true, 'btn-secondary':true, disabled:phases.indexOf('C')>=0}" @click="tooglePhase('C')" style="width: 33.3%;">Phase C</button>
+        </div>
+        <div v-if="phases.length != 0" style="display: table;">
+            <div>0 </div>
+            <div style="display: table-cell; width: 100%; height: 1em; background: linear-gradient(to right, rgba(0,0,255,0.1), rgba(0,0,255,0.5), lime, yellow, red);"></div>
+            <input style="display: table-cell; width:65px" type="number" v-model="maxScale">
+        </div>
+    </div>`,
+    methods: {
+        tooglePhase(phase) {
+            let i = this.phases.indexOf(phase);
+            if(i >= 0)
+                this.phases.splice(i,1);
+            else
+                this.phases.push(phase);
+        },
+    },
+};
+
 export const ModelViewer = {
     props: {
-        modelName: null,
+        modelName: String,
         map: null,
     },
     data() { return {
         model: null,
     };},
-    components: { RemoteLeafletMap, ModelLayer },
+    components: { RemoteLeafletMap, ModelLayer, LoadHeatmapControl },
     template: `<div>
         <remote-leaflet-map :map="map">
             <model-layer :model-name="modelName" fit></model-layer>
@@ -179,7 +215,7 @@ export const ModelViewer = {
                         Loads (kW)
                     </div>
                     <div id="" class="card-body">
-                        <div data-childview="loadHeatMapControl"></div>
+                        <load-heatmap-control :model-name="modelName" :map="map"></load-heatmap-control>
                     </div>
                 </div>
             </div>
