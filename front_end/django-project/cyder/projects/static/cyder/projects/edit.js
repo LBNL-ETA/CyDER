@@ -232,7 +232,7 @@ class DevicePopup extends View {
         return `
         <div class="form-group">
             Power (kW):
-            <input data-name="power" type="number" class="form-control form-control-sm" style="width: 100px" placeholder="Power" aria-label="Power">
+            <input data-name="power" type="number" step="any" class="form-control form-control-sm" style="width: 100px" placeholder="Power" aria-label="Power">
         </div>
         <button type="button" data-on="click:_set" class="btn btn-primary btn-sm">Set</button>
         ${ IF(this._map.has(this._device_number), () =>
