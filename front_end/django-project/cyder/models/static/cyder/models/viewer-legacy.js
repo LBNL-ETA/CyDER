@@ -1,5 +1,5 @@
 'use strict';
-import { createAllModelsLayer, createModelLayer, createLoadHeatLayer } from './layers.js';
+import { createAllModelsLayer, createModelLayer, createLoadHeatmapLayer } from './layers.js';
 import { View, FOREACH, IF, ESCHTML } from '../viewlib.js';
 import CyderAPI from '../api.js';
 
@@ -295,7 +295,7 @@ class LoadHeatMapControl extends View {
         }
         this._leafletMap.removeLayer("load");
         if(this._phases.size > 0) {
-            this._layer = createLoadHeatLayer(this._modelName, this._phases);
+            this._layer = createLoadHeatmapLayer(this._modelName, this._phases);
             this._leafletMap.addLayer(this._layer, "load");
             this._layer = await this._layer;
             this._childviews['scale'] = new HeatMapScale(this._layer);
