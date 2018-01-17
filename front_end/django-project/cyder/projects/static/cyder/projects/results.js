@@ -34,7 +34,10 @@ export class ProjectResults extends View {
         let traceHighC = {x: dates, y: project.results.DwHighVoltWorstC, mode: 'lines', name: 'Phase C'};
         let dataHigh = [traceHighA, traceHighB, traceHighC];
         let layoutHigh = {
-            title:'DwHighVoltWorst'
+            title:'Down-line worst high voltage',
+            yaxis: {
+                title: 'Percentage(%)'
+            }
         };
         Plotly.newPlot(this._html.plotHigh, dataHigh, layoutHigh);
 
@@ -43,7 +46,10 @@ export class ProjectResults extends View {
         let traceLowC = {x: dates, y: project.results.DwLowVoltWorstC, mode: 'lines', name: 'Phase C'};
         let dataLow = [traceLowA, traceLowB, traceLowC];
         let layoutLow = {
-            title:'DwLowVoltWorst'
+            title:'Down-line worst low voltage',
+            yaxis: {
+                title: 'Percentage(%)'
+            }
         };
         Plotly.newPlot(this._html.plotLow, dataLow, layoutLow);
     }

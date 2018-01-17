@@ -34,7 +34,12 @@ export class ProjectConfig extends View {
         let load = {x: dates, y: project.config.load, mode: 'lines', name: 'Load'};
 
         let data = [pv, ev, load];
-        Plotly.newPlot(this._html.plot, data);
+        let layout = {
+            yaxis: {
+                title: 'Active load(kW)'
+            }
+        };
+        Plotly.newPlot(this._html.plot, data, layout);
     }
     get _template() {
         let project = CyderAPI.Project.get(this._projectId);
