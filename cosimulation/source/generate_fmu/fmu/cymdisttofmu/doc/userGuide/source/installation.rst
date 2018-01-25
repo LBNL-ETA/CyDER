@@ -28,7 +28,7 @@ CYMDISTToFMU has been tested with:
   - Python 2.7.13 and 3.5.0 
   - Three Modelica parsers
 
-    - Dymola 2017 FD01 on Windows and Linux
+    - Dymola 2018 on Windows
     - JModelica 2.0 on Windows, and JModelica trunk version 9899 on Linux
     - OpenModelica 1.11.0 on Windows
 
@@ -37,7 +37,7 @@ CYMDISTToFMU has been tested with:
 .. note:: 
 
    CYMDISTToFMU can use OpenModelica and Dymola to export CYMDIST as an FMU. 
-   However OpenModelica 1.11.0 (on Windows) and Dymola 2017 FD01 (on Linux) do not copy all required libraries dependencies to the FMU.
+   However OpenModelica 1.11.0 does not copy all required libraries dependencies to the FMU.
    As a workaround, CYMDISTToFMU checks if there are missing libraries dependencies and copies the dependencies to the FMU.
 
 .. _installation directory:
@@ -79,23 +79,43 @@ To install CYMDISTToFMU, proceed as follows:
 
 2. Install CYMDISTToFMU by running 
 
-  .. code-block:: none
+ .. code-block:: none
 
-    > pip install CYMDISTToFMU
+    > pip install --user CYMDISTToFMU
+
+ .. note::
+
+   Use the ``--user`` command line option to install CYMDISTToFMU so 
+   it can be installed in your Python 3.4 user installation directory 
+   and can write files to your disk. The Python 3.4 user 
+   installation directory is typically 
+   ``C:\Users\YourUserName\AppData\Roaming\Python\Python34\site-packages`` 
+   on Windows, where ``YourUserName`` is your system login user name. 
+
  
-  The installation directory should contain the following subdirectories:
+The installation directory should contain the following subdirectories:
 
-    - ``bin/``
-      (Scripts for running unit tests)
+ - ``bin/``
+   (Scripts for running unit tests)
 
-    - ``doc/``
-      (Documentation sources)
+ - ``doc/``
+   (Documentation sources)
 
-    - ``fmus/``
-      (FMUs folder)
+ - ``fmus/``
+   (FMUs folder)
 
-    - ``parser/``
-      (Python scripts, Modelica templates and XML validator files)
+ - ``parser/``
+   (Python scripts, Modelica templates and XML validator files)
+
+UnitTests
+^^^^^^^^^
+
+To test your installation run from the installation ``bin`` folder
+
+.. code-block:: none
+
+    > python runUnitTest.py 
+    
 
 
 Uninstallation

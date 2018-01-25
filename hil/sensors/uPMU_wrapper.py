@@ -33,14 +33,14 @@ def get_range(uuid, t_start, t_end, server, fmu=True):
 		return -1
 
 if __name__ == "__main__":
-	#Example code
-	server = "http://yourhost:yourport"
-	uuid = "youruuid"
-	print 'Test of uPMU queries for {}\nat {}'.format(uuid, server)
-	print 'Latest value as FMU:', get_latest(uuid, server)
-	temp = get_latest(uuid, server, False)
-	print 'Latest value:', temp
-	print 'Latest readings of the last 1 second (120 with uPMU):', len(get_range(uuid, temp[0]-1*10**9, temp[0], server))
+    #Example code
+    server = "http://yourhost:yourport"
+    uuid = "youruuid"
+    print 'Test of uPMU queries for {}\nat {}'.format(uuid, server)
+    print 'Latest value as FMU:', get_latest(uuid, server)
+    temp = get_latest_avg(uuid, server, False)
+    print 'Latest value:', temp
+    print 'Latest readings of the last 1 second (120 with uPMU):', len(get_range(uuid, temp[0]-1*10**9, temp[0], server))
 
 
 def exchange(configuration_file, time, input_names,
@@ -69,15 +69,18 @@ def exchange(configuration_file, time, input_names,
     # The assumption is that the uuid and the server name
     # are concatenated and separated by a :" in output_names.
     # This allows splitting the output_names and extracting those information
-    output_names = output_names.split(";")
-    if(len(output_names)<2):
-        s="The output name={!s} was incorrectly defined. The syntax must be server:uuid".format(output_names)
-        raise ValueError(s)
-	# Get the server name
-    server=output_names[0]
-	# Get the uuid which identifies the output
-	# to be retrieved
-    uuid=output_names[1]
-    output_values = get_latest(uuid, server, False)
-    output_values = 1.0 * float(output_values[1])
+    if (isinstance(output_names, list)):
+        output_values=[]
+        for var in output_names:
+            var = var.split(";")
+            if(len(var)<2):
+                s="The output name={!s} was incorrectly defined. The syntax must be server:uuid".format(var)
+                raise ValueError(s)
+            # Get the server name
+            server=var[0]
+            # Get the uuid which identifies the output
+            # to be retrieved
+            uuid=var[1]
+            output_values.append(1.0 * float(get_latest(uuid, server, False)[1]))
+            #output_values = 1.0 * float(output_values[1])
     return output_values

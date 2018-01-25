@@ -21,8 +21,8 @@ fixme: A number of input variables of the
 volt-var controller need to be changed to
 parameters as they do not change during simulation.
 
-python exportFMUs.py "jmodelica" "C:\JModelica.org-2.1" "Z:\Ubuntu\proj\cyder_repo\git\hil\controls\CyDER.mo" "CyDER.HIL.Controls.voltvar" "Z:\Ubuntu\proj\simulatortofmu\SimulatorToFMU\simulatortofmu\parser" "Z:\Ubuntu\proj\cyder_repo\git\hil\sensors\uPMU.xml" "Z:\Ubuntu\proj\cyder_repo\git\hil\sensors\simulator_wrapper.py"
-python exportFMUs.py "dymola" "C:\JModelica.org-2.1" "Z:\Ubuntu\proj\cyder_repo\git\hil\controls\CyDER.mo" "CyDER.HIL.Controls.voltvar" "Z:\Ubuntu\proj\simulatortofmu\SimulatorToFMU\simulatortofmu\parser" "Z:\Ubuntu\proj\cyder_repo\git\hil\sensors\uPMU.xml" "Z:\Ubuntu\proj\cyder_repo\git\hil\sensors\simulator_wrapper.py"
+C:\ProgramData\Anaconda2\python.exe exportFMUs.py "jmodelica" "C:\JModelica.org-2.0" "D:\Users\emma\Documents\GitHub\CyDER\hil\controls\CyDER.mo" "CyDER.HIL.Controls.voltVar2" "D:\Users\emma\Documents\GitHub\SimulatorToFMU\simulatortofmu\parser" "D:\Users\emma\Documents\GitHub\CyDER\hil\sensors\uPMU.xml.ignore" "D:\Users\emma\Documents\GitHub\CyDER\hil\sensors\uPMU_wrapper.py" "D:\Users\emma\Documents\GitHub\CyDER\hil\realtime\models\BU0001_timeserie_pv\opalrt.xml" "D:\Users\emma\Documents\GitHub\CyDER\hil\realtime\scripts\opalrt_wrapper.py" "D:\Users\emma\Documents\GitHub\CyDER\hil\realtime\models\BU0001_timeserie_pv\lbnl_test1.llp"
+#python exportFMUs.py "dymola" "C:\JModelica.org-2.0" "D:\Users\emma\Documents\GitHub\CyDER\hil\controls\CyDER.mo" "CyDER.HIL.Controls.voltVar2" "D:\Users\emma\Documents\GitHub\SimulatorToFMU\simulatortofmu\parser" "D:\Users\emma\Documents\GitHub\CyDER\hil\sensors\uPMU.xml" "D:\Users\emma\Documents\GitHub\CyDER\hil\realtime\upmu_wrapper.py"
 
 """
 import sys
@@ -111,7 +111,7 @@ path_to_upmu_inputfile=sys.argv[6]
 if not (os.path.exists(path_to_upmu_inputfile)):
     s="Path to uPMU input file is set to {!s} which does not exist.".format(path_to_upmu_inputfile)
     raise ValueError(s)
-# Get the path to the microPMu script file
+# Get the path to the microPMU script file
 path_to_upmu_script=sys.argv[7]
 if not (os.path.exists(path_to_upmu_script)):
     s="Path to uPMU script file is set to {!s} which does not exist.".format(path_to_upmu_script)
@@ -137,8 +137,8 @@ if not (os.path.exists(path_to_opalrt_inputfile)):
     s="Path to OPAL-RT input file is set to {!s} which does not exist.".format(path_to_opalrt_inputfile)
     raise ValueError(s)
 # Get the path to OPAL_RT script file
-path_to_opalrt_script_root=sys.argv[9]
-path_to_opalrt_script=os.path.join(path_to_opalrt_script_root, "simulator_wrapper.py")
+path_to_opalrt_script=sys.argv[9]
+#path_to_opalrt_script=os.path.join(path_to_opalrt_script_root, "opalrt_wrapper.py")
 if not (os.path.exists(path_to_opalrt_script)):
     s="Path to OPAL-RT script file is set to {!s} which does not exist.".format(path_to_opalrt_script)
     raise ValueError(s)
@@ -150,25 +150,25 @@ if not (os.path.exists(path_to_opalrt_configuration)):
 tstart=datetime.now()
 # Export OPAL-RT as an FMU
 if(tool=="dymola"):
-    retStr=sp.check_output(["python", path_simulator_fmu, "-i",
+    retStr=sp.check_output(["python", path_simulatortofmu, "-i",
         path_to_opalrt_inputfile, "-s", path_to_opalrt_script, "-t", tool])
 if(tool=="jmodelica"):
-    retStr=sp.check_output(["python", path_simulator_fmu, "-i",
+    retStr=sp.check_output(["python", path_simulatortofmu, "-i",
         path_to_opalrt_inputfile, "-s", path_to_opalrt_script, "-t", tool,
-        "-a", api, "-pt", path_tool_exe])
+        "-a", api, "-pt", path_tool_exe, "-c", path_to_opalrt_configuration])
 tend=datetime.now()
 print ("==========Export of the OPAL-RT FMU was successful.")
 print ("==========Exporting OPAL-RT FMU in {!s}s.".format((tend-tstart).seconds))
 
 # print ("==========Ready to export the CYMDIST FMU")
-# print ("==========The uPMU Sensor FMU only works with Python34")
-# #"Z:\Ubuntu\proj\simulatortofmu\SimulatorToFMU\simulatortofmu\parser"
+# print ("==========The CYMDIST FMU only works with Python34")
+# #"D:\Users\emma\Documents\GitHub\SimulatorToFMU\simulatortofmu\parser"
 # path_cymdisttofmu=sys.argv[3]
 # path_cymdisttofmu=os.path.join(path_cymdisttofmu, "CYMDISTToFMU.py")
-# #"Z:\Ubuntu\proj\cyder_repo\git\cosimulation\source\generate_fmu\fmu\cymdisttofmu\parser\utilities\CYMDISTModelDescription.xml"
+# #"D:\Users\emma\Documents\GitHub\CyDER\git\cosimulation\source\generate_fmu\fmu\cymdisttofmu\parser\utilities\CYMDISTModelDescription.xml"
 # path_cymdist_inputfile=sys.argv[4]
 #
-# #"Z:\Ubuntu\proj\cyder_repo\git\cosimulation\source\generate_fmu\fmu\cymdisttofmu\parser\utilities"
+# #"D:\Users\emma\Documents\GitHub\CyDER\git\cosimulation\source\generate_fmu\fmu\cymdisttofmu\parser\utilities"
 # path_to_cymdist_script_root=sys.argv[5]
 # path_to_cymdist_script=os.path.join (path_to_cymdist_script_root, "cymdist_wrapper.py")
 # #target_script=os.path.join (path_to_script_root, "simulator_wrapper.py")
@@ -189,15 +189,6 @@ print ("==========Exporting OPAL-RT FMU in {!s}s.".format((tend-tstart).seconds)
 # #retStr=sp.check_output(["python", path_cymdisttofmu, "-i",
 # #    path_cymdist_inputfile, "-s", path_to_cymdist_script, "-t", tool, "-pt", path_jmodelica])
 # print ("==========Export of the CYMDIST FMU was successful")
-
-#C:\Users\thierry\Desktop>python master.py "Z:\Ubuntu\proj\cyder_repo\git\hil" "C
-#yDER.HIL.Examples.Validate_VoltVarControl" "Z:\Ubuntu\proj\simulatortofmu\Simula
-#torToFMU\simulatortofmu\parser" "Z:\Ubuntu\proj\cyder_repo\git\cosimulation\sour
-#ce\generate_fmu\fmu\cymdisttofmu\parser\utilities\CYMDISTModelDescription.xml" "
-#Z:\Ubuntu\proj\cyder_repo\git\cosimulation\source\generate_fmu\fmu\cymdisttofmu\
-#parser\utilities" "C:\JModelica.org-2.0" "xxx" "Z:\Ubuntu\proj\cyder_repo\git\hi
-#l\SimulatorModelDescription.xml" "Z:\Ubuntu\proj\cyder_repo\git\hil\simulator_wr
-#apper.py"
 
 
 #print ("==========Export of the uPMU FMU was successful")

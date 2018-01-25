@@ -2,7 +2,7 @@ within ;
 package CyDER
   package HIL
     package Controls
-      model voltvar
+      model voltVar
 
         Modelica.Blocks.Interfaces.RealInput v_pu "Voltage [p.u.]"
           annotation (Placement(transformation(extent={{-140,-20},{-100,20}})));
@@ -18,29 +18,53 @@ package CyDER
           annotation (Placement(transformation(extent={{-140,-60},{-100,-20}})));
         Modelica.Blocks.Interfaces.RealInput v_min "Voltage minimum [p.u.]"
           annotation (Placement(transformation(extent={{-140,-100},{-100,-60}})));
-        Modelica.Blocks.Interfaces.RealInput q_max "Q control minimum (centered zero)" annotation (
+        Modelica.Blocks.Interfaces.RealInput q_maxind "Maximal Reactive Power (Inductive)" annotation (
             Placement(transformation(
               extent={{-20,-20},{20,20}},
               rotation=270,
               origin={20,120})));
-        Modelica.Blocks.Interfaces.RealInput q_min "Q control maximum (centered zero)" annotation (
+        Modelica.Blocks.Interfaces.RealInput q_maxcap "Maximal Reactive Power (Capacitive)" annotation (
             Placement(transformation(
               extent={{-20,-20},{20,20}},
               rotation=270,
               origin={-40,120})));
       equation
         q_control = smooth(0,
-          if v_pu > v_max then q_min
-          elseif v_pu > v_maxdead then (v_maxdead - v_pu)/abs(v_max - v_maxdead) * q_max
-          elseif v_pu < v_min then q_max
-          elseif v_pu < v_mindead then (v_mindead - v_pu)/abs(v_min - v_mindead) * q_min * (-1)
+          if v_pu > v_max then q_maxind * (-1)
+          elseif v_pu > v_maxdead then (v_maxdead - v_pu)/abs(v_max - v_maxdead) * q_maxind
+          elseif v_pu < v_min then q_maxcap
+          elseif v_pu < v_mindead then (v_mindead - v_pu)/abs(v_min - v_mindead) * q_maxcap
           else 0);
+      end voltVar;
 
-      end voltvar;
+      model voltVar_param
+
+        Modelica.Blocks.Interfaces.RealInput v(unit="1") "Voltage [p.u]"
+          annotation (Placement(transformation(extent={{-140,-20},{-100,20}})));
+        Modelica.Blocks.Interfaces.RealOutput QCon(unit="kvar") "Q control signal"
+          annotation (Placement(transformation(extent={{100,-10},{120,10}})));
+        parameter Real thr(start=0.05) "over/undervoltage threshold";
+        parameter Real hys(start=0.01) "Hysteresis";
+        final parameter Modelica.SIunits.PerUnit vMaxDea=1 + hys "Upper bound of deaband [p.u.]";
+        final parameter Modelica.SIunits.PerUnit vMax=1 + thr "Voltage maximum [p.u.]";
+        final parameter Modelica.SIunits.PerUnit vMinDea=1 - hys "Upper bound of deaband [p.u.]";
+        final parameter Modelica.SIunits.PerUnit vMin=1 - thr "Voltage minimum [p.u.]";
+        parameter Real QMaxInd(start=1.0, unit="kvar") "Maximal Reactive Power (Inductive)";
+        parameter Real QMaxCap(start=1.0, unit="kvar") "Maximal Reactive Power (Capacitive)";
+      equation
+        QCon = smooth(0, if v > vMax then QMaxInd*(-1) elseif v > vMaxDea then (vMaxDea - v)/
+          abs(vMax - vMaxDea)*QMaxInd elseif v < vMin then QMaxCap elseif v < vMinDea then (
+          vMinDea - v)/abs(vMin - vMinDea)*QMaxCap else 0);
+        annotation (Documentation(info="<html>
+This model is similar to <a href=\"modelica://CyDER.HIL.Controls.voltVar\">
+CyDER.HIL.Controls.voltVar</a> 
+with the only differences that input variables have been 
+changed to parameters.
+</html>"));
+      end voltVar_param;
     end Controls;
 
     package uPMU
-
       model uPMU_API
         Buildings.Utilities.IO.Python27.Real_Real Placeholder
           annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
@@ -62,46 +86,62 @@ package CyDER
           annotation (Placement(transformation(extent={{-60,50},{-40,70}})));
         Modelica.Blocks.Sources.Constant lower_voltage(k=0.95)
           annotation (Placement(transformation(extent={{-60,-70},{-40,-50}})));
-        Controls.voltvar voltvar
+        Controls.voltVar voltVar
           annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
         Modelica.Blocks.Sources.Constant upper_deadband_voltage(k=1.01)
           annotation (Placement(transformation(extent={{-60,10},{-40,30}})));
         Modelica.Blocks.Sources.Constant lower_deadband_voltage(k=0.99)
           annotation (Placement(transformation(extent={{-60,-30},{-40,-10}})));
-        Modelica.Blocks.Sources.Constant upper_q(k=1) annotation (Placement(
+        Modelica.Blocks.Sources.Constant qmax_inductive(k=1) annotation (Placement(
               transformation(
               extent={{-10,-10},{10,10}},
               rotation=-90,
               origin={40,60})));
-        Modelica.Blocks.Sources.Constant lower_q(k=-1) annotation (Placement(
+        Modelica.Blocks.Sources.Constant qmax_capacitive(k=0.2) annotation (Placement(
               transformation(
               extent={{-10,-10},{10,10}},
               rotation=-90,
               origin={0,60})));
       equation
-        connect(ramp.y, voltvar.v_pu)
+        connect(ramp.y, voltVar.v_pu)
           annotation (Line(points={{-69,0},{-12,0}}, color={0,0,127}));
-        connect(lower_voltage.y, voltvar.v_min) annotation (Line(points={{-39,
+        connect(lower_voltage.y, voltVar.v_min) annotation (Line(points={{-39,
                 -60},{-20,-60},{-20,-8},{-12,-8}}, color={0,0,127}));
-        connect(upper_voltage.y, voltvar.v_max) annotation (Line(points={{-39,
+        connect(upper_voltage.y, voltVar.v_max) annotation (Line(points={{-39,
                 60},{-20,60},{-20,8},{-12,8}}, color={0,0,127}));
-        connect(voltvar.v_mindead, lower_deadband_voltage.y) annotation (Line(
+        connect(voltVar.v_mindead, lower_deadband_voltage.y) annotation (Line(
               points={{-12,-4},{-30,-4},{-30,-20},{-39,-20}}, color={0,0,127}));
-        connect(upper_deadband_voltage.y, voltvar.v_maxdead) annotation (Line(
+        connect(upper_deadband_voltage.y, voltVar.v_maxdead) annotation (Line(
               points={{-39,20},{-30,20},{-30,4},{-12,4}}, color={0,0,127}));
-        connect(lower_q.y, voltvar.q_min) annotation (Line(points={{
-                -1.9984e-015,49},{0,49},{0,30},{-4,30},{-4,12}}, color={0,0,127}));
-        connect(upper_q.y, voltvar.q_max) annotation (Line(points={{40,49},{40,
+        connect(qmax_capacitive.y, voltVar.q_maxcap) annotation (Line(points={{-1.9984e-015,
+                49},{0,49},{0,30},{-4,30},{-4,12}}, color={0,0,127}));
+        connect(qmax_inductive.y, voltVar.q_maxind) annotation (Line(points={{40,49},{40,
                 49},{40,40},{12,40},{12,20},{2,20},{2,12}}, color={0,0,127}));
         annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
               coordinateSystem(preserveAspectRatio=false)));
       end Validate_VoltVarControl;
+
+      model Validate_VoltVarControl_param
+
+        Modelica.Blocks.Sources.Ramp ramp(
+          duration=1,
+          startTime=0,
+          height=0.2,
+          offset=0.9)
+          annotation (Placement(transformation(extent={{-90,-10},{-70,10}})));
+        Controls.voltVar_param voltVar_param(QMaxCap=0.5)
+          annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
+      equation
+        connect(voltVar_param.v, ramp.y)
+          annotation (Line(points={{-12,0},{-69,0}}, color={0,0,127}));
+        annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+              coordinateSystem(preserveAspectRatio=false)));
+      end Validate_VoltVarControl_param;
     end Examples;
   end HIL;
 
   package Optimization
     package Examples
-
       model Test_voltage
       protected
         parameter Modelica.SIunits.Impedance Z11_601[2] = {0.3465, 1.0179};
