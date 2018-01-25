@@ -4,7 +4,8 @@ CyDER - Worker
 How to use
 ----
 
-Require python
+Require python, and all other cosimulation requierments (as Cympy, CYMDIST, etc...)  
+If you don't have access to the cosimulation requirements and the CYMDIST models an just test the web interface, consider using the dummy worker (cf. /dummy_worker/README.md). 
 
 If it's the first time you use the project, run `install.bat` (it will install celery)  
 In sym_worker/celery.py set the ip address of the redis db to the ip address of the pc that run the containers

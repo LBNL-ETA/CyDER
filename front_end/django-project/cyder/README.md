@@ -1,6 +1,9 @@
 CyDER - Django apps
 ======
 
+Go to https://docs.djangoproject.com/en/2.0/intro/tutorial01/#creating-the-polls-app to learn what I mean by a "Django app".  
+In this project, Django apps are only use to structure the code.
+
 Apps
 --------
 

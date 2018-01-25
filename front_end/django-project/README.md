@@ -6,15 +6,15 @@ Folders
 
 - config: the Django project config (settings, wsgi.py, urls.py...)  
 - sim_worker: the celery module which allow sending task to the simulation worker  
-- celery_beat: the celery module used to schedule and run tasks in the wsgi container (the celery worker for this module run on wsgi)  
+- celery_beat: the celery module used to schedule and run tasks in the wsgi container (in the wsgi container supervisor is used to manage the beat process and the worker process for this module)  
 - cyder: the Django apps
-- tools: Django module containing tool functions
+- tools: Django python module (python module which need to be used in a Django environment) containing tool functions
 
 Files
 ------
 
 - manage.py: the Django script to manage the project
-- tools.py: a script to perform admin action on CyDER as import new models from the simulation worker
+- tools.py: a script to perform admin action on CyDER as import new models from the simulation worker (it make use of the tools python/Django module)
 
 -------
 
@@ -44,7 +44,7 @@ python manage.py collectstatic --clear
 Use the Django debug server
 -------
 
-You can start the debug server by running `python manage.py runserver 0.0.0.0:8080`. You can the access it by http://127.0.0.1:8080/  
+You can start the debug server by running `python manage.py runserver 0.0.0.0:8080`. You can the access it at http://127.0.0.1:8080/  
 This can be useful when working on static files (to prevent running collectstatic all the time)
 
 Import/Update CYME models into the Postgres DB

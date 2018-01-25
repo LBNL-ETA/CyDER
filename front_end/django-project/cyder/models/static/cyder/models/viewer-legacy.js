@@ -1,3 +1,7 @@
+/* cyder.models have been upgrade to use vue.js instead of viewlib.js (code in viewer.js)
+However cyder.project still have some dependencies from the old viewer.js using viewlib.js
+So we keep this legacy file until cyder.project is rewrite to use vue.js */
+
 'use strict';
 import { createAllModelsLayer, createModelLayer, createLoadHeatmapLayer } from './layers.js';
 import { View, FOREACH, IF, ESCHTML } from '../viewlib.js';
