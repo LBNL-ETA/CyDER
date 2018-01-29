@@ -36,8 +36,8 @@ class PVForecast(object):
     def forecast(self):
         """Forecast PV demand and return configuration file for CyDER"""
         # Save normalized generation with the right format
-        # pv_forecast = self._load_forecast()
-        pv_forecast = self.normalized_pv_generation()
+        pv_forecast = self._load_forecast()
+        # pv_forecast = self.normalized_pv_generation()
 
         # Update the configuration file
         self._update_configuration(pv_forecast)
@@ -116,7 +116,7 @@ class PVForecast(object):
           the name pv_id-predict.csv
         """
         workdir = self.output_dir + 'pv-output/'
-        FORECAST_MAIN_LOCATION='D:\\Users\\Jonathan\\Desktop\\forecast-demo\\build\\src\\forecast_main.exe'
+        FORECAST_MAIN_LOCATION='C:\\Users\\DRRC\\Desktop\\forecast-demo\\build\\src\\forecast_main.exe'
         narx_file, fann_file = nn_files
         narx_file_exists, fann_file_exists = os.path.isfile(narx_file), os.path.isfile(fann_file)
 
