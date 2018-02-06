@@ -2,19 +2,71 @@
 {% load static %}
 
 {% block content %}
-    <div id="project-creator"></div>
+    <div id="app">
+        <div class="form-group">
+            <input v-model="projectName" type="text" class="form-control" placeholder="Name" aria-label="Name">
+        </div>
+        <div class="form-group">
+            Model: <model-selector v-model="modelName"></model-selector>
+        </div>
+        <div class="form-group">
+            <button ref="saveButton" type="button" @click="create" class="btn btn-primary">Create</button>
+        </div>
+    </div>
 {% endblock content %}
 
 {% block script %}
     <script type="module">
-        import { ProjectCreator } from '{% static 'cyder/projects/create.js' %}';
+        import { ModelSelector } from '{% static 'cyder/models/viewer.js' %}';
         import CyderAPI from '{% static 'cyder/api.js' %}';
+        import notifyRESTError from '{% static 'cyder/api-notify-error.js' %}';
 
         document.querySelector(".navbar [data-name='projects']").classList.add('active');
-        let projectCreator;
         window.onload = function() {
             CyderAPI.auth();
-            projectCreator = new ProjectCreator(document.querySelector('#project-creator'));
+            window.app = new Vue({
+                el: '#app',
+                components: { ModelSelector },
+                data: {
+                    modelName: "",
+                    projectName: "",
+                },
+                methods: {
+                    async create() {
+                        if(this.$refs.saveButton.classList.contains('disabled'))
+                            return;
+
+                        if(this.modelName === "") {
+                            $.notify({message: 'You must choose a model'},{type: 'danger'});
+                            return;
+                        }
+
+                        this.$refs.saveButton.classList.add('disabled');
+
+                        try {
+                            let project = {
+                                name: this.projectName,
+                                settings: {
+                                    model: this.modelName,
+                                    addPv: [],
+                                    addLoad: [],
+                                    start: "2017-05-19T06:00",
+                                    end: "2017-05-19T22:00",
+                                    timestep: 1800,
+                                },
+                            };
+                            project = await CyderAPI.Project.create(project);
+                            $.notify({message: 'Project created !'},{type: 'success'});
+                            window.location.href = `../edit/${encodeURI(project.id)}/`;
+                        } catch (error) {
+                            if(!(error instanceof CyderAPI.RESTError))
+                                throw(error);
+                            notifyRESTError(error);
+                            this.$refs.saveButton.classList.remove('disabled');
+                        }
+                    },
+                },
+            });
         }
     </script>
 {% endblock script %}
