@@ -34,7 +34,7 @@ export class ProjectResults extends View {
         let traceHighC = {x: dates, y: project.results.DwHighVoltWorstC, mode: 'lines', name: 'Phase C'};
         let dataHigh = [traceHighA, traceHighB, traceHighC];
         let layoutHigh = {
-            title:'Down-line worst high voltage',
+            title:'Downstream worst high voltage',
             yaxis: {
                 title: 'Percentage(%)'
             }
@@ -46,7 +46,7 @@ export class ProjectResults extends View {
         let traceLowC = {x: dates, y: project.results.DwLowVoltWorstC, mode: 'lines', name: 'Phase C'};
         let dataLow = [traceLowA, traceLowB, traceLowC];
         let layoutLow = {
-            title:'Down-line worst low voltage',
+            title:'Downstream worst low voltage',
             yaxis: {
                 title: 'Percentage(%)'
             }

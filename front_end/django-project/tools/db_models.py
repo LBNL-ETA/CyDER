@@ -32,16 +32,16 @@ def import_model(modelname):
         model = Model(name=modelname, **model_info)
         model.save()
 
-    lenght = len(nodes)
-    for index in range(0, lenght):
+    length = len(nodes)
+    for index in range(0, length):
         node_row = nodes[index]
         node = Node(model=model, **node_row)
         node.save()
-        print("\rImported nodes: %d/%d" % (index+1, lenght), end="")
+        print("\rImported nodes: %d/%d" % (index+1, length), end="")
     print()
 
-    lenght = len(sections)
-    for index in range(0, lenght):
+    length = len(sections)
+    for index in range(0, length):
         section_row = sections[index]
 
         section = Section(model=model, **exclude(section_row, ['from_node_id', 'to_node_id']))
@@ -51,11 +51,11 @@ def import_model(modelname):
         except:
             section.to_node = None
         section.save()
-        print("\rImported sections: %d/%d" % (index+1, lenght), end="")
+        print("\rImported sections: %d/%d" % (index+1, length), end="")
     print()
 
-    lenght = len(devices)
-    for index in range(0, lenght):
+    length = len(devices)
+    for index in range(0, length):
         device_row = devices[index]
         device = Device(model=model, **exclude(device_row, ['section_id', 'detail']))
         device.model = model
@@ -70,5 +70,5 @@ def import_model(modelname):
             pv = PV(device=device, **(device_row['detail']))
             pv.save()
 
-        print("\rImported devices: %d/%d" % (index+1, lenght), end="")
+        print("\rImported devices: %d/%d" % (index+1, length), end="")
     print()
