@@ -5,10 +5,61 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
         integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
         crossorigin=""/>
+    <style>/* Style for LeafletMap componenet */
+        .leaflet-popup-content {
+            /* Override the fact that leaflet.js set the width in the style attribute of the popup
+            to enforce the min and max width option in leaflet.
+            This default behavior can be a problem when vuejs rewrite a popup (the size is calculated for the old content).
+            If a max size is needed for a popup it should be enforce inside the popup itself
+            (ex: put the content inside a div with a set width and use this div for the popup) */
+            width: auto !important;
+        }
+    </style>
 {% endblock css %}
 
 {% block content %}
-    <div id="project-editor"></div>
+    <div id="app" v-if="project !== null">
+        {% verbatim %}
+        <div class="form-group">
+            <input v-model="project.name" type="text" class="form-control" placeholder="Name" aria-label="Name">
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <label>Start: </label>
+                <div class="form-group">
+                    <input v-model="project.settings.start" type="datetime-local" class="form-control" placeholder="Start" aria-label="Start">
+                </div>
+            </div>
+            <div class="col-md-5">
+                <label>Stop: </label>
+                <div class="form-group">
+                    <input v-model="project.settings.end" type="datetime-local" class="form-control" placeholder="End" aria-label="End">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label>Timestep: </label>
+                <div class="form-group" style="display: table;">
+                    <input style="display: table-cell;" :value="project.settings.timestep" @input="project.settings.timestep = Number($event.target.value)" type="number" class="form-control">
+                    <div style="padding-left: 0.5em; display: table-cell;"> sec</div>
+                </div>
+            </div>
+        </div>
+        Model: {{ project.settings.model }}<br>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-secondary" :class="{disabled:layer=='pv'}" @click="layer='pv'">PVs</button>
+            <button type="button" class="btn btn-secondary" :class="{disabled:layer=='load'}" @click="layer='load'">Loads</button>
+        </div>
+        <leaflet-map style="height: 70vh; margin: 0.1rem 0 1rem 0;">
+            <model-layer :model-name="project.settings.model" fit></model-layer>
+            <change-power-layer v-if="layer=='pv'" :model-name="project.settings.model" device-type="pv" v-model="project.settings.addPv" keep-order></change-power-layer>
+            <change-power-layer v-if="layer=='load'" :model-name="project.settings.model" device-type="load" v-model="project.settings.addLoad" keep-order></change-power-layer>
+        </leaflet-map>
+        <div class="form-group">
+            <button type="button" ref="save" @click="save" class="btn btn-primary">Save</button>
+            <button type="button" ref= "cancel" @click="cancel" class="btn btn-primary">Cancel</button>
+        </div>
+        {% endverbatim %}
+    </div>
 {% endblock content %}
 
 {% block script %}
@@ -16,19 +67,101 @@
         integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
         crossorigin=""></script>
     <script type="module">
-        import { ProjectEditor } from '{% static 'cyder/projects/edit.js' %}';
+        import { LeafletMap } from '{% static 'cyder/models/viewer.js' %}';
+        import { ModelLayer } from '{% static 'cyder/models/layers.js' %}';
+        import { ChangePowerLayer } from '{% static 'cyder/projects/edit.js' %}';
         import CyderAPI from '{% static 'cyder/api.js' %}';
 
+        class CanceledByUser extends Error {}
+
         document.querySelector(".navbar [data-name='projects']").classList.add('active');
-        let projectEditor;
+
         window.onload = function() {
             CyderAPI.auth();
-            projectEditor = new ProjectEditor(document.querySelector('#project-editor'));
-            projectEditor.loadProject("{{ project_id|escapejs }}");
+            // DEBUG: Keep a reference to the Vuejs app in window.app to make it available easily in the console for debug
+            window.app = new Vue({
+                el: '#app',
+                components: { LeafletMap, ModelLayer, ChangePowerLayer },
+                data: {
+                    project: null,
+                    modified: false,
+                    layer: '',
+                },
+                methods: {
+                    async loadProject(id) {
+                        this.closeProject();
+                        try {
+                            this.project = await CyderAPI.Project.get(id, true);
+                            this.modified = false;
+
+                            //this._childviews['map-editor'] = new ProjectMapEditor(this._project.settings.model);
+                            //this.childview('map-editor').addDataLayer('PVs', this._project.settings.addPv, createPVLayer);
+                            //this.childview('map-editor').addDataLayer('Loads', this._project.settings.addLoad, createLoadLayer);
+                            //this.childview('map-editor').render();
+
+                        } catch(error) {
+                            if(!(error instanceof CyderAPI.RESTError))
+                                throw(error);
+                            notifyRESTError(error);
+                        }
+                    },
+                    closeProject() {
+                        if(this.project !== null && this.modified) {
+                            if(!confirm('You have unsaved changes. Continue without saving?'))
+                                throw new CanceledByUser('User canceled closing the project');
+                        }
+                        this.project = null;
+                        this.modified = false;
+                    },
+                    async save() {
+                        if(this.$refs.save.classList.contains('disabled'))
+                            return;
+                        this.$refs.save.classList.add('disabled');
+                        this.$refs.cancel.classList.add('disabled');
+                        try {
+                            this.project = await CyderAPI.Project.update(this.project.id, this.project);
+                            this.modified = false;
+                            $.notify({message: 'Project saved !'},{type: 'success'});
+                        } catch(error) {
+                            if(!(error instanceof CyderAPI.RESTError))
+                                throw(error);
+                            notifyRESTError(error);
+                        }
+                        this.$refs.save.classList.remove('disabled');
+                        this.$refs.cancel.classList.remove('disabled');
+                    },
+                    async cancel() {
+                        if(this.$refs.cancel.classList.contains('disabled'))
+                            return;
+                        this.$refs.save.classList.add('disabled');
+                        this.$refs.cancel.classList.add('disabled');
+                        try {
+                            await this.loadProject(this.project.id);
+                        } catch(error) {
+                            if(!(error instanceof CanceledByUser))
+                                throw error;
+                        }
+                        this.$refs.save.classList.remove('disabled');
+                        this.$refs.cancel.classList.remove('disabled');
+                    }
+                },
+                watch: {
+                    project: {
+                        handler(newProject, oldProject) {
+                            // modified == true mean the project have been modified>
+                            // We don't want to set it true if the watcher have been trigger by a project change, only if it is a deep change
+                            if(newProject === oldProject)
+                                this.modified = true;
+                        },
+                        deep: true, // To detect deep changes
+                    }
+                }
+            });
+            app.loadProject("{{ project_id|escapejs }}");
         };
         window.onbeforeunload = function(evt) {
             let message = 'You have unsaved changes. Leave without saving?'
-            if(projectEditor && projectEditor.wasModified()) {
+            if(app && app.modified) {
                 if (typeof evt == 'undefined')
                     evt = window.event;
                 if (evt)
