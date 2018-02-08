@@ -12,21 +12,78 @@
 {% block content %}
     <h1>Projects <a href="{% url 'createproject' %}" style="margin-left: 4rem;" class="btn btn-primary">New</a></h1>
     <br>
-    <div id="project-list"></div>
+
+    <div id="project-list">
+    {% verbatim %}
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Stage</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" class="text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody v-for = "p in projectsArray">
+                <td>{{ p.id }}</td>
+                <td>{{ p.name }}</td>
+                <td>{{ p.stage }}</td>
+                <td>{{ p.status }}</td>
+                <td class="text-right">   
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-primary" data-on="click:_onAction" data-action="revoke" v-if="p.status === 'Pending' || p.status === 'Started'">Revoke</button>
+                        <button type="button" class="btn btn-sm btn-primary" data-on="click:_onResults" v-else-if="p.stage === 'Simulation' && p.status === 'Success'">Results</button>
+                        <button type="button" class="btn btn-sm btn-primary" data-on="click:_onAction" data-action="runSim" v-else-if="p.stage === 'Simulation' || (p.stage === 'Configuration' && p.status === 'Success')">Run simulation</button>
+                        <button type="button" class="btn btn-sm btn-primary" data-on="click:_onAction" data-action="runConfig" v-else>Run configuration</button>
+                        <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="sr-only">Toggle Dropdown</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div v-if="p.stage === 'Simulation' || (p.stage === 'Configuration' && p.status === 'Success')">
+                                <button class="dropdown-item" data-on="click:_onConfig">See configuration</button>
+                                <button class="dropdown-item" data-on="click:_onAction" data-action="runConfig">Re-run configuration</button>
+                            </div>
+                            <button class="dropdown-item" data-on="click:_onEdit">Edit</button>
+                            <button class="dropdown-item" data-on="click:_onAction" data-action="delete">Delete</button>
+                        </div>
+                    </div>
+                </td>
+            </tbody>
+        </table>
+    {% endverbatim %}
+    </div>
+
+
 {% endblock content %}
 
 {% block script %}
     <script type="module">
-        import { ProjectList } from '{% static 'cyder/projects/projects.js' %}';
         import CyderAPI from '{% static 'cyder/api.js' %}';
 
         document.querySelector(".navbar [data-name='projects']").classList.add('active');
         let projectList;
         window.onload = function() {
             CyderAPI.auth();
-            projectList = new ProjectList(document.querySelector('#project-list'));
-            let update = () => { projectList.update(); setTimeout(update, 5000); }
-            setTimeout(update, 5000);
+            
+            window.app = new Vue({
+                el: '#project-list',
+                data: {
+                    projectsMap : [], //is a Map
+                    //It is necessary to convert the map object to array in order to manipulate it with a "v-for" in the HTML with View
+                    projectsArray : []
+                    },
+                methods: {
+                    async update(){
+                        this.projectsMap = await CyderAPI.Project.getAll(true);
+                        this.projectsArray=Array.from(this.projectsMap.values());
+                    }
+                },
+                created() {
+                    this.update();
+                    setInterval(this.update, 5000);
+                }
+                })
         }
     </script>
 {% endblock script %}
