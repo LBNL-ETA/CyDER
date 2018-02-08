@@ -93,6 +93,7 @@ export const LeafletMap = {
             if(this.$data._layers.has(id))
                 return true;
             this.$data._layers.set(id, isAddedProm);
+            this.$data._lastLayerId = id;
             return isAddedProm;
         },
         removeLayer(id) {
@@ -162,9 +163,9 @@ export const LoadHeatmapControl = {
             <load-heatmap-layer v-if="phases.length != 0" :model-name="modelName" :phases="phases" :set-max-scale="maxScale" @maxScaleChange="maxScale=$event"></load-heatmap-layer>
         </remote-leaflet-map>
         <div class="btn-group btn-group-sm" role="group" style="display: flex; margin-bottom: 1em;">
-            <button type="button" :class="{btn:true, 'btn-secondary':true, disabled:phases.indexOf('A')>=0}" @click="tooglePhase('A')" style="width: 33.3%;">Phase A</button>
-            <button type="button" :class="{btn:true, 'btn-secondary':true, disabled:phases.indexOf('B')>=0}" @click="tooglePhase('B')" style="width: 33.3%;">Phase B</button>
-            <button type="button" :class="{btn:true, 'btn-secondary':true, disabled:phases.indexOf('C')>=0}" @click="tooglePhase('C')" style="width: 33.3%;">Phase C</button>
+            <button type="button" class="btn btn-secondary" :class="{disabled:phases.indexOf('A')>=0}" @click="tooglePhase('A')" style="width: 33.3%;">Phase A</button>
+            <button type="button" class="btn btn-secondary" :class="{disabled:phases.indexOf('B')>=0}" @click="tooglePhase('B')" style="width: 33.3%;">Phase B</button>
+            <button type="button" class="btn btn-secondary" :class="{disabled:phases.indexOf('C')>=0}" @click="tooglePhase('C')" style="width: 33.3%;">Phase C</button>
         </div>
         <div v-if="phases.length != 0" style="display: table;">
             <div>0 </div>
