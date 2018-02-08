@@ -20,7 +20,16 @@ Return a promise that resolve when the token is received.
 `contentType`: optional string, mime type of the content of the request. If omitted, `application/json` is used and content is stringified to json.  
 Make a request to the REST API. More specific methods of the module should be preferred to this one.
 
-`class Res` is a class to be used in mirror of Models&ModelViewSet&Routers in Django&DjangoRestFramework. Provide methods `getAll()` (mirror for a list view) and `get()` (mirror for a detail view). The data are cached: when unknown it return a promise which resolve with the data requested, otherwise it return directly the data. Because data are cached you should be careful when modifying data return by one of those get values: an other get could return the modified values (example: `let map = Res.getAll(); map.delete(somekey);` this change the cached value. The next `getAll()` will return a map with the entry of `somekey` deleted. The use of `getAll(true)` will restore it if the value is still on the server)
+`class Res` is a class to be used in mirror of Models&ModelViewSet&Routers in Django&DjangoRestFramework. It allow to manipulate a Resource using the REST API. Provide methods `getAll()` (mirror for a list view) and `get()` (mirror for a detail view). The data are cached: when unknown it return a promise which resolve with the data requested, otherwise it return directly the data.  
+To use it you have to build an instance of the `Res` class for each type of resources you want to manage: `let MyResource = new Res(url, lookup)`. `url` is the url of the REST API endpoint, lookup is the name of the lookup variable for the `get` function.  
+By default the class `Res` only provide function for read only. If your endpoint allow modification an deletion you can extend the class using Mixins `Res.WriteMixin` and `Res.DeleteMixin`. You can compose Mixins like so:
+```
+let ReadWriteDeleteRes = Res.DeleteMixin(Res.WriteMixin(Res));
+let MyResource = new ReadWriteDeleteRes(url, lookup);
+```
+If your endpoint allow other action you can extends the `Res` class (see `ProjectRes` in api.js).  
+Because data are cached you should be careful when modifying data return by one of those get values: an other get could return the modified values (example: `let map = MyResource.getAll(); map.delete(somekey);` this change the cached value. The next `getAll()` will return a map with the entry of `somekey` deleted. The use of `getAll(true)` will restore it if the value is still on the server)
+
 
 `Res.getAll([force])`  
 `force` optional boolean: If `true`, cached value are not used. `false` by default  
