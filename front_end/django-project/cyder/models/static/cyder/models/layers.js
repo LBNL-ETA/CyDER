@@ -1,8 +1,15 @@
 import CyderAPI from '../api.js';
 
-const Layer = {
+/* componenet Layer
+Base component for a layer. It should be heritated using Vuejs compnents mixin to create component.
+To work a layer component using this Layer mixin must at least implement a getLayer() method wich must return the Leaflet layer object (or the Promise of such layer).
+keepOrder: if set, the map will ensure to add this layer after the previous one, so it's drawn on top of it.
+Otherwise all layers are added as soon as their Promise resolves.
+*/
+export const Layer = {
     props: {
         fit: Boolean,
+        keepOrder: Boolean,
     },
     data() { return {
         map: null,
@@ -14,6 +21,15 @@ const Layer = {
     destroyed() {
         if(this.map !== null)
             this.map.removeLayer(this);
+    },
+    methods: {
+        redraw() {
+            // Redraw the layer by forcing a call to the map watcher
+            // This induces a call to getLayer()
+            let map = this.map;
+            this.map = null;
+            this.map = map;
+        }
     },
     watch: {
         fit: {
@@ -28,7 +44,7 @@ const Layer = {
                 if(oldMap !== null)
                     oldMap.removeLayer(this);
                 if(newMap !== null) {
-                    newMap.addLayer(this.getLayer(), this);
+                    newMap.addLayer(this.getLayer(), this, this.keepOrder);
                     if(this.fit)
                         newMap.fitBounds(this);
                 }
@@ -96,10 +112,7 @@ export const ModelLayer = {
     },
     watch: {
         modelName(val) {
-            // Redraw the layer by forcing a call to the map watcher
-            let map = this.map;
-            this.map = null;
-            this.map = map;
+            this.redraw();
         }
     },
 }
