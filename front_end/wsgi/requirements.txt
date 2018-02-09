@@ -1,0 +1,6 @@
+django
+gunicorn
+celery[redis]==3.1.25
+psycopg2
+djangorestframework
+drf-nested-routers
