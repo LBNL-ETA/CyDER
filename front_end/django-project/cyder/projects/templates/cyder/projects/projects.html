@@ -25,30 +25,37 @@
                     <th scope="col" class="text-right">Action</th>
                 </tr>
             </thead>
-            <tbody v-for = "p in projectsArray">
-                <td>{{ p.id }}</td>
-                <td>{{ p.name }}</td>
-                <td>{{ p.stage }}</td>
-                <td>{{ p.status }}</td>
-                <td class="text-right">   
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-primary" data-on="click:_onAction" data-action="revoke" v-if="p.status === 'Pending' || p.status === 'Started'">Revoke</button>
-                        <button type="button" class="btn btn-sm btn-primary" data-on="click:_onResults" v-else-if="p.stage === 'Simulation' && p.status === 'Success'">Results</button>
-                        <button type="button" class="btn btn-sm btn-primary" data-on="click:_onAction" data-action="runSim" v-else-if="p.stage === 'Simulation' || (p.stage === 'Configuration' && p.status === 'Success')">Run simulation</button>
-                        <button type="button" class="btn btn-sm btn-primary" data-on="click:_onAction" data-action="runConfig" v-else>Run configuration</button>
-                        <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="sr-only">Toggle Dropdown</span>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <div v-if="p.stage === 'Simulation' || (p.stage === 'Configuration' && p.status === 'Success')">
-                                <button class="dropdown-item" data-on="click:_onConfig">See configuration</button>
-                                <button class="dropdown-item" data-on="click:_onAction" data-action="runConfig">Re-run configuration</button>
+            <tbody >
+                <tr v-for = "p in projectsArray" :class = "{
+                            'table-success':p.status=='Success',
+                            'table-danger':p.status=='Failure',
+                            'table-primary':p.status=='Started',
+                            'table-secondary':p.status=='Pending',
+                        }">
+                    <td>{{ p.id }}</td>
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.stage }}</td>
+                    <td>{{ p.status }}</td>
+                    <td class="text-right">   
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-primary" @click="action('revoke',p.id)" v-if="p.status === 'Pending' || p.status === 'Started'">Revoke</button>
+                            <button type="button" class="btn btn-sm btn-primary"  @click="redirect(`./results/${encodeURI(p.id)}/`)" v-else-if="p.stage === 'Simulation' && p.status === 'Success'">Results</button>
+                            <button type="button" class="btn btn-sm btn-primary" @click="action('runSim',p.id)" v-else-if="p.stage === 'Simulation' || (p.stage === 'Configuration' && p.status === 'Success')">Run simulation</button>
+                            <button type="button" class="btn btn-sm btn-primary" @click="action('runConfig',p.id)" v-else>Run configuration</button>
+                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div v-if="p.stage === 'Simulation' || (p.stage === 'Configuration' && p.status === 'Success')">
+                                    <button class="dropdown-item" @click="redirect(`./config/${encodeURI(p.id)}/`)" >See configuration</button>
+                                    <button class="dropdown-item" @click="action('runConfig',p.id)">Re-run configuration</button>
+                                </div>
+                                <button class="dropdown-item" @click="redirect(`./edit/${encodeURI(p.id)}/`)" >Edit</button>
+                                <button class="dropdown-item" @click="action('delete', p.id)">Delete</button>
                             </div>
-                            <button class="dropdown-item" data-on="click:_onEdit">Edit</button>
-                            <button class="dropdown-item" data-on="click:_onAction" data-action="delete">Delete</button>
                         </div>
-                    </div>
-                </td>
+                    </td>
+                </tr>
             </tbody>
         </table>
     {% endverbatim %}
@@ -60,6 +67,7 @@
 {% block script %}
     <script type="module">
         import CyderAPI from '{% static 'cyder/api.js' %}';
+        import notifyRESTError from '{% static 'cyder/api-notify-error.js' %}';
 
         document.querySelector(".navbar [data-name='projects']").classList.add('active');
         let projectList;
@@ -77,7 +85,23 @@
                     async update(){
                         this.projectsMap = await CyderAPI.Project.getAll(true);
                         this.projectsArray=Array.from(this.projectsMap.values());
-                    }
+                    },
+
+                    async action(name, id){
+                       try{ 
+                            await CyderAPI.Project[name](id); 
+                            this.update();
+                        }
+                        catch(error) {
+                            if(!(error instanceof CyderAPI.RESTError))
+                                throw(error);
+                            notifyRESTError(error);
+                        }
+                    },
+
+                    redirect(url){
+                        window.location.href = url;
+                    },
                 },
                 created() {
                     this.update();
