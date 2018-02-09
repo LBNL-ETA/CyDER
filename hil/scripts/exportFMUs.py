@@ -21,8 +21,8 @@ fixme: A number of input variables of the
 volt-var controller need to be changed to
 parameters as they do not change during simulation.
 
-C:\ProgramData\Anaconda2\python.exe exportFMUs.py "jmodelica" "C:\JModelica.org-2.0" "D:\Users\emma\Documents\GitHub\CyDER\hil\controls\CyDER.mo" "CyDER.HIL.Controls.voltVar2" "D:\Users\emma\Documents\GitHub\SimulatorToFMU\simulatortofmu\parser" "D:\Users\emma\Documents\GitHub\CyDER\hil\sensors\uPMU.xml.ignore" "D:\Users\emma\Documents\GitHub\CyDER\hil\sensors\uPMU_wrapper.py" "D:\Users\emma\Documents\GitHub\CyDER\hil\realtime\models\BU0001_timeserie_pv\opalrt.xml" "D:\Users\emma\Documents\GitHub\CyDER\hil\realtime\scripts\opalrt_wrapper.py" "D:\Users\emma\Documents\GitHub\CyDER\hil\realtime\models\BU0001_timeserie_pv\lbnl_test1.llp"
-#python exportFMUs.py "dymola" "C:\JModelica.org-2.0" "D:\Users\emma\Documents\GitHub\CyDER\hil\controls\CyDER.mo" "CyDER.HIL.Controls.voltVar2" "D:\Users\emma\Documents\GitHub\SimulatorToFMU\simulatortofmu\parser" "D:\Users\emma\Documents\GitHub\CyDER\hil\sensors\uPMU.xml" "D:\Users\emma\Documents\GitHub\CyDER\hil\realtime\upmu_wrapper.py"
+C:\ProgramData\Anaconda2\python.exe exportFMUs.py "jmodelica" "C:\JModelica.org-2.0" "C:\Users\emma\Documents\GitHub\CyDER\hil\controls\CyDER.mo" "CyDER.HIL.Controls.voltVar2" "C:\Users\emma\Documents\GitHub\SimulatorToFMU\simulatortofmu\parser" "C:\Users\emma\Documents\GitHub\CyDER\hil\sensors\uPMU.xml.ignore" "C:\Users\emma\Documents\GitHub\CyDER\hil\sensors\uPMU_wrapper.py" "C:\Users\emma\Documents\GitHub\CyDER\hil\realtime\models\BU0001_timeserie_pv\opalrt.xml" "C:\Users\emma\Documents\GitHub\CyDER\hil\realtime\scripts\opalrt_wrapper.py" "C:\Users\emma\Documents\GitHub\CyDER\hil\realtime\models\BU0001_timeserie_pv\lbnl_test1.llp"
+#python exportFMUs.py "dymola" "C:\JModelica.org-2.0" "C:\Users\emma\Documents\GitHub\CyDER\hil\controls\CyDER.mo" "CyDER.HIL.Controls.voltVar2" "C:\Users\emma\Documents\GitHub\SimulatorToFMU\simulatortofmu\parser" "C:\Users\emma\Documents\GitHub\CyDER\hil\sensors\uPMU.xml" "C:\Users\emma\Documents\GitHub\CyDER\hil\realtime\upmu_wrapper.py"
 
 """
 import sys
@@ -32,7 +32,7 @@ from datetime import datetime
 from jinja2 import Template
 #script_path = os.path.dirname(os.path.realpath(__file__))
 #controls_lib_base_path = os.path.join("..", "controls")
-api="cs"
+api="me"
 MOS_Template="""
 openModel("{{path_lib}}");
 Advanced.FMI.xmlIgnoreProtected=true;
@@ -162,13 +162,13 @@ print ("==========Exporting OPAL-RT FMU in {!s}s.".format((tend-tstart).seconds)
 
 # print ("==========Ready to export the CYMDIST FMU")
 # print ("==========The CYMDIST FMU only works with Python34")
-# #"D:\Users\emma\Documents\GitHub\SimulatorToFMU\simulatortofmu\parser"
+# #"C:\Users\emma\Documents\GitHub\SimulatorToFMU\simulatortofmu\parser"
 # path_cymdisttofmu=sys.argv[3]
 # path_cymdisttofmu=os.path.join(path_cymdisttofmu, "CYMDISTToFMU.py")
-# #"D:\Users\emma\Documents\GitHub\CyDER\git\cosimulation\source\generate_fmu\fmu\cymdisttofmu\parser\utilities\CYMDISTModelDescription.xml"
+# #"C:\Users\emma\Documents\GitHub\CyDER\git\cosimulation\source\generate_fmu\fmu\cymdisttofmu\parser\utilities\CYMDISTModelDescription.xml"
 # path_cymdist_inputfile=sys.argv[4]
 #
-# #"D:\Users\emma\Documents\GitHub\CyDER\git\cosimulation\source\generate_fmu\fmu\cymdisttofmu\parser\utilities"
+# #"C:\Users\emma\Documents\GitHub\CyDER\git\cosimulation\source\generate_fmu\fmu\cymdisttofmu\parser\utilities"
 # path_to_cymdist_script_root=sys.argv[5]
 # path_to_cymdist_script=os.path.join (path_to_cymdist_script_root, "cymdist_wrapper.py")
 # #target_script=os.path.join (path_to_script_root, "simulator_wrapper.py")
