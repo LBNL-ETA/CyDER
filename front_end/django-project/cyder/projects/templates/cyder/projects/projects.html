@@ -12,21 +12,102 @@
 {% block content %}
     <h1>Projects <a href="{% url 'createproject' %}" style="margin-left: 4rem;" class="btn btn-primary">New</a></h1>
     <br>
-    <div id="project-list"></div>
+
+    <div id="project-list">
+    {% verbatim %}
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Stage</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" class="text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody >
+                <tr v-for = "p in projectsArray" :class = "{
+                            'table-success':p.status=='Success',
+                            'table-danger':p.status=='Failure',
+                            'table-primary':p.status=='Started',
+                            'table-secondary':p.status=='Pending',
+                        }">
+                    <td>{{ p.id }}</td>
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.stage }}</td>
+                    <td>{{ p.status }}</td>
+                    <td class="text-right">   
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-primary" @click="action('revoke',p.id)" v-if="p.status === 'Pending' || p.status === 'Started'">Revoke</button>
+                            <button type="button" class="btn btn-sm btn-primary"  @click="redirect(`./results/${encodeURI(p.id)}/`)" v-else-if="p.stage === 'Simulation' && p.status === 'Success'">Results</button>
+                            <button type="button" class="btn btn-sm btn-primary" @click="action('runSim',p.id)" v-else-if="p.stage === 'Simulation' || (p.stage === 'Configuration' && p.status === 'Success')">Run simulation</button>
+                            <button type="button" class="btn btn-sm btn-primary" @click="action('runConfig',p.id)" v-else>Run configuration</button>
+                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div v-if="p.stage === 'Simulation' || (p.stage === 'Configuration' && p.status === 'Success')">
+                                    <button class="dropdown-item" @click="redirect(`./config/${encodeURI(p.id)}/`)" >See configuration</button>
+                                    <button class="dropdown-item" @click="action('runConfig',p.id)">Re-run configuration</button>
+                                </div>
+                                <button class="dropdown-item" @click="redirect(`./edit/${encodeURI(p.id)}/`)" >Edit</button>
+                                <button class="dropdown-item" @click="action('delete', p.id)">Delete</button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    {% endverbatim %}
+    </div>
+
+
 {% endblock content %}
 
 {% block script %}
     <script type="module">
-        import { ProjectList } from '{% static 'cyder/projects/projects.js' %}';
         import CyderAPI from '{% static 'cyder/api.js' %}';
+        import notifyRESTError from '{% static 'cyder/api-notify-error.js' %}';
 
         document.querySelector(".navbar [data-name='projects']").classList.add('active');
         let projectList;
         window.onload = function() {
             CyderAPI.auth();
-            projectList = new ProjectList(document.querySelector('#project-list'));
-            let update = () => { projectList.update(); setTimeout(update, 5000); }
-            setTimeout(update, 5000);
+            
+            window.app = new Vue({
+                el: '#project-list',
+                data: {
+                    projectsMap : [], //is a Map
+                    //It is necessary to convert the map object to array in order to manipulate it with a "v-for" in the HTML with View
+                    projectsArray : []
+                    },
+                methods: {
+                    async update(){
+                        this.projectsMap = await CyderAPI.Project.getAll(true);
+                        this.projectsArray=Array.from(this.projectsMap.values());
+                    },
+
+                    async action(name, id){
+                       try{ 
+                            await CyderAPI.Project[name](id); 
+                            this.update();
+                        }
+                        catch(error) {
+                            if(!(error instanceof CyderAPI.RESTError))
+                                throw(error);
+                            notifyRESTError(error);
+                        }
+                    },
+
+                    redirect(url){
+                        window.location.href = url;
+                    },
+                },
+                created() {
+                    this.update();
+                    setInterval(this.update, 5000);
+                }
+                })
         }
     </script>
 {% endblock script %}
