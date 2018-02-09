@@ -44,6 +44,7 @@ for index, row in enumerate(cyder_inputs.itertuples()):
     config.directory = directory
     config.times = times
     config.cyder_input_row = row
+    import pdb; pdb.set_trace()
 
     # Configure based on inputs
     config.configure()
