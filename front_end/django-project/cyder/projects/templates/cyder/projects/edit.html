@@ -93,12 +93,6 @@
                         try {
                             this.project = await CyderAPI.Project.get(id, true);
                             this.modified = false;
-
-                            //this._childviews['map-editor'] = new ProjectMapEditor(this._project.settings.model);
-                            //this.childview('map-editor').addDataLayer('PVs', this._project.settings.addPv, createPVLayer);
-                            //this.childview('map-editor').addDataLayer('Loads', this._project.settings.addLoad, createLoadLayer);
-                            //this.childview('map-editor').render();
-
                         } catch(error) {
                             if(!(error instanceof CyderAPI.RESTError))
                                 throw(error);

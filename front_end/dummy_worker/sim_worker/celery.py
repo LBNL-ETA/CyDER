@@ -8,8 +8,8 @@ app = Celery('sim_worker',
 
 # This configuration should be the same evrey where the sim_worker celery application is used
 # /front-end/django-project/sim_worker/celery.py
-# /worker/sim_worker/celery.py
-# /dummy_worker/sim_worker/celery.py
+# /front_end/worker/sim_worker/celery.py
+# /front_end/dummy_worker/sim_worker/celery.py
 # If you modify one, please copy/paste the modifications into the others
 app.conf.update(
     CELERY_TASK_RESULT_EXPIRES=3600,
