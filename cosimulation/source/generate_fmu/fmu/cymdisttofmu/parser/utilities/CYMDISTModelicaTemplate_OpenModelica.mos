@@ -1,0 +1,16 @@
+// Export model as an FMU.
+loadModel(Modelica);
+getErrorString();
+loadModel(ModelicaReference);
+getErrorString();
+loadFile("{{model_name}}.mo");
+getErrorString();
+OpenModelica.Scripting.translateModelFMU(
+  className={{model_name}},
+  version="{{fmi_version}}",
+  fmuType="{{fmi_api}}");
+getErrorString();
+
+
+
+

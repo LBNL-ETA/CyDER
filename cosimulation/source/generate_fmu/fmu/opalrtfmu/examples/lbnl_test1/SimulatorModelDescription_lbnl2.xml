@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SimulatorModelDescription
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  fmiVersion="2.0"
+  modelName="Simulator"
+  description="Input data for a Simulator FMU"
+  generationTool="SimulatorToFMU">
+  <ModelVariables>
+      <ScalarVariable
+      name="LBNL_test1/sc_console/port1"
+      description="Input port"
+      causality="input">
+      <Real
+        unit="A"/>
+    </ScalarVariable>
+    <ScalarVariable
+      name="LBNL_test1/Sm_master/port1(1)"
+      description="Output port"
+      causality="output">
+      <Real
+        unit="V"/>
+    </ScalarVariable>
+  </ModelVariables>
+</SimulatorModelDescription>
