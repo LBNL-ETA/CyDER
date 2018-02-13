@@ -1,4 +1,4 @@
-# Every task declared in this file should be defined in /worker/sim_worker/task.py
+# Every task declared in this file should be defined in /front_end/worker/sim_worker/task.py
 
 from .celery import app
 

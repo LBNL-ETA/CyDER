@@ -101,3 +101,53 @@ export const ChangePowerLayer = {
         }
     }
 }
+
+export const AddPvLayer = {
+    mixins: [Layer],
+    props: {
+        modelName: null,
+    },
+    data(){
+        return {
+            selectedNode: null,
+            power: null,
+        }
+    },
+    methods: {
+        async getLayer() {
+            let geojson = await CyderAPI.rest('GET', `/api/models/${encodeURI(this.modelName)}/geojson/`);
+            let pointToLayer = (feature, latlng) => {
+                var circle = L.circle(latlng, {
+                    color: 'red',
+                    weight: 2,
+                    fillOpacity: 1,
+                    radius: 5
+                });
+            circle.bindPopup(this.$refs.popup);
+            circle.on("click", () => this.selectedNode=feature.properties.id);
+            return circle;
+            }
+            return L.geoJson(geojson, {
+                pointToLayer,
+                //onEachFeature
+            });
+        },
+
+        addPV(){},
+    },
+    watch: {
+        modelName(val) {
+            this.redraw();
+        }
+    },
+
+    template: `<div style="display: none;">
+        <div ref="popup">
+            <div class="form-group">
+                Add PV with Power (kW):
+                <input :value="power" type="number" step="any" class="form-control form-control-sm" style="width: 100px" placeholder="Power" aria-label="Power">
+            </div>
+            <button type="button"  class="btn btn-primary btn-sm" @click="addPV" > Add PV </button>
+        </div>
+    </div>`
+}
