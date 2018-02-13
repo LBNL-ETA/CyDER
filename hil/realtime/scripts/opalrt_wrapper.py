@@ -478,8 +478,8 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
      if (memory == None):
         # Initialize the Python object
         memory = {'tLast':simulationTime, 'outputs':None}
-        if not (input_values is None):
-            memory['inputsLast'] = input_values
+        if not (inputValues is None):
+            memory['inputsLast'] = inputValues
         memory['pp'] = convertUnicodeString(projectPath)
         log.info ("=====exchange(): Ready to compile, load, or execute the model.")
         retVal = compileAndInstantiate(memory['pp'])
@@ -487,8 +487,8 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
         return [memory['outputs'], memory]
      else:
         # Check if inputs have changed
-        if not (input_values is None):
-            newInputs = sum([abs(m - n) for m, n in zip (input_values,
+        if not (inputValues is None):
+            newInputs = sum([abs(m - n) for m, n in zip (inputValues,
             memory['inputsLast'])])
         # Check if time or inputs have changed prior to updating the outputs
         if(abs(simulationTime - memory['tLast']) > 1e-6 or newInputs > 0):
