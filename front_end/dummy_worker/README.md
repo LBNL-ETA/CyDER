@@ -27,11 +27,11 @@ Do this if you just want to run every thing locally.
 Add this add the end of /front_end/docker-compose.yml:
 ```
 dummy_worker:
-        build: ../dummy_worker
+        build: dummy_worker
         links:
                 - redis
 ```
-And in /dummy_worker/sim_worker/celery.py change the redis IP address with `redis` :
+And in sim_worker/celery.py change the redis IP address with `redis` :
 ```
 broker='redis://redis:6379/0',
 backend='redis://redis:6379/0',

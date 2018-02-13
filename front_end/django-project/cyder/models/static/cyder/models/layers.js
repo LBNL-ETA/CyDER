@@ -2,7 +2,7 @@ import CyderAPI from '../api.js';
 
 /* componenet Layer
 Base component for a layer. It should be heritated using Vuejs compnents mixin to create component.
-To work a layer component using this Layer mixin must at least implement a getLayer() method wich must return the Leaflet layer object (or the Promise of such layer).
+To work, a layer component using this Layer mixin must at least implement a getLayer() method wich must return the Leaflet layer object (or the Promise of such layer).
 keepOrder: if set, the map will ensure to add this layer after the previous one, so it's drawn on top of it.
 Otherwise all layers are added as soon as their Promise resolves.
 */
