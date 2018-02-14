@@ -111,6 +111,7 @@ export const AddPvLayer = {
         return {
             selectedNode: null,
             power: null,
+            valueObject : null,
         }
     },
     methods: {
@@ -133,7 +134,13 @@ export const AddPvLayer = {
             });
         },
 
-        addPV(){},
+        addPV(){
+            this.valueObject= { 
+                    device_number: this.selectedNode,
+                    power: this.power, 
+                };
+            this.$emit('added',this.valueObject);
+        },
     },
     watch: {
         modelName(val) {
@@ -145,7 +152,7 @@ export const AddPvLayer = {
         <div ref="popup">
             <div class="form-group">
                 Add PV with Power (kW):
-                <input :value="power" type="number" step="any" class="form-control form-control-sm" style="width: 100px" placeholder="Power" aria-label="Power">
+                <input v-model:value.number="power" type="number" step="any" class="form-control form-control-sm" style="width: 100px" placeholder="Power" aria-label="Power">
             </div>
             <button type="button"  class="btn btn-primary btn-sm" @click="addPV" > Add PV </button>
         </div>

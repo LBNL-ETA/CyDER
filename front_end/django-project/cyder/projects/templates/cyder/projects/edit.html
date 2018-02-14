@@ -50,7 +50,7 @@
             <button type="button" class="btn btn-secondary" :class="{disabled:layer=='load'}" @click="layer='load'">Loads</button>
         </div>
         <leaflet-map style="height: 70vh; margin: 0.1rem 0 1rem 0;">
-            <add-pv-layer :model-name="project.settings.model" fit></add-pv-layer>
+            <add-pv-layer v-on:added="test" :model-name="project.settings.model" fit></add-pv-layer>
             <change-power-layer v-if="layer=='pv'" :model-name="project.settings.model" device-type="pv" v-model="project.settings.addPv" keep-order></change-power-layer>
             <change-power-layer v-if="layer=='load'" :model-name="project.settings.model" device-type="load" v-model="project.settings.addLoad" keep-order></change-power-layer>
         </leaflet-map>
@@ -88,6 +88,9 @@
                     layer: '',
                 },
                 methods: {
+                    test(x){
+                        alert(x);
+                    },
                     async loadProject(id) {
                         this.closeProject();
                         try {
