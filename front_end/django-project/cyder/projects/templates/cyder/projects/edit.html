@@ -50,7 +50,8 @@
             <button type="button" class="btn btn-secondary" :class="{disabled:layer=='load'}" @click="layer='load'">Loads</button>
         </div>
         <leaflet-map style="height: 70vh; margin: 0.1rem 0 1rem 0;">
-            <add-pv-layer v-model="project.settings.addPv" :model-name="project.settings.model" fit></add-pv-layer>
+            <model-layer  :model-name="project.settings.model" fit></model-layer>
+            <add-pv-layer v-if="layer=='pv'" v-model="project.settings.addPv" :model-name="project.settings.model" fit></add-pv-layer>
             <change-power-layer v-if="layer=='pv'" :model-name="project.settings.model" device-type="pv" v-model="project.settings.addPv" keep-order></change-power-layer>
             <change-power-layer v-if="layer=='load'" :model-name="project.settings.model" device-type="load" v-model="project.settings.addLoad" keep-order></change-power-layer>
         </leaflet-map>
@@ -81,7 +82,7 @@
             // DEBUG: Keep a reference to the Vuejs app in window.app to make it available easily in the console for debug
             window.app = new Vue({
                 el: '#app',
-                components: { LeafletMap, AddPvLayer, ChangePowerLayer },
+                components: { LeafletMap, ModelLayer, AddPvLayer, ChangePowerLayer },
                 data: {
                     project: null,
                     modified: false,
