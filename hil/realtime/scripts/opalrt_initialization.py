@@ -552,5 +552,5 @@ if __name__ == "__main__":
      # Run this command to extract the signal names
 	 # Set reset to zero when compiling the model for the first time to extract signal information
 	 # set reset to one when trying to reset the model so it can be recompiled next time
-     reset = 0
+     reset = 1
      compileAndInstantiate(projectName, reset)
