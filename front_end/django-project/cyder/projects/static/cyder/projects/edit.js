@@ -130,6 +130,18 @@ export const AddPvLayer = {
                 circle.on("click", () => this.selectedNode=feature.properties.id);
                 circle.on("click", () => this.currentMarker=circle);
                 circle.on("click", () => this.checkExists());
+
+                for (let i=0; i<this.value.length; i++){
+                    if (this.value[i].device_number===feature.properties.id){
+                        circle.setStyle({
+                            color: '#14e54c',
+                            weight: 10,
+                            fillOpacity: 0.75,
+                            radius: 10,
+                        });
+                    }
+                }
+
                 return circle;
                 }
             return L.geoJson(geojson, {
