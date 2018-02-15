@@ -106,12 +106,14 @@ export const AddPvLayer = {
     mixins: [Layer],
     props: {
         modelName: null,
+        value: { required: true, default() { return [];}, }, 
     },
     data(){
         return {
             selectedNode: null,
             power: null,
             valueObject : null,
+            currentMarker: null,
         }
     },
     methods: {
@@ -121,13 +123,17 @@ export const AddPvLayer = {
                 var circle = L.circle(latlng, {
                     color: 'red',
                     weight: 2,
-                    fillOpacity: 1,
+                    fillOpacity: 0.5,
                     radius: 5
                 });
-            circle.bindPopup(this.$refs.popup);
-            circle.on("click", () => this.selectedNode=feature.properties.id);
-            return circle;
-            }
+                circle.bindPopup(this.$refs.popup);
+                circle.on("click", () => this.selectedNode=feature.properties.id);
+                circle.on("click", () => this.currentMarker=circle);
+                // if (this.valueObject==null){ //if not null then pv has been added
+                //     circle.setStyle({color: 'green'});
+                // }
+                return circle;
+                }
             return L.geoJson(geojson, {
                 pointToLayer,
                 //onEachFeature
@@ -135,11 +141,36 @@ export const AddPvLayer = {
         },
 
         addPV(){
-            this.valueObject= { 
-                    device_number: this.selectedNode,
-                    power: this.power, 
-                };
-            this.$emit('added',this.valueObject);
+            if (this.power!=null){
+                let valueObject= { 
+                        device_number: this.selectedNode,
+                        power: this.power, 
+                    };
+                this.value.push(valueObject);
+                this.$emit('added',valueObject);
+                this.currentMarker.setStyle({
+                        color: '#14e54c',
+                        weight: 10,
+                        fillOpacity: 0.75,
+                        radius: 10,
+                    });
+            }
+        },
+        removePV(){
+                let nodeID=this.selectedNode;
+                for (let i=0; i<this.value.length; i++){
+                    if (this.value[i].device_number===nodeID){
+                        this.value.splice(i, 1);
+                    }
+                }
+                //this.value.splice(this.value.indexOf(valueObject), 1);
+                //this.$emit('added',valueObject);
+                this.currentMarker.setStyle({
+                        color: 'red',
+                        weight: 2,
+                        fillOpacity: 0.5,
+                        radius: 5
+                    });
         },
     },
     watch: {
@@ -155,6 +186,7 @@ export const AddPvLayer = {
                 <input v-model:value.number="power" type="number" step="any" class="form-control form-control-sm" style="width: 100px" placeholder="Power" aria-label="Power">
             </div>
             <button type="button"  class="btn btn-primary btn-sm" @click="addPV" > Add PV </button>
+            <button type="button"  class="btn btn-secondary btn-sm" @click="removePV" > Remove PV </button>
         </div>
     </div>`
 }
