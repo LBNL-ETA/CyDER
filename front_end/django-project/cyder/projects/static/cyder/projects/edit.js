@@ -112,8 +112,8 @@ export const AddPvLayer = {
         return {
             selectedNode: null,
             power: null,
-            valueObject : null,
             currentMarker: null,
+            exists: null,
         }
     },
     methods: {
@@ -129,9 +129,7 @@ export const AddPvLayer = {
                 circle.bindPopup(this.$refs.popup);
                 circle.on("click", () => this.selectedNode=feature.properties.id);
                 circle.on("click", () => this.currentMarker=circle);
-                // if (this.valueObject==null){ //if not null then pv has been added
-                //     circle.setStyle({color: 'green'});
-                // }
+                circle.on("click", () => this.checkExists());
                 return circle;
                 }
             return L.geoJson(geojson, {
@@ -155,6 +153,8 @@ export const AddPvLayer = {
                         radius: 10,
                     });
             }
+            this.checkExists();
+
         },
         removePV(){
                 let nodeID=this.selectedNode;
@@ -172,6 +172,15 @@ export const AddPvLayer = {
                         radius: 5
                     });
         },
+        checkExists(){
+            this.exists=false;
+            let nodeID=this.selectedNode;
+            for (let i=0; i<this.value.length; i++){
+                    if (this.value[i].device_number===nodeID){
+                        this.exists=true;
+                    }
+                }
+        },
     },
     watch: {
         modelName(val) {
@@ -181,12 +190,12 @@ export const AddPvLayer = {
 
     template: `<div style="display: none;">
         <div ref="popup">
-            <div class="form-group">
+            <div class="form-group" v-if="this.exists===false">
                 Add PV with Power (kW):
                 <input v-model:value.number="power" type="number" step="any" class="form-control form-control-sm" style="width: 100px" placeholder="Power" aria-label="Power">
             </div>
-            <button type="button"  class="btn btn-primary btn-sm" @click="addPV" > Add PV </button>
-            <button type="button"  class="btn btn-secondary btn-sm" @click="removePV" > Remove PV </button>
+            <button  v-if="this.exists===false" type="button"  class="btn btn-primary btn-sm" @click="addPV" > Add PV </button>
+            <button v-if="this.exists===true" type="button"  class="btn btn-secondary btn-sm" @click="removePV" > Remove PV </button>
         </div>
     </div>`
 }
