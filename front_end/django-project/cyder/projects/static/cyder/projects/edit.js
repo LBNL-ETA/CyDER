@@ -123,7 +123,7 @@ export const AddPvLayer = {
                 var circle = L.circle(latlng, {
                     color: 'red',
                     weight: 2,
-                    fillOpacity: 0.5,
+                    fillOpacity: 1,
                     radius: 5
                 });
                 circle.bindPopup(this.$refs.popup);
@@ -132,13 +132,8 @@ export const AddPvLayer = {
                 circle.on("click", () => this.checkExists());
 
                 for (let i=0; i<this.value.length; i++){
-                    if (this.value[i].device_number===feature.properties.id){
-                        circle.setStyle({
-                            color: '#14e54c',
-                            weight: 10,
-                            fillOpacity: 0.75,
-                            radius: 10,
-                        });
+                    if (this.value[i].node_id===feature.properties.id){
+                        circle.setStyle({color: '#14e54c'});
                     }
                 }
 
@@ -153,17 +148,12 @@ export const AddPvLayer = {
         addPV(){
             if (this.power!=null){
                 let valueObject= { 
-                        device_number: this.selectedNode,
+                        node_id: this.selectedNode,
                         power: this.power, 
                     };
                 this.value.push(valueObject);
                 this.$emit('added',valueObject);
-                this.currentMarker.setStyle({
-                        color: '#14e54c',
-                        weight: 10,
-                        fillOpacity: 0.75,
-                        radius: 10,
-                    });
+                this.currentMarker.setStyle({color: '#14e54c'});
             }
             this.checkExists();
 
@@ -171,24 +161,19 @@ export const AddPvLayer = {
         removePV(){
                 let nodeID=this.selectedNode;
                 for (let i=0; i<this.value.length; i++){
-                    if (this.value[i].device_number===nodeID){
+                    if (this.value[i].node_id===nodeID){
                         this.value.splice(i, 1);
                     }
                 }
                 //this.value.splice(this.value.indexOf(valueObject), 1);
                 //this.$emit('added',valueObject);
-                this.currentMarker.setStyle({
-                        color: 'red',
-                        weight: 2,
-                        fillOpacity: 0.5,
-                        radius: 5
-                    });
+                this.currentMarker.setStyle({color: 'red'});
         },
         checkExists(){
             this.exists=false;
             let nodeID=this.selectedNode;
             for (let i=0; i<this.value.length; i++){
-                    if (this.value[i].device_number===nodeID){
+                    if (this.value[i].node_id===nodeID){
                         this.exists=true;
                     }
                 }
