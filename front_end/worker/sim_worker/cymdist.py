@@ -20,8 +20,12 @@ def list_nodes():
         node = {}
         node['node_object'] = node_object
         node['node_id'] = node_object.ID
-        node['longitude'] = node_object.X / 100000
-        node['latitude'] = node_object.Y / (1.26 * 100000)
+        node['longitude'] = node_object.X 
+        node['latitude'] = node_object.Y 
+        #The following lines were used to import models accounting for the error in latitude in longitude values
+        #This concerns model imports prior to 02/20/2018
+        # node['longitude'] = node_object.X / 100000
+        # node['latitude'] = node_object.Y / (1.26 * 100000)
         nodes.append(node)
     return nodes
 
