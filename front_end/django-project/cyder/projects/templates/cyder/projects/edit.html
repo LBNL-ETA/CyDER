@@ -51,9 +51,8 @@
         </div>
         <leaflet-map style="height: 70vh; margin: 0.1rem 0 1rem 0;">
             <model-layer  :model-name="project.settings.model" fit></model-layer>
-            <add-pv-layer v-if="layer=='pv'" v-model="project.settings.addPv" :model-name="project.settings.model" fit></add-pv-layer>
-            <change-power-layer v-if="layer=='pv'" :model-name="project.settings.model" device-type="pv" v-model="project.settings.addPv" keep-order></change-power-layer>
-            <change-power-layer v-if="layer=='load'" :model-name="project.settings.model" device-type="load" v-model="project.settings.addLoad" keep-order></change-power-layer>
+            <add-pv-layer v-if="layer=='pv'" v-model="project.settings.addPv" :model-name="project.settings.model" fit keep-order></add-pv-layer>
+            <add-load-layer v-if="layer=='load'" v-model="project.settings.addLoad" :model-name="project.settings.model" fit keep-order></add-load-layer>
         </leaflet-map>
         <div class="form-group">
             <button type="button" ref="save" @click="save" class="btn btn-primary">Save</button>
@@ -70,7 +69,7 @@
     <script type="module">
         import { LeafletMap } from '{% static 'cyder/models/viewer.js' %}';
         import { ModelLayer } from '{% static 'cyder/models/layers.js' %}';
-        import { ChangePowerLayer, AddPvLayer } from '{% static 'cyder/projects/edit.js' %}';
+        import { AddLoadLayer, AddPvLayer } from '{% static 'cyder/projects/edit.js' %}';
         import CyderAPI from '{% static 'cyder/api.js' %}';
 
         class CanceledByUser extends Error {}
@@ -82,16 +81,16 @@
             // DEBUG: Keep a reference to the Vuejs app in window.app to make it available easily in the console for debug
             window.app = new Vue({
                 el: '#app',
-                components: { LeafletMap, ModelLayer, AddPvLayer, ChangePowerLayer },
+                components: { LeafletMap, ModelLayer, AddPvLayer, AddLoadLayer },
                 data: {
                     project: null,
                     modified: false,
                     layer: '',
                 },
                 methods: {
-                    pushPv(x){
-                        this.project.settings.addPv.push(x);
-                    },
+                    // pushPv(x){
+                    //     this.project.settings.addPv.push(x);
+                    // },
                     async loadProject(id) {
                         this.closeProject();
                         try {
