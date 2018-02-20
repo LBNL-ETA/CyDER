@@ -57,10 +57,10 @@ export const AddPvLayer = {
                         power: this.power, 
                     };
                 this.value.push(valueObject);
-                this.$emit('added',valueObject);
                 this.currentMarker.setStyle({color: '#14e54c'});
             }
             this.checkExists();
+            $.notify({message: 'PV Added !'},{type: 'success'});
 
         },
         removePV(){
@@ -70,10 +70,17 @@ export const AddPvLayer = {
                         this.value.splice(i, 1);
                     }
                 }
-                //this.value.splice(this.value.indexOf(valueObject), 1);
-                //this.$emit('added',valueObject);
                 this.currentMarker.setStyle({color: 'red'});
+                this.checkExists();
+                $.notify({message: 'PV Removed !'},{type: 'warning'});  
         },
+
+        updatePV(){
+                this.removePV();
+                this.addPV();
+                $.notify({message: 'PV Updated !'},{type: 'info'});
+        },
+
         checkExists(){
             this.exists=false;
             let nodeID=this.selectedNode;
@@ -81,7 +88,7 @@ export const AddPvLayer = {
                     if (this.value[i].node_id===nodeID){
                         this.exists=true;
                     }
-                }
+                }     
         },
     },
     watch: {
@@ -97,6 +104,11 @@ export const AddPvLayer = {
                 <input v-model:value.number="power" type="number" step="any" class="form-control form-control-sm" style="width: 100px" placeholder="Power" aria-label="Power">
             </div>
             <button  v-if="this.exists===false" type="button"  class="btn btn-primary btn-sm" @click="addPV" > Add PV </button>
+            <div class="form-group" v-if="this.exists===true">
+                Update PV Power (kW):
+                <input v-model:value.number="power" type="number" step="any" class="form-control form-control-sm" style="width: 100px" placeholder="Power" aria-label="Power">
+            </div>
+            <button v-if="this.exists===true" type="button"  class="btn btn-primary btn-sm" @click="updatePV" > Update PV </button>
             <button v-if="this.exists===true" type="button"  class="btn btn-secondary btn-sm" @click="removePV" > Remove PV </button>
         </div>
     </div>`
@@ -152,10 +164,10 @@ export const AddLoadLayer = {
                         power: this.power, 
                     };
                 this.value.push(valueObject);
-                this.$emit('added',valueObject);
                 this.currentMarker.setStyle({color: '#14e54c'});
             }
             this.checkExists();
+            $.notify({message: 'Load Added !'},{type: 'success'});
 
         },
         removeLoad(){
@@ -165,10 +177,17 @@ export const AddLoadLayer = {
                         this.value.splice(i, 1);
                     }
                 }
-                //this.value.splice(this.value.indexOf(valueObject), 1);
-                //this.$emit('added',valueObject);
                 this.currentMarker.setStyle({color: 'red'});
+                 this.checkExists();
+                $.notify({message: 'Load Removed !'},{type: 'warning'});
         },
+
+        updateLoad(){
+                this.removeLoad();
+                this.addLoad();
+                $.notify({message: 'Load Updated !'},{type: 'info'});
+        },
+
         checkExists(){
             this.exists=false;
             let nodeID=this.selectedNode;
@@ -192,6 +211,11 @@ export const AddLoadLayer = {
                 <input v-model:value.number="power" type="number" step="any" class="form-control form-control-sm" style="width: 100px" placeholder="Power" aria-label="Power">
             </div>
             <button  v-if="this.exists===false" type="button"  class="btn btn-primary btn-sm" @click="addLoad" > Add Load </button>
+            <div class="form-group" v-if="this.exists===true">
+                Update Load Power (kW):
+                <input v-model:value.number="power" type="number" step="any" class="form-control form-control-sm" style="width: 100px" placeholder="Power" aria-label="Power">
+            </div>
+            <button v-if="this.exists===true" type="button"  class="btn btn-primary btn-sm" @click="updateLoad" > Update Load </button>
             <button v-if="this.exists===true" type="button"  class="btn btn-secondary btn-sm" @click="removeLoad" > Remove Load </button>
         </div>
     </div>`
