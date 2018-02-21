@@ -21,7 +21,7 @@ def list_nodes():
         node['node_object'] = node_object
         node['node_id'] = node_object.ID
         node['longitude'] = cympy.study.QueryInfoNode('Longitude', node_object.ID)
-        node['longitude'] = cympy.study.QueryInfoNode('Latitude', node_object.ID)
+        node['latitude'] = cympy.study.QueryInfoNode('Latitude', node_object.ID)
 
         #The following lines were used to import models accounting for the error in latitude in longitude values
         #This concerns model imports prior to 02/20/2018
