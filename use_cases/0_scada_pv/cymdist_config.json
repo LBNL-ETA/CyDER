@@ -1,0 +1,7 @@
+{
+  "model_filename": "BU0006.sxst",
+  "scada_filename": "scada.csv",
+  "substation": "2405",
+  "run_all_feeders": true,
+  "feeders": ["feeder1", "feeder2", "..."]
+}

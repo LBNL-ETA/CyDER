@@ -12,9 +12,9 @@ cosimulation/temp/*
 
 # PGE models
 ############
-.sxst
+*.sxst
 
-# customize 
+# customize
 .ignore
 
 # Ignore django outputs

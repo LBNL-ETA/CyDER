@@ -1,0 +1,7 @@
+{
+  "model_filename": "test_substation.sxst",
+  "scada_filename": "test_scada.csv",
+  "substation": "2405",
+  "run_all_feeders": true,
+  "feeders": ["not defined", "not defined", "not defined"]
+}
