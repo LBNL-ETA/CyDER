@@ -1,5 +1,6 @@
 import datetime
 import json
+import pandas
 import cympy
 
 
@@ -72,7 +73,7 @@ def cymdist(configuration_filename, time, input_names,
     def _add_loads(loads):
         """Set active power load or production"""
         # Add load
-        for index, name, value in enumerate(loads.items()):
+        for index, (name, value) in enumerate(loads.items()):
             index = str(index)
             network_id = name.split('#')[0]
             node_id = name.split('#')[1]
@@ -84,11 +85,11 @@ def cymdist(configuration_filename, time, input_names,
                                                  'NEW_NODE' + index)
 
             # Get the number of phases on the section
-            nb_phases = float(len(new_section.Phases))
+            nb_phases = int(len(new_section.GetValue("Phase")))
 
             # Add load value divided by the number of phases
             for phase in range(0, nb_phases):
-                cympy.study.SetValueDevice(value / nb_phases,  # Load value
+                cympy.study.SetValueDevice(float(value) / nb_phases,  # Load value
                     'CustomerLoads[0].CustomerLoadModels[0].' +
                     'CustomerLoadValues[' + str(phase) +
                     '].LoadValue.KW',  # Parameter to set
@@ -170,7 +171,8 @@ def cymdist(configuration_filename, time, input_names,
 
     # Run the power flow
     lf = cympy.sim.LoadFlow()
-    feeders_and_substation = feeders.append(substation_network)
+    feeders_and_substation = list(feeders)
+    feeders_and_substation.append(substation_network)
     lf.Run(feeders_and_substation)
 
     # Return the right values
