@@ -265,5 +265,53 @@ changed to parameters.
       end Test_simple;
     end Examples;
   end Optimization;
+
+  package PvModel
+    package Examples
+    end Examples;
+
+    package Models
+      model PvOrientated
+        parameter Real A_PV=1 "Area of PV system";
+        parameter Real til=10 "Surface tilt [deg]";
+        parameter Real azi=0 "Surface azimuth [deg]";
+
+        Buildings.BoundaryConditions.WeatherData.ReaderTMY3
+                                                  weaDat(
+            computeWetBulbTemperature=false, filNam=
+              "C:/Users/Christoph/Documents/GitHub/cyder/hil/controls/USA_CA_San.Francisco.Intl.AP.724940_TMY3.mos")
+          "Weather data model"
+          annotation (Placement(transformation(extent={{-60,20},{-40,40}})));
+        Buildings.Electrical.AC.ThreePhasesBalanced.Sources.PVSimpleOriented
+                                                        pv1(
+          eta_DCAC=0.89,
+          A=A_PV,
+          fAct=0.9,
+          eta=0.12,
+          linearized=false,
+          pf=1,
+          lat=weaDat.lat,
+          azi=Modelica.SIunits.Conversions.from_deg(azi),
+          til=Modelica.SIunits.Conversions.from_deg(til),
+          V_nominal=120)       "PV"
+          annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
+        Modelica.Blocks.Interfaces.RealOutput Power(unit="W") "Generated power"
+          annotation (Placement(transformation(extent={{100,-10},{120,10}})));
+        Buildings.Electrical.AC.ThreePhasesBalanced.Sources.FixedVoltage fixVol(V=120, f=60)
+          annotation (Placement(transformation(extent={{-60,-10},{-40,10}})));
+      equation
+        connect(weaDat.weaBus, pv1.weaBus) annotation (Line(
+            points={{-40,30},{0,30},{0,9}},
+            color={255,204,51},
+            thickness=0.5));
+        connect(pv1.P, Power) annotation (Line(points={{11,7},{20.5,7},{20.5,0},{110,0}},
+              color={0,0,127}));
+        connect(fixVol.terminal, pv1.terminal)
+          annotation (Line(points={{-40,0},{-10,0}}, color={0,120,120}));
+        annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+              coordinateSystem(preserveAspectRatio=false)));
+      end PvOrientated;
+    end Models;
+  end PvModel;
   annotation (uses(Modelica(version="3.2.2"), Buildings(version="4.0.0")));
 end CyDER;
