@@ -1,0 +1,27 @@
+{% extends 'cyder/base.html' %}
+{% load static %}
+
+{% block css %}
+
+{% endblock css %}
+
+{% block content %}
+    <div id="project-results"></div>
+{% endblock content %}
+
+{% block script %}
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="module">
+        import { ProjectResults } from '{% static 'cyder/projects/results.js' %}';
+        import CyderAPI from '{% static 'cyder/api.js' %}';
+
+        document.querySelector(".navbar [data-name='projects']").classList.add('active');
+        let projectResults;
+        window.onload = function() {
+            CyderAPI.auth();
+            projectResults = new ProjectResults(
+                "{{ project_id|escapejs }}",
+                document.querySelector('#project-results'));
+        }
+    </script>
+{% endblock script %}

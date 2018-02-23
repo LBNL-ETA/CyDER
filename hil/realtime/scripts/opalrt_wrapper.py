@@ -16,6 +16,10 @@ import os
 import sys
 from datetime import datetime
 import logging as log
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+plt.switch_backend('Qt4Agg')
 
 log.basicConfig(filename='OPALRTFMU.log', filemode='w',
                 level=log.DEBUG, format='%(asctime)s %(message)s',
@@ -23,7 +27,8 @@ log.basicConfig(filename='OPALRTFMU.log', filemode='w',
 stderrLogger = log.StreamHandler()
 stderrLogger.setFormatter(log.Formatter(log.BASIC_FORMAT))
 log.getLogger().addHandler(stderrLogger)
-TIMEOUT = 2.0
+TIMEOUT = 1
+TIMEFACTOR = 1
 
 def resetModel(projectPath, reset):
     """
@@ -111,7 +116,8 @@ def compileAndInstantiate(projectPath):
             ctlr = True
             RtlabApi.GetSystemControl (ctlr)
             #log.info ("=====The system control is acquired.")
-            timeFactor   = 1
+            timeFactor   = TIMEFACTOR
+            #RtlabApi.SingleStep()
             RtlabApi.Execute(timeFactor)
             ctlr = False
             RtlabApi.GetSystemControl (ctlr)
@@ -194,12 +200,12 @@ def compileAndInstantiate(projectPath):
             log.error ("=====compileAndInstantiate(): Compilation failed.")
 
         ## Load the current model
-        realTimeMode = RtlabApi.SIM_MODE  # Also possible to use SIM_MODE, SOFT_SIM_MODE, SIM_W_NO_DATA_LOSS_MODE or SIM_W_LOW_PRIO_MODE
+        realTimeMode = RtlabApi.SOFT_SIM_MODE  # Also possible to use SIM_MODE, SOFT_SIM_MODE, SIM_W_NO_DATA_LOSS_MODE or SIM_W_LOW_PRIO_MODE
         # realTimeMode are HARD_SYNC_MODE for hardware synchronization. An I/O board is required
         # on the target. SIM_MODE for simulation as fast as possible, SOFT_SIM_MODE for
         # soft synchronization mode. Other modes ae not relevant but can be found in Enumeration and defined
-        # under OP_REALTIME_MODE 
-        timeFactor   = 1
+        # under OP_REALTIME_MODE
+        timeFactor   = TIMEFACTOR
         RtlabApi.Load(realTimeMode, timeFactor)
         ## Wait until the model is loaded
         #load_time = TIMEOUT
@@ -216,6 +222,7 @@ def compileAndInstantiate(projectPath):
             #log.info("=====The signal description of the model={!s}".format(RtlabApi.GetSignalsDescription()))
 
             ## Execute the model
+            #RtlabApi.SingleStep()
             RtlabApi.Execute(timeFactor)
             log.info ("=====compileAndInstantiate(): The model has executed.")
             status, _ = RtlabApi.GetModelState()
@@ -284,7 +291,8 @@ def setData(projectPath, inputNames, inputValues, simulationTime):
                     #log.info ("=====The model is paused.")
                     RtlabApi.SetSignalsByName(inputNames, inputValues)
                     #log.info ("=====The signals are set.")
-                    timeFactor   = 1
+                    timeFactor   = TIMEFACTOR
+                    #RtlabApi.SingleStep()
                     RtlabApi.Execute(timeFactor)
                     #log.info ("=====The model is executed.")
                     ## Release signal control after changing values
@@ -362,7 +370,8 @@ def getData(projectPath, outputNames, simulationTime):
                     log.info(s)
                     #RtlabApi.GetSignalControl(True)
                     outputValues = RtlabApi.GetSignalsByName(outputNames)
-                    timeFactor   = 1
+                    timeFactor   = TIMEFACTOR
+                    #RtlabApi.SingleStep()
                     RtlabApi.Execute(timeFactor)
                     log.info ("=====getData(): The model is executed.")
                     ## Release signal control after changing values
@@ -390,6 +399,10 @@ def getData(projectPath, outputNames, simulationTime):
             log.info(
                 '=====getData(): Get values={!s} of outputs with names={!s} in {!s} seconds.'.format(outputValues,
                 outputNames, (end - start).total_seconds()))
+            (calculationStep, timeFactor) = RtlabApi.GetTimeInfo()
+            print ("The calculation time step is={!s}".format(calculationStep))
+            sampleTime = RtlabApi.GetAcqSampleTime(1)
+            print ("The sample time step is={!s}".format(sampleTime))
         finally:
             ## Always disconnect from the model when the connection
             ## is completed
@@ -438,12 +451,12 @@ def convertUnicodeString(inputNames):
     return retNames
 
 
-def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, writeResults):
+def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, writeResults, memory):
 
-#if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    ## Connect to a running model using its name.
-    #projectName = os.path.abspath(os.path.join('examples', 'demo', 'demo.llp'))
+    # # Connect to a running model using its name.
+    # projectName = os.path.abspath(os.path.join('examples', 'demo', 'demo.llp'))
 
      """
      Function to exchange data with the Opal RT FMU.
@@ -457,93 +470,155 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
      :param writeResults: Flag to write results.
 
      """
-
-     # Convert the unicode string to a string
-     projectPath = convertUnicodeString(projectPath)
-     #return 0.0
-     # This is just for testing and will be retrieved from the project path
-     # The section below will be removed in production code
-     # 1 will reset the model on the target machine
-     # 0 will run the model in normal mode.
-     ######################################################
-     #reset = 0
-     #retVal = resetModel (projectPath, reset)
-     #if retVal == -2222:
-     #  return zeroOutputValues(outputNames)
-     # Convert the input and output names to be strings that can be set in Opal-RT models
-     #inputNames = 'LBNL_test1/sc_console/port1'
-     #inputNames = None
-     #inputValues = 0
-     #outputNames = ['LBNL_test1/Sm_master/port1(1)', 'LBNL_test1/Sm_master/port1(2)', 'LBNL_test1/Sm_master/port1(3)', 'LBNL_test1/Sm_master/port1(4)', 'LBNL_test1/Sm_master/port1(5)', 'LBNL_test1/Sm_master/port1(6)', 'LBNL_test1/Sm_master/port1(7)', 'LBNL_test1/Sm_master/port1(8)', 'LBNL_test1/Sm_master/port1(9)']
-     ######################################################
      if (inputNames is not None):
-         inputNames=convertUnicodeString(inputNames)
+        inputNames = convertUnicodeString(inputNames)
      if (outputNames is not None):
-        outputNames=convertUnicodeString(outputNames)
+        outputNames = convertUnicodeString(outputNames)
 
-     log.info ("=====exchange(): Ready to compile, load, or execute the model.")
-     # Compile and Run the model for the first time
-     retVal = compileAndInstantiate(projectPath)
-     if (retVal is None):
-        log.info ("=====exchange(): The model hasn't been compiled yet.")
-        return zeroOutputValues (outputNames)
-
-     #simulationTime = 0.0
-     log.info ("=====exchange(): Ready to exchange data with the OPAL-RT running model.")
-     # Handle the case when inputNames is None
-
-     if(inputNames is not None):
-         log.info ("=====exchange(): Ready to set the input variables={!s} with values={!s} at time={!s}.".format(inputNames, inputValues, simulationTime))
-         if (isinstance(inputNames, list)):
-             len_inputNames = len(inputNames)
-             len_inputValues = len(inputValues)
-             if(len_inputNames<>len_inputValues):
-                 log.error ("=====exchange(): An error occured at simulationTime={!s}. "\
-                         "Length of inputNames={!s} ({!s}) does not match " \
-                         "length of input values={!s} ({!s}).".format(simulationTime, inputNames,
-                         len_inputNames, inputValues, len_inputValues))
-                 raise
-             setData(projectPath, tuple(inputNames), tuple(inputValues), simulationTime)
-         else:
-             setData(projectPath, inputNames, inputValues, simulationTime)
-         log.info("=====exchange(): The input variables={!s} were successfully set.".format(inputNames))
-
-     if (outputNames is not None):
-         log.info ("=====exchange(): Ready to get the output variables={!s} at time={!s}.".format(outputNames, simulationTime))
-         if (isinstance(outputNames, list)):
-             outputValues = getData(projectPath, tuple(outputNames), simulationTime)
-             len_outputNames = len(outputNames)
-             len_outputValues = len(outputValues)
-             if(len_outputNames<>len_outputValues):
-                 log.error ("=====exchange(): An error occured at simulationTime={!s}. "\
-                         "Length of outputNames={!s} ({!s}) does not match " \
-                         "length of output values={!s} ({!s}).".format(simulationTime, outputNames,
-                         len_outputNames, outputValues, len_outputValues))
-                 raise
-             outputValues = getData(projectPath, tuple(outputNames), simulationTime)
-         else:
-             outputValues = getData(projectPath, outputNames, simulationTime)
-         log.info("=====exchange(): The output variables={!s} were successfully retrieved.".format(outputNames))
-
-         if(outputValues is None):
-             log.error ("=====exchange(): The output values for outputNames={!=} is empty at time={!s}.".
-                    format(outputNames, simulationTime))
-             raise
-         log.info ("=====exchange(): The values of the output variables:{!s} are equal {!s} at time={!s}.".format(outputNames,
-                 outputValues, simulationTime))
-     # Convert the output values to float so they can be used on the receiver side.
-     retOutputValues = []
-     if (isinstance(outputValues, tuple)):
-         for elem in outputValues:
-             retOutputValues.append(1.0*float(elem))
+     if (memory == None):
+        # Initialize the Python object
+        memory = {'tLast':simulationTime, 'outputs':None}
+        if not (inputValues is None):
+            memory['inputsLast'] = inputValues
+        memory['pp'] = convertUnicodeString(projectPath)
+        log.info ("=====exchange(): Ready to compile, load, or execute the model.")
+        retVal = compileAndInstantiate(memory['pp'])
+        memory['outputs'] = zeroOutputValues (outputNames)
+        return [memory['outputs'], memory]
      else:
-         retOutputValues = 1.0 * float (outputValues)
+        # Check if inputs have changed
+        if not (inputValues is None):
+            newInputs = sum([abs(m - n) for m, n in zip (inputValues,
+            memory['inputsLast'])])
+        # Check if time or inputs have changed prior to updating the outputs
+        if(abs(simulationTime - memory['tLast']) > 1e-6 or newInputs > 0):
+            memory['tLast'] = simulationTime
+            log.info ("=====exchange(): Ready to exchange data with the OPAL-RT running model.")
+            if(inputNames is not None):
+                log.info ("=====exchange(): Ready to set the input variables={!s} with values={!s} at time={!s}.".format(inputNames, inputValues, simulationTime))
+                if (isinstance(inputNames, list)):
+                    len_inputNames = len(inputNames)
+                    len_inputValues = len(inputValues)
+                    if(len_inputNames <> len_inputValues):
+                        log.error ("=====exchange(): An error occured at simulationTime={!s}. "\
+                                "Length of inputNames={!s} ({!s}) does not match " \
+                                "length of input values={!s} ({!s}).".format(simulationTime, inputNames,
+                                len_inputNames, inputValues, len_inputValues))
+                        raise
+                    setData(memory['pp'], tuple(inputNames), tuple(inputValues), simulationTime)
+                else:
+                    setData(memory['pp'], inputNames, inputValues, simulationTime)
+                log.info("=====exchange(): The input variables={!s} were successfully set.".format(inputNames))
 
-     return retOutputValues
+            if (outputNames is not None):
+                log.info ("=====exchange(): Ready to get the output variables={!s} at time={!s}.".format(outputNames, simulationTime))
+                if (isinstance(outputNames, list)):
+                    # outputValues = getData(projectPath, tuple(outputNames), simulationTime)
+                    outputValues = getData(memory['pp'], tuple(outputNames), simulationTime)
+                    len_outputNames = len(outputNames)
+                    len_outputValues = len(outputValues)
+                    if(len_outputNames <> len_outputValues):
+                        log.error ("=====exchange(): An error occured at simulationTime={!s}. "\
+                             "Length of outputNames={!s} ({!s}) does not match " \
+                             "length of output values={!s} ({!s}).".format(simulationTime, outputNames,
+                             len_outputNames, outputValues, len_outputValues))
+                        raise
+                else:
+                    outputValues = getData(memory['pp'], outputNames, simulationTime)
+                log.info("=====exchange(): The output variables={!s} were successfully retrieved.".format(outputNames))
+
+                if(outputValues is None):
+                    log.error ("=====exchange(): The output values for outputNames={!=} is empty at time={!s}.".
+                        format(outputNames, simulationTime))
+                    raise
+                log.info ("=====exchange(): The values of the output variables:{!s} are equal {!s} at time={!s}.".format(outputNames,
+                     outputValues, simulationTime))
+
+                # Convert the output values to float so they can be used on the receiver side.
+                retOutputValues = []
+                if (isinstance(outputValues, tuple)):
+                     for elem in outputValues:
+                         retOutputValues.append(1.0 * float(elem))
+                else:
+                     retOutputValues = 1.0 * float (outputValues)
+                memory['outputs'] = retOutputValues
+     return [memory['outputs'], memory]
 
 # if __name__ == "__main__":
 #
 #     ## Connect to a running model using its name.
-#     projectName = os.path.abspath(os.path.join('examples', 'lbnl_test1', 'lbnl_test1.llp'))
-#     compileAndInstantiate(projectName)
-#     compileAndInstantiate(projectName)
+#     #tim = 0
+#     projectName = os.path.abspath(os.path.join('..', 'CyDER', 'hil', 'realtime', 'models', 'BU0001_timeserie_pv', 'lbnl_test1.llp'))
+#     opalrt_input_names = ['LBNL_test1/sc_console/port1', 'LBNL_test1/sc_console/port2', 'LBNL_test1/sc_console/port3']
+#     opalrt_input_values = [1.0, 1.0, 1.0]
+#     opalrt_output_names = ['LBNL_test1/Sm_master/port1(1)', 'LBNL_test1/Sm_master/port1(2)',
+#         'LBNL_test1/Sm_master/port1(3)','LBNL_test1/Sm_master/port1(4)','LBNL_test1/Sm_master/port1(5)',
+#         'LBNL_test1/Sm_master/port1(6)','LBNL_test1/Sm_master/port1(7)','LBNL_test1/Sm_master/port1(8)',
+#         'LBNL_test1/Sm_master/port1(9)', 'LBNL_test1/Sm_master/port4']
+#     tim = 0.0
+#     memory = None
+#     values=exchange(projectName, tim, opalrt_input_names, opalrt_input_values, opalrt_output_names, 0, memory)
+#     memory = values[1]
+#     tim = 1.0
+#     print(exchange(projectName, tim, opalrt_input_names, opalrt_input_values, opalrt_output_names, 0, memory))
+#     memory = values[1]
+#     tim = 2.0
+#     print(exchange(projectName, tim, opalrt_input_names, opalrt_input_values, opalrt_output_names, 0, memory))
+
+    # compileAndInstantiate(projectName)
+    # # setData(convertUnicodeString(projectName), tuple(convertUnicodeString(opalrt_input_names)), tuple(opalrt_input_values), tim)
+    # # getData(convertUnicodeString(projectName), tuple(convertUnicodeString(opalrt_output_names)), tim)
+    # # tim = 1
+    # # setData(convertUnicodeString(projectName), tuple(convertUnicodeString(opalrt_input_names)), tuple(opalrt_input_values), tim)
+    # # getData(convertUnicodeString(projectName), tuple(convertUnicodeString(opalrt_output_names)), tim)
+    #
+    # start_time = 0
+    # stop_time = 60
+    # step_size = 15
+    # # Create vector to store time
+    # simTim=[]
+    # mod_tim = []
+    # opalrt_res = []
+    #
+    # # Interactive mode on
+    # plt.ion()
+    # plt.ticklabel_format(useOffSet=False)
+    #
+    # # Create the plot
+    # fig = plt.figure()
+    # ax1 = fig.add_subplot(211)
+    # ax2 = fig.add_subplot(212)
+    # ax1.set_ylabel('ModelTime\n[s]')
+    # ax1.set_xlabel('MasterTime\n[s]')
+    # ax2.set_ylabel('Voltage\n[p.u]')
+    # ax2.set_xlabel('ModelTime [-]')
+    #
+    # line1A, = ax1.step(simTim, mod_tim)
+    # line2A, = ax2.plot(mod_tim, opalrt_res)
+    #
+    # ax1.legend(loc=0)
+    #
+    # # Simulation loop
+    # for tim in np.arange(start_time, stop_time, step_size):
+    #     setData(convertUnicodeString(projectName), tuple(convertUnicodeString(opalrt_input_names)), tuple([tim*i/10 for i in opalrt_input_values]), tim)
+    #     opalrt_out = getData(convertUnicodeString(projectName), tuple(convertUnicodeString(opalrt_output_names)), tim)
+    #     opalrt_res.append(float("{0:.8f}".format(opalrt_out[7])))
+    #     mod_tim.append(float("{0:.8f}".format(opalrt_out[-1])))
+    #     #opalrt_res.append(opalrt_out[0])
+    #     simTim.append(tim)
+    #     line1A.set_xdata(simTim)
+    #     line1A.set_ydata(mod_tim)
+    #
+    #     line2A.set_xdata(mod_tim)
+    #     line2A.set_ydata(opalrt_res)
+    #
+    #     ax1.relim()
+    #     ax1.autoscale_view(True,True,True)
+    #     ax2.relim()
+    #     ax2.autoscale_view(True,True,True)
+    #     fig.canvas.draw()
+    #     if(tim==stop_time-step_size):
+    #         print ("Wait prior to closing")
+    #         plt.waitforbuttonpress()
+    #     else:
+    #         plt.pause(1)

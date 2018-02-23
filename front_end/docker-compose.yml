@@ -1,44 +1,35 @@
-web:
-  restart: always
-  build: ./web
-  expose:
-    - "8000"
-  ports:
-    - "81:81"
-  links:
-    - postgres:postgres
-    - redis:redis
-  volumes:
-    - ./web:/usr/src/app
-  env_file: .env
-  environment:
-    DEBUG: 'true'
-  command: bash web_container_start.sh
-
-nginx:
-  restart: always
-  build: ./nginx/
-  ports:
-    - "80:80"
-  volumes:
-    - /www/static
-  volumes_from:
-    - web
-  links:
-    - web:web
-
-postgres:
-  restart: always
-  image: postgres:latest
-  ports:
-    - "5432:5432"
-  volumes:
-    - pgdata:/var/lib/postgresql/data/
+db:
+        image: postgres
+        volumes:
+                - ./db/data:/var/lib/postgresql/data
+        environment:
+                POSTGRES_PASSWORD: admin
+        ports:
+                - "5432:5432"
 
 redis:
-  restart: always
-  image: redis:latest
-  ports:
-    - "6379:6379"
-  volumes:
-    - redisdata:/data
+        image: redis
+        ports:
+                - "6379:6379"
+wsgi:
+        build: wsgi
+        ports:
+                - "8080:8080" # Use for the dev server
+        volumes:
+                - ./wsgi/log:/var/log/cyder/
+                - ./django-project:/usr/src/app
+                - ./http/static:/var/www/ # Where static files are collected to be served
+        links:
+                - redis
+                - db
+http:
+        image: nginx
+        ports:
+                - "80:80"
+                - "443:443"
+        volumes:
+                - ./http/nginx_conf.d:/etc/nginx/conf.d
+                - ./http/ssl:/etc/nginx/ssl
+                - ./http/static:/var/www/ # Where static files are collected to be served
+        links:
+                - wsgi

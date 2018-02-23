@@ -1,0 +1,78 @@
+{% extends 'cyder/base.html' %}
+{% load static %}
+
+{% block css %}
+    <!-- Style for LeafletMap componenet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+        integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+        crossorigin=""/>
+    <style>/* Style for LeafletMap componenet */
+        .leaflet-popup-content {
+            /* Override the fact that leaflet.js set the width in the style attribute of the popup
+            to enforce the min and max width option in leaflet.
+            This default behavior can be a problem when vuejs rewrite a popup (the size is calculated for the old content).
+            If a max size is needed for a popup it should be enforce inside the popup itself
+            (ex: put the content inside a div with a set width and use this div for the popup) */
+            width: auto !important;
+        }
+    </style>
+    <style>/* Style for ModelViewer componenet */
+        .card {
+            height: 100%;
+        }
+        .col-lg-4 {
+            margin-bottom: 1rem;
+        }
+    </style>
+{% endblock css %}
+
+{% block content %}
+    <div id="app">
+        Select a model to display: <model-selector v-model="modelName" allow-empty></model-selector>
+        <leaflet-map ref="map" style="height: 70vh; margin: 1rem 0 1rem 0;">
+            <open-model-layer v-if="modelName === ''" fit @open="modelName=$event.modelName"></open-model-layer>
+        </leaflet-map>
+        <model-viewer v-if="modelName !== ''" :map="map" :model-name="modelName"></model-viewer>
+    </div>
+{% endblock content %}
+
+{% block script %}
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+        integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+        crossorigin=""></script>
+    <script src="{% static 'cyder/models/leaflet-heat.js' %}"></script>
+    <script type="module">
+        import { ModelSelector, LeafletMap, ModelViewer } from '{% static 'cyder/models/viewer.js' %}';
+        import { OpenModelLayer } from '{% static 'cyder/models/layers.js' %}';
+        import CyderAPI from '{% static 'cyder/api.js' %}';
+
+        document.querySelector(".navbar [data-name='model_viewer']").classList.add('active');
+
+        window.onload = function() {
+            CyderAPI.auth();
+
+            window.app = new Vue({
+                el: '#app',
+                components: { ModelSelector, LeafletMap, OpenModelLayer, ModelViewer },
+                data() { return {
+                    modelName: '{{ modelname|escapejs }}',
+                    map: null,
+                };},
+                mounted() {
+                    this.map = this.$refs.map;
+                },
+                watch: {
+                    modelName: {
+                        immediate: true,
+                        handler(value) {
+                            if(value === '')
+                                history.replaceState(null, null, `{% url 'model_viewer' %}`);
+                            else
+                                history.replaceState(null, null, `{% url 'model_viewer' %}${this.modelName}/`);
+                        },
+                    },
+                }
+            });
+        }
+    </script>
+{% endblock script %}

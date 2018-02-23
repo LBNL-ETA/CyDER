@@ -26,14 +26,14 @@ To add new files, enter something like
     git add filename.xyz
     git commit -m "Added the file xxxx" filename.xyz
     git push
-    
+
 To use the git command on `Windows`
 
-1. download and install a `git` client such as [github desktop](https://desktop.github.com/)[^install] 
+1. download and install a `git` client such as [github desktop](https://desktop.github.com/)[^install]
 
 2. open the Git Shell
 
-3. From the Git Shell command prompt, 
+3. From the Git Shell command prompt,
 
     create a folder which should contain the files on the CyDER repository by typing
 
@@ -50,6 +50,8 @@ To download, edit, and add new files see the commands listed in the section abov
 [^install]: In the installation process, you might be asked to log into your repository, just skip this section.
 
 ## CyDER Configuration
+
+(Outdated since MHebant re-did the front end web interface. New instructions available at /front_end/README.md)
 
 None automatic steps before installing:
   - git pull origin master
@@ -86,5 +88,3 @@ Next steps:
   - Re-think the models to be including multiple models with transmission grid
   - Change ssh for celery workers
   - Create a script to update the system / or initialize.
-
-
