@@ -86,23 +86,40 @@ def get_model(modelname):
 
 projects = {}
 
+
+import sim_worker.scadaprofile as scp
+import sim_worker.solarprofile as sop
+import pandas
+
 @app.task
 def run_configuration(id, project):
-    start = dateutil.parser.parse(project['start'])
-    end = dateutil.parser.parse(project['end'])
-    timestep = project['timestep']
-    times = [x for x in range(0, int((end - start).total_seconds()), int(timestep))]
 
-    projects[id] = {'times': times}
+#The following 3 lines of code are the ones to be used once testing is over
+    # start = dateutil.parser.parse(project['start'])
+    # end = dateutil.parser.parse(project['end'])
+    # substation =  project['model']
 
-    pv = []
+#The following 3 lines of code are for testing
+    start = '2016-06-17 00:00:00'
+    end = '2016-06-18 00:00:00'
+    substation =  'BU0006'
+    # timestep = project['timestep']
+    # times = [x for x in range(0, int((end - start).total_seconds()), int(timestep))]
+
+    # projects[id] = {'times': times}
+
+    add_pv = pandas.DataFrame.from_dict(project['addPv'])
+    pv_nominal_capacity_kw = add_pv.iloc[:,1].sum()
+    print("addPV dataframe: ", add_pv)
+    print("pv_nominal_capacity: ", pv_nominal_capacity_kw)
+
+
+
+
+    load = scp.scada_profile(start, end, substation).tolist()
     ev = []
-    load = []
-    for time in times:
-        sleep(0.1)
-        pv.append(random.randint(0,1000))
-        ev.append(random.randint(0,1000))
-        load.append(random.randint(0,1000))
+    pv = sop.solar_profile(start, end, pv_nominal_capacity_kw)
+    pv = pv.iloc[:,0].tolist()
 
     return { 'pv': pv, 'ev': ev, 'load': load}
 

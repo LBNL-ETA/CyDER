@@ -2,8 +2,10 @@ from celery import Celery
 from kombu import Exchange, Queue
 
 app = Celery('sim_worker',
-             broker='redis://redis:6379/0', # <= redis IP goes here
-             backend='redis://redis:6379/0', # <= redis IP goes here
+            broker='redis://redis:6379/0',
+            backend='redis://redis:6379/0',
+             # broker='redis://redis:6379/0', # <= redis IP goes here
+             # backend='redis://redis:6379/0', # <= redis IP goes here
              include=['sim_worker.tasks'])
 
 # This configuration should be the same evrey where the sim_worker celery application is used

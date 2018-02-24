@@ -33,3 +33,8 @@ http:
                 - ./http/static:/var/www/ # Where static files are collected to be served
         links:
                 - wsgi
+                
+dummy_worker:
+        build: dummy_worker
+        links:
+                - redis
