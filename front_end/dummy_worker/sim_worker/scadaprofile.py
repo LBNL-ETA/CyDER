@@ -17,11 +17,11 @@ def scada_profile(start, end, substation):
 
 # ###############################
 # HOW TO USE
-start = '2016-06-17 00:00:00'
-end = '2016-06-18 00:00:00'
-substation = 'BU0006'
-profile = scada_profile(start, end, substation)
-print(profile)
+# start = '2016-06-17 00:00:00'
+# end = '2016-06-18 00:00:00'
+# substation = 'BU0006'
+# profile = scada_profile(start, end, substation)
+# print(profile)
 
 # # Plot profile
 # plt.figure(figsize=(11, 5))

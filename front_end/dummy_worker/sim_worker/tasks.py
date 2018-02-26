@@ -103,25 +103,21 @@ def run_configuration(id, project):
     start = '2016-06-17 00:00:00'
     end = '2016-06-18 00:00:00'
     substation =  'BU0006'
-    # timestep = project['timestep']
-    # times = [x for x in range(0, int((end - start).total_seconds()), int(timestep))]
-
-    # projects[id] = {'times': times}
-
+    
     add_pv = pandas.DataFrame.from_dict(project['addPv'])
     pv_nominal_capacity_kw = add_pv.iloc[:,1].sum()
-    print("addPV dataframe: ", add_pv)
-    print("pv_nominal_capacity: ", pv_nominal_capacity_kw)
 
-
-
-
-    load = scp.scada_profile(start, end, substation).tolist()
+    # In the following lines, the pandas Datafames and Series returned by the solarprofile and scadaprofile scripts are manipulated in such a way that they are JSON serializable (in order for the data to be stored and saved in the project settings)
+    load = scp.scada_profile(start, end, substation)
+    loadIndex = load.to_frame().index.strftime('%Y-%m-%d %H:%M:%S').tolist()
+    load=load.tolist()
     ev = []
     pv = sop.solar_profile(start, end, pv_nominal_capacity_kw)
+    pvIndex=pv.index.strftime('%Y-%m-%d %H:%M:%S').tolist()
     pv = pv.iloc[:,0].tolist()
 
-    return { 'pv': pv, 'ev': ev, 'load': load}
+
+    return { 'pv': pv, 'pvIndex': pvIndex, 'ev': ev, 'load': load, 'loadIndex': loadIndex}
 
 @app.task
 def run_simulation(id):

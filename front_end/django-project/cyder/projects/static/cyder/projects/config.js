@@ -23,21 +23,31 @@ export class ProjectConfig extends View {
     _plot() {
         let project = CyderAPI.Project.get(this._projectId);
 
-        let startDate = Date.parse(project.settings.start);
-        let endDate = Date.parse(project.settings.end);
-        let dates = [];
-        for(let date = startDate; date < endDate; date+=project.settings.timestep*1000)
-            dates.push(new Date(date));
+        project.config.pv
 
-        let pv = {x: dates, y: project.config.pv, mode: 'lines', name: 'PV'};
-        let ev = {x: dates, y: project.config.ev, mode: 'lines', name: 'EV'};
-        let load = {x: dates, y: project.config.load, mode: 'lines', name: 'Load'};
+        var load = {
+          x: project.config.loadIndex,
+          y: project.config.load,
+          name: 'Load',
+          type: 'scatter'
+        };
 
-        let data = [pv, ev, load];
+        var pv = {
+          x: project.config.pvIndex,
+          y: project.config.pv,
+          name: 'PV',
+          yaxis: 'y2',
+          type: 'scatter'
+        };
+
+        let data = [load, pv];
         let layout = {
-            yaxis: {
-                title: 'Active load(kW)'
-            }
+                yaxis: {title: 'Load in KW'},
+                yaxis2: {
+                    title: 'PV in KW',
+                    overlaying: 'y',
+                    side: 'right'
+                }
         };
         Plotly.newPlot(this._html.plot, data, layout);
     }
