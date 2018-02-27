@@ -359,11 +359,10 @@ changed to parameters.
       end Tilted_Solar_TMY;
 
       model PvOrientated_FMU
-        parameter Real A_PV=1 "Area of PV system";
+        parameter Real A_PV=1 "Area of PV system [m2]";
         parameter Real til=10 "Surface tilt [deg]";
         parameter Real azi=0 "Surface azimuth [deg]";
-        //parameter String filNam="C:/Users/Christoph/Documents/GitHub/cyder/hil/controls/USA_CA_San.Francisco.Intl.AP.724940_TMY3.mos";
-        parameter String filNam="USA_CA_San.Francisco.Intl.AP.724940_TMY3.mos";
+        parameter String filNam="" "Full path to weatherfile";
 
         Buildings.BoundaryConditions.WeatherData.ReaderTMY3
                                                   weaDat(
