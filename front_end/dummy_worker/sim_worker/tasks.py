@@ -104,32 +104,73 @@ def run_configuration(id, project):
     end = '2016-06-18 00:00:00'
     substation =  'BU0006'
     
-    add_pv = pandas.DataFrame.from_dict(project['addPv'])
-    pv_nominal_capacity_kw = add_pv.iloc[:,1].sum()
-
     # In the following lines, the pandas Datafames and Series returned by the solarprofile and scadaprofile scripts are manipulated in such a way that they are JSON serializable (in order for the data to be stored and saved in the project settings)
+    add_pv = pandas.DataFrame.from_dict(project['addPv'])
+
+    if (add_pv.empty):
+        pv=[]
+        pvIndex=[]
+    else : 
+        pv_nominal_capacity_kw = add_pv.iloc[:,1].sum()
+        pv = sop.solar_profile(start, end, pv_nominal_capacity_kw)
+        pvIndex=pv.index.strftime('%Y-%m-%d %H:%M:%S').tolist()
+        pv = pv.iloc[:,0].tolist()
+
     load = scp.scada_profile(start, end, substation)
     loadIndex = load.to_frame().index.strftime('%Y-%m-%d %H:%M:%S').tolist()
     load=load.tolist()
     ev = []
-    pv = sop.solar_profile(start, end, pv_nominal_capacity_kw)
-    pvIndex=pv.index.strftime('%Y-%m-%d %H:%M:%S').tolist()
-    pv = pv.iloc[:,0].tolist()
+
 
 
     return { 'pv': pv, 'pvIndex': pvIndex, 'ev': ev, 'load': load, 'loadIndex': loadIndex}
 
+#Currently under development 
+import glob
+
 @app.task
 def run_simulation(id):
-    times = projects[id]['times']
 
-    properties = ['DwHighVoltWorstA', 'DwHighVoltWorstB', 'DwHighVoltWorstC', 'DwLowVoltWorstA', 'DwLowVoltWorstB', 'DwLowVoltWorstC']
+    path = "sim_worker/results"
+    filenames = glob.glob(path + "/*.csv")
+    print(filenames)
 
-    results = {}
-    for prop in properties:
-        results[prop] = []
-    for time in times:
-        for prop in properties:
-            sleep(0.05)
-            results[prop].append(random.randint(0,1000))
-    return results
+    dfs = []
+    for filename in filenames:
+        dfs.append(pandas.read_csv(filename))
+
+    # Concatenate all data into one DataFrame
+    big_frame = pandas.concat(dfs, ignore_index=True)
+
+    return big_frame.to_json()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
