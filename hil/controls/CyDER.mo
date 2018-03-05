@@ -923,7 +923,8 @@ First implementation.
         "Diffuse horizontal solar radiation"
         annotation (Placement(transformation(extent={{-140,30},{-100,70}})));
       Modelica.Blocks.Interfaces.RealInput HGloHor(quantity=
-            "RadiantEnergyFluenceRate", unit="W/m2") "Global horizontal radiation"
+            "RadiantEnergyFluenceRate", unit="W/m2")
+        "Global horizontal radiation"
         annotation (Placement(transformation(extent={{-140,60},{-100,100}})));
 
       Modelica.Blocks.Interfaces.RealInput zen(
@@ -1037,6 +1038,65 @@ First implementation.
 
     end Examples;
   end Solar;
+
+  package InverterModel
+    package Models
+      model Inverter_simple
+        parameter Real fixed_mode=0 "Inverter mode (0-Fixed P; 1-Fixed S)";
+        Modelica.Blocks.Interfaces.RealInput PV_generation "PV generation [W]"
+          annotation (Placement(transformation(extent={{-140,20},{-100,60}})));
+        Modelica.Blocks.Interfaces.RealOutput ActivePower "Output of active power [W]"
+          annotation (Placement(transformation(extent={{100,50},{120,70}})));
+        Modelica.Blocks.Interfaces.RealOutput ReactivePower "Output of reactive power [Var]"
+          annotation (Placement(transformation(extent={{100,-70},{120,-50}})));
+        Modelica.Blocks.Interfaces.RealInput pf "Input of power factor"
+          annotation (Placement(transformation(extent={{-140,-60},{-100,-20}})));
+
+        Modelica.Blocks.Interfaces.RealOutput ApparentPower "Output of apparent  power [VA]"
+          annotation (Placement(transformation(extent={{100,-10},{120,10}})));
+      equation
+        if fixed_mode == 0 then // fixed P
+          ActivePower = PV_generation;
+          ApparentPower = PV_generation / pf;
+          ReactivePower = sqrt(ApparentPower^2 - ActivePower^2);
+        elseif fixed_mode == 1 then // fixed S
+          ApparentPower = PV_generation;
+          ActivePower = ApparentPower * pf;
+          ReactivePower = sqrt(ApparentPower^2 - ActivePower^2);
+        end if
+          annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+              coordinateSystem(preserveAspectRatio=false)));
+
+      end Inverter_simple;
+    end Models;
+
+    package Examples
+      model Test_Inverter_simple
+        Models.Inverter_simple P_fixed(fixed_mode=0)
+          annotation (Placement(transformation(extent={{-10,20},{10,40}})));
+        Models.Inverter_simple S_fixed(fixed_mode=1)
+          annotation (Placement(transformation(extent={{-10,-40},{10,-20}})));
+        Modelica.Blocks.Sources.Constant PV_generation(k=100)
+          annotation (Placement(transformation(extent={{-100,60},{-80,80}})));
+        Modelica.Blocks.Sources.Ramp Power_factor(
+          duration=1,
+          height=0.9,
+          offset=0.1)
+          annotation (Placement(transformation(extent={{-100,16},{-80,36}})));
+      equation
+        connect(PV_generation.y, P_fixed.PV_generatoin) annotation (Line(points
+              ={{-79,70},{-30,70},{-30,34},{-12,34}}, color={0,0,127}));
+        connect(S_fixed.PV_generatoin, PV_generation.y) annotation (Line(points
+              ={{-12,-26},{-30,-26},{-30,70},{-79,70}}, color={0,0,127}));
+        connect(Power_factor.y, P_fixed.pf)
+          annotation (Line(points={{-79,26},{-12,26}}, color={0,0,127}));
+        connect(Power_factor.y, S_fixed.pf) annotation (Line(points={{-79,26},{
+                -50,26},{-50,-34},{-12,-34}}, color={0,0,127}));
+        annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+              coordinateSystem(preserveAspectRatio=false)));
+      end Test_Inverter_simple;
+    end Examples;
+  end InverterModel;
   annotation (uses(Modelica(version="3.2.2"), Buildings(version="4.0.0"),
       Flexgrid(version="3")));
 end CyDER;
