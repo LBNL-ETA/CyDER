@@ -56,6 +56,9 @@ class ModelViewSet(viewsets.ReadOnlyModelViewSet):
                         [line.section.to_node.longitude,line.section.to_node.latitude]
                         ]
                     },
+                'properties': {
+                    'section_id': line.section.section_id
+                    },
                 });
         for node in nodes:
             features.append({

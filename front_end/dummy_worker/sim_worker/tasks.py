@@ -127,24 +127,34 @@ def run_configuration(id, project):
 
 #Currently under development 
 import glob
+import re
 
 @app.task
 def run_simulation(id):
 
     path = "sim_worker/results"
     filenames = glob.glob(path + "/*.csv")
-    print(filenames)
+
 
     dfs = []
+    indexes = []
+
     for filename in filenames:
-        dfs.append(pandas.read_csv(filename))
+        df=pandas.read_csv(filename)
+        df=df.drop(df.columns[0],axis=1)
+        dfs.append(df.to_json())
 
-    # Concatenate all data into one DataFrame
-    big_frame = pandas.concat(dfs, ignore_index=True)
+        filename=re.sub(r'sim_worker/results/', '', filename)
+        filename=re.sub(r'.csv', '', filename)
+        indexes.append(filename)
+        print(filename)
 
-    return big_frame.to_json()
+    dfs.append(indexes)
 
+    # # Concatenate all data into one DataFrame
+    # big_frame = pandas.concat(dfs, ignore_index=True)
 
+    return dfs
 
 
 

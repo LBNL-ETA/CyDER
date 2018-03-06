@@ -2,26 +2,94 @@
 {% load static %}
 
 {% block css %}
-
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+        integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+        crossorigin=""/>
+    <style>/* Style for LeafletMap componenet */
+        .leaflet-popup-content {
+            /* Override the fact that leaflet.js set the width in the style attribute of the popup
+            to enforce the min and max width option in leaflet.
+            This default behavior can be a problem when vuejs rewrite a popup (the size is calculated for the old content).
+            If a max size is needed for a popup it should be enforce inside the popup itself
+            (ex: put the content inside a div with a set width and use this div for the popup) */
+            width: auto !important;
+        }
+    </style>
 {% endblock css %}
 
 {% block content %}
-    <div id="project-results"></div>
+<!--     <div id="project-results"></div> -->
+
+    <div id="app" v-if="project !== null">
+        <h1>Results</h1>
+        <leaflet-map style="height: 70vh; margin: 0.1rem 0 1rem 0;">
+            <model-layer  :model-name="project.settings.model" fit></model-layer>
+        </leaflet-map>
+    </div>
+
 {% endblock content %}
 
 {% block script %}
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+        integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+        crossorigin=""></script>
+
     <script type="module">
-        import { ProjectResults } from '{% static 'cyder/projects/results.js' %}';
+        import { LeafletMap } from '{% static 'cyder/models/viewer.js' %}';
+        import { ModelLayer } from '{% static 'cyder/models/layers.js' %}';
         import CyderAPI from '{% static 'cyder/api.js' %}';
+        import notifyRESTError from '{% static 'cyder/api-notify-error.js' %}';
 
         document.querySelector(".navbar [data-name='projects']").classList.add('active');
-        let projectResults;
+
         window.onload = function() {
             CyderAPI.auth();
-            projectResults = new ProjectResults(
-                "{{ project_id|escapejs }}",
-                document.querySelector('#project-results'));
-        }
+
+
+            // DEBUG: Keep a reference to the Vuejs app in window.app to make it available easily in the console for debug
+            window.app = new Vue({
+                el: '#app',
+                components: { LeafletMap, ModelLayer},
+                data: {
+                    project: null,
+                    layer: '',
+                    results: null,
+                    datetimes: null,
+                    geo: null,
+                },
+                methods: {
+                    async loadProject(id) {
+                        try {
+                            this.project = await CyderAPI.Project.get(id, true);
+                            this.results=[]
+                            let r= this.project.results;
+                            for (var i = 0; i < r.length-1; i++) {
+                                this.results.push(JSON.parse(r[i]));
+                            }
+                            this.datetimes=(r[r.length-1])
+                            this.geo = await CyderAPI.rest('GET', `/api/models/${encodeURI(this.project.settings.model)}/geojson/`);
+                        } catch(error) {
+                            if(!(error instanceof CyderAPI.RESTError))
+                                throw(error);
+                            notifyRESTError(error);
+                        }
+                    },
+
+                    test(){
+                        alert(this.results[3]);
+                    }
+                },
+            });
+
+            app.loadProject("{{ project_id|escapejs }}");
+            //app.test();
+            poum();
+
+        };
+
     </script>
+
 {% endblock script %}
