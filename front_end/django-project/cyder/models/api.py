@@ -57,7 +57,9 @@ class ModelViewSet(viewsets.ReadOnlyModelViewSet):
                         ]
                     },
                 'properties': {
-                    'section_id': line.section.section_id
+                    'section_id': line.section.section_id,
+                    'from_node': line.section.from_node.node_id,
+                    'to_node': line.section.to_node.node_id,
                     },
                 });
         for node in nodes:

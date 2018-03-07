@@ -59,9 +59,15 @@
                     results: null,
                     datetimes: null,
                     geo: null,
+                    lines: null,
+                    points: null,
+                    indexValue: 0, //this variable is used for development and is bound to change as we introduce the time variable from timestamps
                 },
                 methods: {
                     async loadProject(id) {
+                        //loads project from pg db
+                        //loads and parses results from pg db
+                        //collects geojson model data
                         try {
                             this.project = await CyderAPI.Project.get(id, true);
                             this.results=[]
@@ -71,6 +77,10 @@
                             }
                             this.datetimes=(r[r.length-1])
                             this.geo = await CyderAPI.rest('GET', `/api/models/${encodeURI(this.project.settings.model)}/geojson/`);
+                            this.loadFeatures();
+                            this.getPointFeatureResult();
+                            this.getLineFeatureResult();
+                            //this.test();
                         } catch(error) {
                             if(!(error instanceof CyderAPI.RESTError))
                                 throw(error);
@@ -78,17 +88,131 @@
                         }
                     },
 
+                    loadFeatures(){
+                        this.lines=[];
+                        this.points=[];
+                        if (this.geo!=null){
+                            for (let i=0; i<this.geo.features.length;i++){
+                                if (this.geo.features[i].geometry.type=="LineString"){
+                                    this.lines.push(this.geo.features[i]);
+                                } else if (this.geo.features[i].geometry.type=="Point"){
+                                    this.points.push(this.geo.features[i]);
+                                }
+                            }
+                        }
+                    },
+
+
+                    getPointFeatureResult(){
+                        //adds result properties and corresponding values to geojson point features 
+                        //apparently section_ids do not correspond accross results and imported model, we will thus be using to_node and from_node to identify a line's results
+                        for (let i=0; i<Object.keys(this.results[this.indexValue].node_id).length; i++){
+                            for (let j=0; j<this.points.length; j++){
+                                if(this.points[j].properties.id===this.results[this.indexValue].node_id[i]){
+                                    this.points[j].properties.vA=this.results[this.indexValue].voltage_A[i];
+                                    this.points[j].properties.vB=this.results[this.indexValue].voltage_B[i];
+                                    this.points[j].properties.vC=this.results[this.indexValue].voltage_C[i];   
+                                }
+                            }
+                        }
+
+                    },
+
+                    getLineFeatureResult(){
+                        //adds result properties and corresponding values to geojson line features
+                        for (let i=0; i<this.lines.length; i++){
+                            let xA=null,xB=null,xC=null,yA=null,yB=null,yC=null;
+                            for (let j=0; j<this.points.length; j++){
+                                if(this.points[j].properties.id===this.lines[i].properties.from_node){
+                                    xA=this.points[j].properties.vA;
+                                    xB=this.points[j].properties.vB;
+                                    xC=this.points[j].properties.vC;
+                                } else if (this.points[j].properties.id===this.lines[i].properties.to_node){
+                                    yA=this.points[j].properties.vA;
+                                    yB=this.points[j].properties.vB;
+                                    yC=this.points[j].properties.vC;
+                                }
+                            }
+                            if (xA!=null || yA!=null) {this.lines[i].properties.vA=(xA+yA)/2;} else {this.lines[i].properties.vA=null}
+                            if (xB!=null || yB!=null) {this.lines[i].properties.vB=(xB+yB)/2;} else {this.lines[i].properties.vB=null}
+                            if (xC!=null || yC!=null) {this.lines[i].properties.vC=(xC+yC)/2;} else {this.lines[i].properties.vC=null}
+                        }
+                    },
+
+
+                    // async getLayer() {
+                    //         for (let i=0; i<this.geo.features.length;i++){
+                    //             if (this.geo.features[i].geometry.type=="LineString"){
+                    //                 this.lines.push(this.geo.features[i]);
+                    //             } else if (this.geo.features[i].geometry.type=="Point"){
+
+                    //             }
+                    //         }
+
+                    //         }
+                    //     return L.geoJson(geojson, {
+                    //         pointToLayer,
+                    //         //onEachFeature
+                    //     });
+                    // },
+                    // displayResults(){
+                            
+                    // }
+
                     test(){
-                        alert(this.results[3]);
+                        alert(this.results[0].section_id[2]);
                     }
                 },
             });
 
             app.loadProject("{{ project_id|escapejs }}");
             //app.test();
-            poum();
-
         };
+
+
+    function getColor(v) {
+        let color;
+        switch(v!=null) {
+            case (v<=0.95):
+                color='rgb(19,0,132)';
+                break;
+            case (v<=0.96):
+                color='rgb(25,51,164)';
+                break;
+            case (v<=0.97):
+                color='rgb(31,136,201)';
+                break;
+            case (v<=0.98):
+                color='rgb(78,254,182)';
+                break;
+            case (v<=0.99):
+                color='rgb(32, 235, 160)';
+                break;
+            case (v<=1.1):
+                color='rgb(50,205,50)';
+                break;
+            case (v<=1.2):
+                color='rgb(187,255,15)';
+                break;
+            case (v<=1.3):
+                color='rgb(250,212,40)';
+                break;
+            case (v<=1.4):
+                color='rgb(249,96,11)';
+                break;
+            case (v<=1.5):
+                color='rgb(249,96,11)';
+                break;
+            case (v>1.5):
+                color='rgb(232,1,1)';
+                break;
+        }
+        return color;
+    }
+
+    function style(x){
+        return {color: getColor(x)}
+    }
 
     </script>
 
