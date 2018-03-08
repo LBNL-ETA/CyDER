@@ -23,8 +23,19 @@
     <div id="app" v-if="project !== null">
         <h1>Results</h1>
         <leaflet-map style="height: 70vh; margin: 0.1rem 0 1rem 0;">
-            <model-layer  :model-name="project.settings.model" fit></model-layer>
+            <results-layer-a  v-if="SelectedPhase=='A'" v-if="geo!=null" :geojson="geo" fit></results-layer-a>
+            <results-layer-b  v-if="SelectedPhase=='B'" v-if="geo!=null" :geojson="geo" fit></results-layer-b>
+            <results-layer-c  v-if="SelectedPhase=='C'" v-if="geo!=null" :geojson="geo" fit></results-layer-c>
+
         </leaflet-map>
+        <div class="btn-group btn-group-sm" role="group" style="display: flex; margin-bottom: 1em;">
+            <button type="button" class="btn btn-secondary"  @click="SelectedPhase='A'" style="width: 33.3%;">Phase A</button>
+            <button type="button" class="btn btn-secondary"  @click="SelectedPhase='B'" style="width: 33.3%;">Phase B</button>
+            <button type="button" class="btn btn-secondary"  @click="SelectedPhase='C'" style="width: 33.3%;">Phase C</button>
+        </div>
+        <div v-if="datetimes!=null" class="slidecontainer">
+          <input type="range" min="0" max="1000" value="1" class="slider" v-model="sliderValue" style="width: 100%;">
+        </div>
     </div>
 
 {% endblock content %}
@@ -40,6 +51,7 @@
     <script type="module">
         import { LeafletMap } from '{% static 'cyder/models/viewer.js' %}';
         import { ModelLayer } from '{% static 'cyder/models/layers.js' %}';
+        import { ResultsLayerA, ResultsLayerB,  ResultsLayerC} from '{% static 'cyder/projects/results.js' %}';
         import CyderAPI from '{% static 'cyder/api.js' %}';
         import notifyRESTError from '{% static 'cyder/api-notify-error.js' %}';
 
@@ -52,7 +64,7 @@
             // DEBUG: Keep a reference to the Vuejs app in window.app to make it available easily in the console for debug
             window.app = new Vue({
                 el: '#app',
-                components: { LeafletMap, ModelLayer},
+                components: { LeafletMap, ModelLayer, ResultsLayerA, ResultsLayerB,  ResultsLayerC},
                 data: {
                     project: null,
                     layer: '',
@@ -62,6 +74,9 @@
                     lines: null,
                     points: null,
                     indexValue: 0, //this variable is used for development and is bound to change as we introduce the time variable from timestamps
+                    loaded: false,
+                    SelectedPhase: null,
+                    sliderValue: null,
                 },
                 methods: {
                     async loadProject(id) {
@@ -81,6 +96,7 @@
                             this.getPointFeatureResult();
                             this.getLineFeatureResult();
                             //this.test();
+                            this.loaded=true;
                         } catch(error) {
                             if(!(error instanceof CyderAPI.RESTError))
                                 throw(error);
@@ -133,86 +149,32 @@
                                     yC=this.points[j].properties.vC;
                                 }
                             }
-                            if (xA!=null || yA!=null) {this.lines[i].properties.vA=(xA+yA)/2;} else {this.lines[i].properties.vA=null}
-                            if (xB!=null || yB!=null) {this.lines[i].properties.vB=(xB+yB)/2;} else {this.lines[i].properties.vB=null}
-                            if (xC!=null || yC!=null) {this.lines[i].properties.vC=(xC+yC)/2;} else {this.lines[i].properties.vC=null}
+                            if (xA!=null && yA!=null) {this.lines[i].properties.vA=(xA+yA)/2;} else {this.lines[i].properties.vA=null}
+                            if (xB!=null && yB!=null) {this.lines[i].properties.vB=(xB+yB)/2;} else {this.lines[i].properties.vB=null}
+                            if (xC!=null && yC!=null) {this.lines[i].properties.vC=(xC+yC)/2;} else {this.lines[i].properties.vC=null}
                         }
                     },
 
-
-                    // async getLayer() {
-                    //         for (let i=0; i<this.geo.features.length;i++){
-                    //             if (this.geo.features[i].geometry.type=="LineString"){
-                    //                 this.lines.push(this.geo.features[i]);
-                    //             } else if (this.geo.features[i].geometry.type=="Point"){
-
-                    //             }
-                    //         }
-
-                    //         }
-                    //     return L.geoJson(geojson, {
-                    //         pointToLayer,
-                    //         //onEachFeature
-                    //     });
-                    // },
-                    // displayResults(){
-                            
-                    // }
+                    getDatetimesIndex(x){
+                        this.indexTest= Math.round(this.datetimes.length*(x/100));
+                    },
 
                     test(){
-                        alert(this.results[0].section_id[2]);
-                    }
+                        let info = L.control();
+                        info.onAdd = function (map) {
+                            this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+                            this.update();
+                            return this._div;
+                        };
+                        info.update = function (props) {
+                            this._div.innerHTML = '<h4>US Population Density</h4>';
+                        };
+                        alert(this.Layer.map);
+                    },
                 },
             });
-
             app.loadProject("{{ project_id|escapejs }}");
-            //app.test();
         };
-
-
-    function getColor(v) {
-        let color;
-        switch(v!=null) {
-            case (v<=0.95):
-                color='rgb(19,0,132)';
-                break;
-            case (v<=0.96):
-                color='rgb(25,51,164)';
-                break;
-            case (v<=0.97):
-                color='rgb(31,136,201)';
-                break;
-            case (v<=0.98):
-                color='rgb(78,254,182)';
-                break;
-            case (v<=0.99):
-                color='rgb(32, 235, 160)';
-                break;
-            case (v<=1.1):
-                color='rgb(50,205,50)';
-                break;
-            case (v<=1.2):
-                color='rgb(187,255,15)';
-                break;
-            case (v<=1.3):
-                color='rgb(250,212,40)';
-                break;
-            case (v<=1.4):
-                color='rgb(249,96,11)';
-                break;
-            case (v<=1.5):
-                color='rgb(249,96,11)';
-                break;
-            case (v>1.5):
-                color='rgb(232,1,1)';
-                break;
-        }
-        return color;
-    }
-
-    function style(x){
-        return {color: getColor(x)}
-    }
 
     </script>
 
