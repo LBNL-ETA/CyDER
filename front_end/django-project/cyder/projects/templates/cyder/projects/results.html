@@ -14,6 +14,30 @@
             (ex: put the content inside a div with a set width and use this div for the popup) */
             width: auto !important;
         }
+        .info {
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background: white;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+        .info h4 {
+            margin: 0 0 5px;
+            color: #777;
+        }
+
+        .legend {
+            line-height: 18px;
+            color: #555;
+        }
+        .legend i {
+            width: 75px;
+            height: 25px;
+            float: left;
+            margin-right: 8px;
+            opacity: 0.7;
+        }
     </style>
 {% endblock css %}
 
@@ -23,17 +47,18 @@
     <div id="app" v-if="project !== null">
         <h1>Results</h1>
         <leaflet-map style="height: 70vh; margin: 0.1rem 0 1rem 0;">
-            <results-layer-a  v-if="SelectedPhase=='A'" v-if="geo!=null" :geojson="geo" fit></results-layer-a>
-            <results-layer-b  v-if="SelectedPhase=='B'" v-if="geo!=null" :geojson="geo" fit></results-layer-b>
-            <results-layer-c  v-if="SelectedPhase=='C'" v-if="geo!=null" :geojson="geo" fit></results-layer-c>
-
+            <results-layer-a  v-if="SelectedPhase=='A'" v-if="loaded" :geojson="geo" fit></results-layer-a>
+            <results-layer-b  v-if="SelectedPhase=='B'" v-if="loaded" :geojson="geo" fit></results-layer-b>
+            <results-layer-c  v-if="SelectedPhase=='C'" v-if="loaded" :geojson="geo" :properties="mouseOnProp" fit></results-layer-c>
+<!--             <controller  v-if="loaded" :geojson="geo"></controller> -->
+            <legend-layer  v-if="loaded" ></legend-layer>
         </leaflet-map>
         <div class="btn-group btn-group-sm" role="group" style="display: flex; margin-bottom: 1em;">
             <button type="button" class="btn btn-secondary"  @click="SelectedPhase='A'" style="width: 33.3%;">Phase A</button>
             <button type="button" class="btn btn-secondary"  @click="SelectedPhase='B'" style="width: 33.3%;">Phase B</button>
             <button type="button" class="btn btn-secondary"  @click="SelectedPhase='C'" style="width: 33.3%;">Phase C</button>
         </div>
-        <div v-if="datetimes!=null" class="slidecontainer">
+        <div v-if="loaded" class="slidecontainer">
           <input type="range" min="0" max="1000" value="1" class="slider" v-model="sliderValue" style="width: 100%;">
         </div>
     </div>
@@ -51,7 +76,7 @@
     <script type="module">
         import { LeafletMap } from '{% static 'cyder/models/viewer.js' %}';
         import { ModelLayer } from '{% static 'cyder/models/layers.js' %}';
-        import { ResultsLayerA, ResultsLayerB,  ResultsLayerC} from '{% static 'cyder/projects/results.js' %}';
+        import { ResultsLayerA, ResultsLayerB,  ResultsLayerC, Controller, LegendLayer} from '{% static 'cyder/projects/results.js' %}';
         import CyderAPI from '{% static 'cyder/api.js' %}';
         import notifyRESTError from '{% static 'cyder/api-notify-error.js' %}';
 
@@ -64,7 +89,7 @@
             // DEBUG: Keep a reference to the Vuejs app in window.app to make it available easily in the console for debug
             window.app = new Vue({
                 el: '#app',
-                components: { LeafletMap, ModelLayer, ResultsLayerA, ResultsLayerB,  ResultsLayerC},
+                components: { LeafletMap, ModelLayer, ResultsLayerA, ResultsLayerB,  ResultsLayerC, Controller, LegendLayer},
                 data: {
                     project: null,
                     layer: '',
@@ -77,6 +102,7 @@
                     loaded: false,
                     SelectedPhase: null,
                     sliderValue: null,
+                    mouseOnProp: null,
                 },
                 methods: {
                     async loadProject(id) {
