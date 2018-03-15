@@ -4,6 +4,7 @@ import { Layer } from '../models/layers.js';
 import CyderAPI from '../api.js';
 import notifyRESTError from '../api-notify-error.js';
 
+
 export const Controller = {
     mixins: [Layer],
     props: {
@@ -25,13 +26,10 @@ info.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
     this._div.innerHTML = '<h4> Voltage Details </h4>';
     return this._div;
-};
+}
 info.update = function (props) {
     this._div.innerHTML = '<h4> Voltage Details </h4>';
-};
-
-
-
+}
 
 
 export const LegendLayer = {
@@ -82,14 +80,16 @@ export const ResultsLayerA = {
     components: {Controller},
     props: {
         geojson: null,
+        index: null,
     },
     data(){
         return {  
-            properties: null,    
+            properties: null, 
+            layer: null,   
         }
     },
     methods: {
-        async getLayer() {
+        getLayer() {
             let pointToLayer = (feature, latlng) => {
                 var circle = L.circle(latlng, {
                     weight: 2,
@@ -102,9 +102,12 @@ export const ResultsLayerA = {
             // let onEachFeature = (feature, layer) => {
             //     feature.setStyle(styleA(feature));
             // }
-            return L.geoJson(this.geojson, {style: styleA, pointToLayer});
+            this.layer=L.geoJson(this.geojson, {style: styleA, pointToLayer});
+            return this.layer;
         },
     },
+    watch: {
+    }
 }
 
 export const ResultsLayerB = {
@@ -112,6 +115,7 @@ export const ResultsLayerB = {
     components: {Controller},
     props: {
         geojson: null,
+        index: null,
     },
     data(){
         return {
@@ -142,6 +146,7 @@ export const ResultsLayerC = {
     components: {Controller},
     props: {
         geojson: null,
+        index: null,
     },
     data(){
         return {
@@ -187,7 +192,6 @@ export const ResultsLayerC = {
         },
     },
 }
-
 
 
 
@@ -242,4 +246,81 @@ function styleB (feature) {
 function styleC (feature) {
     if (feature.properties.vC!=null) {return { color: getColor(feature.properties.vC)};}
     else {return { color: '#808080', opacity: 0.5};}
+}
+
+
+export const VdPlot = {
+    props: {
+        results: null,
+        index: null,
+    },
+    data(){
+        return {
+        vA: [],
+        vB: [],
+        vC: [],
+        distances: [],
+        }
+    },
+    methods: {
+        plot(){
+            let traceA = {
+              x: this.distances,
+              y: this.vA,
+              mode: 'markers',
+              type: 'scatter'
+            };
+
+            let data = [traceA];
+            var layout = {
+              xaxis: {
+                title: 'Distance in meters',
+                titlefont: {
+                  family: 'Courier New, monospace',
+                  size: 18,
+                  color: '#7f7f7f'
+                }
+              },
+              yaxis: {
+                title: 'Voltage in Kw',
+                titlefont: {
+                  family: 'Courier New, monospace',
+                  size: 18,
+                  color: '#7f7f7f'
+                }
+              }
+            };
+
+            Plotly.newPlot('plot', data, layout);
+        },
+        fetchResults(){
+             if(this.index!=null && this.results!=null){
+                for (let i=0; i<Object.keys(this.results[this.index].node_id).length; i++){
+                    this.vA.push(this.results[this.index].voltage_A[i]);
+                    this.vB.push(this.results[this.index].voltage_B[i]);
+                    this.vC.push(this.results[this.index].voltage_C[i]);
+                    this.distances.push(this.results[this.index].distance[i]);
+                }
+            }
+        }
+    },
+    watch: {
+        results: function (newResults, oldResults){
+            this.fetchResults();
+            this.plot();
+        },
+        index: function (newIndex, oldIndex){this.fetchResults();
+            this.plot();
+        }
+    },
+    mounted: function(){
+        for (let i=0; i<Object.keys(this.results[this.index].node_id).length; i++){
+                    this.vA.push(this.results[this.index].voltage_A[i]);
+                    this.vB.push(this.results[this.index].voltage_B[i]);
+                    this.vC.push(this.results[this.index].voltage_C[i]);
+                    this.distances.push(this.results[this.index].distance[i]);
+            }
+         this.plot();
+    },
+    template: '<div id="plot" style="height:70vh;"> </div>'
 }

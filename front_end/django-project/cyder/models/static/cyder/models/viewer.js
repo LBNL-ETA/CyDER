@@ -44,7 +44,9 @@ export const LeafletMap = {
     };},
     created() {
         this.$data._map = null;
-        this.$data._layers = new Map();
+        let m = new Map();
+        this.$data._layers = m;
+        this.$emit('getmapinstance', m);
         this.$data._loadingLayers = 0;
         this.$data._lastLayerId = null;
         this.$data._loadingSpinner = new Spinner();
