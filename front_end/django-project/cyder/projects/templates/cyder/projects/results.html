@@ -62,6 +62,7 @@
             <results-layer-c  v-if="SelectedPhase=='C' && loaded" :geojson="geo" :index="indexValue"></results-layer-c>
             <legend-layer  v-if="loaded && SelectedPhase!=null" ></legend-layer>
         </leaflet-map>
+        <timestamp-selector @timestampchanged="test" :datetimes="datetimes" > </timestamp-selector>
         <div class="slidecontainer">
             <h3> Time </h3><br>
             <input type="range" min="0" max="1000" value="0" class="slider" v-model="sliderValue" style="width: 100%;">
@@ -70,7 +71,7 @@
         <br>
         <br>
         <h2>Voltage Distance Graph</h2>
-        <vd-plot :results="results" :index="indexValue"></vd-plot>
+        <vd-plot v-if="loaded" :results="results" :timestamp="timestamp"></vd-plot>
         {% endverbatim %}
     </div>
 
@@ -87,7 +88,7 @@
     <script type="module">
         import { LeafletMap } from '{% static 'cyder/models/viewer.js' %}';
         import { ModelLayer } from '{% static 'cyder/models/layers.js' %}';
-        import { ResultsLayerA, ResultsLayerB,  ResultsLayerC, Controller, LegendLayer, VdPlot} from '{% static 'cyder/projects/results.js' %}';
+        import { ResultsLayerA, ResultsLayerB,  ResultsLayerC, Controller, LegendLayer, VdPlot, TimestampSelector} from '{% static 'cyder/projects/results.js' %}';
         import CyderAPI from '{% static 'cyder/api.js' %}';
         import notifyRESTError from '{% static 'cyder/api-notify-error.js' %}';
 
@@ -100,12 +101,14 @@
             // DEBUG: Keep a reference to the Vuejs app in window.app to make it available easily in the console for debug
             window.app = new Vue({
                 el: '#app',
-                components: { LeafletMap, ModelLayer, ResultsLayerA, ResultsLayerB,  ResultsLayerC, Controller, LegendLayer, VdPlot},
+                components: { LeafletMap, ModelLayer, ResultsLayerA, ResultsLayerB,  ResultsLayerC, Controller, LegendLayer, VdPlot, TimestampSelector},
                 data: {
                     project: null,
                     layer: '',
                     results: null,
                     datetimes: null,
+                    sorteddatetimes: null,
+                    timestamp: null,
                     geo: null,
                     lines: null,
                     points: null,
@@ -133,17 +136,15 @@
                         //collects geojson model data
                         try {
                             this.project = await CyderAPI.Project.get(id, true);
-                            this.results=[]
+                            this.results=JSON.parse(this.project.results);
                             let r= this.project.results;
-                            for (var i = 0; i < r.length-1; i++) {
-                                this.results.push(JSON.parse(r[i]));
-                            }
-                            this.datetimes=(r[r.length-1])
+                            this.datetimes=Object.keys(this.results);
+                            this.timestamp=this.datetimes[0];
                             this.geo = await CyderAPI.rest('GET', `/api/models/${encodeURI(this.project.settings.model)}/geojson/`);
                             this.loadFeatures();
                             this.getPointFeatureResult();
                             this.getLineFeatureResult();
-                            //this.test();
+                            // //this.test();
                             this.loaded=true;
                         } catch(error) {
                             if(!(error instanceof CyderAPI.RESTError))
@@ -170,15 +171,12 @@
                     getPointFeatureResult(){
                         //adds result properties and corresponding values to geojson point features 
                         //apparently section_ids do not correspond accross results and imported model, we will thus be using to_node and from_node to identify a line's results
-                        for (let i=0; i<Object.keys(this.results[this.indexValue].node_id).length; i++){
                             for (let j=0; j<this.points.length; j++){
-                                if(this.points[j].properties.id===this.results[this.indexValue].node_id[i]){
-                                    this.points[j].properties.vA=this.results[this.indexValue].voltage_A[i];
-                                    this.points[j].properties.vB=this.results[this.indexValue].voltage_B[i];
-                                    this.points[j].properties.vC=this.results[this.indexValue].voltage_C[i];   
-                                }
+                                // if(this.points[j].properties.id===this.results[this.indexValue].node_id[i]){
+                                    this.points[j].properties.vA=this.results[this.timestamp][this.points[j].properties.id].voltage_A;
+                                    this.points[j].properties.vB=this.results[this.timestamp][this.points[j].properties.id].voltage_B;
+                                    this.points[j].properties.vC=this.results[this.timestamp][this.points[j].properties.id].voltage_C;  
                             }
-                        }
 
                     },
 
@@ -186,17 +184,15 @@
                         //adds result properties and corresponding values to geojson line features
                         for (let i=0; i<this.lines.length; i++){
                             let xA=null,xB=null,xC=null,yA=null,yB=null,yC=null;
-                            for (let j=0; j<this.points.length; j++){
-                                if(this.points[j].properties.id===this.lines[i].properties.from_node){
-                                    xA=this.points[j].properties.vA;
-                                    xB=this.points[j].properties.vB;
-                                    xC=this.points[j].properties.vC;
-                                } else if (this.points[j].properties.id===this.lines[i].properties.to_node){
-                                    yA=this.points[j].properties.vA;
-                                    yB=this.points[j].properties.vB;
-                                    yC=this.points[j].properties.vC;
-                                }
-                            }
+
+                            xA=this.results[this.timestamp][this.lines[i].properties.from_node].voltage_A;
+                            xB=this.results[this.timestamp][this.lines[i].properties.from_node].voltage_B;
+                            xC=this.results[this.timestamp][this.lines[i].properties.from_node].voltage_C;
+
+                            yA=this.results[this.timestamp][this.lines[i].properties.to_node].voltage_A;
+                            yB=this.results[this.timestamp][this.lines[i].properties.to_node].voltage_B;
+                            yC=this.results[this.timestamp][this.lines[i].properties.to_node].voltage_C;
+
                             if (xA!=null && yA!=null) {this.lines[i].properties.vA=(xA+yA)/2;} else {this.lines[i].properties.vA=null}
                             if (xB!=null && yB!=null) {this.lines[i].properties.vB=(xB+yB)/2;} else {this.lines[i].properties.vB=null}
                             if (xC!=null && yC!=null) {this.lines[i].properties.vC=(xC+yC)/2;} else {this.lines[i].properties.vC=null}
@@ -212,8 +208,26 @@
                         alert('should have addTo map');
                     },
 
-                    test(){
-                        alert('ay mate');
+                    async test(x){
+                        // alert('ay mate');
+                        this.timestamp=x;
+                        // alert(this.timestamp);
+                        for (let y=0; y<this.datetimes.length; y++){
+                            if(x==this.datetimes[y]){
+                                // alert(y);
+                                let r=this.project.results;
+                                r=r[r.length-1];
+                                r.push(y);
+                                 try {
+                                    this.project = await CyderAPI.Project.update(this.project.id, this.project);
+                                    window.location.href = ``;
+                                } catch(error) {
+                                    if(!(error instanceof CyderAPI.RESTError))
+                                        throw(error);
+                                    notifyRESTError(error);
+                                }
+                            }
+                        }
                     },
                 },
             });

@@ -4,6 +4,29 @@ import { Layer } from '../models/layers.js';
 import CyderAPI from '../api.js';
 import notifyRESTError from '../api-notify-error.js';
 
+export const TimestampSelector = {
+    props:{ 
+        datetimes: null,
+    },
+    data (){
+        return {
+            timestamp: '',
+        }
+    },
+    methods:{
+
+    },
+    watch: {
+        timestamp : function(newTimestamp, oldTimestamp){
+            this.$emit('timestampchanged',this.timestamp);
+        }
+    },
+    template : `
+        <select v-model="timestamp">
+            <option v-for="t in datetimes">{{ t }}</option>
+        </select>
+    `
+}
 
 export const Controller = {
     mixins: [Layer],
@@ -251,8 +274,8 @@ function styleC (feature) {
 
 export const VdPlot = {
     props: {
-        results: null,
-        index: null,
+        results: {},
+        timestamp: '',
     },
     data(){
         return {
@@ -294,12 +317,13 @@ export const VdPlot = {
             Plotly.newPlot('plot', data, layout);
         },
         fetchResults(){
-             if(this.index!=null && this.results!=null){
-                for (let i=0; i<Object.keys(this.results[this.index].node_id).length; i++){
-                    this.vA.push(this.results[this.index].voltage_A[i]);
-                    this.vB.push(this.results[this.index].voltage_B[i]);
-                    this.vC.push(this.results[this.index].voltage_C[i]);
-                    this.distances.push(this.results[this.index].distance[i]);
+            alert('called');
+             if(this.timestamp!=null && this.results!=null){
+                for (let node in this.results[this.timestamp]){
+                    this.vA.push(this.results[this.timestamp][node].voltage_A);
+                    this.vB.push(this.results[this.timestamp][node].voltage_B);
+                    this.vC.push(this.results[this.timestamp][node].voltage_C);
+                    this.distances.push(this.results[this.timestamp][node].distance);
                 }
             }
         }
@@ -309,18 +333,16 @@ export const VdPlot = {
             this.fetchResults();
             this.plot();
         },
-        index: function (newIndex, oldIndex){this.fetchResults();
+        index: function (newIndex, oldIndex){
+            this.fetchResults();
             this.plot();
         }
     },
+    created: function(){
+        this.fetchResults();
+    },
     mounted: function(){
-        for (let i=0; i<Object.keys(this.results[this.index].node_id).length; i++){
-                    this.vA.push(this.results[this.index].voltage_A[i]);
-                    this.vB.push(this.results[this.index].voltage_B[i]);
-                    this.vC.push(this.results[this.index].voltage_C[i]);
-                    this.distances.push(this.results[this.index].distance[i]);
-            }
-         this.plot();
+        this.plot();
     },
     template: '<div id="plot" style="height:70vh;"> </div>'
 }
