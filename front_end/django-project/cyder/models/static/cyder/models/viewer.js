@@ -18,7 +18,7 @@ export const ModelSelector = {
         models: this.initModels,
     };},
     template: `
-        <select @change="$emit('change', $event.target.value)" :value="value" class="custom-select" :disabled="isLoading">
+        <select @change="$emit('change', $event.target.value)" :value="value" class="custom-select" style="width: 100%":disabled="isLoading">
             <option v-if="allowEmpty" value=""></option>
             <option v-if="!isLoading" v-for="model in models">{{ model }}</option>
         </select>`,

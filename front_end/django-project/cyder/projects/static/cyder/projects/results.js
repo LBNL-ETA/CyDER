@@ -10,23 +10,27 @@ export const TimestampSelector = {
     },
     data (){
         return {
-            timestamp: '',
+            ParsedTimestamp: '',
         }
     },
     methods:{
-
+        parseTimestamp(t){
+        return moment(t, "YYYY_MM_DD_HH_mm_ss").toDate().toString();
+        },
     },
     watch: {
-        timestamp : function(newTimestamp, oldTimestamp){
-            this.$emit('timestampchanged',this.timestamp);
+        ParsedTimestamp : function(newTimestamp, oldTimestamp){
+            this.$emit('timestampchanged',moment(this.ParsedTimestamp).format("YYYY_MM_DD_HH_mm_ss"));
         }
     },
     template : `
-        <select v-model="timestamp">
-            <option v-for="t in datetimes">{{ t }}</option>
+        <select class="form-control form-control-lg" v-model="ParsedTimestamp">
+            <option v-for="t in datetimes" >{{ parseTimestamp(t) }}</option>
         </select>
     `
 }
+
+
 
 export const Controller = {
     mixins: [Layer],
@@ -107,8 +111,6 @@ export const ResultsLayerA = {
     },
     data(){
         return {  
-            properties: null, 
-            layer: null,   
         }
     },
     methods: {
@@ -119,14 +121,9 @@ export const ResultsLayerA = {
                     fillOpacity: 1,
                     radius: 3
                 });
-                circle.on("mouseover", () => this.properties=feature.properties.vA);
                 return circle;
             }
-            // let onEachFeature = (feature, layer) => {
-            //     feature.setStyle(styleA(feature));
-            // }
-            this.layer=L.geoJson(this.geojson, {style: styleA, pointToLayer});
-            return this.layer;
+            return L.geoJson(this.geojson, {style: styleA, pointToLayer});
         },
     },
     watch: {
@@ -142,7 +139,6 @@ export const ResultsLayerB = {
     },
     data(){
         return {
-            properties: null, 
         }
     },
     methods: {
@@ -153,12 +149,8 @@ export const ResultsLayerB = {
                     fillOpacity: 1,
                     radius: 3
                 });
-                circle.on("mouseover", () => this.properties=feature.properties.vB);
                 return circle;
             }
-            // let onEachFeature = (feature, layer) => {
-            //     feature.setStyle(styleA(feature));
-            // }
             return L.geoJson(this.geojson, {style: styleB, pointToLayer});
         },
     },
@@ -173,7 +165,6 @@ export const ResultsLayerC = {
     },
     data(){
         return {
-            properties: null, 
         }
     },
     methods: {
@@ -184,33 +175,8 @@ export const ResultsLayerC = {
                     fillOpacity: 1,
                     radius: 3
                 });
-                circle.on("mouseover", () => this.properties=feature.properties.vC);
                 return circle;
             }
-            // let highlightFeature = (e)  => {
-            //     var layer = e.target;
-
-            //     layer.setStyle({
-            //         weight: 5,
-            //         color: '#666',
-            //         dashArray: '',
-            //         fillOpacity: 0.7
-            //     });
-
-            //     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-            //         layer.bringToFront();
-            //     }
-            // }
-            // let onEachFeature = (feature, layer) => {
-            //     layer.on({
-            //         mouseover: highlightFeature,
-            //         mouseout: resetHighlight,
-            //         click: zoomToFeature
-            //     });
-            // }
-            // let onEachFeature = (feature, layer) => {
-            //     feature.setStyle(styleA(feature));
-            // }
             return L.geoJson(this.geojson, {style: styleC, pointToLayer});
         },
     },
@@ -317,7 +283,6 @@ export const VdPlot = {
             Plotly.newPlot('plot', data, layout);
         },
         fetchResults(){
-            alert('called');
              if(this.timestamp!=null && this.results!=null){
                 for (let node in this.results[this.timestamp]){
                     this.vA.push(this.results[this.timestamp][node].voltage_A);

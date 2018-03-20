@@ -44,10 +44,13 @@
 {% block content %}
 <!--     <div id="project-results"></div> -->
 
-    <div id="app" v-if="project !== null">
+    <div id="app" v-if="loaded">
         {% verbatim %}
         <h1>Results</h1>
         <br>
+        <br>
+        <h2>Timestamp </h2>
+        <timestamp-selector @timestampchanged="updatetimestamp" :datetimes="datetimes" > </timestamp-selector>
         <br>
         <div class="btn-group btn-group-sm" role="group" style="display: flex; margin-bottom: 1em;">
             <button type="button" class="btn btn-secondary"  @click="SelectedPhase='A'" style="width: 33.3%;">Phase A</button>
@@ -55,23 +58,18 @@
             <button type="button" class="btn btn-secondary"  @click="SelectedPhase='C'" style="width: 33.3%;">Phase C</button>
         </div>
         <h2>Voltage Map</h2>
-        <leaflet-map ref="map" style="height: 70vh; margin: 0.1rem 0 1rem 0;" :mapInstance="map" @newlayer="addNewLayer" @getmapinstance="getMap" >
+        <leaflet-map  ref="map" style="height: 70vh; margin: 0.1rem 0 1rem 0;" :mapInstance="map" @getmapinstance="getMap" >
             <model-layer  v-if="SelectedPhase==null" :model-name="project.settings.model" fit></model-layer>
-            <results-layer-a  v-if="SelectedPhase=='A'&& loaded" :geojson="geo" :index="indexValue" ></results-layer-a>
-            <results-layer-b  v-if="SelectedPhase=='B'&& loaded" :geojson="geo" :index="indexValue"></results-layer-b>
-            <results-layer-c  v-if="SelectedPhase=='C' && loaded" :geojson="geo" :index="indexValue"></results-layer-c>
+            <results-layer-a  :key="componentKeyA" v-if="SelectedPhase=='A'&& loaded" :geojson="geo" :index="indexValue" ></results-layer-a>
+            <results-layer-b  :key="componentKeyB" v-if="SelectedPhase=='B'&& loaded" :geojson="geo" :index="indexValue"></results-layer-b>
+            <results-layer-c  :key="componentKeyC" v-if="SelectedPhase=='C' && loaded" :geojson="geo" :index="indexValue"></results-layer-c>
             <legend-layer  v-if="loaded && SelectedPhase!=null" ></legend-layer>
         </leaflet-map>
-        <timestamp-selector @timestampchanged="test" :datetimes="datetimes" > </timestamp-selector>
-        <div class="slidecontainer">
-            <h3> Time </h3><br>
-            <input type="range" min="0" max="1000" value="0" class="slider" v-model="sliderValue" style="width: 100%;">
-        </div>
         <br>
         <br>
         <br>
         <h2>Voltage Distance Graph</h2>
-        <vd-plot v-if="loaded" :results="results" :timestamp="timestamp"></vd-plot>
+        <vd-plot :key="componentKeyP" v-if="loaded" :results="results" :timestamp="timestamp"></vd-plot>
         {% endverbatim %}
     </div>
 
@@ -81,6 +79,7 @@
 
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.js"></script>
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
         integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
         crossorigin=""></script>
@@ -103,31 +102,42 @@
                 el: '#app',
                 components: { LeafletMap, ModelLayer, ResultsLayerA, ResultsLayerB,  ResultsLayerC, Controller, LegendLayer, VdPlot, TimestampSelector},
                 data: {
+                    //The component keys are here used to force the re-render of the map and plot result vue components
+                    //These component keys must always be different from one another
+                    componentKeyA: 0,
+                    componentKeyB: 100,
+                    componentKeyC: 200,
+                    componentKeyP: 300,
                     project: null,
                     layer: '',
                     results: null,
                     datetimes: null,
-                    sorteddatetimes: null,
                     timestamp: null,
+                    parsedTimestamp: null,
                     geo: null,
                     lines: null,
                     points: null,
                     indexValue: 0, //this variable is used for development and is bound to change as we introduce the time variable from timestamps
                     loaded: false,
                     SelectedPhase: null,
-                    sliderValue: null,
+                    // sliderValue: null,
                     mouseOnProp: null,
                     map: null,
                 },
 
                 watch: {
-                    // whenever question changes, this function will run
-                    sliderValue: function (newValue, oldValue) {
-                        this.indexValue= Math.round((this.datetimes.length-1)*(newValue/1000));
-                        this.getPointFeatureResult();
-                        this.getLineFeatureResult();
-                        this.$forceUpdate();
-                    }
+                    timestamp: function (newTimestamp, oldTimestamp) {
+                        if (this.geo!=null){
+                            this.getPointFeatureResult();
+                            this.getLineFeatureResult();
+                            //changing the keys of components force re-render of the vue and thus updates the results on the map dynamically
+                            this.componentKeyA++;
+                            this.componentKeyB++;
+                            this.componentKeyC++;
+                            this.componentKeyP++;
+                            this.parsedTimestamp=this.parsedTimestamp=moment(this.timestamp, "YYYY_MM_DD_HH_mm_ss").toDate();
+                        }
+                    },
                 },
                 methods: {
                     async loadProject(id) {
@@ -140,6 +150,7 @@
                             let r= this.project.results;
                             this.datetimes=Object.keys(this.results);
                             this.timestamp=this.datetimes[0];
+                            this.parsedTimestamp=moment(this.timestamp, "YYYY_MM_DD_HH_mm_ss").toDate();
                             this.geo = await CyderAPI.rest('GET', `/api/models/${encodeURI(this.project.settings.model)}/geojson/`);
                             this.loadFeatures();
                             this.getPointFeatureResult();
@@ -202,32 +213,8 @@
                         this.map=m;
                     },
 
-                    addNewLayer: function(l){
-                        alert('adding now');
-                        l.addTo(this.map);
-                        alert('should have addTo map');
-                    },
-
-                    async test(x){
-                        // alert('ay mate');
+                    updatetimestamp(x){
                         this.timestamp=x;
-                        // alert(this.timestamp);
-                        for (let y=0; y<this.datetimes.length; y++){
-                            if(x==this.datetimes[y]){
-                                // alert(y);
-                                let r=this.project.results;
-                                r=r[r.length-1];
-                                r.push(y);
-                                 try {
-                                    this.project = await CyderAPI.Project.update(this.project.id, this.project);
-                                    window.location.href = ``;
-                                } catch(error) {
-                                    if(!(error instanceof CyderAPI.RESTError))
-                                        throw(error);
-                                    notifyRESTError(error);
-                                }
-                            }
-                        }
                     },
                 },
             });
