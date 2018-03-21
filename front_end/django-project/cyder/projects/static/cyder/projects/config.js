@@ -29,27 +29,36 @@ export class ProjectConfig extends View {
           x: project.config.loadIndex,
           y: project.config.load,
           name: 'Load',
-          type: 'scatter'
+          type: 'scatter',
+          marker: {
+                  color: '#0066cc'
+                }
         };
 
         var pv = {
           x: project.config.pvIndex,
           y: project.config.pv,
           name: 'PV',
-          yaxis: 'y2',
-          type: 'scatter'
-        };
-
-        let data = [load, pv];
-        let layout = {
-                yaxis: {title: 'Load in KW'},
-                yaxis2: {
-                    title: 'PV in KW',
-                    overlaying: 'y',
-                    side: 'right'
+          type: 'scatter',
+          marker: {
+                  color: '#009933'
                 }
         };
-        Plotly.newPlot(this._html.plot, data, layout);
+
+        let dataLoad = [load];
+        let dataPV = [pv];
+        let layoutLoad = {
+                title: 'Load in Time',
+                yaxis: {
+                    title: 'Load in KW'
+                },
+        };
+         let layoutPV = {
+                title: 'PV capacity in Time',
+                yaxis: {title: 'PV in KW'},
+        };
+        Plotly.newPlot(this._html.plotLoad, dataLoad, layoutLoad);
+        Plotly.newPlot(this._html.plotPV, dataPV, layoutPV);
     }
     get _template() {
         let project = CyderAPI.Project.get(this._projectId);
@@ -61,7 +70,9 @@ export class ProjectConfig extends View {
         , () =>
             `<h4>Project: ${ESCHTML(project.name)}</h4>
             <br>
-            <div data-name="plot" style="height:70vh;"></div>`
+            <div data-name="plotLoad" style="height:70vh;"></div>
+            <br>
+            <div data-name="plotPV" style="height:70vh;"></div>`
         )}
         `;
     }

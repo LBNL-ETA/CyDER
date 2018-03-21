@@ -95,14 +95,14 @@ import pandas
 def run_configuration(id, project):
 
 #The following 3 lines of code are the ones to be used once testing is over
-    # start = dateutil.parser.parse(project['start'])
-    # end = dateutil.parser.parse(project['end'])
-    # substation =  project['model']
+    start = dateutil.parser.parse(project['start'])
+    end = dateutil.parser.parse(project['end'])
+    substation =  project['model']
 
 #The following 3 lines of code are for testing
-    start = '2016-06-17 00:00:00'
-    end = '2016-06-18 00:00:00'
-    substation =  'BU0006'
+    # start = '2016-06-17 00:00:00'
+    # end = '2016-06-18 00:00:00'
+    # substation =  'BU0006'
     
     # In the following lines, the pandas Datafames and Series returned by the solarprofile and scadaprofile scripts are manipulated in such a way that they are JSON serializable (in order for the data to be stored and saved in the project settings)
     add_pv = pandas.DataFrame.from_dict(project['addPv'])
@@ -148,6 +148,8 @@ def run_simulation(id):
         df=df.drop(columns=['node_object'])
         df=df.set_index('node_id')
         df = df.where((pandas.notnull(df)), None)
+        if (filename==filenames[0]):
+            df.loc[df['voltage_A'] > 0 , 'voltage_A'] = 0
         keys=df.index.tolist()
         print("\n")
         for index, row in df.iterrows():
