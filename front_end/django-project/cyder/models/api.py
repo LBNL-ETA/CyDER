@@ -60,6 +60,7 @@ class ModelViewSet(viewsets.ReadOnlyModelViewSet):
                     'section_id': line.section.section_id,
                     'from_node': line.section.from_node.node_id,
                     'to_node': line.section.to_node.node_id,
+                    'feeder' : line.section.from_node.feeder,
                     },
                 });
         for node in nodes:
@@ -69,7 +70,11 @@ class ModelViewSet(viewsets.ReadOnlyModelViewSet):
                     'type': 'Point',
                     'coordinates': [node.longitude,node.latitude]
                     },
-                'properties' : { 'id' : node.node_id },
+                'properties' : { 
+                    'id' : node.node_id,
+                    'feeder' : node.feeder,
+
+                },
                 });
 
         return Response({'type': 'FeatureCollection', 'features': features })

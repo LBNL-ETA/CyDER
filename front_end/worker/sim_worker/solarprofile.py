@@ -14,7 +14,7 @@ def solar_profile(start, end, pv_nominal_capacity_kw):
     605629078665%2C-123.0084228515625&zL=9
     """
     # Load data from the raw CSV file
-    df = pandas.read_csv('solar.csv', skiprows=[0, 1])
+    df = pandas.read_csv('sim_worker/solar.csv', skiprows=[0, 1])
     df.drop(['Relative Humidity', 'Temperature', 'Pressure'],
             axis=1, inplace=True)
     df['Time'] = df.apply(lambda x: dt.datetime(
@@ -30,7 +30,7 @@ def solar_profile(start, end, pv_nominal_capacity_kw):
     # Multiply by pv nominal capacity
     return df * pv_nominal_capacity_kw
 
-# # ###############################
+# ###############################
 # # HOW TO USE
 # start = '2016-06-17 00:00:00'
 # end = '2016-06-18 00:00:00'

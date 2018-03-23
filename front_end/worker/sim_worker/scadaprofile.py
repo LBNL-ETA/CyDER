@@ -1,12 +1,12 @@
 from __future__ import division
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import pandas
 import datetime as dt
 
 def scada_profile(start, end, substation):
     """Output scada data at substation level in kW"""
     # Open SCADA data
-    scada = pandas.read_csv('raw_SCADA/'+ substation + '.csv', parse_dates=[0])
+    scada = pandas.read_csv('sim_worker/raw_SCADA/'+ substation + '.csv', parse_dates=[0])
     scada = scada.set_index('TIME')
 
     # filter, sum, and interpolate
@@ -17,13 +17,14 @@ def scada_profile(start, end, substation):
 
 # ###############################
 # HOW TO USE
-start = '2016-06-17 00:00:00'
-end = '2016-06-18 00:00:00'
-substation = 'BU0006'
-profile = scada_profile(start, end, substation)
+# start = '2016-06-17 00:00:00'
+# end = '2016-06-18 00:00:00'
+# substation = 'BU0006'
+# profile = scada_profile(start, end, substation)
+# print(profile)
 
-# Plot profile
-plt.figure(figsize=(11, 5))
-plt.plot(profile)
-plt.ylabel('Active power [kW]')
-plt.show()
+# # Plot profile
+# plt.figure(figsize=(11, 5))
+# plt.plot(profile)
+# plt.ylabel('Active power [kW]')
+# plt.show()

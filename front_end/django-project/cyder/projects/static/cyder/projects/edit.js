@@ -12,18 +12,29 @@ export const AddPvLayer = {
     props: {
         modelName: null,
         value: { required: true, default() { return [];}, }, 
+        selectedFeeders: null,
+        geojson: null,
     },
     data(){
         return {
             selectedNode: null,
+            selectedFeeder:null,
             power: null,
             currentMarker: null,
             exists: null,
+            test: null,
         }
     },
     methods: {
         async getLayer() {
-            let geojson = await CyderAPI.rest('GET', `/api/models/${encodeURI(this.modelName)}/geojson/`);
+            let geojson = {
+                'features' : [],
+                'type': 'FeatureCollection'
+            }
+            for (let i=0; i<this.selectedFeeders.length; i++){
+                geojson.features=geojson.features.concat(this.geojson[ this.selectedFeeders[i] ]);
+            }
+            this.test=geojson;
             let pointToLayer = (feature, latlng) => {
                 var circle = L.circle(latlng, {
                     color: 'red',
@@ -33,6 +44,7 @@ export const AddPvLayer = {
                 });
                 circle.bindPopup(this.$refs.popup);
                 circle.on("click", () => this.selectedNode=feature.properties.id);
+                circle.on("click", () => this.selectedFeeder=feature.properties.feeder);
                 circle.on("click", () => this.currentMarker=circle);
                 circle.on("click", () => this.checkExists());
 
@@ -54,6 +66,7 @@ export const AddPvLayer = {
             if (this.power!=null){
                 let valueObject= { 
                         node_id: this.selectedNode,
+                        feeder: this.selectedFeeder,
                         power: this.power, 
                     };
                 this.value.push(valueObject);

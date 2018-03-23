@@ -13,6 +13,7 @@ class Node(models.Model):
     node_id = models.CharField(max_length=50, null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)
+    feeder = models.CharField(max_length=50, null=True, blank=True)
     VA = models.FloatField(null=True, blank=True)
     VB = models.FloatField(null=True, blank=True)
     VC = models.FloatField(null=True, blank=True)

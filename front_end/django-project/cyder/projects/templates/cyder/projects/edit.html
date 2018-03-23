@@ -44,15 +44,20 @@
                 </div>
             </div>
         </div>
-        Model: {{ project.settings.model }}<br>
+        Model: {{ project.settings.model }}<br><br>
+        Select Feeders to edit: 
+        <select class="form-control" v-if="this.feeders!=null" v-model="selectedFeeders" multiple >
+           <option v-for="f in Object.keys(feeders)" >{{ f }}</option>
+        </select>
+        <br><br>
         <div class="btn-group" role="group">
             <button type="button" class="btn btn-secondary" :class="{disabled:layer=='pv'}" @click="layer='pv'">PVs</button>
             <button type="button" class="btn btn-secondary" :class="{disabled:layer=='load'}" @click="layer='load'">Loads</button>
         </div>
         <leaflet-map style="height: 70vh; margin: 0.1rem 0 1rem 0;">
-            <model-layer  :model-name="project.settings.model" fit></model-layer>
-            <add-pv-layer v-if="layer=='pv'" v-model="project.settings.addPv" :model-name="project.settings.model" fit keep-order></add-pv-layer>
-            <add-load-layer v-if="layer=='load'" v-model="project.settings.addLoad" :model-name="project.settings.model" fit keep-order></add-load-layer>
+            <model-layer v-if="layer!='pv'" :model-name="project.settings.model" fit></model-layer>
+            <add-pv-layer v-if="layer=='pv'" v-model="project.settings.addPv" :model-name="project.settings.model" :geojson="feeders" :selected-feeders="selectedFeeders" keep-order></add-pv-layer>
+            <add-load-layer v-if="layer=='load'" v-model="project.settings.addLoad" :model-name="project.settings.model" keep-order></add-load-layer>
         </leaflet-map>
         <div class="form-group">
             <button type="button" ref="save" @click="save" class="btn btn-primary">Save</button>
@@ -86,6 +91,9 @@
                     project: null,
                     modified: false,
                     layer: '',
+                    geo: null,
+                    feeders: null,
+                    selectedFeeders: [],
                 },
                 methods: {
                     // pushPv(x){
@@ -96,6 +104,16 @@
                         try {
                             this.project = await CyderAPI.Project.get(id, true);
                             this.modified = false;
+                            this.geojson = await CyderAPI.rest('GET', `/api/models/${encodeURI(this.project.settings.model)}/geojson/`);
+                            this.feeders={};
+                            for (let i=0; i<this.geojson.features.length; i++){
+                                    if (this.geojson.features[i].properties.feeder in this.feeders){
+                                        this.feeders[this.geojson.features[i].properties.feeder].push(this.geojson.features[i]);
+                                    } else {
+                                        this.feeders[this.geojson.features[i].properties.feeder]=[];
+                                        this.feeders[this.geojson.features[i].properties.feeder].push(this.geojson.features[i]);
+                                    } 
+                            }     
                         } catch(error) {
                             if(!(error instanceof CyderAPI.RESTError))
                                 throw(error);
