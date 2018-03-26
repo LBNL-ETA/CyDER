@@ -5,14 +5,37 @@ import { View, FOREACH, IF, ESCHTML } from '../viewlib.js';
 import CyderAPI from '../api.js';
 import notifyRESTError from '../api-notify-error.js';
 
+export const ProjectModelViewer = {
+    mixins: [Layer],
+    props:{ 
+        modelName: null,
+        geojson: null,
+    },
+    methods:{
+        async getLayer() {
+            let pointToLayer = (feature, latlng) => {
+                var circle = L.circle(latlng, {
+                    color: 'red',
+                    weight: 2,
+                    fillOpacity: 1,
+                    radius: 5
+                });
 
+                return circle;
+                }
+            return L.geoJson(this.geojson, {
+                pointToLayer,
+                //onEachFeature
+            });
+        },
+    },
+}
 
 export const AddPvLayer = {
     mixins: [Layer],
     props: {
         modelName: null,
         value: { required: true, default() { return [];}, }, 
-        selectedFeeders: null,
         geojson: null,
     },
     data(){
@@ -20,21 +43,11 @@ export const AddPvLayer = {
             selectedNode: null,
             selectedFeeder:null,
             power: null,
-            currentMarker: null,
             exists: null,
-            test: null,
         }
     },
     methods: {
         async getLayer() {
-            let geojson = {
-                'features' : [],
-                'type': 'FeatureCollection'
-            }
-            for (let i=0; i<this.selectedFeeders.length; i++){
-                geojson.features=geojson.features.concat(this.geojson[ this.selectedFeeders[i] ]);
-            }
-            this.test=geojson;
             let pointToLayer = (feature, latlng) => {
                 var circle = L.circle(latlng, {
                     color: 'red',
@@ -56,7 +69,7 @@ export const AddPvLayer = {
 
                 return circle;
                 }
-            return L.geoJson(geojson, {
+            return L.geoJson(this.geojson, {
                 pointToLayer,
                 //onEachFeature
             });
@@ -132,12 +145,13 @@ export const AddLoadLayer = {
     props: {
         modelName: null,
         value: { required: true, default() { return [];}, }, 
+        geojson: null,
     },
     data(){
         return {
             selectedNode: null,
+            selectedFeeder:null,
             power: null,
-            currentMarker: null,
             exists: null,
         }
     },
@@ -153,6 +167,7 @@ export const AddLoadLayer = {
                 });
                 circle.bindPopup(this.$refs.popup);
                 circle.on("click", () => this.selectedNode=feature.properties.id);
+                circle.on("click", () => this.selectedFeeder=feature.properties.feeder);
                 circle.on("click", () => this.currentMarker=circle);
                 circle.on("click", () => this.checkExists());
 

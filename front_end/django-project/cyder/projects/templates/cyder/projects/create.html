@@ -1,6 +1,12 @@
 {% extends 'cyder/base.html' %}
 {% load static %}
 
+{% block css %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+        integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+        crossorigin=""/>
+{% endblock css %}
+
 {% block content %}
     <div id="app">
         <div class="form-group">
@@ -9,6 +15,13 @@
         <div class="form-group">
             Model: <model-selector v-model="modelName"></model-selector>
         </div>
+        <br><br>
+        <feeder-selector :feeders="feeders"  @selection="updateSelection"></feeder-selector>
+        <br><br>
+        <leaflet-map v-if="this.feeders!=null" style="height: 70vh; margin: 0.1rem 0 1rem 0;">
+            <model-layer  v-if="viewmodel" :model-name="modelName" fit></model-layer>
+            <feeder-viewer :key="this.componentKey" v-if="!viewmodel" :feeders="feeders" :selected-feeders="selectedFeeders" ></feeder-viewer>
+        </leaflet-map>
         <div class="form-group">
             <button ref="saveButton" type="button" @click="create" class="btn btn-primary">Create</button>
         </div>
@@ -16,20 +29,32 @@
 {% endblock content %}
 
 {% block script %}
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+        integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+        crossorigin="">
+    </script>
     <script type="module">
         import { ModelSelector } from '{% static 'cyder/models/viewer.js' %}';
         import CyderAPI from '{% static 'cyder/api.js' %}';
         import notifyRESTError from '{% static 'cyder/api-notify-error.js' %}';
+        import { FeederSelector, FeederViewer  } from '{% static 'cyder/projects/create.js' %}';
+        import { LeafletMap} from '{% static 'cyder/models/viewer.js' %}';
+        import { ModelLayer } from '{% static 'cyder/models/layers.js' %}';
 
         document.querySelector(".navbar [data-name='projects']").classList.add('active');
         window.onload = function() {
             CyderAPI.auth();
             window.app = new Vue({
                 el: '#app',
-                components: { ModelSelector },
+                components: { ModelSelector, FeederSelector, LeafletMap, ModelLayer, FeederViewer },
                 data: {
                     modelName: "",
                     projectName: "",
+                    viewmodel: true,
+                    geojson: null,
+                    feeders: null,
+                    selectedFeeders: [],
+                    componentKey: 0,
                 },
                 methods: {
                     async create() {
@@ -41,9 +66,21 @@
                             return;
                         }
 
+                        if(this.selectedFeeders.length==0) {
+                            $.notify({message: 'You must select at least one feeder'},{type: 'danger'});
+                            return;
+                        }
+
                         this.$refs.saveButton.classList.add('disabled');
 
                         try {
+                            let geo = {
+                                'features' : [],
+                                'type': 'FeatureCollection'
+                            }
+                            for (let i=0; i<this.selectedFeeders.length; i++){
+                                geo.features=geo.features.concat(this.feeders[ this.selectedFeeders[i] ]);
+                            }
                             let project = {
                                 name: this.projectName,
                                 settings: {
@@ -53,6 +90,8 @@
                                     start: "2017-05-19T06:00",
                                     end: "2017-05-19T22:00",
                                     timestep: 1800,
+                                    feeders: this.selectedFeeders,
+                                    geojson: geo,
                                 },
                             };
                             project = await CyderAPI.Project.create(project);
@@ -65,7 +104,27 @@
                             this.$refs.saveButton.classList.remove('disabled');
                         }
                     },
+
+                    updateSelection(s){
+                        this.viewmodel=false;
+                        this.selectedFeeders=s;
+                        this.componentKey++;
+                    }
                 },
+                watch : {
+                    modelName : async function(newModelName, oldModelName) {
+                            this.geojson = await CyderAPI.rest('GET', `/api/models/${encodeURI(this.modelName)}/geojson/`);
+                            this.feeders={};
+                            for (let i=0; i<this.geojson.features.length; i++){
+                                    if (this.geojson.features[i].properties.feeder in this.feeders){
+                                        this.feeders[this.geojson.features[i].properties.feeder].push(this.geojson.features[i]);
+                                    } else {
+                                        this.feeders[this.geojson.features[i].properties.feeder]=[];
+                                        this.feeders[this.geojson.features[i].properties.feeder].push(this.geojson.features[i]);
+                                    } 
+                            } 
+                    }
+                }
             });
         }
     </script>
