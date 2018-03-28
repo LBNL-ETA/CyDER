@@ -148,10 +148,10 @@
                             this.project = await CyderAPI.Project.get(id, true);
                             this.results=JSON.parse(this.project.results);
                             let r= this.project.results;
-                            this.datetimes=Object.keys(this.results);
+                            this.datetimes=Object.keys(this.results).sort();
                             this.timestamp=this.datetimes[0];
                             this.parsedTimestamp=moment(this.timestamp, "YYYY_MM_DD_HH_mm_ss").toDate();
-                            this.geo = await CyderAPI.rest('GET', `/api/models/${encodeURI(this.project.settings.model)}/geojson/`);
+                            this.geo = this.project.settings.geojson;
                             this.loadFeatures();
                             this.getPointFeatureResult();
                             this.getLineFeatureResult();

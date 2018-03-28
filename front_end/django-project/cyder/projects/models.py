@@ -57,7 +57,7 @@ class Project(models.Model):
             raise ProjectException("Can't run a simulation on a project when it is currently in " + self.stage)
         if self.stage != "Simulation" and (not (self.stage == "Configuration" and self.status == "Success")):
             raise ProjectException("A succeed configuration must be performed before running a simulation")
-        task = sim_worker.tasks.run_simulation.delay(self.id)
+        task = sim_worker.tasks.run_simulation.delay(self.id, json.loads(self.settings))
         self.task_id = task.id
         self.stage = "Simulation"
         self.status = "Pending"
