@@ -111,7 +111,7 @@ export const ResultsLayerA = {
     },
     data(){
         return {  
-            test: null,
+            popupValue: null,
         }
     },
     methods: {
@@ -123,7 +123,7 @@ export const ResultsLayerA = {
                     radius: 3
                 });
                 circle.bindPopup(this.$refs.popup);
-                circle.on('click', () => this.test=feature.properties.vA);
+                circle.on('click', () => this.popupValue=feature.properties.vA);
                 return circle;
             }
             return L.geoJson(this.geojson, {style: styleA, pointToLayer});
@@ -133,8 +133,8 @@ export const ResultsLayerA = {
     },
     template: `<div style="display: none;">
         <div ref="popup">
-            <h5 v-if="test!=null"> {{test}} pu </h5>
-            <h5 v-if="test==null"> unknown </h5>
+            <h5 v-if="popupValue!=null"> {{popupValue}} pu </h5>
+            <h5 v-if="popupValue==null"> unknown </h5>
         </div>
     </div>`
 }
@@ -148,7 +148,7 @@ export const ResultsLayerB = {
     },
     data(){
         return {
-            test: null,
+            popupValue: null,
         }
     },
     methods: {
@@ -160,7 +160,7 @@ export const ResultsLayerB = {
                     radius: 3
                 });
                 circle.bindPopup(this.$refs.popup);
-                circle.on('click', () => this.test=feature.properties.vB);
+                circle.on('click', () => this.popupValue=feature.properties.vB);
                 return circle;
             }
             return L.geoJson(this.geojson, {style: styleB, pointToLayer});
@@ -168,8 +168,8 @@ export const ResultsLayerB = {
     },
     template: `<div style="display: none;">
         <div ref="popup">
-            <h5 v-if="test!=null"> {{test}} pu </h5>
-            <h5 v-if="test==null"> unknown </h5>
+            <h5 v-if="popupValue!=null"> {{popupValue}} pu </h5>
+            <h5 v-if="popupValue==null"> unknown </h5>
         </div>
     </div>`
 }
@@ -183,7 +183,7 @@ export const ResultsLayerC = {
     },
     data(){
         return {
-            test: null,
+            popupValue: null,
         }
     },
     methods: {
@@ -195,7 +195,7 @@ export const ResultsLayerC = {
                     radius: 3
                 });
                 circle.bindPopup(this.$refs.popup);
-                circle.on('click', () => this.test=feature.properties.vC);
+                circle.on('click', () => this.popupValue=feature.properties.vC);
                 return circle;
             }
             return L.geoJson(this.geojson, {style: styleC, pointToLayer});
@@ -203,8 +203,8 @@ export const ResultsLayerC = {
     },
     template: `<div style="display: none;">
         <div ref="popup">
-            <h5 v-if="test!=null"> {{test}} pu </h5>
-            <h5 v-if="test==null"> unknown </h5>
+            <h5 v-if="popupValue!=null"> {{popupValue}} pu </h5>
+            <h5 v-if="popupValue==null"> unknown </h5>
         </div>
     </div>`
 }
