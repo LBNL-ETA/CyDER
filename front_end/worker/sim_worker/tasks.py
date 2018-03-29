@@ -1,6 +1,15 @@
 # Every task defined in this file should be declared in /front-end/django-project/sim_worker/task.py
 
 from .celery import app
+import os
+import json
+import shutil
+import datetime
+import random
+import math
+import pandas
+import dateutil.parser
+
 
 def drop_column(table, column):
     for row in table:
@@ -31,65 +40,108 @@ def get_model(modelname):
     exit(0)
 
 
-import subprocess
-import os
-import json
-import shutil
-import pandas
-import datetime
-import dateutil.parser
-import scada_profile
 
 @app.task
 def run_configuration(id, project):
-    
-#The following 3 lines of code are the ones to be used once testing is over
-    # start = dateutil.parser.parse(project['start'])
-    # end = dateutil.parser.parse(project['end'])
-    # substation =  project['model']
 
-#The following 3 lines of code are for testing
-    start = '2016-06-17 00:00:00'
-    end = '2016-06-18 00:00:00'
-    substation =  'BU0006'
-    
+    import sim_worker.pv
+    import sim_worker.substation
+    import sim_worker.scada
+    import sim_worker.scadaprofile as scp
+    import sim_worker.solarprofile as sop
+
+    start = dateutil.parser.parse(project['start'])
+    end = dateutil.parser.parse(project['end'])
+    substation =  project['model']
+
     add_pv = pandas.DataFrame.from_dict(project['addPv'])
-    pv_nominal_capacity_kw = add_pv.iloc[:,1].sum()
 
-    # In the following lines, the pandas Datafames and Series returned by the solarprofile and scadaprofile scripts are manipulated in such a way that they are JSON serializable (in order for the data to be stored and saved in the project settings)
+    if (add_pv.empty):
+        pv=[]
+        pvIndex=[]
+    else :
+        pv_nominal_capacity_kw = add_pv['power'].sum()
+        pv = sop.solar_profile(start, end, pv_nominal_capacity_kw)
+        pvIndex=pv.index.strftime('%Y-%m-%d %H:%M:%S').tolist()
+        pv = pv.iloc[:,0].tolist()
+
     load = scp.scada_profile(start, end, substation)
     loadIndex = load.to_frame().index.strftime('%Y-%m-%d %H:%M:%S').tolist()
     load=load.tolist()
     ev = []
-    pv = sop.solar_profile(start, end, pv_nominal_capacity_kw)
-    pvIndex=pv.index.strftime('%Y-%m-%d %H:%M:%S').tolist()
-    pv = pv.iloc[:,0].tolist()
 
 
     return { 'pv': pv, 'pvIndex': pvIndex, 'ev': ev, 'load': load, 'loadIndex': loadIndex}
 
-
 @app.task
-def run_simulation(id):
-    project_path = os.path.join('simulation_projects', str(id))
 
-    subprocess.call(['python', './cosimulation/runsimulation.py', os.path.join('..', project_path)])
+def run_simulation(id, project):
+    from . import cymdist
+    from sim_worker.pv import PVFactory
+    from sim_worker.substation import Substation
+    from sim_worker.scada import Scada
 
-    cyder_inputs = pandas.read_excel(os.path.join(project_path, 'cyder_inputs.xlsx'))
-    start = cyder_inputs.loc[0, 'start']
-    end = cyder_inputs.loc[0, 'end']
-    timestep = cyder_inputs.loc[0, 'timestep']
-    times = [x for x in range(0, int((end - start).total_seconds()), int(timestep))]
+    node_ids = []
+    network_ids = []
+    device_ids = []
+    pv_nominal_capacities = []
+    substation = Substation('C:/Users/DRRC/Desktop/PGE_Models_DO_NOT_SHARE/' + project['model'] + '.sxst')
+    i=0
 
-    properties = ['DwHighVoltWorstA', 'DwHighVoltWorstB', 'DwHighVoltWorstC', 'DwLowVoltWorstA', 'DwLowVoltWorstB', 'DwLowVoltWorstC']
+    for p in project['addPv']:
+        node_ids.append(p['node_id'])
+        network_ids.append(p['feeder'])
+        pv_nominal_capacities.append(-1*p['power'])
+        device_ids.append('PV' + str(i) )
+        i=i+1
 
-    results = {}
-    for prop in properties:
-        results[prop] = []
-    for time in times:
-        result_file = open(os.path.join(project_path, 'sim', '0', str(time) + '.json'))
-        result = json.load(result_file)
-        for prop in properties:
-            results[prop].append(float(result[prop]))
-        result_file.close()
-    return results
+
+    substation.add_power_devices(node_ids=node_ids, network_ids=network_ids, device_ids=device_ids)
+
+    pvfactory = PVFactory('sim_worker/solar.csv')
+    pvs = pvfactory.create(pv_nominal_capacities, device_ids)
+
+    scada = Scada('C:/Users/DRRC/Desktop/raw_SCADA/' + project['model'] + '.csv')
+
+    start = dateutil.parser.parse(project['start'])
+    end = dateutil.parser.parse(project['end'])
+    timestep = str(60*project['timestep']) + 'T'
+
+    datetimes = pandas.date_range(start, end, freq= timestep).tolist()
+
+    results = []
+    for t in datetimes:
+        print("Run substation at " + t.strftime("%Y-%m-%d %H:%M:%S"))
+        feeder_baseloads = scada.get(t)
+        substation.baseload_allocation(feeder_loads=feeder_baseloads)
+        substation.set_power_devices(device_ids=[pv.id for pv in pvs],
+                                     values=[pv.get(t) for pv in pvs])
+        substation.run_powerflow(feeders=feeder_baseloads.keys())
+        nodes = substation.list_nodes()
+        nodes = substation.get_voltage(nodes)
+        results.append(nodes)
+
+    dfs = []
+    indexes = []
+    i=0
+
+    for result in results:
+        keys=[]
+        values=[]
+        df=result
+        columnNumbers = [x for x in range(df.shape[1])]
+        columnNumbers.remove(0)
+        df=df.iloc[:,columnNumbers]
+        df=df.set_index('node_id')
+        df = df.where((pandas.notnull(df)), None)
+        keys=df.index.tolist()
+        for index, row in df.iterrows():
+            values.append(row.to_dict())
+        df=dict(zip(keys, values))
+        dfs.append(df)
+        indexes.append(datetimes[i].strftime("%Y_%m_%d_%H_%M_%S"))
+        i=i+1
+        print(df.head())
+
+    d = dict(zip(indexes, dfs))
+    return json.dumps(d)

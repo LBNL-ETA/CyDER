@@ -1,5 +1,5 @@
 from __future__ import division
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import pandas
 import datetime as dt
 
@@ -29,16 +29,3 @@ def solar_profile(start, end, pv_nominal_capacity_kw):
 
     # Multiply by pv nominal capacity
     return df * pv_nominal_capacity_kw
-
-# ###############################
-# # HOW TO USE
-# start = '2016-06-17 00:00:00'
-# end = '2016-06-18 00:00:00'
-# pv_nominal_capacity_kw = 60  # [kW]
-# profile = solar_profile(start, end, pv_nominal_capacity_kw)
-
-# # Plot profile
-# plt.figure(figsize=(11, 5))
-# plt.plot(profile)
-# plt.ylabel('Active power [kW]')
-# plt.show()
