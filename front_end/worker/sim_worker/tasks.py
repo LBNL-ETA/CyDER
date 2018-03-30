@@ -43,6 +43,8 @@ def get_model(modelname):
 
 @app.task
 def run_configuration(id, project):
+# run_configuration will exploit the solar.csv sunlight data aswell as the scada baseload data through the solarprofile.py and scadaprofile.py modules
+# run_configuration returns the estimated PV production in time and estimated load in time
 
     import sim_worker.pv
     import sim_worker.substation
@@ -74,8 +76,10 @@ def run_configuration(id, project):
     return { 'pv': pv, 'pvIndex': pvIndex, 'ev': ev, 'load': load, 'loadIndex': loadIndex}
 
 @app.task
-
 def run_simulation(id, project):
+# run_simulation prepares and formats the data from the project settings and launches the simulation through the cymdist python api
+ # run_simulation returns  in json format the simulation results that will be saved in the results field of the project
+
     from . import cymdist
     from sim_worker.pv import PVFactory
     from sim_worker.substation import Substation
@@ -86,13 +90,22 @@ def run_simulation(id, project):
     device_ids = []
     pv_nominal_capacities = []
     substation = Substation('C:/Users/DRRC/Desktop/PGE_Models_DO_NOT_SHARE/' + project['model'] + '.sxst')
+    
     i=0
-
     for p in project['addPv']:
         node_ids.append(p['node_id'])
         network_ids.append(p['feeder'])
         pv_nominal_capacities.append(-1*p['power'])
         device_ids.append('PV' + str(i) )
+        i=i+1
+
+    # assuming load_nominal capacities is equivalent to the opposite of pv_nominal_capacities
+    i=0
+    for p in project['addLoad']:
+        node_ids.append(p['node_id'])
+        network_ids.append(p['feeder'])
+        pv_nominal_capacities.append(p['power'])
+        device_ids.append('Load' + str(i) )
         i=i+1
 
 
