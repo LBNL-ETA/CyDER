@@ -32,33 +32,9 @@ export const TimestampSelector = {
 
 
 
-export const Controller = {
-    mixins: [Layer],
-    props: {
-    },
-    data(){
-        return {
-            I: null,
-        }
-    },
-    methods: {
-        async getLayer() {
-            return this.I;
-        },
-    },
-}
+//The implementation of the chloropeth map results visualiser was inspired by: http://leafletjs.com/examples/choropleth/
 
-var info = L.control();
-info.onAdd = function (map) {
-    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
-    this._div.innerHTML = '<h4> Voltage Details </h4>';
-    return this._div;
-}
-info.update = function (props) {
-    this._div.innerHTML = '<h4> Voltage Details </h4>';
-}
-
-
+//Component responsible for displaying the legend on the map
 export const LegendLayer = {
     mixins: [Layer],
     props: {
@@ -100,11 +76,12 @@ legend.onAdd = function (map) {
 };
 
 
+//The following three components are responsible displaying voltage results for the selected phase
+//The implementations are identical for all three components
 
-
+//Phase A
 export const ResultsLayerA = {
     mixins: [Layer],
-    components: {Controller},
     props: {
         geojson: null,
         index: null,
@@ -139,9 +116,9 @@ export const ResultsLayerA = {
     </div>`
 }
 
+//Phase B
 export const ResultsLayerB = {
     mixins: [Layer],
-    components: {Controller},
     props: {
         geojson: null,
         index: null,
@@ -174,9 +151,9 @@ export const ResultsLayerB = {
     </div>`
 }
 
+//Phase C
 export const ResultsLayerC = {
     mixins: [Layer],
-    components: {Controller},
     props: {
         geojson: null,
         index: null,
@@ -210,7 +187,7 @@ export const ResultsLayerC = {
 }
 
 
-
+//tool fuction that returns color code corresponding to voltage value v
 function getColor(v) {
     let color;
     switch(v!=null) {
@@ -251,6 +228,7 @@ function getColor(v) {
     return color;
 }
 
+//tool fuctions that will apply in to each geojson feature the style (using getcolor) given the voltage result (contained in the properties fields of the geojson feature)
 function styleA (feature) {
     if (feature.properties.vA!=null) {return { color: getColor(feature.properties.vA)};}
     else {return { color: '#808080', opacity: 0.5};}
@@ -264,7 +242,7 @@ function styleC (feature) {
     else {return { color: '#808080', opacity: 0.5};}
 }
 
-
+//The following component is responsible for creating and displaying a Voltage/Distance graph for the selected phase
 export const VdPlot = {
     props: {
         results: {},

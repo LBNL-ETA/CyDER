@@ -16,7 +16,7 @@
             Model: <model-selector v-model="modelName"></model-selector>
         </div>
         <br><br>
-        <feeder-selector :feeders="feeders"  @selection="updateSelection"></feeder-selector>
+        <feeder-selector :feeders="feeders"  @selection="updateSelection"></feeder-selector> <!-- "$emit" is captured here by "v-on" (@) (child component to parent communication) calling the updateSelection method to update SelectedFeeders data-->
         <br><br>
         <leaflet-map v-if="this.feeders!=null" style="height: 70vh; margin: 0.1rem 0 1rem 0;">
             <model-layer  v-if="viewmodel" :model-name="modelName" fit></model-layer>
@@ -54,7 +54,7 @@
                     geojson: null,
                     feeders: null,
                     selectedFeeders: [],
-                    componentKey: 0,
+                    componentKey: 0, //used to dynamically update map when the selectedFeeders data changes: when the component key is changed, VueJS completely rerenders the component with the new data and thus updates the map layer in real time
                 },
                 methods: {
                     async create() {
@@ -74,6 +74,7 @@
                         this.$refs.saveButton.classList.add('disabled');
 
                         try {
+                            //creates the gejson feature collection for the selected feeders that will be saved in the settings of the project in order to be used in the edit and result pages
                             let geo = {
                                 'features' : [],
                                 'type': 'FeatureCollection'
@@ -91,7 +92,7 @@
                                     end: "2017-05-19T22:00",
                                     timestep: 1,
                                     feeders: this.selectedFeeders,
-                                    geojson: geo,
+                                    geojson: geo, 
                                 },
                             };
                             project = await CyderAPI.Project.create(project);
@@ -115,6 +116,7 @@
                     modelName : async function(newModelName, oldModelName) {
                             this.geojson = await CyderAPI.rest('GET', `/api/models/${encodeURI(this.modelName)}/geojson/`);
                             this.feeders={};
+                            //sorts all geojson features of the model acording to their feeder
                             for (let i=0; i<this.geojson.features.length; i++){
                                     if (this.geojson.features[i].properties.feeder in this.feeders){
                                         this.feeders[this.geojson.features[i].properties.feeder].push(this.geojson.features[i]);

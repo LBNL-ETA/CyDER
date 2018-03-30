@@ -10,6 +10,8 @@
 {% endblock content %}
 
 {% block script %}
+
+<!-- Still uses Viewlib.js developed by Martin H., this may/should be replaced with ViewJS implementation in later developments -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script type="module">
         import { ProjectConfig } from '{% static 'cyder/projects/config.js' %}';

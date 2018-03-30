@@ -46,7 +46,7 @@ export const LeafletMap = {
         this.$data._map = null;
         let m = new Map();
         this.$data._layers = m;
-        this.$emit('getmapinstance', m);
+        this.$emit('getmapinstance', m); //allows one to access the map instance variable outside this component (could be useful)
         this.$data._loadingLayers = 0;
         this.$data._lastLayerId = null;
         this.$data._loadingSpinner = new Spinner();

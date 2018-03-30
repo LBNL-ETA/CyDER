@@ -3,6 +3,12 @@ import { View, FOREACH, IF, ESCHTML } from '../viewlib.js';
 import CyderAPI from '../api.js';
 import notifyRESTError from '../api-notify-error.js';
 
+
+//Still uses Viewlib.js developed by Martin H., this may/should be replaced with ViewJS implementation in later developments
+
+//The following component uses plotly to dipslay two graphs resulting from the scada and solar data located on the CyDER computer
+
+
 export class ProjectConfig extends View {
     constructor(projectId, el) {
         super(el, 'div');

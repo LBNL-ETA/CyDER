@@ -3,10 +3,19 @@ import os
 import json
 import shutil
 import datetime
-import dateutil.parser
 import random
 import math
 from time import sleep
+import pandas
+import dateutil.parser
+import glob
+import re
+
+from pv import PVFactory
+from substation import Substation
+from scada import Scada
+import sim_worker.scadaprofile as scp
+import sim_worker.solarprofile as sop
 
 def dist_node(node1, node2):
     return math.sqrt((node1['latitude']-node2['latitude'])**2 + (node1['longitude']-node2['longitude'])**2)
@@ -87,12 +96,12 @@ def get_model(modelname):
 projects = {}
 
 
-import sim_worker.scadaprofile as scp
-import sim_worker.solarprofile as sop
-import pandas
 
 @app.task
 def run_configuration(id, project):
+# run_configuration will exploit the solar.csv sunlight data aswell as the scada baseload data through the solarprofile.py and scadaprofile.py modules
+# run_configuration returns the estimated PV production in time and estimated load in time
+
 
 #The following 3 lines of code are the ones to be used once testing is over
     start = dateutil.parser.parse(project['start'])
@@ -111,7 +120,7 @@ def run_configuration(id, project):
         pv=[]
         pvIndex=[]
     else : 
-        pv_nominal_capacity_kw = add_pv.iloc[:,1].sum()
+        pv_nominal_capacity_kw = add_pv['power'].sum()
         pv = sop.solar_profile(start, end, pv_nominal_capacity_kw)
         pvIndex=pv.index.strftime('%Y-%m-%d %H:%M:%S').tolist()
         pv = pv.iloc[:,0].tolist()
@@ -126,12 +135,12 @@ def run_configuration(id, project):
     return { 'pv': pv, 'pvIndex': pvIndex, 'ev': ev, 'load': load, 'loadIndex': loadIndex}
 
 #Currently under development 
-import glob
-import re
-import json
+
 
 @app.task
-def run_simulation(id):
+def run_simulation(id, project):
+# run_simulation in the dummy-work reads and formats sample reuslts saved in .csv in the dummy-worker directory
+# returns the results in json format to be saved in the results field of the project as it would be done in the real worker
 
     path = "sim_worker/results"
     filenames = glob.glob(path + "/*.csv")
@@ -163,31 +172,4 @@ def run_simulation(id):
     d = dict(zip(indexes, dfs))
     return json.dumps(d, indent=4)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+   

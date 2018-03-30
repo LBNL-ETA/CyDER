@@ -87,7 +87,7 @@
     <script type="module">
         import { LeafletMap } from '{% static 'cyder/models/viewer.js' %}';
         import { ModelLayer } from '{% static 'cyder/models/layers.js' %}';
-        import { ResultsLayerA, ResultsLayerB,  ResultsLayerC, Controller, LegendLayer, VdPlot, TimestampSelector} from '{% static 'cyder/projects/results.js' %}';
+        import { ResultsLayerA, ResultsLayerB,  ResultsLayerC, LegendLayer, VdPlot, TimestampSelector} from '{% static 'cyder/projects/results.js' %}';
         import CyderAPI from '{% static 'cyder/api.js' %}';
         import notifyRESTError from '{% static 'cyder/api-notify-error.js' %}';
 
@@ -100,7 +100,7 @@
             // DEBUG: Keep a reference to the Vuejs app in window.app to make it available easily in the console for debug
             window.app = new Vue({
                 el: '#app',
-                components: { LeafletMap, ModelLayer, ResultsLayerA, ResultsLayerB,  ResultsLayerC, Controller, LegendLayer, VdPlot, TimestampSelector},
+                components: { LeafletMap, ModelLayer, ResultsLayerA, ResultsLayerB,  ResultsLayerC, LegendLayer, VdPlot, TimestampSelector},
                 data: {
                     //The component keys are here used to force the re-render of the map and plot result vue components
                     //These component keys must always be different from one another
@@ -120,8 +120,6 @@
                     indexValue: 0, //this variable is used for development and is bound to change as we introduce the time variable from timestamps
                     loaded: false,
                     SelectedPhase: null,
-                    // sliderValue: null,
-                    mouseOnProp: null,
                     map: null,
                 },
 
@@ -141,9 +139,9 @@
                 },
                 methods: {
                     async loadProject(id) {
-                        //loads project from pg db
-                        //loads and parses results from pg db
-                        //collects geojson model data
+                    //loads project from pg db
+                    //loads and parses results from pg db
+                    //collects geojson model data
                         try {
                             this.project = await CyderAPI.Project.get(id, true);
                             this.results=JSON.parse(this.project.results);
@@ -165,6 +163,7 @@
                     },
 
                     loadFeatures(){
+                    //distinguishes geojson point and line features for "getPointFeatureResult()" and "getLineFeatureResult()" functions
                         this.lines=[];
                         this.points=[];
                         if (this.geo!=null){
@@ -180,10 +179,9 @@
 
 
                     getPointFeatureResult(){
-                        //adds result properties and corresponding values to geojson point features 
-                        //apparently section_ids do not correspond accross results and imported model, we will thus be using to_node and from_node to identify a line's results
+                    //adds result properties and corresponding values to geojson point features for displayal on map
+                    //apparently section_ids do not correspond accross results and imported model, we will thus be using to_node and from_node to identify a line's results
                             for (let j=0; j<this.points.length; j++){
-                                // if(this.points[j].properties.id===this.results[this.indexValue].node_id[i]){
                                     this.points[j].properties.vA=this.results[this.timestamp][this.points[j].properties.id].voltage_A;
                                     this.points[j].properties.vB=this.results[this.timestamp][this.points[j].properties.id].voltage_B;
                                     this.points[j].properties.vC=this.results[this.timestamp][this.points[j].properties.id].voltage_C;  
@@ -192,7 +190,8 @@
                     },
 
                     getLineFeatureResult(){
-                        //adds result properties and corresponding values to geojson line features
+                    //adds result properties and corresponding values to geojson line features
+                    //the voltage of a line is considered to be the mean of the voltage of it's 'from' and'to' nod
                         for (let i=0; i<this.lines.length; i++){
                             let xA=null,xB=null,xC=null,yA=null,yB=null,yC=null;
 

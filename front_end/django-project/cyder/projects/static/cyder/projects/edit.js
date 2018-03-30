@@ -5,6 +5,7 @@ import { View, FOREACH, IF, ESCHTML } from '../viewlib.js';
 import CyderAPI from '../api.js';
 import notifyRESTError from '../api-notify-error.js';
 
+//Responsible for map layer displaying only the selected feeders for the project
 export const ProjectModelViewer = {
     mixins: [Layer],
     props:{ 
@@ -25,12 +26,12 @@ export const ProjectModelViewer = {
                 }
             return L.geoJson(this.geojson, {
                 pointToLayer,
-                //onEachFeature
             });
         },
     },
 }
 
+//Responsible for map layer implemeting PV adding funtionalities
 export const AddPvLayer = {
     mixins: [Layer],
     props: {
@@ -43,7 +44,7 @@ export const AddPvLayer = {
             selectedNode: null,
             selectedFeeder:null,
             power: null,
-            exists: null,
+            exists: null, //boolean indicating whether PV has been added to the selected node yet or not
         }
     },
     methods: {
@@ -61,6 +62,7 @@ export const AddPvLayer = {
                 circle.on("click", () => this.currentMarker=circle);
                 circle.on("click", () => this.checkExists());
 
+                //Colors in green all nodes where PV has already been added in previous editions of the project
                 for (let i=0; i<this.value.length; i++){
                     if (this.value[i].node_id===feature.properties.id){
                         circle.setStyle({color: '#14e54c'});
@@ -71,11 +73,11 @@ export const AddPvLayer = {
                 }
             return L.geoJson(this.geojson, {
                 pointToLayer,
-                //onEachFeature
             });
         },
 
         addPV(){
+        // saves all necessary info for simulation (node id, feeder id and power) to the project settings and colors the node to green indicating that a load has been added
             if (this.power!=null){
                 let valueObject= { 
                         node_id: this.selectedNode,
@@ -90,6 +92,7 @@ export const AddPvLayer = {
 
         },
         removePV(){
+        // removes PV info from the project settings and colors the node to back to red indicating that the PV has been removed
                 let nodeID=this.selectedNode;
                 for (let i=0; i<this.value.length; i++){
                     if (this.value[i].node_id===nodeID){
@@ -140,6 +143,7 @@ export const AddPvLayer = {
     </div>`
 }
 
+//Responsible for map layer implemeting Load addition funtionalities, exactly the same implementation as the addPV layer
 export const AddLoadLayer = {
     mixins: [Layer],
     props: {
@@ -152,7 +156,7 @@ export const AddLoadLayer = {
             selectedNode: null,
             selectedFeeder:null,
             power: null,
-            exists: null,
+            exists: null, //boolean indicating whether PV has been added to the selected node yet or not
         }
     },
     methods: {
@@ -171,6 +175,7 @@ export const AddLoadLayer = {
                 circle.on("click", () => this.currentMarker=circle);
                 circle.on("click", () => this.checkExists());
 
+                //Colors in green all nodes where PV has already been added in previous editions of the project
                 for (let i=0; i<this.value.length; i++){
                     if (this.value[i].node_id===feature.properties.id){
                         circle.setStyle({color: '#14e54c'});
@@ -181,14 +186,15 @@ export const AddLoadLayer = {
                 }
             return L.geoJson(geojson, {
                 pointToLayer,
-                //onEachFeature
             });
         },
 
         addLoad(){
+        // saves all necessary info for simulation (node id, feeder id and power) to the project settings and colors the node to green indicating that a load has been added
             if (this.power!=null){
                 let valueObject= { 
                         node_id: this.selectedNode,
+                        feeder: this.selectedFeeder,
                         power: this.power, 
                     };
                 this.value.push(valueObject);
@@ -199,6 +205,7 @@ export const AddLoadLayer = {
 
         },
         removeLoad(){
+        // removes load info from the project settings and colors the node to back to red indicating that the load has been removed
                 let nodeID=this.selectedNode;
                 for (let i=0; i<this.value.length; i++){
                     if (this.value[i].node_id===nodeID){

@@ -41,6 +41,7 @@
                 <div class="form-group" style="display: table;">
                     <input style="display: table-cell;" :value="project.settings.timestep" @input="project.settings.timestep = Number($event.target.value)" type="number" class="form-control">
                     <div style="padding-left: 0.5em; display: table-cell;"> hours </div>
+                    <!-- Timestep can currently on be in mutliples of hours as we only the scada data on which the simulations are based is hourly -->
                 </div>
             </div>
         </div>
@@ -144,8 +145,8 @@
                 watch: {
                     project: {
                         handler(newProject, oldProject) {
-                            // modified == true mean the project have been modified>
-                            // We don't want to set it true if the watcher have been trigger by a project change, only if it is a deep change
+                            // modified == true mean the project has been modified>
+                            // We don't want to set it true if the watcher has been trigger by a project change, only if it is a deep change
                             if(newProject === oldProject)
                                 this.modified = true;
                         },

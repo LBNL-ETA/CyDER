@@ -21,13 +21,14 @@ export const FeederSelector = {
     },
     watch: {
         selected : function(newSelected, oldSelected){
+            //"$emit" captured by "v-on" in parent (child component to parent communication) to update parent SelectedFeeders data dynamically
             this.$emit('selection',this.selected);
         }
     },
     template : `
-        <div>
+        <div v-if="this.feeders!=null">
             Select Feeders to edit: 
-            <select class="form-control" v-if="this.feeders!=null" v-model="selected" multiple >
+            <select class="form-control" v-model="selected" multiple >
                <option v-for="f in Object.keys(feeders)" >{{ f }}</option>
             </select>
         </div>
