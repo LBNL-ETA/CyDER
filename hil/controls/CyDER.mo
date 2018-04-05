@@ -3,7 +3,6 @@ package CyDER
   package HIL
     package Controls
       model voltVar
-
         Modelica.Blocks.Interfaces.RealInput v_pu "Voltage [p.u.]"
           annotation (Placement(transformation(extent={{-140,-20},{-100,20}})));
         Modelica.Blocks.Interfaces.RealOutput q_control "Q control signal"
@@ -38,7 +37,6 @@ package CyDER
       end voltVar;
 
       model voltVar_param
-
         Modelica.Blocks.Interfaces.RealInput v(unit="1") "Voltage [p.u]"
           annotation (Placement(transformation(extent={{-140,-20},{-100,20}})));
         Modelica.Blocks.Interfaces.RealOutput QCon(unit="kvar") "Q control signal"
@@ -62,6 +60,50 @@ with the only differences that input variables have been
 changed to parameters.
 </html>"));
       end voltVar_param;
+
+      model voltVar_param_noEvents
+        function actuate
+        input Real v
+                    "Voltage [p.u]";
+        input Real thr
+                      "over/undervoltage threshold";
+        input Real hys
+                      "Hysteresis";
+        input Modelica.SIunits.PerUnit vMaxDea "Upper bound of deaband [p.u.]";
+        input Modelica.SIunits.PerUnit vMax "Voltage maximum [p.u.]";
+        input Modelica.SIunits.PerUnit vMinDea "Upper bound of deaband [p.u.]";
+        input Modelica.SIunits.PerUnit vMin "Voltage minimum [p.u.]";
+        input Real QMaxInd "Maximal Reactive Power (Inductive)";
+        input Real QMaxCap
+                          "Maximal Reactive Power (Capacitive)";
+        output Real QCon;
+        algorithm
+        QCon := smooth(0, if v > vMax then QMaxInd*(-1) elseif v > vMaxDea then (vMaxDea - v)/
+          abs(vMax - vMaxDea)*QMaxInd elseif v < vMin then QMaxCap elseif v < vMinDea then (
+          vMinDea - v)/abs(vMin - vMinDea)*QMaxCap else 0);
+        end actuate;
+
+        Modelica.Blocks.Interfaces.RealInput v(unit="1") "Voltage [p.u]"
+          annotation (Placement(transformation(extent={{-140,-20},{-100,20}})));
+        Modelica.Blocks.Interfaces.RealOutput QCon(unit="kvar") "Q control signal"
+          annotation (Placement(transformation(extent={{100,-10},{120,10}})));
+        parameter Real thr(start=0.05) "over/undervoltage threshold";
+        parameter Real hys(start=0.01) "Hysteresis";
+        final parameter Modelica.SIunits.PerUnit vMaxDea=1 + hys "Upper bound of deaband [p.u.]";
+        final parameter Modelica.SIunits.PerUnit vMax=1 + thr "Voltage maximum [p.u.]";
+        final parameter Modelica.SIunits.PerUnit vMinDea=1 - hys "Upper bound of deaband [p.u.]";
+        final parameter Modelica.SIunits.PerUnit vMin=1 - thr "Voltage minimum [p.u.]";
+        parameter Real QMaxInd(start=1.0, unit="kvar") "Maximal Reactive Power (Inductive)";
+        parameter Real QMaxCap(start=1.0, unit="kvar") "Maximal Reactive Power (Capacitive)";
+      equation
+        QCon = actuate(v,thr, hys, vMaxDea, vMax, vMinDea, vMin, QMaxInd, QMaxCap);
+        annotation (Documentation(info="<html>
+This model is similar to <a href=\"modelica://CyDER.HIL.Controls.voltVar\">
+CyDER.HIL.Controls.voltVar</a> 
+with the only differences that input variables have been 
+changed to parameters.
+</html>"));
+      end voltVar_param_noEvents;
     end Controls;
 
     package uPMU
@@ -75,7 +117,6 @@ changed to parameters.
 
     package Examples
       model Validate_VoltVarControl
-
         Modelica.Blocks.Sources.Ramp ramp(
           duration=1,
           startTime=0,
@@ -122,7 +163,6 @@ changed to parameters.
       end Validate_VoltVarControl;
 
       model Validate_VoltVarControl_param
-
         Modelica.Blocks.Sources.Ramp ramp(
           duration=1,
           startTime=0,
@@ -137,6 +177,23 @@ changed to parameters.
         annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
               coordinateSystem(preserveAspectRatio=false)));
       end Validate_VoltVarControl_param;
+
+      model Validate_VoltVarControl_param_noEvents
+
+        Modelica.Blocks.Sources.Ramp ramp(
+          duration=1,
+          startTime=0,
+          height=0.2,
+          offset=0.9)
+          annotation (Placement(transformation(extent={{-90,-10},{-70,10}})));
+        Controls.voltVar_param_noEvents voltVar_param_noEvents(QMaxCap=0.5)
+          annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
+      equation
+        connect(voltVar_param.v, ramp.y)
+          annotation (Line(points={{-12,0},{-69,0}}, color={0,0,127}));
+        annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+              coordinateSystem(preserveAspectRatio=false)));
+      end Validate_VoltVarControl_param_noEvents;
     end Examples;
   end HIL;
 
@@ -267,7 +324,6 @@ changed to parameters.
   end Optimization;
 
   package PvModel
-
     package Models
       model PV_simple_tilted "Simple PV model based on irradiation"
         parameter Modelica.SIunits.Area A(min=0) = 1 "Net surface area";
@@ -276,7 +332,6 @@ changed to parameters.
         parameter Real lat=37.9 "Latitude [deg]";
         parameter Real til=10 "Surface tilt [deg]";
         parameter Real azi=0 "Surface azimuth [deg]";
-
         Modelica.Blocks.Interfaces.RealInput Shading(min=0, max=1, unit="1")
           "Shading of PV module"
           annotation (Placement(transformation(
@@ -310,7 +365,6 @@ changed to parameters.
         parameter Real lat=37.9 "Latitude [deg]";
         parameter Real til=0 "Surface tilt [deg]";
         parameter Real azi=0 "Surface azimuth [deg]";
-
         Solar.DiffusePerez HDifTil(
           azi=Modelica.SIunits.Conversions.from_deg(azi),
           til=Modelica.SIunits.Conversions.from_deg(til),
@@ -363,7 +417,6 @@ changed to parameters.
         parameter Real til=10 "Surface tilt [deg]";
         parameter Real azi=0 "Surface azimuth [deg]";
         parameter String filNam="" "Full path to weatherfile";
-
         Buildings.BoundaryConditions.WeatherData.ReaderTMY3
                                                   weaDat(
             computeWetBulbTemperature=false, filNam=
@@ -400,7 +453,6 @@ changed to parameters.
         parameter Real azi=25 "Surface azimuth [deg]";
         parameter String filNam="C:/Users/Christoph/Documents/GitHub/cyder/hil/controls/USA_CA_San.Francisco.Intl.AP.724940_TMY3.mos";
         //parameter String filNam="USA_CA_San.Francisco.Intl.AP.724940_TMY3.mos";
-
         Buildings.BoundaryConditions.WeatherData.ReaderTMY3
                                                   weaDat(
             computeWetBulbTemperature=false, filNam=
@@ -492,12 +544,10 @@ changed to parameters.
   end PvModel;
 
   package Solar
-
     block DiffusePerez
       "Hemispherical diffuse irradiation on a tilted surface using Perez's anisotropic sky model"
       extends
         Buildings.BoundaryConditions.SolarIrradiation.BaseClasses.PartialSolarIrradiation;
-
       parameter Real rho(min=0, max=1, final unit="1")=0.2 "Ground reflectance";
       parameter Modelica.SIunits.Angle lat "Latitude";
       parameter Modelica.SIunits.Angle azi "Surface azimuth";
@@ -505,7 +555,6 @@ changed to parameters.
         "Output contribution of diffuse irradiation from sky";
       parameter Boolean outGroCon=false
         "Output contribution of diffuse irradiation from ground";
-
       Modelica.Blocks.Math.Add add "Block to add radiations"
         annotation (Placement(transformation(extent={{60,-10},{80,10}})));
       Modelica.Blocks.Interfaces.RealOutput HSkyDifTil if outSkyCon
@@ -514,7 +563,6 @@ changed to parameters.
       Modelica.Blocks.Interfaces.RealOutput HGroDifTil if outGroCon
         "Hemispherical diffuse solar irradiation on a tilted surface from the ground"
         annotation (Placement(transformation(extent={{100,-70},{120,-50}})));
-
     protected
       DiffusePerez_sub HDifTil(final til=til, final rho=rho)
         "Diffuse irradiation on tilted surface"
@@ -536,7 +584,6 @@ changed to parameters.
         azi=azi,
         til=til) "Incidence angle"
         annotation (Placement(transformation(extent={{-86,-96},{-76,-86}})));
-
     equation
       connect(relAirMas.relAirMas, skyBri.relAirMas) annotation (Line(
           points={{-71.6,-40},{-66,-40},{-66,-48.4},{-60.8,-48.4}},
@@ -596,7 +643,6 @@ changed to parameters.
           string="%first",
           index=-1,
           extent={{-6,3},{-6,3}}));
-
       connect(briCoe.F2, HDifTil.briCof2) annotation (Line(
           points={{-31.6,-31.6},{-24,-31.6},{-24,-2.1},{-4.2,-2.1}},
           color={0,0,127}));
@@ -628,7 +674,6 @@ changed to parameters.
           points={{81,6.10623e-16},{90.5,6.10623e-16},{90.5,5.55112e-16},{110,
               5.55112e-16}},
           color={0,0,127}));
-
       connect(HDifTil.HSkyDifTil, HSkyDifTil) annotation (Line(
           points={{44.1,8.4},{52,8.4},{52,60},{110,60}},
           color={0,0,127}));
@@ -693,16 +738,13 @@ First implementation.
     block DirectTiltedSurface "Direct solar irradiation on a tilted surface"
       extends
         Buildings.BoundaryConditions.SolarIrradiation.BaseClasses.PartialSolarIrradiation;
-
       parameter Modelica.SIunits.Angle lat "Latitude";
       parameter Modelica.SIunits.Angle azi "Surface azimuth";
-
       Modelica.Blocks.Interfaces.RealOutput inc(
          quantity="Angle",
          unit="rad",
         displayUnit="deg") "Incidence angle"
         annotation (Placement(transformation(extent={{100,-50},{120,-30}})));
-
     protected
       IncidenceAngle incAng(
         azi=azi,
@@ -711,12 +753,10 @@ First implementation.
         annotation (Placement(transformation(extent={{-50,-30},{-30,-10}})));
       DirectTiltedSurface_sub HDirTil "Direct irradition on tilted surface"
         annotation (Placement(transformation(extent={{0,-20},{40,20}})));
-
     equation
       connect(incAng.y, HDirTil.incAng) annotation (Line(
           points={{-29,-20},{-12,-20},{-12,-12},{-4,-12}},
           color={0,0,127}));
-
       connect(weaBus.HDirNor, HDirTil.HDirNor) annotation (Line(
           points={{-100,5.55112e-16},{-80,5.55112e-16},{-80,12},{-4,12}},
           color={255,204,51},
@@ -731,7 +771,6 @@ First implementation.
           points={{42,1.22125e-15},{72,1.22125e-15},{72,5.55112e-16},{110,
               5.55112e-16}},
           color={0,0,127}));
-
       connect(weaBus, incAng.weaBus) annotation (Line(
           points={{-100,5.55112e-16},{-80,5.55112e-16},{-80,-20},{-50,-20}},
           color={255,204,51},
@@ -778,7 +817,6 @@ First implementation.
       parameter Modelica.SIunits.Angle lat "Latitude";
       parameter Modelica.SIunits.Angle azi "Surface azimuth";
       parameter Modelica.SIunits.Angle til "Surface tilt";
-
       Modelica.Blocks.Interfaces.RealOutput y(
         quantity="Angle",
         unit="rad",
@@ -871,7 +909,6 @@ First implementation.
             "RadiantEnergyFluenceRate", unit="W/m2")
         "Direct solar irradiation on a tilted surface"
         annotation (Placement(transformation(extent={{100,-10},{120,10}})));
-
     equation
       HDirTil =  max(0, Modelica.Math.cos(incAng)*HDirNor);
       annotation (
@@ -926,7 +963,6 @@ First implementation.
             "RadiantEnergyFluenceRate", unit="W/m2")
         "Global horizontal radiation"
         annotation (Placement(transformation(extent={{-140,60},{-100,100}})));
-
       Modelica.Blocks.Interfaces.RealInput zen(
         quantity="Angle",
         unit="rad",
@@ -937,7 +973,6 @@ First implementation.
         unit="rad",
         displayUnit="degree") "Solar incidence angle on the surface"
         annotation (Placement(transformation(extent={{-140,-90},{-100,-50}})));
-
       Modelica.Blocks.Interfaces.RealOutput HGroDifTil(final quantity=
             "RadiantEnergyFluenceRate", final unit="W/m2")
         "Hemispherical diffuse solar irradiation on a tilted surface from the ground"
@@ -963,7 +998,6 @@ First implementation.
       HSkyDifTil = HDifHor*(0.5*(1 - briCof1)*(1 + Modelica.Math.cos(til)) +
         briCof1*a/b + briCof2*Modelica.Math.sin(til));
       HGroDifTil = HGloHor*0.5*rho*(1 - Modelica.Math.cos(til));
-
       annotation (
         defaultComponentName="HDifTil",
         Documentation(info="<html>
@@ -1035,7 +1069,6 @@ First implementation.
     end DiffusePerez_sub;
 
     package Examples
-
     end Examples;
   end Solar;
 
@@ -1051,7 +1084,6 @@ First implementation.
           annotation (Placement(transformation(extent={{100,-70},{120,-50}})));
         Modelica.Blocks.Interfaces.RealInput pf "Input of power factor"
           annotation (Placement(transformation(extent={{-140,-60},{-100,-20}})));
-
         Modelica.Blocks.Interfaces.RealOutput ApparentPower "Output of apparent  power [VA]"
           annotation (Placement(transformation(extent={{100,-10},{120,10}})));
       equation
@@ -1066,7 +1098,6 @@ First implementation.
         end if
           annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
               coordinateSystem(preserveAspectRatio=false)));
-
       end Inverter_simple;
     end Models;
 
@@ -1084,10 +1115,10 @@ First implementation.
           offset=0.1)
           annotation (Placement(transformation(extent={{-100,16},{-80,36}})));
       equation
-        connect(PV_generation.y, P_fixed.PV_generatoin) annotation (Line(points
-              ={{-79,70},{-30,70},{-30,34},{-12,34}}, color={0,0,127}));
-        connect(S_fixed.PV_generatoin, PV_generation.y) annotation (Line(points
-              ={{-12,-26},{-30,-26},{-30,70},{-79,70}}, color={0,0,127}));
+        connect(PV_generation.y, P_fixed.PV_generatoin) annotation (Line(points=
+               {{-79,70},{-30,70},{-30,34},{-12,34}}, color={0,0,127}));
+        connect(S_fixed.PV_generatoin, PV_generation.y) annotation (Line(points=
+               {{-12,-26},{-30,-26},{-30,70},{-79,70}}, color={0,0,127}));
         connect(Power_factor.y, P_fixed.pf)
           annotation (Line(points={{-79,26},{-12,26}}, color={0,0,127}));
         connect(Power_factor.y, S_fixed.pf) annotation (Line(points={{-79,26},{
@@ -1097,6 +1128,9 @@ First implementation.
       end Test_Inverter_simple;
     end Examples;
   end InverterModel;
-  annotation (uses(Modelica(version="3.2.2"), Buildings(version="4.0.0"),
-      Flexgrid(version="3")));
+  annotation (uses(Modelica(version="3.2.2"),
+      Flexgrid(version="3"),
+      Buildings(version="5.0.2")),
+    version="1",
+    conversion(noneFromVersion=""));
 end CyDER;
