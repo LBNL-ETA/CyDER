@@ -55,6 +55,15 @@ class ProjectViewSet(viewsets.ModelViewSet):
             return Response({ "detail" : str(e) }, status=status.HTTP_401_UNAUTHORIZED)
 
     @detail_route(methods=['post'])
+    def run_detailed_config(self, request, *args, **kwargs):
+        project = self.get_object()
+        try:
+            project.run_detailed_config()
+            return Response({ "detail": "Detailed configuration requested for this project" })
+        except ProjectException as e:
+            return Response({ "detail" : str(e) }, status=status.HTTP_401_UNAUTHORIZED)
+
+    @detail_route(methods=['post'])
     def run_sim(self, request, *args, **kwargs):
         project = self.get_object()
         try:

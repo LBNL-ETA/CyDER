@@ -1,0 +1,47 @@
+{% extends 'cyder/base.html' %}
+{% load static %}
+
+{% block css %}
+{% endblock css %}
+
+{% block content %}
+<!--     <div id="project-results"></div> -->
+
+    <div id="app" v-if="loaded">
+        {% verbatim %}
+        <h1>Configuaration details</h1>
+        <br>
+        <br>
+        <h2>Timestamp </h2>
+        <timestamp-selector @timestampchanged="updatetimestamp" :datetimes="datetimes" > </timestamp-selector>
+        <br>
+        <br>
+        <br>
+        <br>
+        <h2>Graphs</h2>
+        <vd-plot :key="componentKeyP" v-if="loaded" :results="results" :timestamp="timestamp"></vd-plot>
+        {% endverbatim %}
+    </div>
+
+{% endblock content %}
+
+{% block script %}
+
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.js"></script>
+
+    <script type="module">
+        import CyderAPI from '{% static 'cyder/api.js' %}';
+        import notifyRESTError from '{% static 'cyder/api-notify-error.js' %}';
+
+        document.querySelector(".navbar [data-name='projects']").classList.add('active');
+
+        window.onload = function() {
+            CyderAPI.auth();
+            // app.loadProject("{{ project_id|escapejs }}");
+        };
+
+    </script>
+
+{% endblock script %}

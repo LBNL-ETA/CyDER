@@ -23,7 +23,7 @@ def get_model(modelname):
     cymdist.open_study(modelname + '.sxst')
     cymdist.compute_loadflow()
 
-    model = cymdist.model_info()
+    model = cymdist.model_info(modelname)
     devices = cymdist.list_devices()
     cymdist.get_devices_details(devices)
     nodes = cymdist.list_nodes()
@@ -90,7 +90,7 @@ def run_simulation(id, project):
     device_ids = []
     pv_nominal_capacities = []
     substation = Substation('C:/Users/DRRC/Desktop/PGE_Models_DO_NOT_SHARE/' + project['model'] + '.sxst')
-    
+
     i=0
     for p in project['addPv']:
         node_ids.append(p['node_id'])

@@ -18,6 +18,11 @@ class ModelViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ModelSerializer
     lookup_field = 'name'
 
+    @detail_route(url_path='sim_info')
+    def detail_sim_info(self, request, name=None):
+        model = self.get_object()
+        return Response(model.simulation_info)
+
     @list_route(url_path='geojson')
     def list_geojson(self, request):
         models = Model.objects.all()

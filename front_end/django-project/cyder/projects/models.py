@@ -52,6 +52,16 @@ class Project(models.Model):
         self.status = "Pending"
         self.save()
 
+    def run_detailed_config(self):
+        if self.status == "Started" or self.status == "Pending":
+            raise ProjectException("Can't configure a project when it is currently in " + self.stage)
+        task = sim_worker.tasks.run_detailed_configuration.delay(self.id, json.loads(self.settings))
+        self.task_id = task.id
+        self.stage = "Configuration"
+        self.status = "Pending"
+        self.save()
+
+
     def run_sim(self):
         if self.status == "Started" or self.status == "Pending":
             raise ProjectException("Can't run a simulation on a project when it is currently in " + self.stage)

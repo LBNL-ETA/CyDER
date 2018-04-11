@@ -12,7 +12,6 @@ import glob
 import re
 
 from pv import PVFactory
-from substation import Substation
 from scada import Scada
 import sim_worker.scadaprofile as scp
 import sim_worker.solarprofile as sop
@@ -104,14 +103,25 @@ def run_configuration(id, project):
 
 
 #The following 3 lines of code are the ones to be used once testing is over
-    start = dateutil.parser.parse(project['start'])
-    end = dateutil.parser.parse(project['end'])
-    substation =  project['model']
+    # start = dateutil.parser.parse(project['start'])
+    # end = dateutil.parser.parse(project['end'])
+    # substation =  project['model']
 
 #The following 3 lines of code are for testing
     # start = '2016-06-17 00:00:00'
     # end = '2016-06-18 00:00:00'
     # substation =  'BU0006'
+
+    simDays = dateutil.parser.parse(project['simulation_dates'])
+    l=[]
+    for key in simDays:
+        simDays.append(min(simDays[key].items(), key=lambda x: x[1]))
+    day=min(l,key=lambda x: x[1])[0]
+    start=day + ' 07:00:00'
+    end=day + ' 19:00:00'
+    
+    substation =  project['model']
+
     
     # In the following lines, the pandas Datafames and Series returned by the solarprofile and scadaprofile scripts are manipulated in such a way that they are JSON serializable (in order for the data to be stored and saved in the project settings)
     add_pv = pandas.DataFrame.from_dict(project['addPv'])

@@ -23,7 +23,7 @@
         <div class="form-group">
             <input v-model="project.name" type="text" class="form-control" placeholder="Name" aria-label="Name">
         </div>
-        <div class="row">
+<!--         <div class="row">
             <div class="col-md-5">
                 <label>Start: </label>
                 <div class="form-group">
@@ -41,12 +41,11 @@
                 <div class="form-group" style="display: table;">
                     <input style="display: table-cell;" :value="project.settings.timestep" @input="project.settings.timestep = Number($event.target.value)" type="number" class="form-control">
                     <div style="padding-left: 0.5em; display: table-cell;"> hours </div>
-                    <!-- Timestep can currently on be in mutliples of hours as we only the scada data on which the simulations are based is hourly -->
+                    Timestep can currently on be in mutliples of hours as we only the scada data on which the simulations are based is hourly
                 </div>
             </div>
-        </div>
+        </div> -->
         Model: {{ project.settings.model }}<br><br>
-        <br><br>
         <div class="btn-group" role="group">
             <button type="button" class="btn btn-secondary" :class="{disabled:layer=='pv'}" @click="layer='pv'">PVs</button>
             <button type="button" class="btn btn-secondary" :class="{disabled:layer=='load'}" @click="layer='load'">Loads</button>

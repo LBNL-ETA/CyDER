@@ -183,6 +183,9 @@ NestedRes.handler = {
 };
 
 class ProjectRes extends Res.DeleteMixin(Res.WriteMixin(Res)) {
+    runDetailedConfig(lookup) {
+        return rest('POST', `${this._getLookupUrl(lookup)}run_detailed_config/`);
+    }
     runConfig(lookup) {
         return rest('POST', `${this._getLookupUrl(lookup)}run_config/`);
     }

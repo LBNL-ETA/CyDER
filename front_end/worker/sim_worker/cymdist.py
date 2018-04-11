@@ -1,4 +1,5 @@
 import cympy
+import sim_worker.model_simulation_days as msd
 
 def open_study(modelfile):
     filename = "C:\\Users\\DRRC\\Desktop\\PGE_Models_DO_NOT_SHARE\\" + modelfile
@@ -7,10 +8,11 @@ def open_study(modelfile):
 def compute_loadflow():
     cympy.sim.LoadFlow().Run()
 
-def model_info():
+def model_info(modelname):
     model = {}
     model['longitude'] = 0
     model['latitude'] = 0
+    model['simulation_info'] = msd.get_simulation_days(modelname)
     return model
 
 def list_nodes():

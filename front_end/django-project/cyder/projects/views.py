@@ -21,3 +21,7 @@ def results(request, project_id):
 @login_required
 def config(request, project_id):
     return render(request, 'cyder/projects/config.html', { 'project_id': project_id })
+
+@login_required
+def config_details(request, project_id):
+    return render(request, 'cyder/projects/config_details.html', { 'project_id': project_id })

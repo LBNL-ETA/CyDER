@@ -5,6 +5,7 @@ class Model(models.Model):
     name = models.CharField(max_length=50, null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)
+    simulation_info = models.TextField(default="null")
     def __str__(self):
         return self.name
 

@@ -52,6 +52,7 @@
                     projectName: "",
                     viewmodel: true,
                     geojson: null,
+                    sim_info: null,
                     feeders: null,
                     selectedFeeders: [],
                     componentKey: 0, //used to dynamically update map when the selectedFeeders data changes: when the component key is changed, VueJS completely rerenders the component with the new data and thus updates the map layer in real time
@@ -79,8 +80,10 @@
                                 'features' : [],
                                 'type': 'FeatureCollection'
                             }
+                            let simDays = {};
                             for (let i=0; i<this.selectedFeeders.length; i++){
                                 geo.features=geo.features.concat(this.feeders[ this.selectedFeeders[i] ]);
+                                simDays[ this.selectedFeeders[i] ]=this.sim_info[ this.selectedFeeders[i] ];
                             }
                             let project = {
                                 name: this.projectName,
@@ -88,8 +91,8 @@
                                     model: this.modelName,
                                     addPv: [],
                                     addLoad: [],
-                                    start: "2017-05-19T06:00",
-                                    end: "2017-05-19T22:00",
+                                    simulation_dates: simDays,
+                                    // end: "2016-05-19T22:00",
                                     timestep: 1,
                                     feeders: this.selectedFeeders,
                                     geojson: geo, 
@@ -115,15 +118,19 @@
                 watch : {
                     modelName : async function(newModelName, oldModelName) {
                             this.geojson = await CyderAPI.rest('GET', `/api/models/${encodeURI(this.modelName)}/geojson/`);
+                            let temp = await CyderAPI.rest('GET', `/api/models/${encodeURI(this.modelName)}/sim_info/`);
+                            this.sim_info=JSON.parse(temp);
                             this.feeders={};
                             //sorts all geojson features of the model acording to their feeder
                             for (let i=0; i<this.geojson.features.length; i++){
+                                if (this.geojson.features[i].properties.feeder in this.sim_info){
                                     if (this.geojson.features[i].properties.feeder in this.feeders){
                                         this.feeders[this.geojson.features[i].properties.feeder].push(this.geojson.features[i]);
                                     } else {
                                         this.feeders[this.geojson.features[i].properties.feeder]=[];
                                         this.feeders[this.geojson.features[i].properties.feeder].push(this.geojson.features[i]);
-                                    } 
+                                    }
+                                } 
                             } 
                     }
                 }

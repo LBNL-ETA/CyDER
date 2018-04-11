@@ -1,6 +1,8 @@
-import scada
-import solarprofile
+import sim_worker.scada as scada
+import sim_worker.solarprofile as solarprofile
 import pandas
+import json
+import re
 
 def get_simulation_days(modelName):
     """
@@ -10,7 +12,7 @@ def get_simulation_days(modelName):
         keys are the feeder names
         Values are pandas Series listing the corresponding two minimum net load days (values indexed by timestamp) 
     """
-    sc=scada.Scada('sim_worker/raw_SCADA/'+ modelName + '.csv') 
+    sc=scada.Scada('C:/Users/DRRC/Desktop/raw_SCADA/'+ modelName + '.csv') 
     #Total PV capacity is arbitrarily chosen to be 1MW
     so=solarprofile.solar_profile(sc.data.index[0],sc.data.index[-1],1000)
     S1=sc.data
@@ -33,5 +35,10 @@ def get_simulation_days(modelName):
         for idx, month in d.groupby(d.index.month):
             #selects the two smallest daily net load minimums for each month
             temp=temp.append(month.nsmallest(2))
-        x[col]=temp 
-    return x
+        #makes output json serializable
+        temp=temp.sort_values()
+        keys=temp.index.format()
+        values=temp.tolist()
+        temp=dict(zip(keys, values))
+        x[re.search(r"(\d+)",col).group(0)]=temp
+    return json.dumps(x)

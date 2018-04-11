@@ -1,39 +1,22 @@
 'use strict';
-import { View, FOREACH, IF, ESCHTML } from '../viewlib.js';
 import CyderAPI from '../api.js';
 import notifyRESTError from '../api-notify-error.js';
 
-
-//Still uses Viewlib.js developed by Martin H., this may/should be replaced with ViewJS implementation in later developments
-
-//The following component uses plotly to dipslay two graphs resulting from the scada and solar data located on the CyDER computer
-
-
-export class ProjectConfig extends View {
-    constructor(projectId, el) {
-        super(el, 'div');
-        this.loadProject(projectId);
-    }
-    loadProject(projectId, force = false) {
-        this._projectId = projectId;
-        let prom = CyderAPI.Project.get(this._projectId, force);
-        if(prom instanceof Promise) {
-            prom.catch((error) => notifyRESTError(error));
-            this._ready = prom.then(() => { this.render(); this._plot(); });
+export const configPlots = {
+    props: {
+        p: {},
+    },
+    data(){
+        return {
+          loaded: false,
         }
-        else {
-            this._ready = Promise.resolve();
-        }
-        this.render();
-    }
-    _plot() {
-        let project = CyderAPI.Project.get(this._projectId);
-
-        project.config.pv
+    },
+    methods: {
+        plot(){
 
         var load = {
-          x: project.config.loadIndex,
-          y: project.config.load,
+          x: this.p.config.loadIndex,
+          y: this.p.config.load,
           name: 'Load',
           type: 'scatter',
           marker: {
@@ -42,8 +25,8 @@ export class ProjectConfig extends View {
         };
 
         var pv = {
-          x: project.config.pvIndex,
-          y: project.config.pv,
+          x: this.p.config.pvIndex,
+          y: this.p.config.pv,
           name: 'PV',
           type: 'scatter',
           marker: {
@@ -63,23 +46,28 @@ export class ProjectConfig extends View {
                 title: 'PV capacity in Time',
                 yaxis: {title: 'PV in KW'},
         };
-        Plotly.newPlot(this._html.plotLoad, dataLoad, layoutLoad);
-        Plotly.newPlot(this._html.plotPV, dataPV, layoutPV);
-    }
-    get _template() {
-        let project = CyderAPI.Project.get(this._projectId);
-        return `
-        <h1>Configuration</h1>
-        ${ IF(project instanceof Promise, () =>
-            `<br>
-            Loading...`
-        , () =>
-            `<h4>Project: ${ESCHTML(project.name)}</h4>
+        Plotly.newPlot('plotLoad', dataLoad, layoutLoad);
+        Plotly.newPlot('plotPV', dataPV, layoutPV);
+        },
+    },
+    watch: {
+        p: function (newP, oldP){
+            this.loaded=true;
+            this.plot();
+        },
+    },
+    template: `
+        <div>
+          <div v-if="loaded">
+            <h5 >Project: {{p.name}}</h5>
             <br>
-            <div data-name="plotLoad" style="height:70vh;"></div>
-            <br>
-            <div data-name="plotPV" style="height:70vh;"></div>`
-        )}
-        `;
-    }
+            <h4>Date: {{p.config.date}}</h4>
+            <p>Results are displayed for the day of minimal net load based on scada data and estimated PV Capacity from solar irradiation data.</p>
+          </div>
+          <br>
+          <div id="plotLoad" style="height:70vh;"> </div>
+          <div id="plotPV" style="height:70vh;"> </div>
+        </div>
+        `
 }
+
