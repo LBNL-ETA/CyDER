@@ -16,6 +16,7 @@ class Project(models.Model):
     status = models.CharField(max_length=20, default="NA")
     settings = models.TextField(default="null")
     config = models.TextField(default="null")
+    config_detail = models.TextField(default="null")
     results = models.TextField(default="null")
     def __str__(self):
         return self.name
@@ -57,7 +58,7 @@ class Project(models.Model):
             raise ProjectException("Can't configure a project when it is currently in " + self.stage)
         task = sim_worker.tasks.run_detailed_configuration.delay(self.id, json.loads(self.settings))
         self.task_id = task.id
-        self.stage = "Configuration"
+        self.stage = "Detail Configuration"
         self.status = "Pending"
         self.save()
 

@@ -20,6 +20,8 @@ def retrieve_projects_result():
             project.status = "Success"
             if project.stage == "Configuration":
                 project.config = json.dumps(task.result, separators=(',',':'))
+            elif project.stage == "Detail Configuration":
+                project.config_detail = json.dumps(task.result, separators=(',',':'))
             elif project.stage == "Simulation":
                 project.results = json.dumps(task.result, separators=(',',':'))
         elif task.status == FAILURE:
