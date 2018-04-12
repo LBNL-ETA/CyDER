@@ -39,6 +39,9 @@ class Project(models.Model):
         if self.stage == "Configuration":
             self.stage = "Modification"
             self.status = "NA"
+        elif self.stage == "Detail Configuration":
+            self.stage = "Modification"
+            self.status = "NA"
         elif self.stage == "Simulation":
             self.stage = "Configuration"
             self.status = "Success"
@@ -66,8 +69,8 @@ class Project(models.Model):
     def run_sim(self):
         if self.status == "Started" or self.status == "Pending":
             raise ProjectException("Can't run a simulation on a project when it is currently in " + self.stage)
-        if self.stage != "Simulation" and (not (self.stage == "Configuration" and self.status == "Success")):
-            raise ProjectException("A succeed configuration must be performed before running a simulation")
+        if self.stage != "Simulation" and (not ((self.stage == "Configuration" or self.stage == "Detail Configuration") and self.status == "Success")):
+            raise ProjectException("A successful configuration must be performed before running a simulation")
         task = sim_worker.tasks.run_simulation.delay(self.id, json.loads(self.settings))
         self.task_id = task.id
         self.stage = "Simulation"

@@ -2,21 +2,48 @@
 {% load static %}
 
 {% block css %}
+<style>
+  [v-cloak] {
+    display: none;
+  }
+  .center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 10%;
+}
+</style>
 {% endblock css %}
 
 {% block content %}
 <!--     <div id="project-results"></div> -->
-
-    <div id="app" v-if="loaded">
+    <h1>Configuration details</h1>
+    <div id="app">
         {% verbatim %}
-        <h1>Configuaration details</h1>
+        <div v-cloak v-if="loaded">
+                <h5 >Project: {{project.name}}</h5>
+            <br>
+            <h2>Date </h2>
+                <date-selector @timestampchanged="updatetimestamp" :datetimes="datetimes" > </date-selector>
+                Dates correspond to the the two lowest net load days of each month for the year 2016 based on corresponding scada data and solar capacity data estimated from solar irradiation data.
+            <br>
+        </div>
         <br>
-        <h2>Timestamp </h2>
-<!--         <timestamp-selector @timestampchanged="updatetimestamp" :datetimes="datetimes" > </timestamp-selector> -->
-        <br>
-        <h2>Graphs</h2>
-
+        <config-plots :key="componentKey" v-if="loaded" :d="details" :timestamp="timestamp"></config-plots>
         {% endverbatim %}
+        <div v-else>
+            <br>
+            Detailed configuration process is running, this may take up to a minute. The results will appear shortly on this page but feel free to explore the rest of the platform and return to this page later. 
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <img src="{% static 'cyder/loader.gif' %}" class="center" / >
+
+        </div>
     </div>
 
 {% endblock content %}
@@ -28,6 +55,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.js"></script>
 
     <script type="module">
+        import {DateSelector, configPlots} from '{% static 'cyder/projects/config_details.js' %}';
         import CyderAPI from '{% static 'cyder/api.js' %}';
         import notifyRESTError from '{% static 'cyder/api-notify-error.js' %}';
 
@@ -36,35 +64,31 @@
         window.onload = function() {
             CyderAPI.auth();
 
-
             // DEBUG: Keep a reference to the Vuejs app in window.app to make it available easily in the console for debug
             window.app = new Vue({
                 el: '#app',
-                components: {},
+                components: {DateSelector, configPlots},
                 data: {
                     project: null,
                     details:null,
                     datetimes: null,
                     timestamp: null,
                     parsedTimestamp: null,
+                    componentKey:0,
                     loaded: null,
                 },
 
-                // watch: {
-                //     timestamp: function (newTimestamp, oldTimestamp) {
-                //         if (this.geo!=null){
-                //             this.getPointFeatureResult();
-                //             this.getLineFeatureResult();
-                //             //changing the keys of components force re-render of the vue and thus updates the results on the map dynamically
-                //             this.componentKeyA++;
-                //             this.componentKeyB++;
-                //             this.componentKeyC++;
-                //             this.componentKeyP++;
-                //             this.parsedTimestamp=this.parsedTimestamp=moment(this.timestamp, "YYYY_MM_DD_HH_mm_ss").toDate();
-                //         }
-                //     },
-                // },
+                watch: {
+                    timestamp: function (newTimestamp, oldTimestamp) {
+                            this.componentKey++;
+                    },
+                },
                 methods: {
+                    initialise(id){
+                        this.update(id);
+                        setInterval(this.update, 5000, id);
+                    },
+
                     async loadProject(id) {
                     //loads project from pg db
                     //loads and parses results from pg db
@@ -74,7 +98,6 @@
                             this.details=JSON.parse(this.project.config_detail);
                             this.datetimes=Object.keys(this.details).sort();
                             this.timestamp=this.datetimes[0];
-                            this.parsedTimestamp=moment(this.timestamp, "YYYY-MM-DD").toDate();
                             this.loaded=true;
                         } catch(error) {
                             if(!(error instanceof CyderAPI.RESTError))
@@ -86,9 +109,16 @@
                     updatetimestamp(x){
                         this.timestamp=x;
                     },
-                },
+
+                    async update(id){
+                        let temp = await CyderAPI.Project.get(id, true);
+                        if (temp.status=='Success' && this.loaded!=true){
+                            this.loadProject(id);
+                            }
+                        }
+                    },
             });
-            app.loadProject("{{ project_id|escapejs }}");
+            app.initialise("{{ project_id|escapejs }}");
         };
 
     </script>

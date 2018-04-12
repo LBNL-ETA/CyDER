@@ -6,6 +6,9 @@
         .table td {
             vertical-align: middle;
         }
+        [v-cloak] {
+            display: none;
+        }
     </style>
 {% endblock css %}
 
@@ -14,6 +17,7 @@
     <br>
 
     <div id="project-list">
+    <div v-cloak>
     {% verbatim %}
         <table class="table table-hover">
             <thead>
@@ -40,14 +44,15 @@
                         <div class="btn-group">
                             <button type="button" class="btn btn-sm btn-primary" @click="action('revoke',p.id)" v-if="p.status === 'Pending' || p.status === 'Started'">Revoke</button>
                             <button type="button" class="btn btn-sm btn-primary"  @click="redirect(`./results/${encodeURI(p.id)}/`)" v-else-if="p.stage === 'Simulation' && p.status === 'Success'">Results</button>
-                            <button type="button" class="btn btn-sm btn-primary" @click="action('runSim',p.id)" v-else-if="p.stage === 'Simulation' || (p.stage === 'Configuration' && p.status === 'Success')">Run simulation</button>
+                            <button type="button" class="btn btn-sm btn-primary" @click="action('runSim',p.id)" v-else-if="p.stage === 'Simulation' || ((p.stage === 'Configuration'||p.stage === 'Detail Configuration' ) && p.status === 'Success')">Run simulation</button>
                             <button type="button" class="btn btn-sm btn-primary" @click="action('runConfig',p.id)" v-else>Run configuration</button>
                             <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <div v-if="p.stage === 'Simulation' || (p.stage === 'Configuration' && p.status === 'Success')">
+                                <div v-if="p.stage === 'Simulation' || ((p.stage === 'Configuration'||p.stage === 'Detail Configuration' ) && p.status === 'Success')">
                                     <button class="dropdown-item" @click="redirect(`./config/${encodeURI(p.id)}/`)" >See configuration</button>
+                                    <button class="dropdown-item" v-if="p.stage === 'Detail Configuration'" @click="redirect(`./config_details/${encodeURI(p.id)}/`)" >See detailed configuration</button>
                                     <button class="dropdown-item" @click="action('runConfig',p.id)">Re-run configuration</button>
                                 </div>
                                 <button class="dropdown-item" @click="redirect(`./edit/${encodeURI(p.id)}/`)" >Edit</button>
@@ -59,6 +64,7 @@
             </tbody>
         </table>
     {% endverbatim %}
+
     </div>
 
 

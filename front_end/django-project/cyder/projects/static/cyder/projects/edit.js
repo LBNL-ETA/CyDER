@@ -161,7 +161,6 @@ export const AddLoadLayer = {
     },
     methods: {
         async getLayer() {
-            let geojson = await CyderAPI.rest('GET', `/api/models/${encodeURI(this.modelName)}/geojson/`);
             let pointToLayer = (feature, latlng) => {
                 var circle = L.circle(latlng, {
                     color: 'red',
@@ -184,7 +183,7 @@ export const AddLoadLayer = {
 
                 return circle;
                 }
-            return L.geoJson(geojson, {
+            return L.geoJson(this.geojson, {
                 pointToLayer,
             });
         },
