@@ -9,6 +9,7 @@ import random
 import math
 import pandas
 import dateutil.parser
+import re
 
 
 def drop_column(table, column):
@@ -47,13 +48,18 @@ def run_configuration(id, project):
 # run_configuration returns the estimated PV production in time and estimated load in time
 
     import sim_worker.pv
-    import sim_worker.substation
+    # import sim_worker.substation
     import sim_worker.scada
     import sim_worker.scadaprofile as scp
     import sim_worker.solarprofile as sop
 
-    start = dateutil.parser.parse(project['start'])
-    end = dateutil.parser.parse(project['end'])
+    simDays = project['simulation_dates']
+    l=[]
+    for key in simDays:
+        l.append(min(simDays[key].items(), key=lambda x: x[1]))
+    day=min(l,key=lambda x: x[1])[0]
+    start=day + ' 07:00:00'
+    end=day + ' 19:00:00'
     substation =  project['model']
 
     add_pv = pandas.DataFrame.from_dict(project['addPv'])
@@ -73,7 +79,57 @@ def run_configuration(id, project):
     ev = []
 
 
-    return { 'pv': pv, 'pvIndex': pvIndex, 'ev': ev, 'load': load, 'loadIndex': loadIndex}
+    return { 'pv': pv, 'pvIndex': pvIndex, 'ev': ev, 'load': load, 'loadIndex': loadIndex, 'date': day }
+
+@app.task
+def run_detailed_configuration(id, project):
+# run_configuration will exploit the solar.csv sunlight data aswell as the scada baseload data through the solarprofile.py and scadaprofile.py modules
+# run_configuration returns the estimated PV production in time and estimated load in time
+
+    import sim_worker.pv
+    # import sim_worker.substation
+    import sim_worker.scada
+    import sim_worker.scadaprofile as scp
+    import sim_worker.solarprofile as sop
+
+    simDays = project['simulation_dates']
+    x=pandas.Series()
+    for key in simDays:
+        x=x.append(pandas.Series(list(simDays[key].keys())))
+    x=x.drop_duplicates().sort_values()
+    result={}
+    for day in x:
+        start=day + ' 07:00:00'
+        end=day + ' 19:00:00'
+        substation =  project['model']
+
+        add_pv = pandas.DataFrame.from_dict(project['addPv'])
+
+        if (add_pv.empty):
+            pv=[]
+            pvIndex=[]
+        else :
+            pv_nominal_capacity_kw = add_pv['power'].sum()
+            pv = sop.solar_profile(start, end, pv_nominal_capacity_kw)
+            pvIndex=pv.index.strftime('%Y-%m-%d %H:%M:%S').tolist()
+            pv = pv.iloc[:,0].tolist()
+
+        load = scp.scada_profile(start, end, substation)
+        loadIndex = load.to_frame().index.strftime('%Y-%m-%d %H:%M:%S').tolist()
+        load=load.tolist()
+        ev = []
+
+        temp={}
+        temp['pv']=pv
+        temp['pvIndex']=pvIndex
+        temp['ev']=ev
+        temp['load']=load
+        temp['loadIndex']=loadIndex
+        temp['date']=day
+        result[day]=temp
+
+
+    return result
 
 @app.task
 def run_simulation(id, project):
@@ -85,40 +141,59 @@ def run_simulation(id, project):
     from sim_worker.substation import Substation
     from sim_worker.scada import Scada
 
-    node_ids = []
-    network_ids = []
-    device_ids = []
+    simDays = project['simulation_dates']
+    l=[]
+    for key in simDays:
+        l.append(min(simDays[key].items(), key=lambda x: x[1]))
+    day=min(l,key=lambda x: x[1])[0]
+
+
+    pv_node_ids = []
+    pv_network_ids = []
+    pv_device_ids = []
     pv_nominal_capacities = []
+
+    load_node_ids = []
+    load_network_ids = []
+    load_device_ids = []
+    load_nominal_capacities = []
+
     substation = Substation('C:/Users/DRRC/Desktop/PGE_Models_DO_NOT_SHARE/' + project['model'] + '.sxst')
 
     i=0
     for p in project['addPv']:
-        node_ids.append(p['node_id'])
-        network_ids.append(p['feeder'])
+        pv_node_ids.append(p['node_id'])
+        pv_network_ids.append(p['feeder'])
         pv_nominal_capacities.append(-1*p['power'])
-        device_ids.append('PV' + str(i) )
+        pv_device_ids.append('PV' + str(i) )
         i=i+1
 
     # assuming load_nominal capacities is equivalent to the opposite of pv_nominal_capacities
     i=0
     for p in project['addLoad']:
-        node_ids.append(p['node_id'])
-        network_ids.append(p['feeder'])
-        pv_nominal_capacities.append(p['power'])
-        device_ids.append('Load' + str(i) )
+        load_node_ids.append(p['node_id'])
+        load_network_ids.append(p['feeder'])
+        load_nominal_capacities.append(p['power'])
+        load_device_ids.append('Load' + str(i) )
         i=i+1
 
 
-    substation.add_power_devices(node_ids=node_ids, network_ids=network_ids, device_ids=device_ids)
+    substation.add_power_devices(node_ids=pv_node_ids, network_ids=pv_network_ids, device_ids=pv_device_ids)
 
     pvfactory = PVFactory('sim_worker/solar.csv')
-    pvs = pvfactory.create(pv_nominal_capacities, device_ids)
+    pvs = pvfactory.create(pv_nominal_capacities, pv_device_ids)
 
     scada = Scada('C:/Users/DRRC/Desktop/raw_SCADA/' + project['model'] + '.csv')
 
-    start = dateutil.parser.parse(project['start'])
-    end = dateutil.parser.parse(project['end'])
-    timestep = str(60*project['timestep']) + 'T'
+    # simDays = project['simulation_dates']
+    # l=[]
+    # for key in simDays:
+    #     l.append(min(simDays[key].items(), key=lambda x: x[1]))
+    # day=min(l,key=lambda x: x[1])[0]
+
+    start=day + ' 07:00:00'
+    end=day + ' 19:00:00'
+    timestep = '60T'
 
     datetimes = pandas.date_range(start, end, freq= timestep).tolist()
 
@@ -147,14 +222,22 @@ def run_simulation(id, project):
         df=df.iloc[:,columnNumbers]
         df=df.set_index('node_id')
         df = df.where((pandas.notnull(df)), None)
+        df['max']=df[['voltage_A','voltage_B','voltage_C']].max(axis=1)
+        df['min']=df[['voltage_A','voltage_B','voltage_C']].min(axis=1)
+        worstHighVoltage=df.loc[df['max'].idxmax()]
+        wostLowVoltage=df.loc[df['min'].idxmin()]
+        df=df.drop('min', axis=1)
+        df=df.drop('max', axis=1)
         keys=df.index.tolist()
         for index, row in df.iterrows():
             values.append(row.to_dict())
         df=dict(zip(keys, values))
+        df['worstHighVoltage']=worstHighVoltage.to_dict()
+        df['wostLowVoltage']=wostLowVoltage.to_dict()
         dfs.append(df)
         indexes.append(datetimes[i].strftime("%Y_%m_%d_%H_%M_%S"))
         i=i+1
-        print(df.head())
 
-    d = dict(zip(indexes, dfs))
+        d = dict(zip(indexes, dfs))
+    
     return json.dumps(d)

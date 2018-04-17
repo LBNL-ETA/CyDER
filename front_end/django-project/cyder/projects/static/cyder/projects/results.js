@@ -316,3 +316,85 @@ export const VdPlot = {
     },
     template: '<div id="plot" style="height:70vh;"> </div>'
 }
+
+//The following component is responsible for creating and displaying a Worst Voltage/Feeder Distance /Time (VFDT) 
+export const Vfdt = {
+    props: {
+        results: {},
+        datetimes: null,
+    },
+    data(){
+        return {
+        worstHighVoltages: [],
+        worstLowVoltages:[],
+        distancesHigh: [],
+        distancesLow: [],
+        times:[],
+        }
+    },
+    methods: {
+        plot(){
+            let xValues = this.times;
+
+            let yValuesHigh = this.worstHighVoltages;
+
+            let yValuesLow = this.worstLowVoltages;
+
+            let traceHigh = {
+                  x: xValues,
+                  y: yValuesHigh,
+                  name: 'Worst High Votages',
+                  autobinx: true, 
+                  histnorm: "count", 
+                  marker: {
+                    color: "rgba(255, 100, 102, 0.7)", 
+                     line: {
+                      color:  "rgba(255, 100, 102, 1)", 
+                      width: 1
+                    }
+                  },  
+                  opacity: 0.5, 
+                  type: "bar", 
+                };
+
+            let traceLow = {
+                  x: xValues,
+                  y: yValuesLow, 
+                  autobinx: true, 
+                  marker: {
+                          color: "rgba(100, 200, 102, 0.7)",
+                           line: {
+                            color:  "rgba(100, 200, 102, 1)", 
+                            width: 1
+                    } 
+                       }, 
+                  name: "Worst Low Voltages", 
+                  opacity: 0.75, 
+                  type: "bar", 
+                };
+            var data = [traceHigh, traceLow];
+            var layout = {
+                  barmode: "overlay", 
+                  title: "Worst High and Low Voltages in Time",  
+                  yaxis: {title: "Worst High Low Voltages in pu"}
+                };
+            Plotly.newPlot('VFDTplot', data, layout);
+        },
+        fetchData(){
+            for (let timestamp in this.results){
+                this.worstHighVoltages.push(this.results[timestamp]['worstHighVoltage'].max);
+                this.worstLowVoltages.push(this.results[timestamp]['worstLowVoltage'].min);
+                this.times.push(timestamp);
+            }
+        }
+    },
+    watch: {
+    },
+    created: function(){
+        this.fetchData();
+    },
+    mounted: function(){
+        this.plot();
+    },
+    template: '<div id="VFDTplot" style="height:80vh;"> </div>'
+}
