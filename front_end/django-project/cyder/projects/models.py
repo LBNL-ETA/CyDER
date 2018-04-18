@@ -4,6 +4,7 @@ import json
 from celery.result import AsyncResult
 import sim_worker.celery
 import sim_worker.tasks
+import pandas
 
 class ProjectException(Exception):
     pass
@@ -31,6 +32,12 @@ class Project(models.Model):
             self.stage = "Modification"
             self.status = "NA"
         super(Project, self).save(*args, **kwargs)
+
+    def saveBis(self, *args, **kwargs):
+        if self.old_settings != self.settings:
+            self.old_settings = self.settings
+        super(Project, self).save(*args, **kwargs)
+
 
     def revoke(self):
         task = AsyncResult(self.task_id, app=sim_worker.celery.app)
@@ -71,7 +78,8 @@ class Project(models.Model):
             raise ProjectException("Can't run a simulation on a project when it is currently in " + self.stage)
         if self.stage != "Simulation" and (not ((self.stage == "Configuration" or self.stage == "Detail Configuration") and self.status == "Success")):
             raise ProjectException("A successful configuration must be performed before running a simulation")
-        task = sim_worker.tasks.run_simulation.delay(self.id, json.loads(self.settings))
+        settings=json.loads(self.settings)
+        task = sim_worker.tasks.run_simulation.delay(self.id, settings, settings['nextSimDay'])
         self.task_id = task.id
         self.stage = "Simulation"
         self.status = "Pending"

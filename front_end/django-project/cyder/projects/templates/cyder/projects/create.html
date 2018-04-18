@@ -81,10 +81,16 @@
                                 'type': 'FeatureCollection'
                             }
                             let simDays = {};
+                            let simDaysList = [];
                             for (let i=0; i<this.selectedFeeders.length; i++){
                                 geo.features=geo.features.concat(this.feeders[ this.selectedFeeders[i] ]);
                                 simDays[ this.selectedFeeders[i] ]=this.sim_info[ this.selectedFeeders[i] ];
+                                simDaysList=simDaysList.concat(Object.keys(simDays[this.selectedFeeders[i]]));
                             }
+                            simDaysList.sort();
+                            simDaysList = simDaysList.filter(function(item, pos, self) {
+                                return self.indexOf(item) == pos;
+                            });
                             let project = {
                                 name: this.projectName,
                                 settings: {
@@ -92,6 +98,8 @@
                                     addPv: [],
                                     addLoad: [],
                                     simulation_dates: simDays,
+                                    simDaysList: simDaysList,
+                                    nextSimDay: simDaysList[0],
                                     // end: "2016-05-19T22:00",
                                     timestep: 1,
                                     feeders: this.selectedFeeders,
