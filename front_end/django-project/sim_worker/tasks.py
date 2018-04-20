@@ -15,5 +15,5 @@ def run_detailed_configuration(id, project):
     return
 
 @app.task
-def run_simulation(id, project):
+def run_simulation(id, project, day):
     return
