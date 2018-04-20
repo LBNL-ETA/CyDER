@@ -76,3 +76,13 @@ class Project(models.Model):
         self.stage = "Simulation"
         self.status = "Pending"
         self.save()
+
+class SimulationResult(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    date = models.CharField(max_length=70, blank=True)
+    results = models.TextField(default="null")
+
+class ComponentResult(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    component = models.CharField(max_length=70, blank=True)
+    results = models.TextField(default="null")
