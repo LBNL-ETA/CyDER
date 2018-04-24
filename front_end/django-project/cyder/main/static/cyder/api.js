@@ -197,13 +197,16 @@ class ProjectRes extends Res.DeleteMixin(Res.WriteMixin(Res)) {
     }
 }
 
+class ProjectResultsRes extends Res.DeleteMixin(Res.WriteMixin(Res)) {}
+
 let Model = new Res('/api/models/', 'name');
 let Node = new NestedRes(Model, 'nodes/', 'node_id');
 let Device = new NestedRes(Model, 'devices/', 'id');
 let Load = new NestedRes(Model, 'loads/', 'device');
 let PV = new NestedRes(Model, 'pvs/', 'device');
 let Project = new ProjectRes('/api/projects/', 'id');
+let ProjectResults = new ProjectResultsRes('/api/project-results/', 'id')
 
-export { auth, rest, RESTError, Model, Node, Device, Load, PV, Project };
-let CyderAPI = { auth, rest, RESTError, Model, Node, Device, Load, PV, Project };
+export { auth, rest, RESTError, Model, Node, Device, Load, PV, Project, ProjectResults };
+let CyderAPI = { auth, rest, RESTError, Model, Node, Device, Load, PV, Project, ProjectResults };
 export default CyderAPI;

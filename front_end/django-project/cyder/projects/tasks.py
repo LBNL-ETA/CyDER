@@ -11,9 +11,7 @@ import sim_worker.celery
 def retrieve_projects_result():
     projectsInWork = Project.objects.filter(Q(status="Pending") | Q(status="Started"))
     for project in projectsInWork:
-        print(project)
         tasks = json.loads(project.task_id)
-        print(tasks)
         if tasks:
             status = "Success"
             for task_id in tasks:
@@ -28,13 +26,19 @@ def retrieve_projects_result():
                     elif project.stage == "Detail Configuration":
                         project.config_detail = json.dumps(task.result, separators=(',',':'))
                     elif project.stage == "Simulation":
-                        print(task.result)
-                        date=task.result['date']
-                        print(date)
-                        results=json.dumps(task.result, separators=(',',':'))
-                        simres=SimulationResult(project=project, date=date, results=results )
-                        simres.save()
+                        if (len(SimulationResult.objects.filter(Q(project=project)))<=len(tasks)) and (not SimulationResult.objects.filter(Q(project=project) & Q(task=task))) :
+                            date=task.result['date']
+                            results=json.dumps(task.result['results'], separators=(',',':'))
+                            SimResult=SimulationResult(project=project, task=task,  date=date, results=results )
+                            SimResult.save()
+                        elif len(SimulationResult.objects.filter(Q(project=project)))==len(tasks):
+                            getComponentResults()
                 elif task.status == FAILURE:
                     project.status = "Failure"
             project.status = status
         project.save()
+
+
+def getComponentResults(): 
+    
+    return

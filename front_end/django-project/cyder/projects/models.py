@@ -96,6 +96,7 @@ class Project(models.Model):
 
 class SimulationResult(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    task = models.CharField(max_length=70, blank=True)
     date = models.CharField(max_length=70, blank=True)
     results = models.TextField(default="null")
 

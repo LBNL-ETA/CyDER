@@ -6,8 +6,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route, list_route
 from .models import *
-from .serializers import ProjectSerializer
+from .serializers import ProjectSerializer, SimulationResultSerializer
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -72,4 +73,17 @@ class ProjectViewSet(viewsets.ModelViewSet):
         except ProjectException as e:
             return Response({ "detail" : str(e) }, status=status.HTTP_401_UNAUTHORIZED)
 
+class ProjectResultsViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    queryset = Project.objects.all().order_by('-id')
+    serializer_class = ProjectSerializer
+    lookup_field = 'id'
+
+    def retrieve(self, request, *args, **kwargs):
+        results = {}
+        for obj in SimulationResult.objects.filter(Q(project=self.get_object())):
+            results[obj.date]=obj.results
+        return Response(results)
+
 apirouter.register(r'projects', ProjectViewSet)
+apirouter.register(r'project-results', ProjectResultsViewSet)
