@@ -125,7 +125,12 @@ export async function createPVLayer(modelName, onEach = ()=>{}) {
     let layer = L.layerGroup([]);
     for(let pv of pvs.values()) {
         let device = devices.get(pv.device);
-        let marker = L.circleMarker([device.latitude, device.longitude]);
+        let marker = L.circle([device.latitude, device.longitude], {
+            color: 'blue',
+            weight: 2,
+            fillOpacity: 1,
+            radius: 5,
+        });
         onEach(pv, device, marker);
         layer.addLayer(marker);
     }
@@ -140,7 +145,12 @@ export async function createLoadLayer(modelName, onEach = ()=>{}) {
     let layer = L.layerGroup([]);
     for(let load of loads.values()) {
         let device = devices.get(load.device);
-        let marker = L.circleMarker([device.latitude, device.longitude]);
+        let marker = L.circle([device.latitude, device.longitude], {
+            color: 'blue',
+            weight: 2,
+            fillOpacity: 1,
+            radius: 5,
+        });
         onEach(load, device, marker);
         layer.addLayer(marker);
     }
