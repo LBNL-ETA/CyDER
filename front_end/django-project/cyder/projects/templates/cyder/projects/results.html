@@ -49,6 +49,9 @@
         <h1>Results</h1>
         <br>
         <br>
+        <h2>Date </h2>
+        <date-selector @datechanged="updatedate" :dates="dates" > </date-selector>
+        <br>
         <h2>Timestamp </h2>
         <timestamp-selector @timestampchanged="updatetimestamp" :datetimes="datetimes" > </timestamp-selector>
         <br>
@@ -96,7 +99,7 @@
     <script type="module">
         import { LeafletMap } from '{% static 'cyder/models/viewer.js' %}';
         import { ModelLayer } from '{% static 'cyder/models/layers.js' %}';
-        import { ResultsLayerA, ResultsLayerB,  ResultsLayerC, LegendLayer, VdPlot, TimestampSelector, Vfdt} from '{% static 'cyder/projects/results.js' %}';
+        import { ResultsLayerA, ResultsLayerB,  ResultsLayerC, LegendLayer, VdPlot, DateSelector, TimestampSelector, Vfdt} from '{% static 'cyder/projects/results.js' %}';
         import CyderAPI from '{% static 'cyder/api.js' %}';
         import notifyRESTError from '{% static 'cyder/api-notify-error.js' %}';
 
@@ -109,7 +112,7 @@
             // DEBUG: Keep a reference to the Vuejs app in window.app to make it available easily in the console for debug
             window.app = new Vue({
                 el: '#app',
-                components: { LeafletMap, ModelLayer, ResultsLayerA, ResultsLayerB,  ResultsLayerC, LegendLayer, VdPlot, TimestampSelector, Vfdt},
+                components: { LeafletMap, ModelLayer, ResultsLayerA, ResultsLayerB,  ResultsLayerC, LegendLayer, VdPlot, TimestampSelector, DateSelector, Vfdt},
                 data: {
                     //The component keys are here used to force the re-render of the map and plot result vue components
                     //These component keys must always be different from one another
@@ -119,8 +122,11 @@
                     componentKeyP: 300,
                     project: null,
                     layer: '',
+                    fullResults: null,
                     results: null,
                     datetimes: null,
+                    date:null,
+                    dates: null,
                     timestamp: null,
                     parsedTimestamp: null,
                     geo: null,
@@ -153,8 +159,10 @@
                     //collects geojson model data
                         try {
                             this.project = await CyderAPI.Project.get(id, true);
-                            this.results=JSON.parse(this.project.results);
-                            let r= this.project.results;
+                            this.fullResults= await CyderAPI.ProjectResults.get(id, true);
+                            this.dates=Object.keys(this.fullResults).sort();
+                            this.date=this.dates[0];
+                            this.results=JSON.parse(this.fullResults[this.date]);
                             this.datetimes=Object.keys(this.results).sort();
                             this.timestamp=this.datetimes[0];
                             this.parsedTimestamp=moment(this.timestamp, "YYYY_MM_DD_HH_mm_ss").toDate();
@@ -162,13 +170,26 @@
                             this.loadFeatures();
                             this.getPointFeatureResult();
                             this.getLineFeatureResult();
-                            // //this.test();
                             this.loaded=true;
                         } catch(error) {
                             if(!(error instanceof CyderAPI.RESTError))
                                 throw(error);
                             notifyRESTError(error);
                         }
+                    },
+
+                    loadDateResults(){
+
+                            this.loaded=false
+                            this.results=JSON.parse(this.fullResults[this.date]);
+                            this.datetimes=Object.keys(this.results).sort();
+                            this.timestamp=this.datetimes[0];
+                            this.parsedTimestamp=moment(this.timestamp, "YYYY_MM_DD_HH_mm_ss").toDate();
+                            this.geo = this.project.settings.geojson;
+                            this.loadFeatures();
+                            this.getPointFeatureResult();
+                            this.getLineFeatureResult();
+                            this.loaded=true;
                     },
 
                     loadFeatures(){
@@ -219,6 +240,11 @@
                     },
                     getMap: function(m){
                         this.map=m;
+                    },
+
+                    updatedate(x){
+                        this.date=x;
+                        this.loadDateResults();
                     },
 
                     updatetimestamp(x){

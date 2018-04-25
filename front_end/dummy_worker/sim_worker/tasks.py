@@ -11,8 +11,7 @@ import dateutil.parser
 import glob
 import re
 
-from pv import PVFactory
-from scada import Scada
+from sim_worker.scada import Scada
 import sim_worker.scadaprofile as scp
 import sim_worker.solarprofile as sop
 
@@ -112,32 +111,12 @@ def run_configuration(id, project):
     # end = '2016-06-18 00:00:00'
     # substation =  'BU0006'
 
-    simDays = dateutil.parser.parse(project['simulation_dates'])
-    l=[]
-    for key in simDays:
-        simDays.append(min(simDays[key].items(), key=lambda x: x[1]))
-    day=min(l,key=lambda x: x[1])[0]
-    start=day + ' 07:00:00'
-    end=day + ' 19:00:00'
-    
-    substation =  project['model']
 
-    
-    # In the following lines, the pandas Datafames and Series returned by the solarprofile and scadaprofile scripts are manipulated in such a way that they are JSON serializable (in order for the data to be stored and saved in the project settings)
-    add_pv = pandas.DataFrame.from_dict(project['addPv'])
 
-    if (add_pv.empty):
-        pv=[]
-        pvIndex=[]
-    else : 
-        pv_nominal_capacity_kw = add_pv['power'].sum()
-        pv = sop.solar_profile(start, end, pv_nominal_capacity_kw)
-        pvIndex=pv.index.strftime('%Y-%m-%d %H:%M:%S').tolist()
-        pv = pv.iloc[:,0].tolist()
-
-    load = scp.scada_profile(start, end, substation)
-    loadIndex = load.to_frame().index.strftime('%Y-%m-%d %H:%M:%S').tolist()
-    load=load.tolist()
+    load = []
+    loadIndex = []
+    pv=[]
+    pvIndex=[]
     ev = []
 
 
@@ -148,38 +127,29 @@ def run_configuration(id, project):
 
 
 @app.task
-def run_simulation(id, project):
+def run_simulation(id, project, day):
 # run_simulation in the dummy-work reads and formats sample reuslts saved in .csv in the dummy-worker directory
 # returns the results in json format to be saved in the results field of the project as it would be done in the real worker
 
-    path = "sim_worker/results"
-    filenames = glob.glob(path + "/*.csv")
-    filenames.sort()
+    # path = "./sim_worker/resultsLongSim"
+    # filenames = glob.glob(path + "/*.csv")
+    # filenames.sort()
 
-    dfs = []
-    indexes = []
+    # dfs = pandas.Series()
+    # indexes = []
+    result={'test': 101, 'date': day}
 
-    for filename in filenames:
-        keys=[]
-        values=[]
-        df=pandas.read_csv(filenames[0])
-        df=df.drop(df.columns[0],axis=1)
-        df=df.drop(columns=['node_object'])
-        df=df.set_index('node_id')
-        df = df.where((pandas.notnull(df)), None)
-        if (filename==filenames[0]):
-            df.loc[df['voltage_A'] > 0 , 'voltage_A'] = 0
-        keys=df.index.tolist()
-        print("\n")
-        for index, row in df.iterrows():
-            values.append(row.to_dict())
-        df=dict(zip(keys, values))
-        dfs.append(df)
-        filename=re.sub(r'sim_worker/results/', '', filename)
-        filename=re.sub(r'.csv', '', filename)
-        indexes.append(filename)
+    # for filename in filenames:
 
-    d = dict(zip(indexes, dfs))
-    return json.dumps(d, indent=4)
+    #     df=pandas.read_csv(filename)
+    #     filename=re.sub(r'./sim_worker/resultsLongSim/', '', filename)
+    #     filename=re.sub(r'.csv', '', filename)
+    #     dfs[datetime.datetime.strptime(filename, "%Y_%m_%d_%H_%M_%S")]=df.to_dict()
+    # days=dfs.groupby(by=[dfs.index.day, dfs.index.month, dfs.index.year])
+    # for day in days:
+    #     result[day[1].index[0].date()]=day[1].to_dict()
+            
+            
+    return result
 
    

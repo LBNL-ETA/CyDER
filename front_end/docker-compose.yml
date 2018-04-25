@@ -34,7 +34,7 @@ http:
         links:
                 - wsgi
                 
-dummy_worker:
-        build: dummy_worker
-        links:
-                - redis
+# dummy_worker:
+#         build: dummy_worker
+#         links:
+#                 - redis

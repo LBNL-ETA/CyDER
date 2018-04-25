@@ -30,6 +30,27 @@ export const TimestampSelector = {
     `
 }
 
+export const DateSelector = {
+    props:{ 
+        dates: null,
+    },
+    data (){
+        return {
+            date: '',
+        }
+    },
+    watch: {
+        date : function(newDate, oldDate){
+            this.$emit('datechanged',this.date);
+        }
+    },
+    template : `
+        <select class="form-control form-control-lg" v-model="date">
+            <option v-for="t in dates" >{{ t }}</option>
+        </select>
+    `
+}
+
 
 
 //The implementation of the chloropeth map results visualiser was inspired by: http://leafletjs.com/examples/choropleth/

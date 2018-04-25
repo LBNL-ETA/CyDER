@@ -2,11 +2,11 @@ from celery import Celery
 from kombu import Exchange, Queue
 
 app = Celery('sim_worker',
-            broker='redis://redis:6379/0',
-            backend='redis://redis:6379/0',
-             # broker='redis://redis:6379/0', # <= redis IP goes here
-             # backend='redis://redis:6379/0', # <= redis IP goes here
-             include=['sim_worker.tasks'])
+            # broker='redis://redis:6379/0',
+            # backend='redis://redis:6379/0',
+            broker='redis://128.3.111.21:6379/0', # <= redis IP goes here
+            backend='redis://128.3.111.21:6379/0', # <= redis IP goes here
+            include=['sim_worker.tasks'])
 
 # This configuration should be the same evrey where the sim_worker celery application is used
 # /front-end/django-project/sim_worker/celery.py
@@ -14,7 +14,7 @@ app = Celery('sim_worker',
 # /front_end/dummy_worker/sim_worker/celery.py
 # If you modify one, please copy/paste the modifications into the others
 app.conf.update(
-    CELERY_TASK_RESULT_EXPIRES=3600,
+    CELERY_TASK_RESULT_EXPIRES=600,
     CELERY_TRACK_STARTED=True,
     CELERY_ACCEPT_CONTENT = ['json'],
     CELERY_RESULT_SERIALIZER = 'json',
