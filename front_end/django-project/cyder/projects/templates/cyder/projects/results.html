@@ -47,6 +47,8 @@
     <div id="app" v-if="loaded">
         {% verbatim %}
         <h1>Results</h1>
+        <vfdt v-if="loaded" :fullresults="fullresults" :dates="dates"></vfdt>
+        <br>
         <br>
         <br>
         <h2>Date </h2>
@@ -77,11 +79,7 @@
         <br>
         <br>
         <br>
-        <h2>Worst High/Low Voltages</h2>
-        <vfdt v-if="loaded" :results="results" :datetimes="datetimes"></vfdt>
-        <br>
-        <br>
-        <br>
+
         {% endverbatim %}
     </div>
 
@@ -122,7 +120,7 @@
                     componentKeyP: 300,
                     project: null,
                     layer: '',
-                    fullResults: null,
+                    fullresults: null,
                     results: null,
                     datetimes: null,
                     date:null,
@@ -159,10 +157,10 @@
                     //collects geojson model data
                         try {
                             this.project = await CyderAPI.Project.get(id, true);
-                            this.fullResults= await CyderAPI.ProjectResults.get(id, true);
-                            this.dates=Object.keys(this.fullResults).sort();
+                            this.fullresults= await CyderAPI.ProjectResults.get(id, true);
+                            this.dates=Object.keys(this.fullresults).sort();
                             this.date=this.dates[0];
-                            this.results=JSON.parse(this.fullResults[this.date]);
+                            this.results=JSON.parse(this.fullresults[this.date]);
                             this.datetimes=Object.keys(this.results).sort();
                             this.timestamp=this.datetimes[0];
                             this.parsedTimestamp=moment(this.timestamp, "YYYY_MM_DD_HH_mm_ss").toDate();
@@ -181,7 +179,7 @@
                     loadDateResults(){
 
                             this.loaded=false
-                            this.results=JSON.parse(this.fullResults[this.date]);
+                            this.results=JSON.parse(this.fullresults[this.date]);
                             this.datetimes=Object.keys(this.results).sort();
                             this.timestamp=this.datetimes[0];
                             this.parsedTimestamp=moment(this.timestamp, "YYYY_MM_DD_HH_mm_ss").toDate();

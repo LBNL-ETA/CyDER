@@ -341,21 +341,19 @@ export const VdPlot = {
 //The following component is responsible for creating and displaying a Worst Voltage/Feeder Distance /Time (VFDT) 
 export const Vfdt = {
     props: {
-        results: {},
-        datetimes: null,
+        fullresults: {},
+        dates: null,
     },
     data(){
         return {
         worstHighVoltages: [],
         worstLowVoltages:[],
-        distancesHigh: [],
-        distancesLow: [],
-        times:[],
+        date_values:[],
         }
     },
     methods: {
         plot(){
-            let xValues = this.times;
+            let xValues = this.date_values;
 
             let yValuesHigh = this.worstHighVoltages;
 
@@ -397,15 +395,23 @@ export const Vfdt = {
             var layout = {
                   barmode: "overlay", 
                   title: "Worst High and Low Voltages in Time",  
-                  yaxis: {title: "Worst High Low Voltages in pu"}
+                  yaxis: {title: "Worst High Low Voltages in pu"},
+                  xaxis: {type: 'category'}
                 };
             Plotly.newPlot('VFDTplot', data, layout);
         },
         fetchData(){
-            for (let timestamp in this.results){
-                this.worstHighVoltages.push(this.results[timestamp]['worstHighVoltage'].max);
-                this.worstLowVoltages.push(this.results[timestamp]['worstLowVoltage'].min);
-                this.times.push(timestamp);
+            for (let date in this.fullresults) {
+                let results=JSON.parse(this.fullresults[date]);
+                let DayWorstHighVoltages=[];
+                let DayWorstLowVoltages=[];
+                for (let timestamp in results){
+                    DayWorstHighVoltages.push(results[timestamp]['worstHighVoltage'].max);
+                    DayWorstLowVoltages.push(results[timestamp]['worstLowVoltage'].min);
+                }
+                this.worstHighVoltages.push(Math.max(...DayWorstHighVoltages));
+                this.worstLowVoltages.push(Math.min(...DayWorstLowVoltages));
+                this.date_values.push(date);
             }
         }
     },

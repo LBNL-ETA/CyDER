@@ -59,7 +59,7 @@ def run_configuration(id, project):
         l.append(min(simDays[key].items(), key=lambda x: x[1]))
     day=min(l,key=lambda x: x[1])[0]
     start=day + ' 07:00:00'
-    end=day + ' 19:00:00'
+    end=day + ' 18:00:00'
     substation =  project['model']
 
     add_pv = pandas.DataFrame.from_dict(project['addPv'])
@@ -100,7 +100,7 @@ def run_detailed_configuration(id, project):
     result={}
     for day in x:
         start=day + ' 07:00:00'
-        end=day + ' 19:00:00'
+        end=day + ' 18:00:00'
         substation =  project['model']
 
         add_pv = pandas.DataFrame.from_dict(project['addPv'])
@@ -132,7 +132,7 @@ def run_detailed_configuration(id, project):
     return result
 
 @app.task
-def run_simulation(id, project):
+def run_simulation(id, project, day):
 # run_simulation prepares and formats the data from the project settings and launches the simulation through the cymdist python api
  # run_simulation returns  in json format the simulation results that will be saved in the results field of the project
 
@@ -141,11 +141,7 @@ def run_simulation(id, project):
     from sim_worker.substation import Substation
     from sim_worker.scada import Scada
 
-    simDays = project['simulation_dates']
-    l=[]
-    for key in simDays:
-        l.append(min(simDays[key].items(), key=lambda x: x[1]))
-    day=min(l,key=lambda x: x[1])[0]
+
 
 
     pv_node_ids = []
@@ -192,7 +188,7 @@ def run_simulation(id, project):
     # day=min(l,key=lambda x: x[1])[0]
 
     start=day + ' 07:00:00'
-    end=day + ' 19:00:00'
+    end=day + ' 18:00:00'
     timestep = '60T'
 
     datetimes = pandas.date_range(start, end, freq= timestep).tolist()
@@ -225,7 +221,7 @@ def run_simulation(id, project):
         df['max']=df[['voltage_A','voltage_B','voltage_C']].max(axis=1)
         df['min']=df[['voltage_A','voltage_B','voltage_C']].min(axis=1)
         worstHighVoltage=df.loc[df['max'].idxmax()]
-        wostLowVoltage=df.loc[df['min'].idxmin()]
+        worstLowVoltage=df.loc[df['min'].idxmin()]
         df=df.drop('min', axis=1)
         df=df.drop('max', axis=1)
         keys=df.index.tolist()
@@ -233,11 +229,14 @@ def run_simulation(id, project):
             values.append(row.to_dict())
         df=dict(zip(keys, values))
         df['worstHighVoltage']=worstHighVoltage.to_dict()
-        df['wostLowVoltage']=wostLowVoltage.to_dict()
+        df['worstLowVoltage']=worstLowVoltage.to_dict()
         dfs.append(df)
         indexes.append(datetimes[i].strftime("%Y_%m_%d_%H_%M_%S"))
         i=i+1
 
-        d = dict(zip(indexes, dfs))
+    d = dict(zip(indexes, dfs))
+    r={}
+    r['results']=d
+    r['date']=day
     
-    return json.dumps(d)
+    return r
