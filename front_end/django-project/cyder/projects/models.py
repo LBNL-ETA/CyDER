@@ -9,7 +9,13 @@ import pandas
 class ProjectException(Exception):
     pass
 
-# Create your models here.
+# NOTE REGARDING PROJECT EDITIONS:
+#     Once simulations have been launched for a given project, if this project is edited, 
+#     the previous simulation rusults will not be ovewritten and will still be displayed on the results page.
+#     To obtain only new results, a new project must created.
+#     It is probably wise in the next developments to make sure that on edition of an already simulated project, 
+#     all "SimulationResult" model intances associated to the "Project" model instance are deleted.
+
 class Project(models.Model):
     name = models.CharField(max_length=50)
     task_id = models.TextField(default="null")
