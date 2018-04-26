@@ -356,7 +356,7 @@ def setData(projectPath, inputNames, inputValues, simulationTime):
                " the connection is closed.".format(RtlabApi.GetStopTime()))
 
 
-def getData(projectPath, outputNames, simulationTime):
+def getData(memory, outputNames, simulationTime):
     """
     Function to exchange data with a running model.
 
@@ -374,7 +374,7 @@ def getData(projectPath, outputNames, simulationTime):
         ## Connect to a running model using its name.
         print ("This is the modelState={!s} in getData".format(modelState))
     else:
-        projectName = os.path.abspath(projectPath)
+        projectName = os.path.abspath(memory['pp'])
         #log.info("=====Path to the project={!s}".format(projectName))
         RtlabApi.OpenProject(projectName)
     if (simulationTime < RtlabApi.GetStopTime() or RtlabApi.GetStopTime() <= 0.0):
@@ -414,8 +414,12 @@ def getData(projectPath, outputNames, simulationTime):
                     if info[1][0] != 11:  # 'There is currently no data waiting.'
                         ## If a exception occur: stop waiting
                         log.error ("=====getData(): An error occured at simulationTime={!s} while getting the " \
-                               "output values for the output names={!s}.".format(simulationTime, outputNames))
-                        raise
+                               "output values for the output names={!s}. The last seen output values={!s} will be sent".format(simulationTime,
+                               outputNames, memory['outputsLast']))
+                        #raise
+                        # To make sure that the HIL run, we won't raised nay exception if output values can't be retrieved, we will rather
+                        # sent the last seen output values to avoid breaking the model
+                        outputValues=memory['outputsLast']
 
             ## if the model is not running
             else:
@@ -499,7 +503,7 @@ def setGetData(simulationTime, inputNames, inputValues, outputNames, memory):
         log.info ("=====exchange(): Ready to get the output variables={!s} at time={!s}.".format(outputNames, simulationTime))
         if (isinstance(outputNames, list)):
             # outputValues = getData(projectPath, tuple(outputNames), simulationTime)
-            outputValues = getData(memory['pp'], tuple(outputNames), simulationTime)
+            outputValues = getData(memory, tuple(outputNames), simulationTime)
             len_outputNames = len(outputNames)
             len_outputValues = len(outputValues)
             if(len_outputNames <> len_outputValues):
@@ -509,7 +513,7 @@ def setGetData(simulationTime, inputNames, inputValues, outputNames, memory):
                      len_outputNames, outputValues, len_outputValues))
                 raise
         else:
-            outputValues = getData(memory['pp'], outputNames, simulationTime)
+            outputValues = getData(memory, outputNames, simulationTime)
         log.info("=====exchange(): The output variables={!s} were successfully retrieved.".format(outputNames))
 
         if(outputValues is None):
@@ -574,56 +578,9 @@ def exchange(projectPath, simulationTime, inputNames, inputValues, outputNames, 
         # Check if time or inputs have changed prior to updating the outputs
         if(abs(simulationTime - memory['tLast']) > 1e-6 or newInputs > 0):
             memory['tLast'] = simulationTime
+            memory['outputsLast'] = memory['outputs']
             log.info ("=====exchange(): Ready to exchange data with the OPAL-RT running model.")
             memory = setGetData(simulationTime, inputNames, inputValues, outputNames, memory)
-            # if(inputNames is not None):
-            #     log.info ("=====exchange(): Ready to set the input variables={!s} with values={!s} at time={!s}.".format(inputNames, inputValues, simulationTime))
-            #     if (isinstance(inputNames, list)):
-            #         len_inputNames = len(inputNames)
-            #         len_inputValues = len(inputValues)
-            #         if(len_inputNames <> len_inputValues):
-            #             log.error ("=====exchange(): An error occured at simulationTime={!s}. "\
-            #                     "Length of inputNames={!s} ({!s}) does not match " \
-            #                     "length of input values={!s} ({!s}).".format(simulationTime, inputNames,
-            #                     len_inputNames, inputValues, len_inputValues))
-            #             raise
-            #         setData(memory['pp'], tuple(inputNames), tuple(inputValues), simulationTime)
-            #     else:
-            #         setData(memory['pp'], inputNames, inputValues, simulationTime)
-            #     log.info("=====exchange(): The input variables={!s} were successfully set.".format(inputNames))
-            #
-            # if (outputNames is not None):
-            #     log.info ("=====exchange(): Ready to get the output variables={!s} at time={!s}.".format(outputNames, simulationTime))
-            #     if (isinstance(outputNames, list)):
-            #         # outputValues = getData(projectPath, tuple(outputNames), simulationTime)
-            #         outputValues = getData(memory['pp'], tuple(outputNames), simulationTime)
-            #         len_outputNames = len(outputNames)
-            #         len_outputValues = len(outputValues)
-            #         if(len_outputNames <> len_outputValues):f
-            #             log.error ("=====exchange(): An error occured at simulationTime={!s}. "\
-            #                  "Length of outputNames={!s} ({!s}) does not match " \
-            #                  "length of output values={!s} ({!s}).".format(simulationTime, outputNames,
-            #                  len_outputNames, outputValues, len_outputValues))
-            #             raise
-            #     else:
-            #         outputValues = getData(memory['pp'], outputNames, simulationTime)
-            #     log.info("=====exchange(): The output variables={!s} were successfully retrieved.".format(outputNames))
-            #
-            #     if(outputValues is None):
-            #         log.error ("=====exchange(): The output values for outputNames={!=} is empty at time={!s}.".
-            #             format(outputNames, simulationTime))
-            #         raise
-            #     log.info ("=====exchange(): The values of the output variables:{!s} are equal {!s} at time={!s}.".format(outputNames,
-            #          outputValues, simulationTime))
-            #
-            #     # Convert the output values to float so they can be used on the receiver side.
-            #     retOutputValues = []
-            #     if (isinstance(outputValues, tuple)):
-            #          for elem in outputValues:
-            #              retOutputValues.append(1.0 * float(elem))
-            #     else:
-            #          retOutputValues = 1.0 * float (outputValues)
-            #     memory['outputs'] = retOutputValues
      return [memory['outputs'], memory]
 
 if __name__ == "__main__":
