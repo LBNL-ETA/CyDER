@@ -15,7 +15,11 @@ def run_simulator (nSteps):
         return
     ############## Control FMU
     stepsize = 5
-    start_time = int(time.time() - time.mktime(datetime(2018, 1, 1, 0, 0).timetuple()))
+    #start_time = int(time.time() - time.mktime(datetime(2018, 1, 1, 0, 0).timetuple()))
+    now = datetime.now()
+    start_time = int(time.mktime(datetime(2018, 4, 19, now.hour, now.minute, now.second).timetuple()) -\
+                    time.mktime(datetime(2018, 1, 1).timetuple()))
+    print start_time
     stop_time = nSteps * start_time
     control_fmu_path = "../controls/me/controls.fmu"
     control1 = load_fmu(control_fmu_path)
@@ -204,7 +208,7 @@ def run_simulator (nSteps):
     pv_control_memory['pv2'] = 0
     pv_control_memory['pv3'] = 0
     pv_control_memory['pv4'] = 100
-    t_constant = 5.0
+    t_constant = 2.5 # 5.0 works ok
     for idx in range(0, nSteps):
         print("========This is the {!s} invocation".format(idx))
         realtime = int(time.time() - time.mktime(datetime(2018, 1, 1, 0, 0).timetuple()))
@@ -278,10 +282,10 @@ def run_simulator (nSteps):
         # This needs to be changed to be P instead of QCon
         res = control4.get("QCon")[0]
         results['pv4_Qraw'].append(res)
-        res = int((1-res) *100)
+        res = (1-res) *100
         pv_control_memory['pv4'] = pv_control_memory['pv4'] + (res-pv_control_memory['pv4']) / t_constant
         print ("Inverter Control", res, "Control Calculated", pv_control_memory['pv4'], "PF", control4.get("QCon"))
-        inverterapi.set("P", pv_control_memory['pv4'])
+        inverterapi.set("P", int(pv_control_memory['pv4']))
         # The FMU will only update if get and set are called.
         inverterapi.get("_dummy")
         results['pvhil_P'].append(pv_control_memory['pv4'])
@@ -308,8 +312,8 @@ def run_simulator (nSteps):
         #     plt.waitforbuttonpress()
         # else:
         #     plt.pause(1)
-        print ("Sleep for 90s")
-        time.sleep(90)
+        print ("Sleep for 120s")
+        time.sleep(5)
 
     #plt.close()
 if __name__ == "__main__":
@@ -318,7 +322,7 @@ if __name__ == "__main__":
     # The time factor is set in the model directly
     print ('Starting the simulation')
     start = datetime.now()
-    run_simulator(200)
+    run_simulator(500)
     end = datetime.now()
     print('Ran a single co-simulation in {!s} seconds.'.format(
         (end - start).total_seconds()))
