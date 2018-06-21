@@ -62,6 +62,54 @@ with the only differences that input variables have been
 changed to parameters.
 </html>"));
       end voltVar_param;
+
+      model voltVar_param_noEvents
+        function voltVar
+        input Real v;
+        input Real thr
+                      "over/undervoltage threshold";
+        input Real hys
+                      "Hysteresis";
+        input Modelica.SIunits.PerUnit vMaxDea
+                                              "Upper bound of deaband [p.u.]";
+        input Modelica.SIunits.PerUnit vMax
+                                           "Voltage maximum [p.u.]";
+        input Modelica.SIunits.PerUnit vMinDea
+                                              "Upper bound of deaband [p.u.]";
+        input Modelica.SIunits.PerUnit vMin
+                                           "Voltage minimum [p.u.]";
+        input Real QMaxInd
+                          "Maximal Reactive Power (Inductive)";
+        input Real QMaxCap
+                          "Maximal Reactive Power (Capacitive)";
+        output Real QCon;
+        algorithm
+          QCon:=smooth(0, if v > vMax then QMaxInd*(-1) elseif v > vMaxDea then (vMaxDea - v)/
+          abs(vMax - vMaxDea)*QMaxInd elseif v < vMin then QMaxCap elseif v < vMinDea then (
+          vMinDea - v)/abs(vMin - vMinDea)*QMaxCap else 0);
+        end voltVar;
+
+        Modelica.Blocks.Interfaces.RealInput v(unit="1") "Voltage [p.u]"
+          annotation (Placement(transformation(extent={{-140,-20},{-100,20}})));
+        Modelica.Blocks.Interfaces.RealOutput QCon(unit="kvar") "Q control signal"
+          annotation (Placement(transformation(extent={{100,-10},{120,10}})));
+        parameter Real thr(start=0.05) "over/undervoltage threshold";
+        parameter Real hys(start=0.01) "Hysteresis";
+        final parameter Modelica.SIunits.PerUnit vMaxDea=1 + hys "Upper bound of deaband [p.u.]";
+        final parameter Modelica.SIunits.PerUnit vMax=1 + thr "Voltage maximum [p.u.]";
+        final parameter Modelica.SIunits.PerUnit vMinDea=1 - hys "Upper bound of deaband [p.u.]";
+        final parameter Modelica.SIunits.PerUnit vMin=1 - thr "Voltage minimum [p.u.]";
+        parameter Real QMaxInd(start=1.0, unit="kvar") "Maximal Reactive Power (Inductive)";
+        parameter Real QMaxCap(start=1.0, unit="kvar") "Maximal Reactive Power (Capacitive)";
+      equation
+        QCon = voltVar(v, thr, hys, vMaxDea, vMax, vMinDea, vMin, QMaxInd, QMaxCap);
+        annotation (Documentation(info="<html>
+This model is similar to <a href=\"modelica://CyDER.HIL.Controls.voltVar\">
+CyDER.HIL.Controls.voltVar</a> 
+with the only differences that input variables have been 
+changed to parameters.
+</html>"));
+      end voltVar_param_noEvents;
     end Controls;
 
     package uPMU
@@ -137,6 +185,25 @@ changed to parameters.
         annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
               coordinateSystem(preserveAspectRatio=false)));
       end Validate_VoltVarControl_param;
+
+      model Validate_VoltVarControl_param_noEvents
+
+        Modelica.Blocks.Sources.Ramp ramp(
+          duration=1,
+          startTime=0,
+          height=0.2,
+          offset=0.9)
+          annotation (Placement(transformation(extent={{-90,-10},{-70,10}})));
+        Controls.voltVar_param_noEvents
+                               voltVar_param_noEvents(
+                                             QMaxCap=0.5)
+          annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
+      equation
+        connect(voltVar_param_noEvents.v, ramp.y)
+          annotation (Line(points={{-12,0},{-69,0}}, color={0,0,127}));
+        annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+              coordinateSystem(preserveAspectRatio=false)));
+      end Validate_VoltVarControl_param_noEvents;
     end Examples;
   end HIL;
 
@@ -1084,10 +1151,10 @@ First implementation.
           offset=0.1)
           annotation (Placement(transformation(extent={{-100,16},{-80,36}})));
       equation
-        connect(PV_generation.y, P_fixed.PV_generatoin) annotation (Line(points
-              ={{-79,70},{-30,70},{-30,34},{-12,34}}, color={0,0,127}));
-        connect(S_fixed.PV_generatoin, PV_generation.y) annotation (Line(points
-              ={{-12,-26},{-30,-26},{-30,70},{-79,70}}, color={0,0,127}));
+        connect(PV_generation.y, P_fixed.PV_generatoin) annotation (Line(points=
+               {{-79,70},{-30,70},{-30,34},{-12,34}}, color={0,0,127}));
+        connect(S_fixed.PV_generatoin, PV_generation.y) annotation (Line(points=
+               {{-12,-26},{-30,-26},{-30,70},{-79,70}}, color={0,0,127}));
         connect(Power_factor.y, P_fixed.pf)
           annotation (Line(points={{-79,26},{-12,26}}, color={0,0,127}));
         connect(Power_factor.y, S_fixed.pf) annotation (Line(points={{-79,26},{
