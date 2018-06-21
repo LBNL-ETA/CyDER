@@ -16,3 +16,7 @@ The main script used to run the HIL is runFMUs_hil_me.py
 The FMUs which are needed for the HIL are in the different models folder.
 
 All the FMUs which are based on Python need the path to the Python scripts to be added to the Python path. This was done by creating a folder D:\Users\emma\Documents\GitHub\cyder.scripts and putting all the Python scripts inside of it.
+
+If the script fails to run, check that the right version of Matlab is used. The HIL uses Matlab R2014B. 
+
+Note: Some time the model will fail at the first try. Try a second time to see if that works.

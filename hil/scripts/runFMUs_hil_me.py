@@ -83,13 +83,13 @@ def run_simulator (nSteps):
 
     # Inverter API FMU
     inverterapi_path = "../inverterapi/me/inverterapi.fmu"
-    inverterapi = load_fmu(inverterapi_path)
-    inverterapi.setup_experiment(start_time=start_time, stop_time_defined=False, stop_time=stop_time)
-    inverterapi.initialize()
+    #inverterapi = load_fmu(inverterapi_path)
+    #inverterapi.setup_experiment(start_time=start_time, stop_time_defined=False, stop_time=stop_time)
+    #inverterapi.initialize()
     print ("Completed initialization of Inverter API FMU")
-    inverterapi.event_update()
-    inverterapi.enter_continuous_time_mode()
-    inveterapi_input_names = ["P"]
+    #inverterapi.event_update()
+    #inverterapi.enter_continuous_time_mode()
+    #inveterapi_input_names = ["P"]
 
     # uPMU FMU
     upmu_path = "../sensors/me/uPMU.fmu"
@@ -156,7 +156,7 @@ def run_simulator (nSteps):
                         'multirate2a_SC_Console_port1_26_', 'multirate2a_SC_Console_port1_27_']
 
     opalrt_output_names = ['multirate2a_SM_HIL_port1_49_', 'multirate2a_SM_HIL_port1_50_',
-                        'multirate2a_SM_HIL_port1_51_', 'multirate2a_SM_HIL_port1_51_']
+                        'multirate2a_SM_HIL_port1_51_', 'multirate2a_SM_HIL_port1_52_']
     # OPAL-RT FMU
     # Interactive mode on
     # plt.ion()
@@ -219,7 +219,7 @@ def run_simulator (nSteps):
         control2.time = realtime
         control3.time = realtime
         control4.time = realtime
-        inverterapi.time=realtime
+        #inverterapi.time=realtime
         pv1.time = realtime
         pv2.time = realtime
         pv3.time = realtime
@@ -285,9 +285,9 @@ def run_simulator (nSteps):
         res = (1-res) *100
         pv_control_memory['pv4'] = pv_control_memory['pv4'] + (res-pv_control_memory['pv4']) / t_constant
         print ("Inverter Control", res, "Control Calculated", pv_control_memory['pv4'], "PF", control4.get("QCon"))
-        inverterapi.set("P", int(pv_control_memory['pv4']))
+        #inverterapi.set("P", int(pv_control_memory['pv4']))
         # The FMU will only update if get and set are called.
-        inverterapi.get("_dummy")
+        #inverterapi.get("_dummy")
         results['pvhil_P'].append(pv_control_memory['pv4'])
         # Get the realtime from the clock in the opal-rt model
         results['time'].append(realtime)
@@ -312,8 +312,8 @@ def run_simulator (nSteps):
         #     plt.waitforbuttonpress()
         # else:
         #     plt.pause(1)
-        print ("Sleep for 120s")
-        time.sleep(5)
+        print ("Sleep for 270s")
+        time.sleep(1)
 
     #plt.close()
 if __name__ == "__main__":
@@ -322,7 +322,7 @@ if __name__ == "__main__":
     # The time factor is set in the model directly
     print ('Starting the simulation')
     start = datetime.now()
-    run_simulator(500)
+    run_simulator(2000)
     end = datetime.now()
     print('Ran a single co-simulation in {!s} seconds.'.format(
         (end - start).total_seconds()))
