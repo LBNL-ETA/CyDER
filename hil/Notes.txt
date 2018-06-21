@@ -1,12 +1,16 @@
 FMUs exported by SimulatorToFMU
-are exported for a a specific version of Python 2.7
+ are exported for a specific version of Python 2.7
 (The binaries which exist on GitHub were compiled with Python 2.7.13 ).
-If the FMU requires external Python librariesto run, make sure to 
+If the FMU requires external Python libraries to run, make sure to 
 install the libraries on the target machine.
 The Python version of the libraries must 
 match the version used to compile the FMUs libraries
 
-The realtime folder contains scripts which allow reinitializing
+. The realtime folder contains scripts which allow reinitializing 
 a running opal-rt FMU. Instructions on how to reinitialize are in 
-the script itself. The folder also contains scripts for extracting
+the script itself. The folder also contains scripts for extracting 
 input names of an ePhasorSim model which will be compiled as an FMU.
+
+
+The main script used to run the HIL is runFMUs_hil_me.py
+The FMUs which are needed for the HIL are in the different models folder.
