@@ -1,0 +1,1 @@
+This folder contains the script and the XML input file which are needed to generate the micro PMU FMU. The script is not on the repository because of the credentials which are not allowed to be made public.

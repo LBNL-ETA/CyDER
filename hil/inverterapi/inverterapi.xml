@@ -2,24 +2,24 @@
 <SimulatorModelDescription
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   fmiVersion="2.0"
-  modelName="uPMU"
+  modelName="inverterapi"
   description="Input data for a Simulator FMU"
   generationTool="SimulatorToFMU">
   <ModelVariables>
     <ScalarVariable
-      name="_dummy"
-      description="Dummy inputs"
+      name="P"
+      description="Power"
       causality="input">
       <Real
         unit="1"/>
     </ScalarVariable>
-    <!-- Specify host, port and uuid -->
+    <!-- Output voltage -->
     <ScalarVariable
-      name="uPMU"
-      description="uPMU voltage"
+      name="_dummy"
+      description="Dummy output"
       causality="output">
       <Real
-        unit="V"/>
+        unit="1"/>
     </ScalarVariable>
   </ModelVariables>
 </SimulatorModelDescription>
